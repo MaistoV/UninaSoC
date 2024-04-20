@@ -1,3 +1,17 @@
+# Basic variables for Vivado
+XILINX_VIVADO ?= vivado
+XILINX_VIVADO_MODE ?= tcl
+# Output directory of Vivado's compilation reports
+XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_ROOT}/${XILINX_PROJECT_NAME}/reports
+# List of the Xilinx IPs to build and import in the design
+XILINX_IP_LIST ?= xlnx_clk_wiz 				\
+					xlnx_jtag2axi_master 	\
+					xlnx_vio 				\
+					xlnx_axi_crossbar 		\
+					xlnx_axi_uartlite 		\
+					xlnx_axi_gpio_in 		\
+					xlnx_axi_gpio_out
+
 all: bitstream
 
 # Build bitstream from scratch
@@ -16,7 +30,7 @@ XILINX_IP_NAMES ?= $(addsuffix .xci, ${XILINX_IP_LIST})
 ips: ${XILINX_IP_NAMES}
 
 # Build single IP
-%.xci: ips/%/run.tcl
+%.xci: ips/%/config.tcl
 	@echo "Generating IP $@"
 	export IP_BUILD_DIR=${XILINX_IP_ROOT}/$*/build; \
 	export IP_NAME=$*;					\
