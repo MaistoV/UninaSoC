@@ -38,7 +38,7 @@ export XILINX_PROJECT_NAME=uninasoc
 # Software #
 ############
 export SW_ROOT=${ROOT_DIR}/sw
-# TBD
+export BOOTROM_COE=${SW_ROOT}/bootrom.coe
 
 
 

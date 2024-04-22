@@ -23,7 +23,9 @@ The choice of the simulator is driven by the choice of the IPs and required lice
 2022.2
 
 # TODO
-* Design address space -> linker script in sw/linker
+* Design configuration flow under config/ directory
+* Design address space -> linker script in sw/linker from template + configs to .ld
+* Decide whether to wrap Xilinx IPs in top level or keep the IP instatiation
 * Design Xilinx IPs simulation flow
 * Design interchangability of RVM cores in RVM socket, e.g.:  
 ```
