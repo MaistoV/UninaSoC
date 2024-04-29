@@ -8,17 +8,27 @@ Before integration, you can use the verilator-based simulation environment in th
 To create a verilator simulation, first you need to copy the .sv files in the rtl folder.
 The Makefile allows the definition of a top module (TOP_SV) and the other .sv dependencies (SV_INC_DIR).
 Once all files are placed, run
+```
 make verilate
+```
 
 The template directory contains a dummy .sv file and the verilator tb template. 
+```
 make sim_create
+```
 This creates a copy of the testbench for the TOP_SV file previously built with verilator.
 The testbench will be put into the tb directory. From here it is possible to customize it as you prefer.
 
 After finishing the testbench, just run
+```
 make sim_compile
+```
 to compile all the .cpp files and finally
+```
 make sim_run
+```
 to run the simulation. Wave traces are also built in the directory waves.
 If you have gtkwave installed, you can visualize them by
+```
 make wave
+```
