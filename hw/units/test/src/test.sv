@@ -1,4 +1,4 @@
-module mux(
+module test(
   input  logic  rstn_i,
   input  logic  clk_i,
   input  logic  a_i,

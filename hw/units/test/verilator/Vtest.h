@@ -5,20 +5,20 @@
 // The class here is then constructed to instantiate the design.
 // See the Verilator manual for examples.
 
-#ifndef _VMUX_H_
-#define _VMUX_H_  // guard
+#ifndef _VTEST_H_
+#define _VTEST_H_  // guard
 
 #include "verilated.h"
 
 //==========
 
-class Vmux__Syms;
-class Vmux_VerilatedVcd;
+class Vtest__Syms;
+class Vtest_VerilatedVcd;
 
 
 //----------
 
-VL_MODULE(Vmux) {
+VL_MODULE(Vtest) {
   public:
     
     // PORTS
@@ -35,18 +35,18 @@ VL_MODULE(Vmux) {
     
     // INTERNAL VARIABLES
     // Internals; generally not touched by application code
-    Vmux__Syms* __VlSymsp;  // Symbol table
+    Vtest__Syms* __VlSymsp;  // Symbol table
     
     // CONSTRUCTORS
   private:
-    VL_UNCOPYABLE(Vmux);  ///< Copying not allowed
+    VL_UNCOPYABLE(Vtest);  ///< Copying not allowed
   public:
     /// Construct the model; called by application code
     /// The special name  may be used to make a wrapper with a
     /// single model invisible with respect to DPI scope names.
-    Vmux(const char* name = "TOP");
+    Vtest(const char* name = "TOP");
     /// Destroy the model; called (often implicitly) by application code
-    ~Vmux();
+    ~Vtest();
     /// Trace signals in the model; called by application code
     void trace(VerilatedVcdC* tfp, int levels, int options = 0);
     
@@ -63,23 +63,23 @@ VL_MODULE(Vmux) {
     
     // INTERNAL METHODS
   private:
-    static void _eval_initial_loop(Vmux__Syms* __restrict vlSymsp);
+    static void _eval_initial_loop(Vtest__Syms* __restrict vlSymsp);
   public:
-    void __Vconfigure(Vmux__Syms* symsp, bool first);
+    void __Vconfigure(Vtest__Syms* symsp, bool first);
   private:
-    static QData _change_request(Vmux__Syms* __restrict vlSymsp);
-    static QData _change_request_1(Vmux__Syms* __restrict vlSymsp);
+    static QData _change_request(Vtest__Syms* __restrict vlSymsp);
+    static QData _change_request_1(Vtest__Syms* __restrict vlSymsp);
     void _ctor_var_reset() VL_ATTR_COLD;
   public:
-    static void _eval(Vmux__Syms* __restrict vlSymsp);
+    static void _eval(Vtest__Syms* __restrict vlSymsp);
   private:
 #ifdef VL_DEBUG
     void _eval_debug_assertions();
 #endif  // VL_DEBUG
   public:
-    static void _eval_initial(Vmux__Syms* __restrict vlSymsp) VL_ATTR_COLD;
-    static void _eval_settle(Vmux__Syms* __restrict vlSymsp) VL_ATTR_COLD;
-    static void _initial__TOP__1(Vmux__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+    static void _eval_initial(Vtest__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+    static void _eval_settle(Vtest__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+    static void _initial__TOP__1(Vtest__Syms* __restrict vlSymsp) VL_ATTR_COLD;
   private:
     static void traceChgSub0(void* userp, VerilatedVcd* tracep);
     static void traceChgTop0(void* userp, VerilatedVcd* tracep);

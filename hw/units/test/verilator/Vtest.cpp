@@ -1,16 +1,16 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Design implementation internals
-// See Vmux.h for the primary calling header
+// See Vtest.h for the primary calling header
 
-#include "Vmux.h"
-#include "Vmux__Syms.h"
+#include "Vtest.h"
+#include "Vtest__Syms.h"
 
 //==========
 
-void Vmux::eval_step() {
-    VL_DEBUG_IF(VL_DBG_MSGF("+++++TOP Evaluate Vmux::eval\n"); );
-    Vmux__Syms* __restrict vlSymsp = this->__VlSymsp;  // Setup global symbol table
-    Vmux* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+void Vtest::eval_step() {
+    VL_DEBUG_IF(VL_DBG_MSGF("+++++TOP Evaluate Vtest::eval\n"); );
+    Vtest__Syms* __restrict vlSymsp = this->__VlSymsp;  // Setup global symbol table
+    Vtest* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
 #ifdef VL_DEBUG
     // Debug assertions
     _eval_debug_assertions();
@@ -31,7 +31,7 @@ void Vmux::eval_step() {
             Verilated::debug(1);
             __Vchange = _change_request(vlSymsp);
             Verilated::debug(__Vsaved_debug);
-            VL_FATAL_MT("template/mux.sv", 1, "",
+            VL_FATAL_MT("test/src/test.sv", 1, "",
                 "Verilated model didn't converge\n"
                 "- See DIDNOTCONVERGE in the Verilator manual");
         } else {
@@ -40,7 +40,7 @@ void Vmux::eval_step() {
     } while (VL_UNLIKELY(__Vchange));
 }
 
-void Vmux::_eval_initial_loop(Vmux__Syms* __restrict vlSymsp) {
+void Vtest::_eval_initial_loop(Vtest__Syms* __restrict vlSymsp) {
     vlSymsp->__Vm_didInit = true;
     _eval_initial(vlSymsp);
     vlSymsp->__Vm_activity = true;
@@ -57,7 +57,7 @@ void Vmux::_eval_initial_loop(Vmux__Syms* __restrict vlSymsp) {
             Verilated::debug(1);
             __Vchange = _change_request(vlSymsp);
             Verilated::debug(__Vsaved_debug);
-            VL_FATAL_MT("template/mux.sv", 1, "",
+            VL_FATAL_MT("test/src/test.sv", 1, "",
                 "Verilated model didn't DC converge\n"
                 "- See DIDNOTCONVERGE in the Verilator manual");
         } else {
@@ -66,21 +66,21 @@ void Vmux::_eval_initial_loop(Vmux__Syms* __restrict vlSymsp) {
     } while (VL_UNLIKELY(__Vchange));
 }
 
-void Vmux::_eval(Vmux__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vmux::_eval\n"); );
-    Vmux* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+void Vtest::_eval(Vtest__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtest::_eval\n"); );
+    Vtest* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
 }
 
-VL_INLINE_OPT QData Vmux::_change_request(Vmux__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vmux::_change_request\n"); );
-    Vmux* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+VL_INLINE_OPT QData Vtest::_change_request(Vtest__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtest::_change_request\n"); );
+    Vtest* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
     return (vlTOPp->_change_request_1(vlSymsp));
 }
 
-VL_INLINE_OPT QData Vmux::_change_request_1(Vmux__Syms* __restrict vlSymsp) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vmux::_change_request_1\n"); );
-    Vmux* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
+VL_INLINE_OPT QData Vtest::_change_request_1(Vtest__Syms* __restrict vlSymsp) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtest::_change_request_1\n"); );
+    Vtest* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
     // Change detection
     QData __req = false;  // Logically a bool
@@ -88,8 +88,8 @@ VL_INLINE_OPT QData Vmux::_change_request_1(Vmux__Syms* __restrict vlSymsp) {
 }
 
 #ifdef VL_DEBUG
-void Vmux::_eval_debug_assertions() {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vmux::_eval_debug_assertions\n"); );
+void Vtest::_eval_debug_assertions() {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtest::_eval_debug_assertions\n"); );
     // Body
     if (VL_UNLIKELY((rstn_i & 0xfeU))) {
         Verilated::overWidthError("rstn_i");}

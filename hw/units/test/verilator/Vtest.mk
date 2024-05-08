@@ -2,9 +2,9 @@
 # DESCRIPTION: Verilator output: Makefile for building Verilated archive or executable
 #
 # Execute this makefile from the object directory:
-#    make -f Vmux.mk
+#    make -f Vtest.mk
 
-default: Vmux__ALL.a
+default: Vtest__ALL.a
 
 ### Constants...
 # Perl executable (from $PERL)
@@ -28,9 +28,9 @@ VM_SC_TARGET_ARCH = linux
 
 ### Vars...
 # Design prefix (from --prefix)
-VM_PREFIX = Vmux
+VM_PREFIX = Vtest
 # Module prefix (from --prefix)
-VM_MODPREFIX = Vmux
+VM_MODPREFIX = Vtest
 # User CFLAGS (from -CFLAGS on Verilator command line)
 VM_USER_CFLAGS = \
 
@@ -46,7 +46,7 @@ VM_USER_DIR = \
 
 ### Default rules...
 # Include list of all generated classes
-include Vmux_classes.mk
+include Vtest_classes.mk
 # Include global rules
 include $(VERILATOR_ROOT)/include/verilated.mk
 

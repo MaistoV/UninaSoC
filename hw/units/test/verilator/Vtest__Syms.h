@@ -4,16 +4,16 @@
 // Internal details; most calling programs do not need this header,
 // unless using verilator public meta comments.
 
-#ifndef _VMUX__SYMS_H_
-#define _VMUX__SYMS_H_  // guard
+#ifndef _VTEST__SYMS_H_
+#define _VTEST__SYMS_H_  // guard
 
 #include "verilated.h"
 
 // INCLUDE MODULE CLASSES
-#include "Vmux.h"
+#include "Vtest.h"
 
 // SYMS CLASS
-class Vmux__Syms : public VerilatedSyms {
+class Vtest__Syms : public VerilatedSyms {
   public:
     
     // LOCAL STATE
@@ -23,11 +23,11 @@ class Vmux__Syms : public VerilatedSyms {
     bool __Vm_didInit;
     
     // SUBCELL STATE
-    Vmux*                          TOPp;
+    Vtest*                         TOPp;
     
     // CREATORS
-    Vmux__Syms(Vmux* topp, const char* namep);
-    ~Vmux__Syms() {}
+    Vtest__Syms(Vtest* topp, const char* namep);
+    ~Vtest__Syms() {}
     
     // METHODS
     inline const char* name() { return __Vm_namep; }

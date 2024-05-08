@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Vmux.h"
+#include "Vdummy.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
 
 #define CLK_NS 20
 #define CYCLES 1000
 
-void tick(int tickcount, Vmux *tb, VerilatedVcdC *tfp);
-void trace_init(Vmux *tb, VerilatedVcdC * tfp);
+void tick(int tickcount, Vdummy *tb, VerilatedVcdC *tfp);
+void trace_init(Vdummy *tb, VerilatedVcdC * tfp);
 
 int main(int argc, char **argv){
 	
-	Vmux * tb = new Vmux;
+	Vdummy * tb = new Vdummy;
 	VerilatedVcdC * tfp = new VerilatedVcdC;
 
 	unsigned tickcount = 0;
@@ -33,7 +33,7 @@ int main(int argc, char **argv){
 
 }
 
-void tick(int tickcount, Vmux *tb, VerilatedVcdC *tfp){
+void tick(int tickcount, Vdummy *tb, VerilatedVcdC *tfp){
 	tb->eval();
 	if(tfp) //dump 2ns before the tick
 		tfp->dump(tickcount*CLK_NS - 2);
@@ -49,7 +49,7 @@ void tick(int tickcount, Vmux *tb, VerilatedVcdC *tfp){
 	}
 }
 
-void trace_init(Vmux *tb, VerilatedVcdC * tfp){
+void trace_init(Vdummy *tb, VerilatedVcdC * tfp){
 
 	Verilated::traceEverOn(true);
 	

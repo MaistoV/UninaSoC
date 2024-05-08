@@ -1,13 +1,13 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Symbol table implementation internals
 
-#include "Vmux__Syms.h"
-#include "Vmux.h"
+#include "Vtest__Syms.h"
+#include "Vtest.h"
 
 
 
 // FUNCTIONS
-Vmux__Syms::Vmux__Syms(Vmux* topp, const char* namep)
+Vtest__Syms::Vtest__Syms(Vtest* topp, const char* namep)
     // Setup locals
     : __Vm_namep(namep)
     , __Vm_activity(false)
