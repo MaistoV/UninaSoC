@@ -1,4 +1,4 @@
-module test(
+module template(
   input  logic  rstn_i,
   input  logic  clk_i,
   input  logic  a_i,

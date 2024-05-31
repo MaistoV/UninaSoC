@@ -1,19 +1,21 @@
-# Units simulation Readme
-This repo is meant to allow users to automate the creation of a simulation environment for SystemVerilog-based units by using the open-source simulator Verilator.
+# Units Simulation
+This tree is meant to allow users to automate the creation of a simulation environment for SystemVerilog-based units by using the open-source simulator Verilator.
+
+# Install Verilator
+Installation steps: TBD
 
 # Creating a new simulation environment
-The Makefile is used to orchestrate the whole flow, while the template directory contains an example of the final outcome for whatever units.
-First, edit the Makefile with the path of GCC, Verilator and GTKWave if you plan on generating waves as well.
-Second, define the project name (i.e. the SV top module name).
-Finally, run
+A template project structure is provided in `template.prj/`. In this directory, a symlink to a common Makefile is provided to orchestrate the whole flow, while the template directory contains an example of the final outcome for whichever unit. 
+
+To create a new project, you need to:
 ```
-make proj_create
+ source the create_project.sh <your-proj-name>
 ```
-This will create a directory similar to template, with all sub-folders and a skeleton for your testbench.
+This will create a directory similar to the template, with all sub-folders and a skeleton for your testbench.
 
 # Prepare and Run the testbench
-Now, you can add your SV sources in PROJECT_NAME/src. If your module includes more SV files, specify them in SV_INC_DIR in the Makefile.
-Then run 
+Now, you can add your SV sources in `PROJECT_NAME/src`. If your module includes more SV files, specify them in the `SV_INC_DIR` Makefile varibale.
+Then run:
 ```
 make verilate
 ```
