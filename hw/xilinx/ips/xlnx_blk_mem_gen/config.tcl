@@ -1,6 +1,6 @@
 
 # Import IP
-create_ip -name blk_mem_gen -vendor xilinx.com -library ip -version 8.4 -module_name $env::(IP_NAME)
+create_ip -name blk_mem_gen -vendor xilinx.com -library ip -version 8.4 -module_name $::env(IP_NAME)
 
 # Configure IP
 set_property -dict [list CONFIG.Interface_Type {AXI4}
@@ -10,9 +10,9 @@ set_property -dict [list CONFIG.Interface_Type {AXI4}
                         CONFIG.Use_Byte_Write_Enable {true}
                         CONFIG.Byte_Size {8}
                         CONFIG.Assume_Synchronous_Clk {true}
-                        CONFIG.Write_Width_A {32}       # TODO: change with $env::(AXI_DATA_WIDTH)
-                        CONFIG.Write_Depth_A {1024}     # TODO: change with $env::(MEMORY_SIZE_BYTES/AXI_DATA_WIDTH)
-                        CONFIG.Read_Width_A {32}        # TODO: change with $env::(AXI_DATA_WIDTH)
+                        CONFIG.Write_Width_A {32}       # TODO: change with $::env(AXI_DATA_WIDTH)
+                        CONFIG.Write_Depth_A {1024}     # TODO: change with $::env(MEMORY_SIZE_BYTES/AXI_DATA_WIDTH)
+                        CONFIG.Read_Width_A {32}        # TODO: change with $::env(AXI_DATA_WIDTH)
                         CONFIG.Operating_Mode_A {READ_FIRST}
                         CONFIG.Write_Width_B {32}
                         CONFIG.Read_Width_B {32}
@@ -25,6 +25,6 @@ set_property -dict [list CONFIG.Interface_Type {AXI4}
                         CONFIG.Port_B_Enable_Rate {100}
                         CONFIG.EN_SAFETY_CKT {true}
                         CONFIG.Load_Init_File {true}
-                        CONFIG.Coe_File {$env::(BOOTROM_COE)}
+                        CONFIG.Coe_File {$::env(BOOTROM_COE)}
                         CONFIG.Fill_Remaining_Memory_Locations {true}
-                ] [get_ips $env::(IP_NAME)]
+                ] [get_ips $::env(IP_NAME)]

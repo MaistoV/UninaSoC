@@ -11,7 +11,7 @@ import_files -fileset constrs_1 -norecurse $::env(XILIN_ROOT)/constraints/$::env
 import_files -fileset constrs_1 -norecurse $::env(XILIN_ROOT)/constraints/${board}.xdc
 
 # Import IPS
-read_ip $env::(XILINX_IP_LIST_XCI)
+read_ip $::env(XILINX_IP_LIST_XCI)
 
 # Set top level module
 set_property top uninasoc_top [current_fileset]

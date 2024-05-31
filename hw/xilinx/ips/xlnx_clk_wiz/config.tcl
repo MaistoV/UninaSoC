@@ -1,6 +1,6 @@
 
 # Import IP
-create_ip -name clk_wiz -vendor xilinx.com -library ip -version 6.0 -module_name $env::(IP_NAME)
+create_ip -name clk_wiz -vendor xilinx.com -library ip -version 6.0 -module_name $::env(IP_NAME)
 
 # Configure IP
 set_property -dict  [list CONFIG.CLK_IN1_BOARD_INTERFACE {Custom} \
@@ -27,5 +27,5 @@ set_property -dict  [list CONFIG.CLK_IN1_BOARD_INTERFACE {Custom} \
                             CONFIG.CLKOUT3_PHASE_ERROR {87.180} \
                             CONFIG.CLKOUT4_JITTER {188.586} \
                             CONFIG.CLKOUT4_PHASE_ERROR {87.180} \
-                    ] [get_ips $env::(IP_NAME)]
+                    ] [get_ips $::env(IP_NAME)]
 }
