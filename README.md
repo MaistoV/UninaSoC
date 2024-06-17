@@ -3,7 +3,8 @@ RISC-V SoC design for FPGA fast prototyping from University of Naples Federico I
 
 Alternative name candidates:
 * Federico-V
-* ...?
+* SECLabbino
+* ?
 
 # Supported boards:
 Zybo?
@@ -17,7 +18,7 @@ The choice of the simulator is driven by the choice of the IPs and required lice
 * SoC-level tests, QuestaSim:
    * Requires license
    * Supports Xilinx IPs
-   * Students can access a shared machine for using the simulator
+   * Students can access a shared machine simulator access
 
 # Environment and Tools Version 
 This project was verified on Ubuntu 22.04.
@@ -33,8 +34,6 @@ W.r.t. the single tools:
 # TODO
 * Design configuration flow under config/ directory
 * Design address space -> linker script in sw/linker from template + configs to .ld
-* Decide whether to wrap Xilinx IPs in top level or keep the IP instatiation
-* Design Xilinx IPs simulation flow
 * Design interchangability of RVM cores in RVM socket, e.g.:  
 ```
 'RVM_CORE_WRAPPER # (
@@ -46,13 +45,12 @@ W.r.t. the single tools:
 ```
 * Build and verify first design
 
-# ES Draft Project Ideas
+# ES Project 2024
 - SoC-independent:
 	1. Autogenerate linker script + Xilinx AXI crossbar address map from a configuration file
-      - Use same syntax as device tree address ranges
 	2. Bare-metal driver xlnx axi uart in C, not asssemby
-		- Host is the PS Cortex-A (on Zybo), not a RISC-V core
+		- Host is a PS Cortex-A (on Zybo), not a RISC-V core
 	3. Verify jtag2axi integration and develop minimal bootrom
 		- Can leverage spike and RISC-V GCC from CE2/APC demo
-- Soc-dependent?
-	4. ???
+- Soc-dependent
+	4. Cove (TBD)
