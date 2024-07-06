@@ -7,8 +7,6 @@
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports sys_clk]
 create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports sys_clk]
 
-#create_generated_clock -name clk_50 -source [get_pins clkwiz_inst/clk_in1] -divide_by 2 [get_pins clkwiz_inst/clk_50];
-
 ##Switches
 
 #set_property -dict { PACKAGE_PIN J15   IOSTANDARD LVCMOS33 } [get_ports { SW[0] }]; #IO_L24N_T3_RS0_15 Sch=sw[0]
