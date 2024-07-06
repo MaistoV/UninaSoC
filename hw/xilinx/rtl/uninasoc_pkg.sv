@@ -12,7 +12,8 @@ package uninasoc_pkg;
     // RVM socket + JTAG2AXI
     localparam int unsigned NUM_AXI_MASTERS = 2; 
     // Main memory + UART + GPIOs
-    localparam int unsigned NUM_AXI_SLAVES  = 2 + NUM_GPIO_IN +  NUM_GPIO_OUT;
+   // localparam int unsigned NUM_AXI_SLAVES  = 2 + NUM_GPIO_IN +  NUM_GPIO_OUT;
+    localparam int unsigned NUM_AXI_SLAVES  = 2 //ONLY VALID FOR THIS VERSION
     localparam int unsigned AXI_DATA_WIDTH  = 32;
     localparam int unsigned AXI_ADDR_WIDTH  = 32;
 
