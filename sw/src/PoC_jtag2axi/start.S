@@ -1,6 +1,7 @@
+# all rights of this file go to martinKindall on GitHub
 # Base address of memory-mapped IO,
 # Loaded into gp at startup
-.equ IO_BASE, 0x400000
+.equ IO_BASE, 0x4000000
 
 .section .text
 
