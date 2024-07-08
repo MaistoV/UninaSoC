@@ -1,3 +1,4 @@
+# all rights of this file go to martinKindall on GitHub
 # Led driver. Writes a value to the
 # led port of the FPGA. Up to 5 leds can be controlled.
 
