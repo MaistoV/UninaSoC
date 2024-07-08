@@ -1,3 +1,4 @@
+// all rights of this file go to martinKindall on GitHub
 #include "digital.h"
 
 int main() {
