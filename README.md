@@ -1,5 +1,5 @@
 # UninaSoC
-RISC-V SoC design for FPGA fast prototyping from University of Naples Federico II.
+RISC-V soft-SoC design for Xilinx FPGAs from University of Naples Federico II.
 
 Alternative name candidates:
 * Federico-V
@@ -7,8 +7,9 @@ Alternative name candidates:
 * ?
 
 # Supported boards:
-Zybo?
-Artix-7?
+- [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
+- [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
+- Alveo?
 
 # Simulation flow:
 The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
@@ -18,7 +19,7 @@ The choice of the simulator is driven by the choice of the IPs and required lice
 * SoC-level tests, QuestaSim:
    * Requires license
    * Supports Xilinx IPs
-   * Students can access a shared machine simulator access
+   * Students can access a licensed host for simulator access
 
 # Environment and Tools Version 
 This project was verified on Ubuntu 22.04.
@@ -32,9 +33,10 @@ W.r.t. the single tools:
 | gtkwave         | TBD              |
 
 # TODO
-* Design configuration flow under config/ directory
-* Design address space -> linker script in sw/linker from template + configs to .ld
-* Design interchangability of RVM cores in RVM socket, e.g.:  
+* Design address space
+	* Finalized linker script
+ 	* Device tree (template + generation)
+* Design interchangability of RVM cores in RVM socket, e.g.:
 ```
 'RVM_CORE_WRAPPER # (
 'rvm_core_name_parameter_map
@@ -43,14 +45,22 @@ W.r.t. the single tools:
 'RVM_CORE_NAME_PORT_MAP
 )
 ```
-* Build and verify first design
 
 # ES Project 2024
-- SoC-independent:
-	1. Autogenerate linker script + Xilinx AXI crossbar address map from a configuration file
-	2. Bare-metal driver xlnx axi uart in C, not asssemby
-		- Host is a PS Cortex-A (on Zybo), not a RISC-V core
-	3. Verify jtag2axi integration and develop minimal bootrom
-		- Can leverage spike and RISC-V GCC from CE2/APC demo
-- Soc-dependent
-	4. Cove (TBD)
+Basic projects:
+
+1. ~~AXI Crossbar: Autogenerate linker script + Xilinx AXI crossbar address map from a configuration file~~  
+2. ~~AXI UART: Bare-metal driver xlnx axi uart in C, not asssemby~~
+3. ~~JTAG2AXI: Verify jtag2axi integration~~
+4. Bootrom: design and development
+5. (?) DRAM: MIG IP integration
+6. Interrupts: interrupt system design
+7. Alveo porting: Port SoC on Alveo
+8. SPI flash: Integrate + PoC boot from SPI flash
+9. Debugger: JTAG debug core + OpenOCD/GDB
+
+Advanced projects:
+
+10. Linux in-memory boot 
+11. Linux SPI flash boot 
+12. CoVe: extension implementation
