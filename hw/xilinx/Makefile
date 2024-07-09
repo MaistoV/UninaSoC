@@ -86,6 +86,8 @@ ${XILINX_SIM_IP_ROOT}/ips:
 # Start Demo Jtag to Axi
 # IMPORTANT! Write absolute path between two high quotes with double slashes 
 # i.e. "C:\\Users\\user\\Downloads\\blink.bin"
+# command should be launched like this <make demo_j2a path="C:\\Users\\user\\Downloads\\blink.bin" base_address="0x4000000">
+
 demo_j2a:
 	#compile blinkled demo project
 	@sh $(COMPILE_BLINKLED_SCRIPT_PATH)
@@ -96,7 +98,7 @@ demo_j2a:
 	fi
 	@echo "Running TCL script with path=$(path) and base_address=$(base_address)"
 	${XILINX_VIVADO} \
-		-mode batch -source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_master_load_binary.tcl -tclargs $(path) $(address)
+		-mode batch -source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_master_load_binary.tcl -tclargs $(path) $(base_address)
 
 # Clean up project
 clean:
