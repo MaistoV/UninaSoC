@@ -80,6 +80,18 @@ ${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
 ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
+# Start Demo Jtag to Axi
+demo_j2a:
+	@sh sw/src/PoC_jtag2axi/compile.sh
+	./install_and_zip_foo.sh
+	@if [ -z "$(path)" ] || [ -z "$(base_address)" ]; then \
+		echo "Usage: make demo_j2a path=<path_to_bin_file> base_address=<address_value>"; \
+		exit 1; \
+	fi
+	@echo "Running TCL script with path=$(path) and base_address=$(base_address)"
+	${XILINX_VIVADO} \
+		-mode batch -source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_master_load_binary.tcl -tclargs -tclargs $(path) $(address)
+
 # Clean up project
 clean:
 	rm -rf ${XILINX_PROJECT_NAME}
