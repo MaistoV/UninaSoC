@@ -15,6 +15,9 @@ XILINX_IP_LIST ?= xlnx_clk_wiz 				\
 # List of IPs' xci
 XILINX_IP_LIST_XCI := $(foreach ip,${XILINX_IP_LIST},${XILINX_IPS_ROOT}/${ip}/build/${ip}.srcs/sources_1/ip/${ip}/${ip}.xci)
 
+#path to demo_j2a compilation script
+COMPILE_BLINKLED_SCRIPT_PATH := sw/src/PoC_jtag2axi/compile.sh
+
 # Full environment variables list for Vivado
 # XILINX_PROJECT_LTX=${XILINX_PROJECT_LTX}
 XILINX_VIVADO_ENV ?=              					\
@@ -81,16 +84,19 @@ ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
 # Start Demo Jtag to Axi
+# IMPORTANT! Write absolute path between two high quotes with double slashes 
+# i.e. "C:\\Users\\user\\Downloads\\blink.bin"
 demo_j2a:
-	@sh sw/src/PoC_jtag2axi/compile.sh
-	./install_and_zip_foo.sh
+	#compile blinkled demo project
+	@sh $(COMPILE_BLINKLED_SCRIPT_PATH)
+	#transfer it to BRAM with tcl script
 	@if [ -z "$(path)" ] || [ -z "$(base_address)" ]; then \
 		echo "Usage: make demo_j2a path=<path_to_bin_file> base_address=<address_value>"; \
 		exit 1; \
 	fi
 	@echo "Running TCL script with path=$(path) and base_address=$(base_address)"
 	${XILINX_VIVADO} \
-		-mode batch -source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_master_load_binary.tcl -tclargs -tclargs $(path) $(address)
+		-mode batch -source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_master_load_binary.tcl -tclargs $(path) $(address)
 
 # Clean up project
 clean:
