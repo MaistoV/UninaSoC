@@ -1,6 +1,9 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>                                                       
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>                                                
-// Description: Basic version of UninaSoC                                                                    
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>   
+// Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
+// Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)    
+// NOTE: ONLY GPIO_OUT, AXI CROSSBAR, MEM_GEN AND JTAG_AXI COMPONENTS HAVE BEEN USED IN THIS VERSION
+                                                                                                             
                                                                                                              
 // System architecture:                                                                                      
 //                                                                                    ________               
@@ -18,8 +21,6 @@
 //                                                                                   |________|              
 //                       
 
-// NOTE: ONLY GPIO_OUT, AXI CROSSBAR, MEM_GEN AND JTAG_AXI COMPONENTS HAVE BEEN USED IN THIS VERSION
-                                                                                                             
 import uninasoc_pkg::*;                                                                                      
                                                                                                              
 module uninasoc  # (                                                                                         
