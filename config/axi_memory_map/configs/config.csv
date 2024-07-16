@@ -1,0 +1,29 @@
+SI_Number,2
+Slave_Name,Slave_Name_A Slave_Name_B
+MI_Number,2
+Strategy,0
+R_Register,1
+Protocol,AXI4
+Addr_Width,64
+Data_Width,32
+ID_Width,10
+AW_User_Width,0
+AR_User_Width,0
+W_User_Width,0
+R_User_Width,0
+B_User_Width,0 
+Connectivity_Mode,SASD
+Slave_Priority,0 1
+SI_Read_Acceptance,1 1
+SI_Write_Acceptance,1 1
+Thread_ID_Width,3 8
+Single_Thread,1 0
+Base_ID,0x00000000 0x01000000
+MI_Read_Issuing,4 5
+MI_Write_Issuing,4 7
+Secure,1 0
+Addr_Ranges,1
+Range_Base_Addr,0x0000000000000000 0x0001000000000000
+Range_Width,24 48
+Read_Connectivity,1 1 0 1
+Write_Connectivity,0 1 0 1
