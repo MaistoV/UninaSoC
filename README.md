@@ -58,9 +58,10 @@ Basic projects:
 7. Alveo porting: Port SoC on Alveo
 8. SPI flash: Integrate + PoC boot from SPI flash
 9. Debugger: JTAG debug core + OpenOCD/GDB
+10. Design probing: ILA integration in SoC flow
 
 Advanced projects:
 
-10. Linux in-memory boot 
-11. Linux SPI flash boot 
-12. CoVe: extension implementation
+11. Linux in-memory boot 
+12. Linux SPI flash boot 
+13. CoVe: extension implementation
