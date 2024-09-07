@@ -2,18 +2,16 @@
 
 all: xilinx hw sw
 
-.PHONY: hw
 hw:
 
-.PHONY: xilinx
 xilinx:
-	${MAKE} -C ${XILIN_ROOT} bitstream
+	${MAKE} -C ${XILINX_ROOT}
 
-.PHONY: sw
+.PHONY: 
 sw:
+	${MAKE} -C ${SW_ROOT}
 
-.PHONY: sim
-sim:
+.PHONY: sim xilinx sw
 
 
 

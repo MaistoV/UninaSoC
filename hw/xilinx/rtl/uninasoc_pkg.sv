@@ -1,25 +1,28 @@
+// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+// Description: Basic system variables for UninaSoC
+
 package uninasoc_pkg;
 
     ///////////////////////
     // SoC-level defines //
     ///////////////////////
-    // TBD
-    localparam NUM_IRQ = 3;
+    localparam int unsigned NUM_IRQ = 3;
+    localparam int unsigned NUM_GPIO_IN  = 0; //TBD
+    localparam int unsigned NUM_GPIO_OUT = 1;
 
-    /////////////////
-    // AXI defines //
-    /////////////////
-    // RVM socket + JTAG2AXI
-    localparam int unsigned NUM_AXI_MASTERS = 2; 
-    // Main memory + UART + GPIOs
-    localparam int unsigned NUM_AXI_SLAVES  = 2 + NUM_GPIO_IN +  NUM_GPIO_OUT;
-    localparam int unsigned AXI_DATA_WIDTH  = 32;
-    localparam int unsigned AXI_ADDR_WIDTH  = 32;
+    //////////////////
+    // AXI crossbar //
+    //////////////////
+    // Crosbar masters
+    // - RVM socket
+    // - JTAG2AXI
+    // localparam int unsigned NUM_AXI_MASTERS = 2;
+    localparam int unsigned NUM_AXI_MASTERS = 1; // Just 1 for verify/jtag2axi
 
-    // TODO: define wrapper structs/interfaces for Xilinx-generated AXI interface
-
-    /////////
-    // TBD //
-    /////////
+    // Crosbar slaves
+    // - GPIOs in input
+    // - GPIOs in outputs
+    // - Main memory
+    localparam int unsigned NUM_AXI_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 1;
 
 endpackage : uninasoc_pkg

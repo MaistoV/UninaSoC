@@ -39,9 +39,14 @@ export VLTSTD_INC=/usr/share/verilator/include/vltstd/
 # Xilinx project name
 export XILINX_PROJECT_NAME=uninasoc
 # Target device
-# ZCU102
-export XILINX_PART_NUMBER=xczu9eg-ffvb1156-2-i
-export XILINX_BOARD=xilinx.com:zcu102:part0:3.4
+# Nexsys A7
+export XILINX_PART_NUMBER=xc7a100tcsg324-1
+export XILINX_BOARD=Nexys-A7-100T-Master
+export XILINX_HW_DEVICE=xc7a100t_0
+# Nexsys Alveo XXX
+# export XILINX_PART_NUMBER=TBD
+# export XILINX_BOARD=TBD
+# export XILINX_HW_DEVICE=TBD
 # Root directoriy
 export XILINX_ROOT=${ROOT_DIR}/hw/xilinx
 export XILINX_IPS_ROOT=${XILINX_ROOT}/ips
@@ -50,9 +55,13 @@ export XILINX_SYNTH_ROOT=${XILINX_ROOT}/synth
 export XILINX_SYNTH_TCL_ROOT=${XILINX_SYNTH_ROOT}/tcl
 export XILINX_SYNTH_XDC_ROOT=${XILINX_SYNTH_ROOT}/constraints
 # Hardware Server Host
-export XILINX_HW_SERVER_HOST=0.0.0.0
-export XILINX_HW_SERVER_PORT=3232
-export XILINX_FPGA_DEVICE=tbd #TBD
+export XILINX_HW_SERVER_HOST=127.0.0.1
+export XILINX_HW_SERVER_PORT=3121
+# NOTE: this is device-specific
+# export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Digilent/210292B17F3DA
+# Use wildcard instead
+export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Digilent/*
+
 # Simulation
 export XILINX_SIM_ROOT=${XILINX_ROOT}/sim
 export XILINX_SIM_TCL_ROOT=${XILINX_SIM_ROOT}/tcl
@@ -66,6 +75,7 @@ export QUESTA_PATH=$(dirname $(which vsim))
 ############
 # Software #
 ############
+# Add GCC and Spike to path
 export SW_ROOT=${ROOT_DIR}/sw
 export BOOTROM_COE=${SW_ROOT}/bootrom.coe
 

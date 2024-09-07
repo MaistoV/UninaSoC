@@ -11,6 +11,11 @@ RISCV_MARCH ?= rv32i
 LD_GEN = TBD
 BIN2COE = bin2coe
 
+# Only temporary, until bootrom is added
+PoC_jtag2axi:
+	cd ${SW_ROOT}/src/PoC_jtag2axi; \
+	./compile.sh
+
 linker/UninaSoC.ld: linker/UninaSoC.ld.tpl
 	${LD_GEN} $< -o $@
 
