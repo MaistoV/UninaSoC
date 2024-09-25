@@ -25,7 +25,19 @@ source $::env(XILINX_SYNTH_TCL_ROOT)/add_xilinx_sources.tcl
 
 # Load constraints
 import_files -fileset constrs_1 -norecurse $::env(XILINX_ROOT)/synth/constraints/$::env(XILINX_PROJECT_NAME).xdc
-import_files -fileset constrs_1 -norecurse $::env(XILINX_ROOT)/synth/constraints/$::env(XILINX_BOARD).xdc
+import_files -fileset constrs_1 -norecurse $::env(XILINX_ROOT)/synth/constraints/$::env(SOC_CONFIG).xdc
+
+# Check needed beacuse the SOC_CONFIG of au250 is xilinx.com:au250:part0:1.3, not a valid directory
+# set_property verilog_define SOC_CONFIG="$::env(SOC_CONFIG)"  [current_fileset]
+
+if { "$::env(SOC_CONFIG)" == "au250" } {
+    set_property verilog_define AU250=1 [current_fileset]
+} elseif { "$::env(SOC_CONFIG)" == "Nexys-A7-100T-Master" } { 
+    set_property verilog_define NEXYS_A7=1 [current_fileset]
+} else {
+    puts "Unsupported board $::env(SOC_CONFIG)"
+    exit 1 
+}
 
 # Import IPS
 read_ip $::env(XILINX_IP_LIST_XCI)

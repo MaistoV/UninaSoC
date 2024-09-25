@@ -8,10 +8,33 @@ XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_PROJECT_BUILD_DIR}/reports
 
 # List of the Xilinx IPs to build and import in the design
 # Parsing from directory ips/
-XILINX_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/xlnx_*)
+
+XILINX_COMMON_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/common/xlnx_*)
+XILINX_HPC_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/hpc/xlnx_*) 
+XILINX_EMBEDDED_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/embedded/xlnx_*) 
+
+XILINX_IP_LIST = ${XILINX_COMMON_IP_LIST}
 
 # List of IPs' xci files
-XILINX_IP_LIST_XCI := $(foreach ip,${XILINX_IP_LIST},${XILINX_IPS_ROOT}/${ip}/build/${ip}.srcs/sources_1/ip/${ip}/${ip}.xci)
+XILINX_COMMON_IP_LIST_XCI := $(foreach ip,${XILINX_COMMON_IP_LIST},${XILINX_IPS_ROOT}/common/${ip}/build/${ip}.srcs/sources_1/ip/${ip}/${ip}.xci)
+XILINX_HPC_IP_LIST_XCI := $(foreach ip,${XILINX_HPC_IP_LIST},${XILINX_IPS_ROOT}/hpc/${ip}/build/${ip}.srcs/sources_1/ip/${ip}/${ip}.xci)
+XILINX_EMBEDDED_IP_LIST_XCI := $(foreach ip,${XILINX_EMBEDDED_IP_LIST},${XILINX_IPS_ROOT}/embedded/${ip}/build/${ip}.srcs/sources_1/ip/${ip}/${ip}.xci)
+
+XILINX_IP_LIST_XCI = ${XILINX_COMMON_IP_LIST_XCI}
+
+# Selecting flow: HPC or EMBEDDED
+ifeq (${SOC_CONFIG}, au250)
+	XILINX_IP_LIST += ${XILINX_HPC_IP_LIST}
+	XILINX_IP_LIST_XCI += ${XILINX_HPC_IP_LIST_XCI}
+# There is a problem with the number of slaves (min 2 if 1 master is used, for now use gpio also in Alveo)
+	XILINX_IP_LIST += ${XILINX_EMBEDDED_IP_LIST}
+	XILINX_IP_LIST_XCI += ${XILINX_EMBEDDED_IP_LIST_XCI}
+else ifeq (${SOC_CONFIG}, Nexys-A7-100T-Master) 
+	XILINX_IP_LIST += ${XILINX_EMBEDDED_IP_LIST}
+	XILINX_IP_LIST_XCI += ${XILINX_EMBEDDED_IP_LIST_XCI}
+else
+$(error "Unsupported config ${SOC_CONFIG}") 
+endif
 
 # Runtime optimized run strategies
 SYNTH_STRATEGY ?= Flow_RuntimeOptimized
@@ -25,7 +48,7 @@ XILINX_VIVADO_ENV ?=              					\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
     XILINX_PART_NUMBER=${XILINX_PART_NUMBER}   		\
     XILINX_PROJECT_NAME=${XILINX_PROJECT_NAME}   	\
-    XILINX_BOARD=${XILINX_BOARD}   					\
+    SOC_CONFIG=${SOC_CONFIG}   					    \
     XILINX_HW_SERVER_HOST=${XILINX_HW_SERVER_HOST}  \
     XILINX_HW_SERVER_PORT=${XILINX_HW_SERVER_PORT}  \
     XILINX_FPGA_DEVICE=${XILINX_FPGA_DEVICE}		\
@@ -67,15 +90,16 @@ ips: ${XILINX_IP_NAMES}
 
 # Build single IP
 %.xci: IP_NAME=$*
-%.xci: IP_BUILD_DIR=${XILINX_IPS_ROOT}/$*/build
-%.xci: ips/%/config.tcl
+%.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
+%.xci: IP_BUILD_DIR=${IP_DIR}/build
+%.xci: ips/*/%/config.tcl
 	@echo "Generating IP $@"
 	mkdir -p ${IP_BUILD_DIR}; 						 		\
 	cd       ${IP_BUILD_DIR}; 						 		\
 	export IP_NAME=${IP_NAME}; ${XILINX_VIVADO_BATCH}		\
-		-source ${XILINX_IPS_ROOT}/common/pre_config.tcl 	\
-		-source ${XILINX_IPS_ROOT}/$*/config.tcl			\
-		-source ${XILINX_IPS_ROOT}/common/post_config.tcl
+		-source ${XILINX_IPS_ROOT}/common/tcl/pre_config.tcl 	\
+		-source ${IP_DIR}/config.tcl \
+		-source ${XILINX_IPS_ROOT}/common/tcl/post_config.tcl
 	touch $@
 
 # Start hardware server
@@ -120,7 +144,7 @@ clean:
 	rm -rf vivado*.log vivado*.jou vivado*.str
 
 clean_ips:
-	rm -rf ${XILINX_IPS_ROOT}/*/build
+	rm -rf ${XILINX_IPS_ROOT}/*/*/build
 	rm -rf *.xci
 
 ###########

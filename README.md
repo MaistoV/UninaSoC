@@ -4,12 +4,10 @@ RISC-V soft-SoC design for Xilinx FPGAs from University of Naples Federico II.
 Alternative name candidates:
 * Federico-V
 * SECLabbino
+* NA-V
+* NAPL-V
+* NAPULE-V
 * ?
-
-# Supported boards:
-- [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
-- [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
-- Alveo?
 
 # Simulation flow:
 The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
@@ -31,6 +29,25 @@ W.r.t. the single tools:
 | g++             | TBD              |
 | Verilator       | TBD              |
 | gtkwave         | TBD              |
+
+
+# Target board selection
+## Supported boards:
+- [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
+- [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
+- [Alveo U250](https://www.amd.com/en/products/accelerators/alveo/u250/a-u250-a64g-pq-g.html)
+
+```
+source settings.sh <board_name>
+```
+
+Valid board_names are:
+
+| Board                    | board_name       |
+|--------------------------|------------------|
+| Nexsys A7 (Default)      | Nexsys-A7        |
+| Alveo U250               | au250            |
+
 
 # TODO
 * Design address space
