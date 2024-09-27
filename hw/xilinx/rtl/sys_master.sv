@@ -22,10 +22,7 @@ module sys_master
         input logic pcie_resetn_i,
 
         // PCIe interface
-        input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxn_i,
-        input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxp_i,  
-        output logic [NUM_PCIE_LANES-1:0] pci_exp_txn_o, 
-        output logic [NUM_PCIE_LANES-1:0] pci_exp_txp_o,
+        `DEFINE_PCIE_PORTS,
     `endif
 
 
@@ -34,7 +31,7 @@ module sys_master
     output logic sys_resetn_o,
 
     // AXI Master interface 
-    `DEFINE_AXI_MASTER_PORT(m)
+    `DEFINE_AXI_MASTER_PORTS(m)
 
 );
 
@@ -49,7 +46,7 @@ module sys_master
     ) IBUFDS_GTE4_inst (
         .O(ibuf_out),
         .ODIV2(ibuf_os_odiv2),
-        .CEB(1),
+        .CEB(1'b0),
         .I(pcie_refclk_p_i),
         .IB(pcie_refclk_n_i)
     );
@@ -73,6 +70,9 @@ module sys_master
         .pci_exp_rxp(pci_exp_rxp_i), // [NUM_PCIE_LANES-1:0] 
         .pci_exp_txn(pci_exp_txn_o), // [NUM_PCIE_LANES-1:0]
         .pci_exp_txp(pci_exp_txp_o), // [NUM_PCIE_LANES-1:0]
+
+        // Interrupts interface
+        .usr_irq_req    ( 0      ),
 
         // AXI Master
         .m_axib_awid     ( m_axi_awid    ), 
@@ -190,7 +190,7 @@ module sys_master
         .m_axi_rresp    ( m_axi_rresp   ), // input wire [1 : 0] m_axi_rresp
         .m_axi_rlast    ( m_axi_rlast   ), // input wire m_axi_rlast
         .m_axi_rvalid   ( m_axi_rvalid  ), // input wire m_axi_rvalid
-        .m_axi_rready   ( m_axi_rready  )  // output wire m_axi_rready
+        .m_axi_rready   ( m_axi_rready  )  // output wire m_axi_rready 
     );
 `endif
 

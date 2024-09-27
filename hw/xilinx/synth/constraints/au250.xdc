@@ -144,15 +144,6 @@
 #
 #################################################################################
 
-## Compatibility with the actual dedsign - to be removed
-## Clock signal
-# # set_property -dict {PACKAGE_PIN AR25 IOSTANDARD LVCMOS12} [get_ports sys_clock_i]
-# create_clock -period 1.000 -name sys_clk -waveform {0.000 0.500} [get_nets axi_aclk]
-# # set_property -dict { PACKAGE_PIN BB20 IOSTANDARD LVCMOS12 } [get_ports { gpio_out_o[0]  }]
-# # set_property -dict {PACKAGE_PIN BD21 IOSTANDARD LVCMOS12} [get_ports sys_reset_i]
-###################################################################################
-
-
 # Bitstream Generation for QSPI                              
 set_property CONFIG_VOLTAGE 1.8                        [current_design]
 set_property BITSTREAM.CONFIG.CONFIGFALLBACK Enable    [current_design]                  ;# Golden image is the fall back image if  new bitstream is corrupted.    
@@ -194,6 +185,11 @@ set_operating_conditions -design_power_budget 160
 # PCIE_REFCLK -> PCIe 100Mhz Host clock
 set_property PACKAGE_PIN AM10             [get_ports pcie_refclk_n_i ]; # Bank 226 Net "PEX_REFCLK_C_N" - MGTREFCLK0N_226
 set_property PACKAGE_PIN AM11             [get_ports pcie_refclk_p_i ]; # Bank 226 Net "PEX_REFCLK_C_P" - MGTREFCLK0P_226
+#
+create_clock -period 10 -name pcie_mgt_refclk_1 [get_ports pcie_refclk_p_i]
+#
+set_false_path -from [get_ports pcie_resetn_i]
+set_input_delay 0 [get_ports pcie_resetn_i]
 #
 # Input Clocks and Controls for QSFP28 Port 0
 #

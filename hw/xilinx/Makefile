@@ -26,9 +26,6 @@ XILINX_IP_LIST_XCI = ${XILINX_COMMON_IP_LIST_XCI}
 ifeq (${SOC_CONFIG}, au250)
 	XILINX_IP_LIST += ${XILINX_HPC_IP_LIST}
 	XILINX_IP_LIST_XCI += ${XILINX_HPC_IP_LIST_XCI}
-# There is a problem with the number of slaves (min 2 if 1 master is used, for now use gpio also in Alveo)
-	XILINX_IP_LIST += ${XILINX_EMBEDDED_IP_LIST}
-	XILINX_IP_LIST_XCI += ${XILINX_EMBEDDED_IP_LIST_XCI}
 else ifeq (${SOC_CONFIG}, Nexys-A7-100T-Master) 
 	XILINX_IP_LIST += ${XILINX_EMBEDDED_IP_LIST}
 	XILINX_IP_LIST_XCI += ${XILINX_EMBEDDED_IP_LIST_XCI}
@@ -49,6 +46,7 @@ XILINX_VIVADO_ENV ?=              					\
     XILINX_PART_NUMBER=${XILINX_PART_NUMBER}   		\
     XILINX_PROJECT_NAME=${XILINX_PROJECT_NAME}   	\
     SOC_CONFIG=${SOC_CONFIG}   					    \
+	XILINX_BOARD_PART=${XILINX_BOARD_PART}          \
     XILINX_HW_SERVER_HOST=${XILINX_HW_SERVER_HOST}  \
     XILINX_HW_SERVER_PORT=${XILINX_HW_SERVER_PORT}  \
     XILINX_FPGA_DEVICE=${XILINX_FPGA_DEVICE}		\
@@ -136,6 +134,12 @@ JTAG_READBACK ?= false
 jtag2axi_load_binary: ${bin_path}
 	${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_load_binary.tcl \
+		-tclargs ${bin_path} ${base_address} ${JTAG_READBACK}
+
+# Not working yet
+pcie2axi_load_binary: ${bin_path}
+	${XILINX_VIVADO} \
+		-source ${XILINX_SYNTH_TCL_ROOT}/pcie2axi_load_binary.tcl \
 		-tclargs ${bin_path} ${base_address} ${JTAG_READBACK}
 
 # Clean up project

@@ -11,6 +11,7 @@
 ########################
 # Create new project (no force)
 create_project $::env(XILINX_PROJECT_NAME) . -part $::env(XILINX_PART_NUMBER) -force
+set_property board_part $::env(XILINX_BOARD_PART) [current_project]
 
 # Suppress Message(s)
 # The IP file <...> has been moved from its original location, as a result the outputs for this IP will now be generated in <...>. Alternatively a copy of the IP can be imported into the project using one of the 'import_ip' or 'import_files' commands.

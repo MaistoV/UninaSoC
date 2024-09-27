@@ -14,6 +14,6 @@ set_property -dict [list \
   CONFIG.mode_selection {Advanced} \
   CONFIG.pl_link_cap_max_link_speed {8.0_GT/s} \
   CONFIG.pl_link_cap_max_link_width {X16} \
-  CONFIG.ref_clk_freq {250_MHz} \
+  CONFIG.ref_clk_freq {100_MHz} \
   CONFIG.pciebar2axibar_0 {0x000000000000000} \
 ] [get_ips $::env(IP_NAME)]

@@ -303,7 +303,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 // TODO: add macros for 3, 4, ... buses, both for masters and slaves
 
 // AXI4 MASTER PORTS
-`define DEFINE_AXI_MASTER_PORT(master_name)          \
+`define DEFINE_AXI_MASTER_PORTS(master_name)          \
     // AW channel                       \
     output axi_id_t     ``master_name``_axi_awid,     \
     output axi_addr_t   ``master_name``_axi_awaddr,   \
@@ -351,7 +351,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 
 
 // AXI4 SLAVE PORTS
-`define DEFINE_AXI_SLAVE_PORT(slave_name)          \
+`define DEFINE_AXI_SLAVE_PORTS(slave_name)          \
     // AW channel                       \
     input  axi_id_t     ``slave_name``_axi_awid,     \
     input  axi_addr_t   ``slave_name``_axi_awaddr,   \
@@ -396,5 +396,11 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     output axi_last_t   ``slave_name``_axi_rlast,    \
     output axi_valid_t  ``slave_name``_axi_rvalid,   \
     input  axi_ready_t  ``slave_name``_axi_rready
+
+`define DEFINE_PCIE_PORTS()                          \
+    input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxn_i, \
+    input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxp_i, \
+    output logic [NUM_PCIE_LANES-1:0] pci_exp_txn_o, \
+    output logic [NUM_PCIE_LANES-1:0] pci_exp_txp_o
 
 `endif // UNINASOC_AXI_SVH__

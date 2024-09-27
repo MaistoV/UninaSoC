@@ -56,10 +56,7 @@ module uninasoc (
         input logic pcie_resetn_i,
 
         // PCIe interface
-        input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxn_i,
-        input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxp_i,  
-        output logic [NUM_PCIE_LANES-1:0] pci_exp_txn_o, 
-        output logic [NUM_PCIE_LANES-1:0] pci_exp_txp_o
+        `DEFINE_PCIE_PORTS
     `endif
 
 );
@@ -100,15 +97,17 @@ module uninasoc (
     // rvm_socket -> crossbar
     // `DECLARE_AXI_BUS(rvm_socket);
 
-
     // AXI slaves
     // xbar -> main memory
     `DECLARE_AXI_BUS(xbar_to_main_mem);
-    // xbar -> GPIO out
 
-    // `ifdef NEXYS_A7
+    // xbar -> GPIO out
+    `ifdef NEXYS_A7
         `DECLARE_AXI_BUS(xbar_to_gpio_out);
-    // `endif
+    `elsif AU250
+        // need secondary memory because the xbar wants one side with only 1 port ( no both slaves and masters can be 1 at the same time )
+        `DECLARE_AXI_BUS(xbar_to_second_mem);
+    `endif
     // xbar -> GPIO in
     // `DECLARE_AXI_BUS(xbar_to_gpio_in);
     // xbar -> UART
@@ -127,11 +126,12 @@ module uninasoc (
     `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus 1,           bus 0
-    // `ifdef NEXYS_A7
+    
+    `ifdef NEXYS_A7
         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
-    // `elsif AU250
-    //     `CONCAT_AXI_SLAVES_ARRAY1(xbar_slaves, xbar_to_main_mem);
-    // `endif
+    `elsif AU250
+         `CONCAT_AXI_SLAVES_ARRAY1(xbar_slaves, xbar_to_second_mem, xbar_to_main_mem);
+    `endif
     // TODO: add GPIO in
     // //                      array_name,           bus 2,           bus 1,             bus 0
     // `CONCAT_AXI_BUS_ARRAY3(xbar_slaves, xbar_to_gpio_in, xbar_to_gpio_out, xbar_to_main_mem);
@@ -464,7 +464,7 @@ module uninasoc (
     //     .tx             ( uart_tx_o      )  // output wire tx
     // );
 
-// `ifdef NEXYS_A7
+`ifdef NEXYS_A7
     // GPIOs
     generate
         // GPIO in
@@ -654,15 +654,47 @@ module uninasoc (
                 .s_axi_rresp    ( gpio_out_axilite_rresp        ), // output wire [1 : 0] s_axi_rresp
                 .s_axi_rvalid   ( gpio_out_axilite_rvalid       ), // output wire s_axi_rvalid
                 .s_axi_rready   ( gpio_out_axilite_rready       ), // input wire s_axi_rready
-                `ifdef NEXYS_A7
-                    .gpio_io_o      ( gpio_out_o [i]                )  // input wire [0 : 0] gpio_io_o
-                `elsif AU250
-                    .gpio_io_o      (                               )
-                `endif
+                .gpio_io_o      ( gpio_out_o [i]                )  // input wire [0 : 0] gpio_io_o
             );
         end
     endgenerate
-// `endif
+`elsif AU250
+    xlnx_blk_mem_gen second_mem_inst (
+        .rsta_busy      ( /* open */                   ), // output wire rsta_busy
+        .rstb_busy      ( /* open */                   ), // output wire rstb_busy
+        .s_aclk         ( soc_clk                      ), // input wire s_aclk
+        .s_aresetn      ( sys_resetn                   ), // input wire s_aresetn
+        .s_axi_awid     ( xbar_to_second_mem_axi_awid    ), // input wire [3 : 0] s_axi_awid
+        .s_axi_awaddr   ( xbar_to_second_mem_axi_awaddr  ), // input wire [31 : 0] s_axi_awaddr
+        .s_axi_awlen    ( xbar_to_second_mem_axi_awlen   ), // input wire [7 : 0] s_axi_awlen
+        .s_axi_awsize   ( xbar_to_second_mem_axi_awsize  ), // input wire [2 : 0] s_axi_awsize
+        .s_axi_awburst  ( xbar_to_second_mem_axi_awburst ), // input wire [1 : 0] s_axi_awburst
+        .s_axi_awvalid  ( xbar_to_second_mem_axi_awvalid ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_second_mem_axi_awready ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_second_mem_axi_wdata   ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_second_mem_axi_wstrb   ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wlast    ( xbar_to_second_mem_axi_wlast   ), // input wire s_axi_wlast
+        .s_axi_wvalid   ( xbar_to_second_mem_axi_wvalid  ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_second_mem_axi_wready  ), // output wire s_axi_wready
+        .s_axi_bid      ( xbar_to_second_mem_axi_bid     ), // output wire [3 : 0] s_axi_bid
+        .s_axi_bresp    ( xbar_to_second_mem_axi_bresp   ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_second_mem_axi_bvalid  ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_second_mem_axi_bready  ), // input wire s_axi_bready
+        .s_axi_arid     ( xbar_to_second_mem_axi_arid    ), // input wire [3 : 0] s_axi_arid
+        .s_axi_araddr   ( xbar_to_second_mem_axi_araddr  ), // input wire [31 : 0] s_axi_araddr
+        .s_axi_arlen    ( xbar_to_second_mem_axi_arlen   ), // input wire [7 : 0] s_axi_arlen
+        .s_axi_arsize   ( xbar_to_second_mem_axi_arsize  ), // input wire [2 : 0] s_axi_arsize
+        .s_axi_arburst  ( xbar_to_second_mem_axi_arburst ), // input wire [1 : 0] s_axi_arburst
+        .s_axi_arvalid  ( xbar_to_second_mem_axi_arvalid ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_second_mem_axi_arready ), // output wire s_axi_arready
+        .s_axi_rid      ( xbar_to_second_mem_axi_rid     ), // output wire [3 : 0] s_axi_rid
+        .s_axi_rdata    ( xbar_to_second_mem_axi_rdata   ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_second_mem_axi_rresp   ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rlast    ( xbar_to_second_mem_axi_rlast   ), // output wire s_axi_rlast
+        .s_axi_rvalid   ( xbar_to_second_mem_axi_rvalid  ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_second_mem_axi_rready  )  // input wire s_axi_rready
+    );
+`endif
 
 
 endmodule : uninasoc
