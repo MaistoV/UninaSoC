@@ -10,7 +10,8 @@ proc leds_set { address value } {
 # Local variables
 set word_off 0x00000000
 set word_on  0xffffffff
-set base_address 0x1000000
+set base_address 0x0020000
+set base_address 0x100000
 set num_toggles 5
 
 for {set i 0} {$i < $num_toggles} {incr i} {

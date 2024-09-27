@@ -7,14 +7,19 @@
 export ROOT_DIR=$( dirname $( realpath $BASH_SOURCE[0]} ) )
 
 # Check if Vivado is in path
-if ! command -v vivado &> /dev/null; then 
-    echo "[Error] Can't find Vivado in PATH!" >&2 ; 
+if ! command -v vivado &> /dev/null; then
+    echo "[Error] Can't find Vivado in PATH!" >&2 ;
 fi
 
 # Check if Questa/ModelSim is in path
-if ! command -v vsim &> /dev/null; then 
-    echo "[Error] Can't find vsim in PATH!" >&2 ; 
+if ! command -v vsim &> /dev/null; then
+    echo "[Error] Can't find vsim in PATH!" >&2 ;
 fi
+
+#################
+# Configuration #
+#################
+export CONFIG_ROOT=${ROOT_DIR}/config
 
 ############
 # Hardware #
