@@ -129,18 +129,16 @@ ${XILINX_SIM_IP_ROOT}/ips:
 
 bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom
 base_address ?= 0x40000000 # BRAM base address
-JTAG_READBACK ?= false
+JTAG_READBACK ?= true
 # Write elf to BRAM through jtag2axi
 jtag2axi_load_binary: ${bin_path}
 	${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_load_binary.tcl \
 		-tclargs ${bin_path} ${base_address} ${JTAG_READBACK}
 
-# Not working yet
+# Write elf to BRAM/DDR through XDMA
 pcie2axi_load_binary: ${bin_path}
-	${XILINX_VIVADO} \
-		-source ${XILINX_SYNTH_TCL_ROOT}/pcie2axi_load_binary.tcl \
-		-tclargs ${bin_path} ${base_address} ${JTAG_READBACK}
+	source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${bin_path} ${base_address} ${JTAG_READBACK}
 
 # Clean up project
 clean:

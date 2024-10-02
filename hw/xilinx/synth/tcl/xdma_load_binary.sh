@@ -62,7 +62,7 @@ fi
 echo "Write complete!";
 
 # Readback
-if [ $READBACK -eq 1 ]; 
+if [[ ${READBACK} == "true" ]]; 
 then
     echo "Start readback...";
     addr=$BASE_ADDRESS;
