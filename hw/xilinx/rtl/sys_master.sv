@@ -11,7 +11,6 @@ import uninasoc_pkg::*;
 `include "uninasoc_axi.svh"
 
 `ifdef HPC
-    `include "uninasoc_xdma_axi.svh"
     `include "uninasoc_pcie.svh"
 `endif
 

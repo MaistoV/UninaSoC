@@ -33,7 +33,7 @@ if len(sys.argv) >= 2:
 	config_file_name = sys.argv[1]
 
 # Target TCL file
-config_tcl_file_name = 'hw/xilinx/ips/xlnx_axi_crossbar/config.tcl'
+config_tcl_file_name = 'hw/xilinx/ips/common/xlnx_axi_crossbar/config.tcl'
 if len(sys.argv) >= 3:
 	config_tcl_file_name = sys.argv[2]
 
