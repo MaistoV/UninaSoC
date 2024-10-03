@@ -1,6 +1,6 @@
 Property,Value
 NUM_SI,2
-SLAVE_NAMES,Slave_Name_A Slave_Name_B
+RANGE_NAMES,Slave_Name_A Slave_Name_B
 NUM_MI,2
 STRATEGY,0
 R_REGISTER,0

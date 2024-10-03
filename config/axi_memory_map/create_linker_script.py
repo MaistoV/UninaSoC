@@ -46,8 +46,8 @@ NUM_MI = int(config_df.loc["NUM_MI"]["Value"])
 # print("[DEBUG] NUM_MI", NUM_MI)
 
 # Read slaves' names
-SLAVE_NAMES = config_df.loc["SLAVE_NAMES"]["Value"].split()
-# print("[DEBUG] SLAVE_NAMES", SLAVE_NAMES)
+RANGE_NAMES = config_df.loc["RANGE_NAMES"]["Value"].split()
+# print("[DEBUG] RANGE_NAMES", RANGE_NAMES)
 
 # Read address Ranges
 RANGE_BASE_ADDR = config_df.loc["RANGE_BASE_ADDR"]["Value"].split()
@@ -63,8 +63,8 @@ for i in range(len(RANGE_ADDR_WIDTH)):
 ################
 # Sanity check #
 ################
-assert (NUM_MI == len(SLAVE_NAMES)) & (NUM_MI == len(RANGE_BASE_ADDR) ) & (NUM_MI  == len(RANGE_ADDR_WIDTH)), \
-	"Mismatch in lenght of configurations: NUM_MI(" + str(NUM_MI) + "), SLAVE_NAMES (" + str(len(SLAVE_NAMES)) + \
+assert (NUM_MI == len(RANGE_NAMES)) & (NUM_MI == len(RANGE_BASE_ADDR) ) & (NUM_MI  == len(RANGE_ADDR_WIDTH)), \
+	"Mismatch in lenght of configurations: NUM_MI(" + str(NUM_MI) + "), RANGE_NAMES (" + str(len(RANGE_NAMES)) + \
 	"), RANGE_BASE_ADDR(" + str(len(RANGE_BASE_ADDR)) + ") RANGE_ADDR_WIDTH(" + str(len(RANGE_ADDR_WIDTH)) + ")"
 
 ###########################
@@ -79,7 +79,7 @@ HBM_LENGTH = 0
 BRAM_END = 0
 DDR_END = 0
 HBM_END = 0
-for name in SLAVE_NAMES:
+for name in RANGE_NAMES:
 	match name:
 		# BRAM
 		case "BRAM":
@@ -146,8 +146,8 @@ start = int(RANGE_BASE_ADDR[0], 16)
 for i in range(NUM_MI):
 	range_start = int(RANGE_BASE_ADDR[i], 16)
 	range_end = range_start + (2 << RANGE_ADDR_WIDTH[i])
-	fd.write("\t_slave_" + SLAVE_NAMES[i] + "_base = " + hex(range_start) + ";\n")
-	fd.write("\t_slave_" + SLAVE_NAMES[i] + "_end = "  + hex(range_end)   + ";\n")
+	fd.write("\t_slave_" + RANGE_NAMES[i] + "_base = " + hex(range_start) + ";\n")
+	fd.write("\t_slave_" + RANGE_NAMES[i] + "_end = "  + hex(range_end)   + ";\n")
 fd.write("}\n")
 
 # Files closing
