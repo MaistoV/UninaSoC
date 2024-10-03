@@ -39,23 +39,24 @@ export VLTSTD_INC=/usr/share/verilator/include/vltstd/
 # Xilinx project name
 export XILINX_PROJECT_NAME=uninasoc
 
-# Target device
-export BOARD=$1
-if [[ ${BOARD} == "au250" ]]; then
+# SoC Configuration - Select the board 
+# HPC      -> Alveo U250
+# EMBEDDED -> Nexys-A7
+SOC_CONFIG=$1
+if [[ ${SOC_CONFIG} == "hpc" ]]; then
     # Alveo  250
     export XILINX_PART_NUMBER=xcu250-figd2104-2L-e
-    # Needed when create the project, without it Vivado doesn't set the board properly
     export XILINX_BOARD_PART=xilinx.com:au250:part0:1.3
-    # Maybe HPC would be better
-    export SOC_CONFIG=au250
+    export SOC_CONFIG=hpc
     export XILINX_HW_DEVICE=xcu250
-else  # Default Nexsys for now
+    export BOARD=au250
+else
     # Nexsys A7
     export XILINX_PART_NUMBER=xc7a100tcsg324-1
     export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.2
-    # Maybe EMBEDDED would be better
-    export SOC_CONFIG=Nexys-A7-100T-Master
+    export SOC_CONFIG=embedded
     export XILINX_HW_DEVICE=xc7a100t_0
+    export BOARD=Nexys-A7-100T-Master
 fi
 # Root directoriy
 export XILINX_ROOT=${ROOT_DIR}/hw/xilinx

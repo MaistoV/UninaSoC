@@ -31,23 +31,23 @@ W.r.t. the single tools:
 | gtkwave         | TBD              |
 
 
-# Target board selection
+# SoC configuration selection
+
+```
+source settings.sh <soc_config>
+```
+The board is automatically selected based on the SoC configuration
+Valid Soc Configuration and boards are:
+
+| soc_config               | board            |
+|--------------------------|------------------|
+| embedded (Default)       | Nexsys A7        |
+| hpc                      | Alveo U205       |
+
 ## Supported boards:
 - [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
 - [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
 - [Alveo U250](https://www.amd.com/en/products/accelerators/alveo/u250/a-u250-a64g-pq-g.html)
-
-```
-source settings.sh <board_name>
-```
-
-Valid board_names are:
-
-| Board                    | board_name       |
-|--------------------------|------------------|
-| Nexsys A7 (Default)      | Nexsys-A7        |
-| Alveo U250               | au250            |
-
 
 # TODO
 * Design address space
