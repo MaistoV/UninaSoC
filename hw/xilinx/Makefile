@@ -1,3 +1,8 @@
+# Environment check
+ifndef XILINX_ROOT
+$(error Setup script settings.sh has not been sourced, aborting)
+endif
+
 # Basic variables for Vivado
 XILINX_VIVADO_CMD ?= vivado
 XILINX_VIVADO_MODE ?= batch
@@ -63,14 +68,14 @@ XILINX_VIVADO_BATCH := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode batch
 
 all: bitstream
 
-# Open project
-open:
+# Open project in TCL mode
+open_prj:
 	cd ${XILINX_PROJECT_BUILD_DIR};			\
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} \
 	-mode tcl ${XILINX_PROJECT_NAME}.xpr
 
-# Open project
-gui:
+# Open project and GUI
+open_gui:
 	cd ${XILINX_PROJECT_BUILD_DIR};			\
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} \
 	-mode gui ${XILINX_PROJECT_NAME}.xpr
@@ -128,8 +133,8 @@ ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
 bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom
-base_address ?= 0x40000000 # BRAM base address
-JTAG_READBACK ?= true
+base_address ?= 0x00000000 # BRAM base address
+JTAG_READBACK ?= false
 
 
 load_binary: load_binary_${SOC_CONFIG}
@@ -158,5 +163,5 @@ clean_ips:
 ###########
 # PHONIES #
 ###########
-.PHONY: open gui bitstream ips open_hw_manager sim_compile_simlib clean clean_ips load_binary load_binary_embedded load_binary_hpc
+.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips load_binary load_binary_embedded load_binary_hpc
 
