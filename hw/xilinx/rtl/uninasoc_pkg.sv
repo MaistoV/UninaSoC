@@ -19,21 +19,18 @@ package uninasoc_pkg;
     // localparam int unsigned NUM_AXI_MASTERS = 2;
     localparam int unsigned NUM_AXI_MASTERS = 1; // Just 1 for verify/jtag2axi
 
-    // Crosbar slaves if Nexys
+    // Crosbar slaves if EMBEDDED 
     // - GPIOs in input
     // - GPIOs in outputs
     // - Main memory
-    `ifdef NEXYS_A7
+    `ifdef EMBEDDED
         localparam int unsigned NUM_AXI_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 1;
     
-    // Crosbar slaves if Alveo
+    // Crosbar slaves if HPC
     // - Main memory
     // - Secondary memory
-    `elsif AU250
+    `elsif HPC
         localparam int unsigned NUM_AXI_SLAVES = 2;
     `endif
-    
-    // PCIe parameters
-    localparam int unsigned NUM_PCIE_LANES = 16; 
 
 endpackage : uninasoc_pkg

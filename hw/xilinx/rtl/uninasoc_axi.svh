@@ -12,7 +12,7 @@ import uninasoc_pkg::*;
 // AXI4 bus parameters
 localparam int unsigned AXI_DATA_WIDTH   = 32;
 localparam int unsigned AXI_ADDR_WIDTH   = 32;
-localparam int unsigned AXI_STRB_WIDTH   = AXI_ADDR_WIDTH / 8;
+localparam int unsigned AXI_STRB_WIDTH   = AXI_DATA_WIDTH / 8;
 localparam int unsigned AXI_ID_WIDTH     = 2;
 localparam int unsigned AXI_LEN_WIDTH    = 8;
 localparam int unsigned AXI_SIZE_WIDTH   = 3;
@@ -304,7 +304,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 
 // AXI4 MASTER PORTS
 `define DEFINE_AXI_MASTER_PORTS(master_name)          \
-    // AW channel                       \
+    // AW channel                                     \
     output axi_id_t     ``master_name``_axi_awid,     \
     output axi_addr_t   ``master_name``_axi_awaddr,   \
     output axi_len_t    ``master_name``_axi_awlen,    \
@@ -317,18 +317,18 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     output axi_valid_t  ``master_name``_axi_awvalid,  \
     input  axi_ready_t  ``master_name``_axi_awready,  \
     output axi_region_t ``master_name``_axi_awregion, \
-    // W channel                        \
+    // W channel                                      \
     output axi_data_t   ``master_name``_axi_wdata,    \
     output axi_strb_t   ``master_name``_axi_wstrb,    \
     output axi_last_t   ``master_name``_axi_wlast,    \
     output axi_valid_t  ``master_name``_axi_wvalid,   \
     input  axi_ready_t  ``master_name``_axi_wready,   \
-    // B channel                        \
+    // B channel                                      \
     input  axi_id_t     ``master_name``_axi_bid,      \
     input  axi_resp_t   ``master_name``_axi_bresp,    \
     input  axi_valid_t  ``master_name``_axi_bvalid,   \
     output axi_ready_t  ``master_name``_axi_bready,   \
-    // AR channel                       \
+    // AR channel                                     \
     output axi_addr_t   ``master_name``_axi_araddr,   \
     output axi_len_t    ``master_name``_axi_arlen,    \
     output axi_size_t   ``master_name``_axi_arsize,   \
@@ -341,7 +341,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     input  axi_ready_t  ``master_name``_axi_arready,  \
     output axi_id_t     ``master_name``_axi_arid,     \
     output axi_region_t ``master_name``_axi_arregion, \
-    // R channel                        \
+    // R channel                                      \
     input  axi_id_t     ``master_name``_axi_rid,      \
     input  axi_data_t   ``master_name``_axi_rdata,    \
     input  axi_resp_t   ``master_name``_axi_rresp,    \
@@ -351,8 +351,8 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 
 
 // AXI4 SLAVE PORTS
-`define DEFINE_AXI_SLAVE_PORTS(slave_name)          \
-    // AW channel                       \
+`define DEFINE_AXI_SLAVE_PORTS(slave_name)           \
+    // AW channel                                    \
     input  axi_id_t     ``slave_name``_axi_awid,     \
     input  axi_addr_t   ``slave_name``_axi_awaddr,   \
     input  axi_len_t    ``slave_name``_axi_awlen,    \
@@ -365,18 +365,18 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     input  axi_valid_t  ``slave_name``_axi_awvalid,  \
     output axi_ready_t  ``slave_name``_axi_awready,  \
     input  axi_region_t ``slave_name``_axi_awregion, \
-    // W channel                        \
+    // W channel                                     \
     input  axi_data_t   ``slave_name``_axi_wdata,    \
     input  axi_strb_t   ``slave_name``_axi_wstrb,    \
     input  axi_last_t   ``slave_name``_axi_wlast,    \
     input  axi_valid_t  ``slave_name``_axi_wvalid,   \
     output axi_ready_t  ``slave_name``_axi_wready,   \
-    // B channel                        \
+    // B channel                                     \
     output axi_id_t     ``slave_name``_axi_bid,      \
     output axi_resp_t   ``slave_name``_axi_bresp,    \
     output axi_valid_t  ``slave_name``_axi_bvalid,   \
     input  axi_ready_t  ``slave_name``_axi_bready,   \
-    // AR channel                       \
+    // AR channel                                    \
     input  axi_addr_t   ``slave_name``_axi_araddr,   \
     input  axi_len_t    ``slave_name``_axi_arlen,    \
     input  axi_size_t   ``slave_name``_axi_arsize,   \
@@ -389,18 +389,12 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     output axi_ready_t  ``slave_name``_axi_arready,  \
     input  axi_id_t     ``slave_name``_axi_arid,     \
     input  axi_region_t ``slave_name``_axi_arregion, \
-    // R channel                        \
+    // R channel                                     \
     output axi_id_t     ``slave_name``_axi_rid,      \
     output axi_data_t   ``slave_name``_axi_rdata,    \
     output axi_resp_t   ``slave_name``_axi_rresp,    \
     output axi_last_t   ``slave_name``_axi_rlast,    \
     output axi_valid_t  ``slave_name``_axi_rvalid,   \
     input  axi_ready_t  ``slave_name``_axi_rready
-
-`define DEFINE_PCIE_PORTS()                          \
-    input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxn_i, \
-    input  logic [NUM_PCIE_LANES-1:0] pci_exp_rxp_i, \
-    output logic [NUM_PCIE_LANES-1:0] pci_exp_txn_o, \
-    output logic [NUM_PCIE_LANES-1:0] pci_exp_txp_o
 
 `endif // UNINASOC_AXI_SVH__

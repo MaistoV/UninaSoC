@@ -31,10 +31,10 @@ READBACK=$3;
 FILE_SIZE=$(stat -c%s "$FILE_NAME");
 
 # Read the entire file in hexadecimal
-hex_file=$(xxd -p -c 9999999999 $FILE_NAME);
+hex_file=$(xxd -p -u -c 9999999999 $FILE_NAME);
 
 # Set the transaction size to 8 bytes
-trans_size=8;
+trans_size=4;
 
 num_trans=$(($FILE_SIZE/$trans_size));
 remaining_bytes=$(($FILE_SIZE%$trans_size));
@@ -45,16 +45,16 @@ echo "Start writing...";
 
 for i in $(seq 0 $(($num_trans-1)));
 do
-    hex_data=${hex_file:$(($i*8*2)):16};
+    hex_data=${hex_file:$(($i*$trans_size*2)):$(($trans_size*2))};
     hex_addr=$(printf "%x" $addr);
     sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
-    addr=$(($addr+8));
+    addr=$(($addr+$trans_size));
 done
 
 # Write remaining bytes
-if [ $(($remaining_bytes>0)) ]; 
+if [ $remaining_bytes -gt 0 ]; 
 then
-    hex_data=${hex_file:$(($i*8*2)):$remaining_bytes*2};
+    hex_data=${hex_file:$((($i+1)*$trans_size*2)):$remaining_bytes*2};
     hex_addr=$(printf "%x" $addr);
     sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
 fi
@@ -72,13 +72,14 @@ then
         hex_addr=$(printf "%x" $addr);
         read_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
         readback_data=$readback_data${read_data:2:$(($trans_size*2))};
-        addr=$(($addr+8));
+        addr=$(($addr+$trans_size));
     done
-    if [ $(($remaining_bytes>0)) ]; 
+    if [ $remaining_bytes -gt 0 ]; 
     then
         hex_addr=$(printf "%x" $addr);
         read_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
-        readback_data=$readback_data${read_data:2:$(($trans_size*2))};
+        remaining_index=$((($trans_size-$remaining_bytes)*2));
+        readback_data=$readback_data${read_data:$((2+$remaining_index)):$(($trans_size*2))};
     fi
     echo "Readback complete!";
     echo "Original hexadecimal binary:";

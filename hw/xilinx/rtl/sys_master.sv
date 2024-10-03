@@ -1,5 +1,7 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: Sys master - Instantiates the right masetr AXI based on the board (e.g. Jtag2Axi for NEXYS_A7, XDMA for Alveo), and gives the clk and rst to the soc
+// Description: Sys master - Instantiates the right masetr AXI based on the SoC Configuration and gives the clk and rst to the soc
+//              EMBEDDED -> Jtag2Axi 
+//              HPC      -> XDMA
 
 
 // Import packages
@@ -8,14 +10,19 @@ import uninasoc_pkg::*;
 // Import headers
 `include "uninasoc_axi.svh"
 
+`ifdef HPC
+    `include "uninasoc_xdma_axi.svh"
+    `include "uninasoc_pcie.svh"
+`endif
+
 module sys_master
 (
 
-    `ifdef NEXYS_A7
+    `ifdef EMBEDDED
         // Input clock and reset
         input logic sys_clock_i,
         input logic sys_reset_i,
-    `elsif AU250
+    `elsif HPC
         // Input clock and reset
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
@@ -25,25 +32,20 @@ module sys_master
         `DEFINE_PCIE_PORTS,
     `endif
 
-
     // Output clk and reset
     output logic soc_clk_o,
     output logic sys_resetn_o,
 
     // AXI Master interface 
     `DEFINE_AXI_MASTER_PORTS(m)
-
 );
 
-`ifdef AU250
+`ifdef HPC
     // ALVEO
-
     logic ibuf_out;
     logic ibuf_os_odiv2;
 
-    IBUFDS_GTE4 #(
-
-    ) IBUFDS_GTE4_inst (
+    IBUFDS_GTE4 IBUFDS_GTE4_inst (
         .O(ibuf_out),
         .ODIV2(ibuf_os_odiv2),
         .CEB(1'b0),
@@ -51,68 +53,74 @@ module sys_master
         .IB(pcie_refclk_n_i)
     );
 
+    logic axi_aclk;
+    logic axi_aresetn;
+
+    assign soc_clk_o    = axi_aclk;
+    assign sys_resetn_o = axi_aresetn;
+
+    `DECLARE_XDMA_AXI_BUS(xdma_to_axi_dwidth_converter);
+
     // XDMA Master 
-    xlnx_xdma #(
-
-    ) xlnx_xdma_inst (
-
+    xlnx_xdma xlnx_xdma_inst (
         // Input clock and reset
-        .sys_clk(ibuf_os_odiv2),
-        .sys_clk_gt(ibuf_out),
-        .sys_rst_n(pcie_resetn_i),
+        .sys_clk      ( ibuf_os_odiv2 ),
+        .sys_clk_gt   ( ibuf_out      ),
+        .sys_rst_n    ( pcie_resetn_i ),
 
         // Output clock
-        .axi_aclk(soc_clk_o),
-        .axi_aresetn(sys_resetn_o),
+        .axi_aclk     ( axi_aclk      ),
+        .axi_aresetn  ( axi_aresetn   ),
 
         // PCI interface
-        .pci_exp_rxn(pci_exp_rxn_i), // [NUM_PCIE_LANES-1:0]
-        .pci_exp_rxp(pci_exp_rxp_i), // [NUM_PCIE_LANES-1:0] 
-        .pci_exp_txn(pci_exp_txn_o), // [NUM_PCIE_LANES-1:0]
-        .pci_exp_txp(pci_exp_txp_o), // [NUM_PCIE_LANES-1:0]
+        .pci_exp_rxn  ( pci_exp_rxn_i ),
+        .pci_exp_rxp  ( pci_exp_rxp_i ), 
+        .pci_exp_txn  ( pci_exp_txn_o ),
+        .pci_exp_txp  ( pci_exp_txp_o ),
 
         // Interrupts interface
         .usr_irq_req    ( 0      ),
 
         // AXI Master
-        .m_axib_awid     ( m_axi_awid    ), 
-        .m_axib_awaddr   ( m_axi_awaddr  ), 
-        .m_axib_awlen    ( m_axi_awlen   ), 
-        .m_axib_awsize   ( m_axi_awsize  ), 
-        .m_axib_awburst  ( m_axi_awburst ), 
-        .m_axib_awlock   ( m_axi_awlock  ), 
-        .m_axib_awcache  ( m_axi_awcache ), 
-        .m_axib_awprot   ( m_axi_awprot  ), 
-        // .m_axib_awqos    ( m_axi_awqos   ), 
-        .m_axib_awvalid  ( m_axi_awvalid ), 
-        .m_axib_awready  ( m_axi_awready ), 
-        .m_axib_wdata    ( m_axi_wdata   ), 
-        .m_axib_wstrb    ( m_axi_wstrb   ), 
-        .m_axib_wlast    ( m_axi_wlast   ), 
-        .m_axib_wvalid   ( m_axi_wvalid  ), 
-        .m_axib_wready   ( m_axi_wready  ), 
-        .m_axib_bid      ( m_axi_bid     ), 
-        .m_axib_bresp    ( m_axi_bresp   ), 
-        .m_axib_bvalid   ( m_axi_bvalid  ), 
-        .m_axib_bready   ( m_axi_bready  ), 
-        .m_axib_arid     ( m_axi_arid    ), 
-        .m_axib_araddr   ( m_axi_araddr  ), 
-        .m_axib_arlen    ( m_axi_arlen   ), 
-        .m_axib_arsize   ( m_axi_arsize  ), 
-        .m_axib_arburst  ( m_axi_arburst ), 
-        .m_axib_arlock   ( m_axi_arlock  ), 
-        .m_axib_arcache  ( m_axi_arcache ), 
-        .m_axib_arprot   ( m_axi_arprot  ), 
-        // .m_axib_arqos    ( m_axi_arqos   ), 
-        .m_axib_arvalid  ( m_axi_arvalid ), 
-        .m_axib_arready  ( m_axi_arready ), 
-        .m_axib_rid      ( m_axi_rid     ), 
-        .m_axib_rdata    ( m_axi_rdata   ), 
-        .m_axib_rresp    ( m_axi_rresp   ), 
-        .m_axib_rlast    ( m_axi_rlast   ), 
-        .m_axib_rvalid   ( m_axi_rvalid  ), 
-        .m_axib_rready   ( m_axi_rready  ),
+        .m_axib_awid     ( xdma_to_axi_dwidth_converter_axi_awid    ), 
+        .m_axib_awaddr   ( xdma_to_axi_dwidth_converter_axi_awaddr  ), 
+        .m_axib_awlen    ( xdma_to_axi_dwidth_converter_axi_awlen   ), 
+        .m_axib_awsize   ( xdma_to_axi_dwidth_converter_axi_awsize  ), 
+        .m_axib_awburst  ( xdma_to_axi_dwidth_converter_axi_awburst ), 
+        .m_axib_awlock   ( xdma_to_axi_dwidth_converter_axi_awlock  ), 
+        .m_axib_awcache  ( xdma_to_axi_dwidth_converter_axi_awcache ), 
+        .m_axib_awprot   ( xdma_to_axi_dwidth_converter_axi_awprot  ), 
+        // .m_axib_awqos    ( xdma_to_axi_dwidth_converter_axi_awqos   ), 
+        .m_axib_awvalid  ( xdma_to_axi_dwidth_converter_axi_awvalid ), 
+        .m_axib_awready  ( xdma_to_axi_dwidth_converter_axi_awready ), 
+        .m_axib_wdata    ( xdma_to_axi_dwidth_converter_axi_wdata   ), 
+        .m_axib_wstrb    ( xdma_to_axi_dwidth_converter_axi_wstrb   ), 
+        .m_axib_wlast    ( xdma_to_axi_dwidth_converter_axi_wlast   ), 
+        .m_axib_wvalid   ( xdma_to_axi_dwidth_converter_axi_wvalid  ), 
+        .m_axib_wready   ( xdma_to_axi_dwidth_converter_axi_wready  ), 
+        .m_axib_bid      ( xdma_to_axi_dwidth_converter_axi_bid     ), 
+        .m_axib_bresp    ( xdma_to_axi_dwidth_converter_axi_bresp   ), 
+        .m_axib_bvalid   ( xdma_to_axi_dwidth_converter_axi_bvalid  ), 
+        .m_axib_bready   ( xdma_to_axi_dwidth_converter_axi_bready  ), 
+        .m_axib_arid     ( xdma_to_axi_dwidth_converter_axi_arid    ), 
+        .m_axib_araddr   ( xdma_to_axi_dwidth_converter_axi_araddr  ), 
+        .m_axib_arlen    ( xdma_to_axi_dwidth_converter_axi_arlen   ), 
+        .m_axib_arsize   ( xdma_to_axi_dwidth_converter_axi_arsize  ), 
+        .m_axib_arburst  ( xdma_to_axi_dwidth_converter_axi_arburst ), 
+        .m_axib_arlock   ( xdma_to_axi_dwidth_converter_axi_arlock  ), 
+        .m_axib_arcache  ( xdma_to_axi_dwidth_converter_axi_arcache ), 
+        .m_axib_arprot   ( xdma_to_axi_dwidth_converter_axi_arprot  ), 
+        // .m_axib_arqos    ( xdma_to_axi_dwidth_converter_axi_arqos   ), 
+        .m_axib_arvalid  ( xdma_to_axi_dwidth_converter_axi_arvalid ), 
+        .m_axib_arready  ( xdma_to_axi_dwidth_converter_axi_arready ), 
+        .m_axib_rid      ( xdma_to_axi_dwidth_converter_axi_rid     ), 
+        .m_axib_rdata    ( xdma_to_axi_dwidth_converter_axi_rdata   ), 
+        .m_axib_rresp    ( xdma_to_axi_dwidth_converter_axi_rresp   ), 
+        .m_axib_rlast    ( xdma_to_axi_dwidth_converter_axi_rlast   ), 
+        .m_axib_rvalid   ( xdma_to_axi_dwidth_converter_axi_rvalid  ), 
+        .m_axib_rready   ( xdma_to_axi_dwidth_converter_axi_rready  ),
 
+        // AXI lite (configuration channel)
         .s_axil_awaddr	(12'b0),
         .s_axil_awvalid	(1'b0),
         .s_axil_awready	(),
@@ -133,8 +141,95 @@ module sys_master
         .s_axil_awprot  (3'b0),
         .s_axil_arprot  (3'b0)
     );
-`elsif  NEXYS_A7
-    // NEXYS_A7
+
+    xlnx_axi_dwidth_converter xlnx_axi_dwidth_converter_inst (
+        .s_axi_aclk     ( axi_aclk    ),
+        .s_axi_aresetn  ( axi_aresetn ),
+
+        // Slave from XDMA
+        .s_axi_awid     ( xdma_to_axi_dwidth_converter_axi_awid    ),
+        .s_axi_awaddr   ( xdma_to_axi_dwidth_converter_axi_awaddr  ),
+        .s_axi_awlen    ( xdma_to_axi_dwidth_converter_axi_awlen   ),
+        .s_axi_awsize   ( xdma_to_axi_dwidth_converter_axi_awsize  ),
+        .s_axi_awburst  ( xdma_to_axi_dwidth_converter_axi_awburst ),
+        .s_axi_awvalid  ( xdma_to_axi_dwidth_converter_axi_awvalid ),
+        .s_axi_awready  ( xdma_to_axi_dwidth_converter_axi_awready ),
+        .s_axi_wdata    ( xdma_to_axi_dwidth_converter_axi_wdata   ),
+        .s_axi_wstrb    ( xdma_to_axi_dwidth_converter_axi_wstrb   ),
+        .s_axi_wlast    ( xdma_to_axi_dwidth_converter_axi_wlast   ),
+        .s_axi_wvalid   ( xdma_to_axi_dwidth_converter_axi_wvalid  ),
+        .s_axi_wready   ( xdma_to_axi_dwidth_converter_axi_wready  ),
+        .s_axi_bid      ( xdma_to_axi_dwidth_converter_axi_bid     ),
+        .s_axi_bresp    ( xdma_to_axi_dwidth_converter_axi_bresp   ),
+        .s_axi_bvalid   ( xdma_to_axi_dwidth_converter_axi_bvalid  ),
+        .s_axi_bready   ( xdma_to_axi_dwidth_converter_axi_bready  ),
+        .s_axi_arid     ( xdma_to_axi_dwidth_converter_axi_arid    ),
+        .s_axi_araddr   ( xdma_to_axi_dwidth_converter_axi_araddr  ),
+        .s_axi_arlen    ( xdma_to_axi_dwidth_converter_axi_arlen   ),
+        .s_axi_arsize   ( xdma_to_axi_dwidth_converter_axi_arsize  ),
+        .s_axi_arburst  ( xdma_to_axi_dwidth_converter_axi_arburst ),
+        .s_axi_arvalid  ( xdma_to_axi_dwidth_converter_axi_arvalid ),
+        .s_axi_arready  ( xdma_to_axi_dwidth_converter_axi_arready ),
+        .s_axi_rid      ( xdma_to_axi_dwidth_converter_axi_rid     ),
+        .s_axi_rdata    ( xdma_to_axi_dwidth_converter_axi_rdata   ),
+        .s_axi_rresp    ( xdma_to_axi_dwidth_converter_axi_rresp   ),
+        .s_axi_rlast    ( xdma_to_axi_dwidth_converter_axi_rlast   ),
+        .s_axi_rvalid   ( xdma_to_axi_dwidth_converter_axi_rvalid  ),
+        .s_axi_rready   ( xdma_to_axi_dwidth_converter_axi_rready  ),
+        .s_axi_awlock   ( xdma_to_axi_dwidth_converter_axi_awlock  ),
+        .s_axi_awcache  ( xdma_to_axi_dwidth_converter_axi_awcache ),
+        .s_axi_awprot   ( xdma_to_axi_dwidth_converter_axi_awprot  ),
+        .s_axi_awqos    ( 0   ),
+        .s_axi_awregion ( 0   ),
+        .s_axi_arlock   ( xdma_to_axi_dwidth_converter_axi_arlock  ),
+        .s_axi_arcache  ( xdma_to_axi_dwidth_converter_axi_arcache ),
+        .s_axi_arprot   ( xdma_to_axi_dwidth_converter_axi_arprot  ),
+        .s_axi_arqos    ( 0   ),
+        .s_axi_arregion ( 0   ),
+
+        
+        // Master to output port
+        // .m_axi_awid     ( m_axi_awid    ),
+        .m_axi_awaddr   ( m_axi_awaddr  ),
+        .m_axi_awlen    ( m_axi_awlen   ),
+        .m_axi_awsize   ( m_axi_awsize  ),
+        .m_axi_awburst  ( m_axi_awburst ),
+        .m_axi_awlock   ( m_axi_awlock  ),
+        .m_axi_awcache  ( m_axi_awcache ),
+        .m_axi_awprot   ( m_axi_awprot  ),
+        .m_axi_awqos    ( m_axi_awqos   ),
+        .m_axi_awvalid  ( m_axi_awvalid ),
+        .m_axi_awready  ( m_axi_awready ),
+        .m_axi_wdata    ( m_axi_wdata   ),
+        .m_axi_wstrb    ( m_axi_wstrb   ),
+        .m_axi_wlast    ( m_axi_wlast   ),
+        .m_axi_wvalid   ( m_axi_wvalid  ),
+        .m_axi_wready   ( m_axi_wready  ),
+        // .m_axi_bid      ( m_axi_bid     ),
+        .m_axi_bresp    ( m_axi_bresp   ),
+        .m_axi_bvalid   ( m_axi_bvalid  ),
+        .m_axi_bready   ( m_axi_bready  ),
+        // .m_axi_arid     ( m_axi_arid    ),
+        .m_axi_araddr   ( m_axi_araddr  ),
+        .m_axi_arlen    ( m_axi_arlen   ),
+        .m_axi_arsize   ( m_axi_arsize  ),
+        .m_axi_arburst  ( m_axi_arburst ),
+        .m_axi_arlock   ( m_axi_arlock  ),
+        .m_axi_arcache  ( m_axi_arcache ),
+        .m_axi_arprot   ( m_axi_arprot  ),
+        .m_axi_arqos    ( m_axi_arqos   ),
+        .m_axi_arvalid  ( m_axi_arvalid ),
+        .m_axi_arready  ( m_axi_arready ),
+        // .m_axi_rid      ( m_axi_rid     ),
+        .m_axi_rdata    ( m_axi_rdata   ),
+        .m_axi_rresp    ( m_axi_rresp   ),
+        .m_axi_rlast    ( m_axi_rlast   ),
+        .m_axi_rvalid   ( m_axi_rvalid  ),
+        .m_axi_rready   ( m_axi_rready  ) 
+    );
+
+`elsif  EMBEDDED
+    // EMBEDDED
     
     assign sys_resetn_o = ~sys_reset_i;
     // PLL
@@ -192,6 +287,7 @@ module sys_master
         .m_axi_rvalid   ( m_axi_rvalid  ), // input wire m_axi_rvalid
         .m_axi_rready   ( m_axi_rready  )  // output wire m_axi_rready 
     );
+
 `endif
 
 endmodule : sys_master

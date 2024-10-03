@@ -35,10 +35,14 @@ import uninasoc_pkg::*;
 // Import headers
 `include "uninasoc_axi.svh"
 
+`ifdef HPC
+    `include "uninasoc_pcie.svh"
+`endif
+
 // Module definition
 module uninasoc (
 
-    `ifdef NEXYS_A7
+    `ifdef EMBEDDED
         // Clock and reset
         input logic sys_clock_i,
         input logic sys_reset_i
@@ -50,7 +54,7 @@ module uninasoc (
         // GPIOs
         // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
-    `elsif AU250
+    `elsif HPC
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
         input logic pcie_resetn_i,
@@ -102,9 +106,9 @@ module uninasoc (
     `DECLARE_AXI_BUS(xbar_to_main_mem);
 
     // xbar -> GPIO out
-    `ifdef NEXYS_A7
+    `ifdef EMBEDDED
         `DECLARE_AXI_BUS(xbar_to_gpio_out);
-    `elsif AU250
+    `elsif HPC
         // need secondary memory because the xbar wants one side with only 1 port ( no both slaves and masters can be 1 at the same time )
         `DECLARE_AXI_BUS(xbar_to_second_mem);
     `endif
@@ -127,10 +131,10 @@ module uninasoc (
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus 1,           bus 0
     
-    `ifdef NEXYS_A7
+    `ifdef EMBEDDED
         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
-    `elsif AU250
-         `CONCAT_AXI_SLAVES_ARRAY1(xbar_slaves, xbar_to_second_mem, xbar_to_main_mem);
+    `elsif HPC
+         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_second_mem, xbar_to_main_mem);
     `endif
     // TODO: add GPIO in
     // //                      array_name,           bus 2,           bus 1,             bus 0
@@ -243,10 +247,10 @@ module uninasoc (
 
     sys_master sys_master_inst (
 
-        `ifdef NEXYS_A7
+        `ifdef EMBEDDED
             .sys_clock_i(sys_clock_i),
             .sys_reset_i(sys_reset_i),
-        `elsif AU250
+        `elsif HPC
             .pcie_refclk_p_i(pcie_refclk_p_i),
             .pcie_refclk_n_i(pcie_refclk_n_i),
             .pcie_resetn_i(pcie_resetn_i),
@@ -464,7 +468,7 @@ module uninasoc (
     //     .tx             ( uart_tx_o      )  // output wire tx
     // );
 
-`ifdef NEXYS_A7
+`ifdef EMBEDDED
     // GPIOs
     generate
         // GPIO in
@@ -658,7 +662,7 @@ module uninasoc (
             );
         end
     endgenerate
-`elsif AU250
+`elsif HPC
     xlnx_blk_mem_gen second_mem_inst (
         .rsta_busy      ( /* open */                   ), // output wire rsta_busy
         .rstb_busy      ( /* open */                   ), // output wire rstb_busy

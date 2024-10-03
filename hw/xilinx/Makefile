@@ -23,10 +23,10 @@ XILINX_EMBEDDED_IP_LIST_XCI := $(foreach ip,${XILINX_EMBEDDED_IP_LIST},${XILINX_
 XILINX_IP_LIST_XCI = ${XILINX_COMMON_IP_LIST_XCI}
 
 # Selecting flow: HPC or EMBEDDED
-ifeq (${SOC_CONFIG}, au250)
+ifeq (${SOC_CONFIG}, hpc)
 	XILINX_IP_LIST += ${XILINX_HPC_IP_LIST}
 	XILINX_IP_LIST_XCI += ${XILINX_HPC_IP_LIST_XCI}
-else ifeq (${SOC_CONFIG}, Nexys-A7-100T-Master) 
+else ifeq (${SOC_CONFIG}, embedded) 
 	XILINX_IP_LIST += ${XILINX_EMBEDDED_IP_LIST}
 	XILINX_IP_LIST_XCI += ${XILINX_EMBEDDED_IP_LIST_XCI}
 else
@@ -130,15 +130,21 @@ ${XILINX_SIM_IP_ROOT}/ips:
 bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom
 base_address ?= 0x40000000 # BRAM base address
 JTAG_READBACK ?= true
+
+
+load_binary: load_binary_${SOC_CONFIG}
+
 # Write elf to BRAM through jtag2axi
-jtag2axi_load_binary: ${bin_path}
+load_binary_embedded: ${bin_path}
 	${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_load_binary.tcl \
 		-tclargs ${bin_path} ${base_address} ${JTAG_READBACK}
 
 # Write elf to BRAM/DDR through XDMA
-pcie2axi_load_binary: ${bin_path}
-	source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${bin_path} ${base_address} ${JTAG_READBACK}
+load_binary_hpc: ${bin_path}
+	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${bin_path} ${base_address} ${JTAG_READBACK}"
+
+
 
 # Clean up project
 clean:
@@ -152,5 +158,5 @@ clean_ips:
 ###########
 # PHONIES #
 ###########
-.PHONY: open gui bitstream ips open_hw_manager sim_compile_simlib clean clean_ips jtag2axi_load_binary
+.PHONY: open gui bitstream ips open_hw_manager sim_compile_simlib clean clean_ips load_binary load_binary_embedded load_binary_hpc
 

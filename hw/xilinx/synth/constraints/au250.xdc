@@ -1016,35 +1016,35 @@ set_property PACKAGE_PIN AM6 [get_ports pci_exp_txn_o[6] ]; # Bank 226  - MGTYTX
 set_property PACKAGE_PIN AM7 [get_ports pci_exp_txp_o[6] ]; # Bank 226  - MGTYTXP1_226
 set_property PACKAGE_PIN AN8 [get_ports pci_exp_txn_o[7] ]; # Bank 226  - MGTYTXN0_226
 set_property PACKAGE_PIN AN9 [get_ports pci_exp_txp_o[7] ]; # Bank 226  - MGTYTXP0_226
-set_property PACKAGE_PIN AT1 [get_ports pci_exp_rxn_i[10]]; # Bank 225  - MGTYRXN1_225
-set_property PACKAGE_PIN AT2 [get_ports pci_exp_rxp_i[10]]; # Bank 225  - MGTYRXP1_225
-set_property PACKAGE_PIN AU3 [get_ports pci_exp_rxn_i[11]]; # Bank 225  - MGTYRXN0_225
-set_property PACKAGE_PIN AU4 [get_ports pci_exp_rxp_i[11]]; # Bank 225  - MGTYRXP0_225
-set_property PACKAGE_PIN AP1 [get_ports pci_exp_rxn_i[8] ]; # Bank 225  - MGTYRXN3_225
-set_property PACKAGE_PIN AP2 [get_ports pci_exp_rxp_i[8] ]; # Bank 225  - MGTYRXP3_225
-set_property PACKAGE_PIN AR3 [get_ports pci_exp_rxn_i[9] ]; # Bank 225  - MGTYRXN2_225
-set_property PACKAGE_PIN AR4 [get_ports pci_exp_rxp_i[9] ]; # Bank 225  - MGTYRXP2_225
-set_property PACKAGE_PIN AT6 [get_ports pci_exp_txn_o[10]]; # Bank 225  - MGTYTXN1_225
-set_property PACKAGE_PIN AT7 [get_ports pci_exp_txp_o[10]]; # Bank 225  - MGTYTXP1_225
-set_property PACKAGE_PIN AU8 [get_ports pci_exp_txn_o[11]]; # Bank 225  - MGTYTXN0_225
-set_property PACKAGE_PIN AU9 [get_ports pci_exp_txp_o[11]]; # Bank 225  - MGTYTXP0_225
-set_property PACKAGE_PIN AP6 [get_ports pci_exp_txn_o[8] ]; # Bank 225  - MGTYTXN3_225
-set_property PACKAGE_PIN AP7 [get_ports pci_exp_txp_o[8] ]; # Bank 225  - MGTYTXP3_225
-set_property PACKAGE_PIN AR8 [get_ports pci_exp_txn_o[9] ]; # Bank 225  - MGTYTXN2_225
-set_property PACKAGE_PIN AR9 [get_ports pci_exp_txp_o[9] ]; # Bank 225  - MGTYTXP2_225
-set_property PACKAGE_PIN AV1 [get_ports pci_exp_rxn_i[12]]; # Bank 224  - MGTYRXN3_224
-set_property PACKAGE_PIN AV2 [get_ports pci_exp_rxp_i[12]]; # Bank 224  - MGTYRXP3_224
-set_property PACKAGE_PIN AW3 [get_ports pci_exp_rxn_i[13]]; # Bank 224  - MGTYRXN2_224
-set_property PACKAGE_PIN AW4 [get_ports pci_exp_rxp_i[13]]; # Bank 224  - MGTYRXP2_224
-set_property PACKAGE_PIN BA1 [get_ports pci_exp_rxn_i[14]]; # Bank 224  - MGTYRXN1_224
-set_property PACKAGE_PIN BA2 [get_ports pci_exp_rxp_i[14]]; # Bank 224  - MGTYRXP1_224
-set_property PACKAGE_PIN BC1 [get_ports pci_exp_rxn_i[15]]; # Bank 224  - MGTYRXN0_224
-set_property PACKAGE_PIN BC2 [get_ports pci_exp_rxp_i[15]]; # Bank 224  - MGTYRXP0_224
-set_property PACKAGE_PIN AV6 [get_ports pci_exp_txn_o[12]]; # Bank 224  - MGTYTXN3_224
-set_property PACKAGE_PIN AV7 [get_ports pci_exp_txp_o[12]]; # Bank 224  - MGTYTXP3_224
-set_property PACKAGE_PIN BB4 [get_ports pci_exp_txn_o[13]]; # Bank 224  - MGTYTXN2_224
-set_property PACKAGE_PIN BB5 [get_ports pci_exp_txp_o[13]]; # Bank 224  - MGTYTXP2_224
-set_property PACKAGE_PIN BD4 [get_ports pci_exp_txn_o[14]]; # Bank 224  - MGTYTXN1_224
-set_property PACKAGE_PIN BD5 [get_ports pci_exp_txp_o[14]]; # Bank 224  - MGTYTXP1_224
-set_property PACKAGE_PIN BF4 [get_ports pci_exp_txn_o[15]]; # Bank 224  - MGTYTXN0_224
-set_property PACKAGE_PIN BF5 [get_ports pci_exp_txp_o[15]]; # Bank 224  - MGTYTXP0_224
+# set_property PACKAGE_PIN AT1 [get_ports pci_exp_rxn_i[10]]; # Bank 225  - MGTYRXN1_225
+# set_property PACKAGE_PIN AT2 [get_ports pci_exp_rxp_i[10]]; # Bank 225  - MGTYRXP1_225
+# set_property PACKAGE_PIN AU3 [get_ports pci_exp_rxn_i[11]]; # Bank 225  - MGTYRXN0_225
+# set_property PACKAGE_PIN AU4 [get_ports pci_exp_rxp_i[11]]; # Bank 225  - MGTYRXP0_225
+# set_property PACKAGE_PIN AP1 [get_ports pci_exp_rxn_i[8] ]; # Bank 225  - MGTYRXN3_225
+# set_property PACKAGE_PIN AP2 [get_ports pci_exp_rxp_i[8] ]; # Bank 225  - MGTYRXP3_225
+# set_property PACKAGE_PIN AR3 [get_ports pci_exp_rxn_i[9] ]; # Bank 225  - MGTYRXN2_225
+# set_property PACKAGE_PIN AR4 [get_ports pci_exp_rxp_i[9] ]; # Bank 225  - MGTYRXP2_225
+# set_property PACKAGE_PIN AT6 [get_ports pci_exp_txn_o[10]]; # Bank 225  - MGTYTXN1_225
+# set_property PACKAGE_PIN AT7 [get_ports pci_exp_txp_o[10]]; # Bank 225  - MGTYTXP1_225
+# set_property PACKAGE_PIN AU8 [get_ports pci_exp_txn_o[11]]; # Bank 225  - MGTYTXN0_225
+# set_property PACKAGE_PIN AU9 [get_ports pci_exp_txp_o[11]]; # Bank 225  - MGTYTXP0_225
+# set_property PACKAGE_PIN AP6 [get_ports pci_exp_txn_o[8] ]; # Bank 225  - MGTYTXN3_225
+# set_property PACKAGE_PIN AP7 [get_ports pci_exp_txp_o[8] ]; # Bank 225  - MGTYTXP3_225
+# set_property PACKAGE_PIN AR8 [get_ports pci_exp_txn_o[9] ]; # Bank 225  - MGTYTXN2_225
+# set_property PACKAGE_PIN AR9 [get_ports pci_exp_txp_o[9] ]; # Bank 225  - MGTYTXP2_225
+# set_property PACKAGE_PIN AV1 [get_ports pci_exp_rxn_i[12]]; # Bank 224  - MGTYRXN3_224
+# set_property PACKAGE_PIN AV2 [get_ports pci_exp_rxp_i[12]]; # Bank 224  - MGTYRXP3_224
+# set_property PACKAGE_PIN AW3 [get_ports pci_exp_rxn_i[13]]; # Bank 224  - MGTYRXN2_224
+# set_property PACKAGE_PIN AW4 [get_ports pci_exp_rxp_i[13]]; # Bank 224  - MGTYRXP2_224
+# set_property PACKAGE_PIN BA1 [get_ports pci_exp_rxn_i[14]]; # Bank 224  - MGTYRXN1_224
+# set_property PACKAGE_PIN BA2 [get_ports pci_exp_rxp_i[14]]; # Bank 224  - MGTYRXP1_224
+# set_property PACKAGE_PIN BC1 [get_ports pci_exp_rxn_i[15]]; # Bank 224  - MGTYRXN0_224
+# set_property PACKAGE_PIN BC2 [get_ports pci_exp_rxp_i[15]]; # Bank 224  - MGTYRXP0_224
+# set_property PACKAGE_PIN AV6 [get_ports pci_exp_txn_o[12]]; # Bank 224  - MGTYTXN3_224
+# set_property PACKAGE_PIN AV7 [get_ports pci_exp_txp_o[12]]; # Bank 224  - MGTYTXP3_224
+# set_property PACKAGE_PIN BB4 [get_ports pci_exp_txn_o[13]]; # Bank 224  - MGTYTXN2_224
+# set_property PACKAGE_PIN BB5 [get_ports pci_exp_txp_o[13]]; # Bank 224  - MGTYTXP2_224
+# set_property PACKAGE_PIN BD4 [get_ports pci_exp_txn_o[14]]; # Bank 224  - MGTYTXN1_224
+# set_property PACKAGE_PIN BD5 [get_ports pci_exp_txp_o[14]]; # Bank 224  - MGTYTXP1_224
+# set_property PACKAGE_PIN BF4 [get_ports pci_exp_txn_o[15]]; # Bank 224  - MGTYTXN0_224
+# set_property PACKAGE_PIN BF5 [get_ports pci_exp_txp_o[15]]; # Bank 224  - MGTYTXP0_224
