@@ -39,7 +39,7 @@ Valid Soc Configuration and boards are:
 | soc_config               | board            |
 |--------------------------|------------------|
 | embedded (Default)       | Nexsys A7        |
-| hpc                      | Alveo U205       |
+| hpc                      | Alveo U250       |
 
 ## Supported boards:
 - [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
