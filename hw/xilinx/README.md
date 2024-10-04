@@ -30,8 +30,28 @@ This tree is structured as:
 └── tcl                    
 ```
 
-# Build Bitstream
-TBD
+## Build Bitstream and Program Device
+To build the bitstream just run:
+``` bash
+make bistream
+```
+
+Once the build is completed, program target device running:
+``` bash
+make start_hw_server # Only once after host boot
+make program_bitstream
+```
+
+## Load Binary on the Device
+Assuming:
+1. The bistream has been programmed
+2. A binary has been built (in binary, non elf format), e.g. bootrom
+
+You can load your binary into the device memory running the following command, optionally setting some environment variables:
+``` bash
+make load_binary bin_path=<path-to-bin> base_address=<value> JTAG_READBACK=<false|true>
+```
+The default configuration load the bootrom.
 
 # Add and Configure a Xilinx IP
 Based on the specific SoC configuration to which the IP to be inserted must belong,
@@ -44,13 +64,13 @@ The name of the directory will be the name of your IP in the design. In the dire
 * `create_ip ... -module_name $::env(IP_NAME)`
 * `set_property -dict [list CONFIG.<property_key> {<property_value>} CONFIG.<property_key> {<property_value>} ...] [get_ips $::env(IP_NAME)]`
 
-## Configure IP
+### Configure IP
 (Re-)configure the IP by:
 1. Editing the property keys and values;
 2. Running make `<ip_name>`
 > NOTE: Vivado versions must match between IP build and IP import during system build.
 
-## Prepare IP Simulation
+### Prepare IP Simulation
 tbd
 
  
