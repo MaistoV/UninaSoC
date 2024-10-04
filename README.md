@@ -4,9 +4,6 @@ RISC-V soft-SoC design for Xilinx FPGAs from University of Naples Federico II.
 Alternative name candidates:
 * Federico-V
 * SECLabbino
-* NA-V
-* NAPL-V
-* NAPULE-V
 * ?
 
 # Simulation flow:
