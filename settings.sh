@@ -25,8 +25,7 @@ export CONFIG_ROOT=${ROOT_DIR}/config
 # Hardware #
 ############
 export HW_ROOT=${ROOT_DIR}/hw
-export HW_RTL_ROOT=${ROOT_DIR}/hw/rtl
-# TBD
+export HW_UNITS_ROOT=${HW_ROOT}/units
 
 ###################
 # Unit Simulation #
@@ -37,6 +36,7 @@ export GTKWAVE=gtkwave
 # Verilator paths - Insert here your include path
 export VERILATOR_INC=/usr/share/verilator/include
 export VLTSTD_INC=/usr/share/verilator/include/vltstd/
+
 
 ##########
 # Xilinx #

@@ -5,6 +5,7 @@
 set src_file_list [ list \
     $::env(XILINX_ROOT)/rtl/uninasoc_pkg.sv  \
     $::env(XILINX_ROOT)/rtl/uninasoc_axi.svh \
+    $::env(XILINX_ROOT)/rtl/rvm_socket.sv \
     $::env(XILINX_ROOT)/rtl/uninasoc.sv      \
 ]
 

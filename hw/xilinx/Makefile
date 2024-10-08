@@ -16,7 +16,20 @@ XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_PROJECT_BUILD_DIR}/reports
 XILINX_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/xlnx_*)
 
 # List of IPs' xci files
-XILINX_IP_LIST_XCI := $(foreach ip,${XILINX_IP_LIST},${XILINX_IPS_ROOT}/${ip}/build/${ip}.srcs/sources_1/ip/${ip}/${ip}.xci)
+XILINX_IP_LIST_XCI := $(foreach ip,${XILINX_IP_LIST},${XILINX_IPS_ROOT}/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+
+######################
+#	STEFANO START	##
+######################
+
+# List of the IPs in the ips repo, excluding common
+IP_LIST = $(shell find ${XILINX_IPS_ROOT} -maxdepth 1 -type d -not -name "common" -not -name "ips" -exec basename {} \;)
+# List of all the XCI files
+IP_LIST_XCI := $(foreach ip,${IP_LIST},${XILINX_IPS_ROOT}/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+
+######################
+#	STEFANO END		##
+######################
 
 # Runtime optimized run strategies
 SYNTH_STRATEGY ?= Flow_RuntimeOptimized
@@ -35,7 +48,7 @@ XILINX_VIVADO_ENV ?=              					\
     XILINX_HW_SERVER_PORT=${XILINX_HW_SERVER_PORT}  \
     XILINX_FPGA_DEVICE=${XILINX_FPGA_DEVICE}		\
     XILINX_BITSTREAM=${XILINX_BITSTREAM}   			\
-	XILINX_IP_LIST_XCI="${XILINX_IP_LIST_XCI}" 		\
+	IP_LIST_XCI="${IP_LIST_XCI}" 		\
 	XILINX_ROOT=${XILINX_ROOT}						\
     QUESTA_PATH=${QUESTA_PATH}   					\
     GCC_PATH=${GCC_PATH}   							\
@@ -46,6 +59,9 @@ XILINX_VIVADO := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode ${XILINX_VIVADO
 XILINX_VIVADO_BATCH := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode batch
 
 all: bitstream
+
+test:
+	echo ${IP_LIST_XCI}
 
 # Open project in TCL mode
 open_prj:
@@ -67,8 +83,8 @@ bitstream: ips
 	${XILINX_VIVADO} -source ${XILINX_ROOT}/synth/tcl/build_bitstream.tcl
 
 # Generate ips
-XILINX_IP_NAMES ?= $(addsuffix .xci, ${XILINX_IP_LIST})
-ips: ${XILINX_IP_NAMES}
+IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
+ips: ${IP_NAMES}
 
 # Build single IP
 %.xci: IP_NAME=$*
@@ -77,6 +93,7 @@ ips: ${XILINX_IP_NAMES}
 	@echo "Generating IP $@"
 	mkdir -p ${IP_BUILD_DIR}; 						 		\
 	cd       ${IP_BUILD_DIR}; 						 		\
+	export IP_PRJ_NAME=${IP_NAME}_prj;						\
 	export IP_NAME=${IP_NAME}; ${XILINX_VIVADO_BATCH}		\
 		-source ${XILINX_IPS_ROOT}/common/pre_config.tcl 	\
 		-source ${XILINX_IPS_ROOT}/$*/config.tcl			\
@@ -131,5 +148,5 @@ clean_ips:
 ###########
 # PHONIES #
 ###########
-.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips jtag2axi_load_binary
+.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips jtag2axi_load_binary test
 

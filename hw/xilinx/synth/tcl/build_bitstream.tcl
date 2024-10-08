@@ -28,7 +28,7 @@ import_files -fileset constrs_1 -norecurse $::env(XILINX_ROOT)/synth/constraints
 import_files -fileset constrs_1 -norecurse $::env(XILINX_ROOT)/synth/constraints/$::env(XILINX_BOARD).xdc
 
 # Import IPS
-read_ip $::env(XILINX_IP_LIST_XCI)
+read_ip $::env(IP_LIST_XCI)
 
 # Set top level module
 set_property top $::env(XILINX_PROJECT_NAME) [current_fileset]

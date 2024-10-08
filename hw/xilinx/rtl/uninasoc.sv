@@ -34,7 +34,7 @@ import uninasoc_pkg::*;
 
 
 // Import headers
-`include "uninasoc_axi.svh"
+//`include "uninasoc_axi.svh"
 
 // Module definition
 module uninasoc (
@@ -85,7 +85,8 @@ module uninasoc (
     // jtag2axi -> crossbar
     `DECLARE_AXI_BUS(j2a_to_xbar);
     // rvm_socket -> crossbar
-    // `DECLARE_AXI_BUS(rvm_socket);
+    `DECLARE_AXI_BUS(rvm_socket_instr);
+    `DECLARE_AXI_BUS(rvm_socket_data);
 
     // AXI slaves
     // xbar -> main memory
@@ -101,10 +102,12 @@ module uninasoc (
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                       array_name,       bus 0
-    `CONCAT_AXI_MASTERS_ARRAY1(xbar_masters, j2a_to_xbar);
+    //`CONCAT_AXI_MASTERS_ARRAY1(xbar_masters, j2a_to_xbar);
     // TODO: add RVM socket
     // //                       array_name,      bus 1,      bus 0
     // `CONCAT_AXI_BUS_ARRAY2(xbar_masters, rvm_socket, j2a_to_xbar);
+    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, j2a_to_xbar)
+
 
     // Concatenate AXI slave buses
    `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
@@ -278,19 +281,51 @@ module uninasoc (
         .m_axi_rready   ( j2a_to_xbar_axi_rready    )  // output wire m_axi_rready
     );
 
-    // // RVM Socket
-    // rvm_socket # (
-    //     .DATA_WIDTH ( AXI_DATA_WIDTH ),
-    //     .ADDR_WIDTH ( AXI_ADDR_WIDTH ),
-    //     .NUM_IRQ    ( NUM_IRQ        )
-    // ) rvm_socket_inst (
-    //     .clock_i        ( soc_clk      ),
-    //     .reset_ni       ( vio_reset_n  ),
-    //     .boot_address_i ( vio_bootaddr ),
-    //     .irq_i          ( vio_irq      )
-    //     .axi_master
-    //     .tbd()
-    // );
+    // RVM Socket
+    rvm_socket rvm_socket_u (
+        .clk_i          ( soc_clk    ),
+        .rst_ni         ( sys_resetn ),
+        .bootaddr_i     ( '0         ),
+        .irq_i          ( '0         ),
+
+        .m_axi_awid     ( {rvm_socket_instr_axi_awid, rvm_socket_data_axi_awid}       ),
+        .m_axi_awaddr   ( {rvm_socket_instr_axi_awaddr, rvm_socket_data_axi_awaddr}   ),
+        .m_axi_awlen    ( {rvm_socket_instr_axi_awlen, rvm_socket_data_axi_awlen}     ),
+        .m_axi_awsize   ( {rvm_socket_instr_axi_awsize, rvm_socket_data_axi_awsize}   ),
+        .m_axi_awburst  ( {rvm_socket_instr_axi_awburst, rvm_socket_data_axi_awburst} ),
+        .m_axi_awlock   ( {rvm_socket_instr_axi_awlock, rvm_socket_data_axi_awlock}   ),
+        .m_axi_awcache  ( {rvm_socket_instr_axi_awcache, rvm_socket_data_axi_awcache} ),
+        .m_axi_awprot   ( {rvm_socket_instr_axi_awprot, rvm_socket_data_axi_awprot}   ),
+        .m_axi_awqos    ( {rvm_socket_instr_axi_awqos, rvm_socket_data_axi_awqos}     ),
+        .m_axi_awvalid  ( {rvm_socket_instr_axi_awvalid, rvm_socket_data_axi_awvalid} ),
+        .m_axi_awready  ( {rvb_socket_data_axi_awready, rvm_socket_data_axi_awready}  ),
+        .m_axi_wdata    ( {rvm_socket_instr_axi_wdata, rvm_socket_data_axi_wdata}     ),
+        .m_axi_wstrb    ( {rvm_socket_instr_axi_wstrb, rvm_socket_data_axi_wstrb}     ),
+        .m_axi_wlast    ( {rvm_socket_instr_axi_wlast, rvm_socket_data_axi_wlast}     ),
+        .m_axi_wvalid   ( {rvm_socket_instr_axi_wvalid, rvm_socket_data_axi_wvalid}   ),
+        .m_axi_wready   ( {rvb_socket_data_axi_wready, rvm_socket_data_axi_wready}    ),
+        .m_axi_bid      ( {rvb_socket_data_axi_bid, rvm_socket_data_axi_bid}          ),
+        .m_axi_bresp    ( {rvb_socket_data_axi_bresp, rvm_socket_data_axi_bresp}      ),
+        .m_axi_bvalid   ( {rvb_socket_data_axi_bvalid, rvm_socket_data_axi_bvalid}    ),
+        .m_axi_bready   ( {rvm_socket_instr_axi_bready, rvm_socket_data_axi_bready}   ),
+        .m_axi_arid     ( {rvm_socket_instr_axi_arid, rvm_socket_data_axi_arid}       ),
+        .m_axi_araddr   ( {rvm_socket_instr_axi_araddr, rvm_socket_data_axi_araddr}   ),
+        .m_axi_arlen    ( {rvm_socket_instr_axi_arlen, rvm_socket_data_axi_arlen}     ),
+        .m_axi_arsize   ( {rvm_socket_instr_axi_arsize, rvm_socket_data_axi_arsize}   ),
+        .m_axi_arburst  ( {rvm_socket_instr_axi_arburst, rvm_socket_data_axi_arburst} ),
+        .m_axi_arlock   ( {rvm_socket_instr_axi_arlock, rvm_socket_data_axi_arlock}   ),
+        .m_axi_arcache  ( {rvm_socket_instr_axi_arcache, rvm_socket_data_axi_arcache} ),
+        .m_axi_arprot   ( {rvm_socket_instr_axi_arprot, rvm_socket_data_axi_arprot}   ),
+        .m_axi_arqos    ( {rvm_socket_instr_axi_arqos, rvm_socket_data_axi_arqos}     ),
+        .m_axi_arvalid  ( {rvm_socket_instr_axi_arvalid, rvm_socket_data_axi_arvalid} ),
+        .m_axi_arready  ( {rvb_socket_data_axi_arready, rvm_socket_data_axi_arready}  ),
+        .m_axi_rid      ( {rvb_socket_data_axi_rid, rvm_socket_data_axi_rid}          ),
+        .m_axi_rdata    ( {rvb_socket_data_axi_rdata, rvm_socket_data_axi_rdata}      ),
+        .m_axi_rresp    ( {rvb_socket_data_axi_rresp, rvm_socket_data_axi_rresp}      ),
+        .m_axi_rlast    ( {rvb_socket_data_axi_rlast, rvm_socket_data_axi_rlast}      ),
+        .m_axi_rvalid   ( {rvb_socket_data_axi_rvalid, rvm_socket_data_axi_rvalid}    ),
+        .m_axi_rready   ( {rvm_socket_instr_axi_rready, rvm_socket_data_axi_rready}   )
+    );
 
     ////////////////
     // AXI slaves //
