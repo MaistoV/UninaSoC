@@ -46,54 +46,9 @@ typedef logic [AXI_RESP_WIDTH   -1 : 0] axi_resp_t;
 typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 
 // Single define for whole AXI4 bus
-`define DECLARE_AXI_BUS(bus_name) \
-    // AW channel                           \
-    axi_id_t     ``bus_name``_axi_awid;     \
-    axi_addr_t   ``bus_name``_axi_awaddr;   \
-    axi_len_t    ``bus_name``_axi_awlen;    \
-    axi_size_t   ``bus_name``_axi_awsize;   \
-    axi_burst_t  ``bus_name``_axi_awburst;  \
-    axi_lock_t   ``bus_name``_axi_awlock;   \
-    axi_cache_t  ``bus_name``_axi_awcache;  \
-    axi_prot_t   ``bus_name``_axi_awprot;   \
-    axi_qos_t    ``bus_name``_axi_awqos;    \
-    axi_valid_t  ``bus_name``_axi_awvalid;  \
-    axi_ready_t  ``bus_name``_axi_awready;  \
-    axi_region_t ``bus_name``_axi_awregion; \
-    // W channel                            \
-    axi_data_t   ``bus_name``_axi_wdata;    \
-    axi_strb_t   ``bus_name``_axi_wstrb;    \
-    axi_last_t   ``bus_name``_axi_wlast;    \
-    axi_valid_t  ``bus_name``_axi_wvalid;   \
-    axi_ready_t  ``bus_name``_axi_wready;   \
-    // B channel                            \
-    axi_id_t     ``bus_name``_axi_bid;      \
-    axi_resp_t   ``bus_name``_axi_bresp;    \
-    axi_valid_t  ``bus_name``_axi_bvalid;   \
-    axi_ready_t  ``bus_name``_axi_bready;   \
-    // AR channel                           \
-    axi_addr_t   ``bus_name``_axi_araddr;   \
-    axi_len_t    ``bus_name``_axi_arlen;    \
-    axi_size_t   ``bus_name``_axi_arsize;   \
-    axi_burst_t  ``bus_name``_axi_arburst;  \
-    axi_lock_t   ``bus_name``_axi_arlock;   \
-    axi_cache_t  ``bus_name``_axi_arcache;  \
-    axi_prot_t   ``bus_name``_axi_arprot;   \
-    axi_qos_t    ``bus_name``_axi_arqos;    \
-    axi_valid_t  ``bus_name``_axi_arvalid;  \
-    axi_ready_t  ``bus_name``_axi_arready;  \
-    axi_id_t     ``bus_name``_axi_arid;     \
-    axi_region_t ``bus_name``_axi_arregion; \
-    // R channel                            \
-    axi_id_t     ``bus_name``_axi_rid;      \
-    axi_data_t   ``bus_name``_axi_rdata;    \
-    axi_resp_t   ``bus_name``_axi_rresp;    \
-    axi_last_t   ``bus_name``_axi_rlast;    \
-    axi_valid_t  ``bus_name``_axi_rvalid;   \
-    axi_ready_t  ``bus_name``_axi_rready;
 
 // Declare AXI bus specifying the DATA_WIDTH
-`define DECLARE_AXI_BUS_WIDTH(bus_name, DATA_WIDTH) \
+`define DECLARE_AXI_BUS(bus_name, DATA_WIDTH) \
     // AW channel                                            \
     axi_id_t                      ``bus_name``_axi_awid;     \
     axi_addr_t                    ``bus_name``_axi_awaddr;   \

@@ -61,7 +61,7 @@ module sys_master
     assign soc_clk_o    = axi_aclk;
     assign sys_resetn_o = axi_aresetn;
 
-    `DECLARE_AXI_BUS_WIDTH(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
+    `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
 
     // XDMA Master 
     xlnx_xdma xlnx_xdma_inst (

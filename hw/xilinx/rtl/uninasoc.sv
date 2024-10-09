@@ -97,25 +97,25 @@ module uninasoc (
 
     // AXI masters
     // sys_master -> crossbar
-    `DECLARE_AXI_BUS(sys_master_to_xbar);
+    `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
-    // `DECLARE_AXI_BUS(rvm_socket);
+    // `DECLARE_AXI_BUS(rvm_socket, AXI_DATA_WIDTH);
 
     // AXI slaves
     // xbar -> main memory
-    `DECLARE_AXI_BUS(xbar_to_main_mem);
+    `DECLARE_AXI_BUS(xbar_to_main_mem, AXI_DATA_WIDTH);
 
     // xbar -> GPIO out
     `ifdef EMBEDDED
-        `DECLARE_AXI_BUS(xbar_to_gpio_out);
+        `DECLARE_AXI_BUS(xbar_to_gpio_out, AXI_DATA_WIDTH);
     `elsif HPC
         // need secondary memory because the xbar wants one side with only 1 port ( no both slaves and masters can be 1 at the same time )
-        `DECLARE_AXI_BUS(xbar_to_second_mem);
+        `DECLARE_AXI_BUS(xbar_to_second_mem, AXI_DATA_WIDTH);
     `endif
     // xbar -> GPIO in
-    // `DECLARE_AXI_BUS(xbar_to_gpio_in);
+    // `DECLARE_AXI_BUS(xbar_to_gpio_in, AXI_DATA_WIDTH);
     // xbar -> UART
-    // `DECLARE_AXI_BUS(xbar_to_uart);
+    // `DECLARE_AXI_BUS(xbar_to_uart, AXI_DATA_WIDTH);
 
     // Concatenate AXI master buses
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
