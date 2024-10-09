@@ -46,6 +46,12 @@ Valid Soc Configuration and boards are:
 - [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
 - [Alveo U250](https://www.amd.com/en/products/accelerators/alveo/u250/a-u250-a64g-pq-g.html)
 
+## Board installation
+- Alveo U250 (Verified on Vivado 2023.1)
+   - Download the [Alveo U250 board files](https://www.xilinx.com/bin/public/openDownload?filename=au250_board_files_20200616.zip)
+   - Extract the downloaded zip into \<VIVADO_DIR>/data/xhub/boards/XilinxBoardStore/boards/Xilinx/ 
+   - Restart Vivado
+
 # TODO
 * Design address space
 	* Finalized linker script

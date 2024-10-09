@@ -41,6 +41,9 @@ module sys_master
 
 `ifdef HPC
     // ALVEO
+
+    localparam int unsigned XDMA_DATA_WIDTH = 64;
+
     logic ibuf_out;
     logic ibuf_os_odiv2;
 
@@ -58,7 +61,7 @@ module sys_master
     assign soc_clk_o    = axi_aclk;
     assign sys_resetn_o = axi_aresetn;
 
-    `DECLARE_XDMA_AXI_BUS(xdma_to_axi_dwidth_converter);
+    `DECLARE_AXI_BUS_WIDTH(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
 
     // XDMA Master 
     xlnx_xdma xlnx_xdma_inst (
