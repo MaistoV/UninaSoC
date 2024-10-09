@@ -4,7 +4,7 @@ CONFIG_CSV ?= ${CONFIG_ROOT}/axi_memory_map/configs/config.csv
 
 all: config_axi config_ld
 
-OUTPUT_TCL_FILE ?= ${XILINX_ROOT}/ips/xlnx_axi_crossbar/config.tcl
+OUTPUT_TCL_FILE ?= ${XILINX_ROOT}/ips/common/xlnx_axi_crossbar/config.tcl
 config_axi:
 	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/create_crossbar_config.py \
 		${CONFIG_CSV} \

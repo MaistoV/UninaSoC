@@ -43,15 +43,26 @@ export VLTSTD_INC=/usr/share/verilator/include/vltstd/
 ##########
 # Xilinx project name
 export XILINX_PROJECT_NAME=uninasoc
-# Target device
-# Nexsys A7
-export XILINX_PART_NUMBER=xc7a100tcsg324-1
-export XILINX_BOARD=Nexys-A7-100T-Master
-export XILINX_HW_DEVICE=xc7a100t_0
-# Nexsys Alveo XXX
-# export XILINX_PART_NUMBER=TBD
-# export XILINX_BOARD=TBD
-# export XILINX_HW_DEVICE=TBD
+
+# SoC Configuration - Select the board 
+# HPC      -> Alveo U250
+# EMBEDDED -> Nexys-A7
+SOC_CONFIG=$1
+if [[ ${SOC_CONFIG} == "hpc" ]]; then
+    # Alveo  250
+    export XILINX_PART_NUMBER=xcu250-figd2104-2L-e
+    export XILINX_BOARD_PART=xilinx.com:au250:part0:1.3
+    export SOC_CONFIG=hpc
+    export XILINX_HW_DEVICE=xcu250
+    export BOARD=au250
+else
+    # Nexsys A7
+    export XILINX_PART_NUMBER=xc7a100tcsg324-1
+    export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.2
+    export SOC_CONFIG=embedded
+    export XILINX_HW_DEVICE=xc7a100t_0
+    export BOARD=Nexys-A7-100T-Master
+fi
 # Root directoriy
 export XILINX_ROOT=${ROOT_DIR}/hw/xilinx
 export XILINX_IPS_ROOT=${XILINX_ROOT}/ips
