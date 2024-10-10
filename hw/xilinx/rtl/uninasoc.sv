@@ -4,7 +4,7 @@
 // Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
 // NOTE: vio and rvm_socket are commented off in this version
 
-
+// Scheme made with: https://asciiflow.com/#/
 // System architecture:
 //                                                                                    ________
 //   _________              ____________               __________                    |        |
@@ -159,7 +159,7 @@ module uninasoc (
     // );
 
     // Axi Crossbar
-    xlnx_axi_crossbar axi_xbar_inst (
+    xlnx_axi_crossbar axi_xbar_u (
         .aclk           ( soc_clk                   ), // input wire aclk
         .aresetn        ( sys_resetn                ), // input wire aresetn
         .s_axi_awid     ( xbar_masters_axi_awid     ), // input wire [1 : 0] s_axi_awid
@@ -245,7 +245,7 @@ module uninasoc (
     // AXI masters //
     /////////////////
 
-    sys_master sys_master_inst (
+    sys_master sys_master_u (
 
         `ifdef EMBEDDED
             .sys_clock_i(sys_clock_i),
@@ -328,7 +328,7 @@ module uninasoc (
     ////////////////
 
     // Main memory
-    xlnx_blk_mem_gen main_memory_inst (
+    xlnx_blk_mem_gen main_memory_u (
         .rsta_busy      ( /* open */                   ), // output wire rsta_busy
         .rstb_busy      ( /* open */                   ), // output wire rstb_busy
         .s_aclk         ( soc_clk                      ), // input wire s_aclk
@@ -572,7 +572,7 @@ module uninasoc (
             `DECLARE_AXILITE_BUS(gpio_out);
 
             // AXI4 to AXI4-Lite protocol converter
-            xlnx_axi4_to_axilite_converter axi4_to_axilite_inst (
+            xlnx_axi4_to_axilite_converter axi4_to_axilite_u (
                 .aclk           ( soc_clk                       ), // input wire s_axi_aclk
                 .aresetn        ( sys_resetn                    ), // input wire s_axi_aresetn
                 // AXI4 slave port (from xbar)
@@ -638,7 +638,7 @@ module uninasoc (
             );
 
             // GPIO instance
-            xlnx_axi_gpio_out gpio_out_inst (
+            xlnx_axi_gpio_out gpio_out_u (
                 .s_axi_aclk     ( soc_clk                       ), // input wire s_axi_aclk
                 .s_axi_aresetn  ( sys_resetn                    ), // input wire s_axi_aresetn
                 .s_axi_awaddr   ( gpio_out_axilite_awaddr [8:0] ), // input wire [8 : 0] s_axi_awaddr
@@ -663,7 +663,7 @@ module uninasoc (
         end
     endgenerate
 `elsif HPC
-    xlnx_blk_mem_gen second_mem_inst (
+    xlnx_blk_mem_gen second_mem_u (
         .rsta_busy      ( /* open */                   ), // output wire rsta_busy
         .rstb_busy      ( /* open */                   ), // output wire rstb_busy
         .s_aclk         ( soc_clk                      ), // input wire s_aclk
