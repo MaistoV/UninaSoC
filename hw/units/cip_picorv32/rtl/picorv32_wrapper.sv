@@ -197,7 +197,7 @@ module picorv32_wrapper #(
 	.pcpi_ready	  ('0),
 
 	.irq		      (irq_i),
-	.eoi		      ('0),
+	.eoi		      (),
 
 `ifdef RISCV_FORMAL
 	.rvfi_valid    (),
@@ -231,16 +231,19 @@ module picorv32_wrapper #(
 
 	// Instruction Transaction
 	assign mem_instr_req    = (mem_instr) ? mem_valid: '0;
-	assign mem_instr_valid  = (mem_instr) ? mem_ready: '0;
 	assign mem_instr_addr   =	(mem_instr) ? mem_addr: '0;
-	assign mem_instr_rdata  = (mem_instr) ? mem_rdata: '0;
 	// Data Transaction
 	assign mem_data_req     = (~mem_instr) ? mem_valid: '0;
-	assign mem_data_valid   = (~mem_instr) ? mem_ready: '0;
 	assign mem_data_addr    = (~mem_instr) ? mem_addr: '0;
-	assign mem_data_rdata   =	(~mem_instr) ? mem_rdata: '0;
 	assign mem_data_we      = (~mem_instr & |mem_wstrb) ? 1'b1: 1'b0;
   assign mem_data_be      = mem_wstrb;
+
+  ////////////////////////
+  //    Multiplexing    //
+  ////////////////////////
+
+  assign mem_ready = (mem_instr) ? mem_instr_valid_i : mem_data_valid_i;
+  assign mem_rdata = (mem_instr) ? mem_instr_rdata_i : mem_data_rdata_i;
 
   ////////////////////////////////////
   //    Mem "lite" to Mem "full"    //
@@ -253,6 +256,9 @@ module picorv32_wrapper #(
   // and ignoring both grant and error signals.                                   //
   //////////////////////////////////////////////////////////////////////////////////
 
+  assign mem_instr_gnt = mem_instr_gnt_i;
+  assign mem_data_gnt = mem_data_gnt_i;
+
   //////////////////////////////
   //    Output Assignments    //
   //////////////////////////////
@@ -261,15 +267,12 @@ module picorv32_wrapper #(
   assign trace_data_o     = trace_data;
   assign trap_o           = trap;
 
-  assign mem_data_be_o    = mem_data_be;
-  assign mem_data_wdata_o = mem_data_wdata;
   assign mem_instr_req_o  = mem_instr_req;
   assign mem_instr_addr_o = mem_instr_addr;
-	assign mem_data_req_o   = mem_data_req_o;
-  assign mem_data_addr_o  = mem_data_addr_o;
-	assign mem_data_wdata_o = mem_data_wdata_o;
-	assign mem_data_be_o    = mem_data_be_o;
-  assign mem_data_we_o    = mem_data_we_o;
+	assign mem_data_req_o   = mem_data_req;
+  assign mem_data_addr_o  = mem_data_addr;
+	assign mem_data_be_o    = mem_data_be;
+  assign mem_data_we_o    = mem_data_we;
 
 
 endmodule: picorv32_wrapper;

@@ -90,9 +90,6 @@ XILINX_VIVADO_BATCH := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode batch
 
 all: bitstream
 
-test:
-	echo ${IP_LIST}
-
 # Open project in TCL mode
 open_prj:
 	cd ${XILINX_PROJECT_BUILD_DIR};			\
@@ -190,5 +187,5 @@ clean_ips:
 ###########
 # PHONIES #
 ###########
-.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips load_binary load_binary_embedded load_binary_hpc test
+.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips load_binary load_binary_embedded load_binary_hpc
 

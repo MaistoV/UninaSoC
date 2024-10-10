@@ -64,7 +64,7 @@ module axi_from_mem_wrapper # (
     output  logic [AXI_REGION_WIDTH -1 : 0] m_axi_arregion,   // Region identifier
     output  logic [AXI_VALID_WIDTH  -1 : 0] m_axi_arvalid,    // Read address valid
     input   logic [AXI_READY_WIDTH  -1 : 0] m_axi_arready,    // Read address ready
-    input   logic [AXI_ID_WIDTH     -1 : 0] m_axi_arid,       // Read ID
+    output  logic [AXI_ID_WIDTH     -1 : 0] m_axi_arid,       // Read ID
 
     input   logic [AXI_ID_WIDTH     -1 : 0] m_axi_rid,        // Read ID
     input   logic [AXI_DATA_WIDTH   -1 : 0] m_axi_rdata,      // Read data
@@ -177,6 +177,7 @@ module axi_from_mem_wrapper # (
     assign m_axi_arregion  = axi_req.ar.region;
     assign m_axi_arvalid   = axi_req.ar_valid;
     assign m_axi_rready    = axi_req.r_ready;
+    assign m_axi_arid      = axi_req.ar.id;
 
     assign axi_rsp.aw_ready = m_axi_awready;  
     assign axi_rsp.w_ready  = m_axi_wready;    
@@ -184,7 +185,6 @@ module axi_from_mem_wrapper # (
     assign axi_rsp.b.resp     = m_axi_bresp;      
     assign axi_rsp.b_valid  = m_axi_bvalid;     
     assign axi_rsp.ar_ready = m_axi_arready;    
-    assign axi_req.ar.id    = m_axi_arid;       
     assign axi_rsp.r.id     = m_axi_rid;        
     assign axi_rsp.r.data   = m_axi_rdata;      
     assign axi_rsp.r.resp   = m_axi_rresp;      

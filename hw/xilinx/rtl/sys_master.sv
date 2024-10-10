@@ -234,6 +234,8 @@ module sys_master
     // EMBEDDED
     
     assign sys_resetn_o = ~sys_reset_i;
+    assign m_axi_awregion = '0;
+    assign m_axi_arregion = '0;
     // PLL
 
     xlnx_clk_wiz clkwiz_inst (
