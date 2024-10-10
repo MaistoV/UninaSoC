@@ -124,6 +124,7 @@ ips: ${IP_NAMES}
 	@echo "Generating IP $@"
 	mkdir -p ${IP_BUILD_DIR}; 						 		\
 	cd       ${IP_BUILD_DIR}; 						 		\
+	export IP_DIR=${IP_DIR};								\
 	export IP_PRJ_NAME=${IP_NAME}_prj;						\
 	export IP_NAME=${IP_NAME}; ${XILINX_VIVADO_BATCH}		\
 		-source ${XILINX_IPS_ROOT}/common/tcl/pre_config.tcl 	\
