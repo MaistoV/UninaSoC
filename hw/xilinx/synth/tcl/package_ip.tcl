@@ -1,6 +1,6 @@
 
 # Add files to project
-add_files -norecurse -fileset [current_fileset] $src_file_list
+import_files -norecurse -fileset [current_fileset] $src_file_list
 update_compile_order -fileset sources_1
 set_property top ${top_module} [current_fileset]
 
