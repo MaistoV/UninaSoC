@@ -67,8 +67,8 @@ module rvm_socket # (
 );
 
   // Declare AXI interfaces for instruction memory port and data memory port
-  `DECLARE_AXI_BUS(core_instr_to_socket_instr);
-  `DECLARE_AXI_BUS(core_data_to_socket_data);
+  `DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
+  `DECLARE_AXI_BUS(core_data_to_socket_data, DATA_WIDTH);
 
   // Connect memory interfaces to socket output memory ports
   `CONCAT_AXI_MASTERS_ARRAY2(m, core_instr_to_socket_instr, core_data_to_socket_data);
@@ -110,7 +110,7 @@ module rvm_socket # (
   ///////////////////////////////////////////////////////////////////////////
 
 
-	picorv32_ip picorv32_core (
+	cip_picorv32 picorv32_core (
 		.clk_i      	      (clk_i ),
 		.rst_ni   	        (rst_ni),
 		.trap_o     	      (),
@@ -162,7 +162,7 @@ module rvm_socket # (
 
 
   // MEM to AXI-Full converter: Instruction Port
-	axi_from_mem_adapter /*#(
+	cip_axi_from_mem /*#(
     .MEM_ADDR_WIDTH		(ADDR_WIDTH),
     .MEM_DATA_WIDTH		(DATA_WIDTH),
     .AXI_DATA_WIDTH		(AXI_DATA_WIDTH),
@@ -238,7 +238,7 @@ module rvm_socket # (
     );
 
 	// MEM to AXI-Full converter: Data Port
-	axi_from_mem_adapter /*#(
+	cip_axi_from_mem /*#(
         .MEM_ADDR_WIDTH		(ADDR_WIDTH),
         .MEM_DATA_WIDTH		(DATA_WIDTH),
         .AXI_DATA_WIDTH		(AXI_DATA_WIDTH),

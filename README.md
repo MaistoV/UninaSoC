@@ -6,11 +6,6 @@ Alternative name candidates:
 * SECLabbino
 * ?
 
-# Supported boards:
-- [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
-- [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
-- Alveo?
-
 # Simulation flow:
 The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
 * Unit tests: Verilator
@@ -31,6 +26,31 @@ W.r.t. the single tools:
 | g++             | TBD              |
 | Verilator       | TBD              |
 | gtkwave         | TBD              |
+
+
+# SoC configuration selection
+
+```
+source settings.sh <soc_config>
+```
+The board is automatically selected based on the SoC configuration
+Valid Soc Configuration and boards are:
+
+| soc_config               | board            |
+|--------------------------|------------------|
+| embedded (Default)       | Nexsys A7        |
+| hpc                      | Alveo U250       |
+
+## Supported boards:
+- [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
+- [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
+- [Alveo U250](https://www.amd.com/en/products/accelerators/alveo/u250/a-u250-a64g-pq-g.html)
+
+## Board installation
+- Alveo U250 (Verified on Vivado 2023.1)
+   - Download the [Alveo U250 board files](https://www.xilinx.com/bin/public/openDownload?filename=au250_board_files_20200616.zip)
+   - Extract the downloaded zip into \<VIVADO_DIR>/data/xhub/boards/XilinxBoardStore/boards/Xilinx/ 
+   - Restart Vivado
 
 # TODO
 * Design address space

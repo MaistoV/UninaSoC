@@ -13,23 +13,50 @@ XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_PROJECT_BUILD_DIR}/reports
 
 # List of the Xilinx IPs to build and import in the design
 # Parsing from directory ips/
-XILINX_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/xlnx_*)
+XILINX_COMMON_IP_LIST 	= $(shell basename --multiple ${XILINX_IPS_ROOT}/common/xlnx_*)
+XILINX_HPC_IP_LIST 		= $(shell basename --multiple ${XILINX_IPS_ROOT}/hpc/xlnx_*) 
+XILINX_EMBEDDED_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/embedded/xlnx_*) 
+
+# List of the Custom IPs to build and import in the design
+# Parsing from directory ips/
+CIP_COMMON_IP_LIST 		= $(shell if ls ${XILINX_IPS_ROOT}/common/cip_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/common/cip_*; else echo ""; fi)
+CIP_HPC_IP_LIST 		= $(shell if ls ${XILINX_IPS_ROOT}/hpc/cip_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/hpc/cip_*; else echo ""; fi)
+CIP_EMBEDDED_IP_LIST 	= $(shell if ls ${XILINX_IPS_ROOT}/embedded/cip_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/embedded/cip_*; else echo ""; fi)
+
+# Board-independent IP lists
+XILINX_IP_LIST	= ${XILINX_COMMON_IP_LIST}
+CIP_IP_LIST 	= ${CIP_COMMON_IP_LIST}
 
 # List of IPs' xci files
-XILINX_IP_LIST_XCI := $(foreach ip,${XILINX_IP_LIST},${XILINX_IPS_ROOT}/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+XILINX_COMMON_IP_LIST_XCI 	:= $(foreach ip,${XILINX_COMMON_IP_LIST},${XILINX_IPS_ROOT}/common/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+XILINX_HPC_IP_LIST_XCI 		:= $(foreach ip,${XILINX_HPC_IP_LIST},${XILINX_IPS_ROOT}/hpc/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+XILINX_EMBEDDED_IP_LIST_XCI := $(foreach ip,${XILINX_EMBEDDED_IP_LIST},${XILINX_IPS_ROOT}/embedded/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+CIP_COMMON_IP_LIST_XCI 		:= $(foreach ip,${CIP_COMMON_IP_LIST},${XILINX_IPS_ROOT}/common/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+CIP_HPC_IP_LIST_XCI 		:= $(foreach ip,${CIP_HPC_IP_LIST},${XILINX_IPS_ROOT}/hpc/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+CIP_EMBEDDED_IP_LIST_XCI 	:= $(foreach ip,${CIP_EMBEDDED_IP_LIST},${XILINX_IPS_ROOT}/embedded/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
 
-######################
-#	STEFANO START	##
-######################
+# Board-independent XCI lists
+XILINX_IP_LIST_XCI 	= ${XILINX_COMMON_IP_LIST_XCI}
+CIP_IP_LIST_XCI		= ${CIP_COMMON_IP_LIST_XCI}
 
-# List of the IPs in the ips repo, excluding common
-IP_LIST = $(shell find ${XILINX_IPS_ROOT} -maxdepth 1 -type d -not -name "common" -not -name "ips" -exec basename {} \;)
-# List of all the XCI files
-IP_LIST_XCI := $(foreach ip,${IP_LIST},${XILINX_IPS_ROOT}/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+# Selecting flow: HPC or EMBEDDED
+ifeq (${SOC_CONFIG}, hpc)
+	XILINX_IP_LIST 		+= ${XILINX_HPC_IP_LIST}
+	XILINX_IP_LIST_XCI 	+= ${XILINX_HPC_IP_LIST_XCI}
+	CIP_IP_LIST 		+= ${CIP_HPC_IP_LIST}
+	CIP_IP_LIST_XCI 	+= ${CIP_HPC_IP_LIST_XCI}
+else ifeq (${SOC_CONFIG}, embedded) 
+	XILINX_IP_LIST 		+= ${XILINX_EMBEDDED_IP_LIST}
+	XILINX_IP_LIST_XCI 	+= ${XILINX_EMBEDDED_IP_LIST_XCI}
+	CIP_IP_LIST 		+= ${CIP_EMBEDDED_IP_LIST}
+	CIP_IP_LIST_XCI 	+= ${CIP_EMBEDDED_IP_LIST_XCI}
+else
+$(error "Unsupported config ${SOC_CONFIG}") 
+endif
 
-######################
-#	STEFANO END		##
-######################
+# Concatenate/create the final IP lists
+IP_LIST 	= ${XILINX_IP_LIST} ${CIP_IP_LIST}
+IP_LIST_XCI = ${XILINX_IP_LIST_XCI} ${CIP_IP_LIST_XCI}
 
 # Runtime optimized run strategies
 SYNTH_STRATEGY ?= Flow_RuntimeOptimized
@@ -43,16 +70,19 @@ XILINX_VIVADO_ENV ?=              					\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
     XILINX_PART_NUMBER=${XILINX_PART_NUMBER}   		\
     XILINX_PROJECT_NAME=${XILINX_PROJECT_NAME}   	\
-    XILINX_BOARD=${XILINX_BOARD}   					\
+    SOC_CONFIG=${SOC_CONFIG}   					    \
+	XILINX_BOARD_PART=${XILINX_BOARD_PART}          \
     XILINX_HW_SERVER_HOST=${XILINX_HW_SERVER_HOST}  \
     XILINX_HW_SERVER_PORT=${XILINX_HW_SERVER_PORT}  \
     XILINX_FPGA_DEVICE=${XILINX_FPGA_DEVICE}		\
     XILINX_BITSTREAM=${XILINX_BITSTREAM}   			\
-	IP_LIST_XCI="${IP_LIST_XCI}" 		\
+	IP_LIST_XCI="${IP_LIST_XCI}" 					\
 	XILINX_ROOT=${XILINX_ROOT}						\
     QUESTA_PATH=${QUESTA_PATH}   					\
     GCC_PATH=${GCC_PATH}   							\
     XILINX_SIMLIB_PATH=${XILINX_SIMLIB_PATH}
+	
+	
 
 # Package Vivado command in a single variable
 XILINX_VIVADO := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode ${XILINX_VIVADO_MODE}
@@ -61,7 +91,7 @@ XILINX_VIVADO_BATCH := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode batch
 all: bitstream
 
 test:
-	echo ${IP_LIST_XCI}
+	echo ${IP_LIST}
 
 # Open project in TCL mode
 open_prj:
@@ -88,16 +118,17 @@ ips: ${IP_NAMES}
 
 # Build single IP
 %.xci: IP_NAME=$*
-%.xci: IP_BUILD_DIR=${XILINX_IPS_ROOT}/$*/build
-%.xci: ips/%/config.tcl
+%.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
+%.xci: IP_BUILD_DIR=${IP_DIR}/build
+%.xci: ips/*/%/config.tcl
 	@echo "Generating IP $@"
 	mkdir -p ${IP_BUILD_DIR}; 						 		\
 	cd       ${IP_BUILD_DIR}; 						 		\
 	export IP_PRJ_NAME=${IP_NAME}_prj;						\
 	export IP_NAME=${IP_NAME}; ${XILINX_VIVADO_BATCH}		\
-		-source ${XILINX_IPS_ROOT}/common/pre_config.tcl 	\
-		-source ${XILINX_IPS_ROOT}/$*/config.tcl			\
-		-source ${XILINX_IPS_ROOT}/common/post_config.tcl
+		-source ${XILINX_IPS_ROOT}/common/tcl/pre_config.tcl 	\
+		-source ${IP_DIR}/config.tcl			\
+		-source ${XILINX_IPS_ROOT}/common/tcl/post_config.tcl
 	touch $@
 
 # Start hardware server
@@ -127,14 +158,24 @@ ${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
 ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
-bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom
-base_address ?= 0x00000000 # BRAM base address
-JTAG_READBACK ?= false
-# Write elf to BRAM through jtag2axi
-jtag2axi_load_binary: ${bin_path}
+bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom 
+base_address ?= 0x00000000                        # BRAM base address
+LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
+
+# Load the binary into SoC memory (BRAM for now)
+# Call the specific load script based on the SOC_CONFIG (HPC or EMBEDDED) 
+load_binary: load_binary_${SOC_CONFIG}
+
+# Write the binary to BRAM through jtag2axi
+load_binary_embedded: ${bin_path}
 	${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_load_binary.tcl \
-		-tclargs ${bin_path} ${base_address} ${JTAG_READBACK}
+		-tclargs ${bin_path} ${base_address} ${LOAD_BINARY_READBACK}
+
+# Write the binary to BRAM/DDR through XDMA
+load_binary_hpc: ${bin_path}
+	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${bin_path} ${base_address} ${LOAD_BINARY_READBACK}"
+
 
 # Clean up project
 clean:
@@ -142,11 +183,11 @@ clean:
 	rm -rf vivado*.log vivado*.jou vivado*.str
 
 clean_ips:
-	rm -rf ${XILINX_IPS_ROOT}/*/build
+	rm -rf ${XILINX_IPS_ROOT}/*/*/build
 	rm -rf *.xci
 
 ###########
 # PHONIES #
 ###########
-.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips jtag2axi_load_binary test
+.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips load_binary load_binary_embedded load_binary_hpc test
 

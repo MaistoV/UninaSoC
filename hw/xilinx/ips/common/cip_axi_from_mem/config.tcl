@@ -10,7 +10,6 @@ set src_file_list [ list \
     $::env(HW_UNITS_ROOT)/$::env(IP_NAME)/rtl/typedef.svh \
     $::env(HW_UNITS_ROOT)/$::env(IP_NAME)/rtl/registers.svh \
     $::env(HW_UNITS_ROOT)/$::env(IP_NAME)/rtl/assertions.svh \
-    $::env(HW_UNITS_ROOT)/$::env(IP_NAME)/rtl/uninasoc_axi.svh \
     $::env(HW_UNITS_ROOT)/$::env(IP_NAME)/rtl/fifo_v3.sv \
     $::env(HW_UNITS_ROOT)/$::env(IP_NAME)/rtl/axi_lite_from_mem.sv \
     $::env(HW_UNITS_ROOT)/$::env(IP_NAME)/rtl/axi_lite_to_axi.sv \
