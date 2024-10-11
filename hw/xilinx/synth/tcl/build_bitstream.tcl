@@ -10,7 +10,7 @@
 ########################
 # Setup Vivado project #
 ########################
-# Create new project (no force)
+# Create new project (force)
 create_project $::env(XILINX_PROJECT_NAME) . -part $::env(XILINX_PART_NUMBER) -force
 set_property board_part $::env(XILINX_BOARD_PART) [current_project]
 
@@ -74,6 +74,11 @@ set_property top $::env(XILINX_PROJECT_NAME) [current_fileset]
 # Generate compilation order
 update_compile_order -fileset sources_1
 
+# Reports directory
+set project_dir [get_property directory [current_project]]
+set report_dir $project_dir/report
+exec mkdir $report_dir
+
 ###################
 # RTL elaboration #
 ###################
@@ -96,13 +101,16 @@ wait_on_run synth_1
 # Open synthesized design
 open_run synth_1 -name synth_1
 # Genate reports
-check_timing -verbose                                       -file reports/$::env(XILINX_PROJECT_NAME).post_synth.check_timing.rpt
-report_utilization -hierarchical -hierarchical_percentage   -file reports/$::env(XILINX_PROJECT_NAME).post_synth.utilization.rpt
+check_timing -verbose                                       -file $report_dir/$::env(XILINX_PROJECT_NAME).post_synth.check_timing.rpt
+report_utilization -hierarchical -hierarchical_percentage   -file $report_dir/$::env(XILINX_PROJECT_NAME).post_synth.utilization.rpt
 
 ############
 # Add ILAs #
 ############
-source $::env(XILINX_SYNTH_TCL_ROOT)/add_ilas.tcl
+if { $::env(XILINX_ILA) == 1 } {
+    source $::env(XILINX_SYNTH_TCL_ROOT)/mark_debug_nets.tcl
+    source $::env(XILINX_SYNTH_TCL_ROOT)/add_ila.tcl
+}
 
 ##################
 # Implementation #
@@ -123,8 +131,16 @@ wait_on_run impl_1
 open_run impl_1
 
 # Genate reports
-check_timing                                                              -file reports/$::env(XILINX_PROJECT_NAME).post_impl.check_timing.rpt
-report_timing -max_paths 100 -nworst 100 -delay_type max -sort_by slack   -file reports/$::env(XILINX_PROJECT_NAME).post_impl.timing_WORST_100.rpt
-report_timing -nworst 1 -delay_type max -sort_by group                    -file reports/$::env(XILINX_PROJECT_NAME).post_impl.timing.rpt
-report_utilization -hierarchical -hierarchical_percentage                 -file reports/$::env(XILINX_PROJECT_NAME).post_impl.utilization.rpt
-report_timing_summary                                                     -file reports/$::env(XILINX_PROJECT_NAME).post_impl.timing_summary.rpt
+check_timing                                                              -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.check_timing.rpt
+report_timing -max_paths 100 -nworst 100 -delay_type max -sort_by slack   -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.timing_WORST_100.rpt
+report_timing -nworst 1 -delay_type max -sort_by group                    -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.timing.rpt
+report_utilization -hierarchical -hierarchical_percentage                 -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.utilization.rpt
+report_timing_summary                                                     -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.timing_summary.rpt
+
+# Print info
+puts "    \[REPORT\] prj         [current_project]
+    \[REPORT\] strategy    [get_property STRATEGY       [get_runs]]
+    \[REPORT\] status      [get_property status         [get_runs]]
+    \[REPORT\] elapsed     [get_property stats.elapsed  [get_runs]]
+    \[REPORT\] wns         [get_property stats.wns      [get_runs impl_1]]
+"
