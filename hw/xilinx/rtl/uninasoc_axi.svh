@@ -1,4 +1,5 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Description: Utility variables and macros for AXI interconnections in UninaSoC
 // Note: The main rationale behind this macro is to avoid the usage of structs and
 //       macros for the widest possible syntax compatibility.
@@ -10,10 +11,10 @@
 import uninasoc_pkg::*;
 
 // AXI4 bus parameters
-localparam int unsigned AXI_DATA_WIDTH   = 32;
-localparam int unsigned AXI_ADDR_WIDTH   = 32;
-localparam int unsigned AXI_STRB_WIDTH   = AXI_DATA_WIDTH / 8;
-localparam int unsigned AXI_ID_WIDTH     = 2;
+localparam int unsigned AXI_DATA_WIDTH   = `AXI_DATA_WIDTH;
+localparam int unsigned AXI_ADDR_WIDTH   = `AXI_ADDR_WIDTH;
+localparam int unsigned AXI_STRB_WIDTH   = `AXI_DATA_WIDTH / 8;
+localparam int unsigned AXI_ID_WIDTH     = `AXI_ID_WIDTH;
 localparam int unsigned AXI_LEN_WIDTH    = 8;
 localparam int unsigned AXI_SIZE_WIDTH   = 3;
 localparam int unsigned AXI_BURST_WIDTH  = 2;

@@ -10,17 +10,12 @@ set coe_file no_coe_file_loaded
 set_property -dict [list CONFIG.Interface_Type {AXI4} \
                         CONFIG.AXI_Slave_Type {Memory_Slave} \
 			CONFIG.Use_AXI_ID {true} \
-                        CONFIG.AXI_ID_Width {2} \
 			CONFIG.Use_Byte_Write_Enable {TRUE} \
                         CONFIG.Memory_Type {Simple_Dual_Port_RAM} \
                         CONFIG.Byte_Size {8} \
                         CONFIG.Assume_Synchronous_Clk {true} \
-                        CONFIG.Write_Width_A {32} \
                         CONFIG.Write_Depth_A {1024} \
-                        CONFIG.Read_Width_A {32} \
                         CONFIG.Operating_Mode_A {READ_FIRST} \
-                        CONFIG.Write_Width_B {32} \
-                        CONFIG.Read_Width_B {32} \
                         CONFIG.Operating_Mode_B {READ_FIRST} \
                         CONFIG.Enable_B {Use_ENB_Pin} \
                         CONFIG.Register_PortA_Output_of_Memory_Primitives {false} \
@@ -33,3 +28,10 @@ set_property -dict [list CONFIG.Interface_Type {AXI4} \
                         CONFIG.Coe_File {$coe_file} \
                         CONFIG.Fill_Remaining_Memory_Locations {true} \
                 ] [get_ips $::env(IP_NAME)]
+
+# Use envvars out of list
+set_property CONFIG.Write_Width_A $::env(AXI_DATA_WIDTH) [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_A  $::env(AXI_DATA_WIDTH) [get_ips $::env(IP_NAME)]
+set_property CONFIG.Write_Width_B $::env(AXI_DATA_WIDTH) [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_B  $::env(AXI_DATA_WIDTH) [get_ips $::env(IP_NAME)]
+set_property CONFIG.AXI_ID_Width  $::env(AXI_ID_WIDTH)   [get_ips $::env(IP_NAME)]

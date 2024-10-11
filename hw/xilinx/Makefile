@@ -3,6 +3,9 @@ ifndef XILINX_ROOT
 $(error Setup script settings.sh has not been sourced, aborting)
 endif
 
+# Include AXI configuration
+include axi_config.mk
+
 # Basic variables for Vivado
 XILINX_VIVADO_CMD ?= vivado
 XILINX_VIVADO_MODE ?= batch
@@ -15,8 +18,8 @@ XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_PROJECT_BUILD_DIR}/reports
 # Parsing from directory ips/
 
 XILINX_COMMON_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/common/xlnx_*)
-XILINX_HPC_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/hpc/xlnx_*) 
-XILINX_EMBEDDED_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/embedded/xlnx_*) 
+XILINX_HPC_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/hpc/xlnx_*)
+XILINX_EMBEDDED_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/embedded/xlnx_*)
 
 XILINX_IP_LIST = ${XILINX_COMMON_IP_LIST}
 
@@ -31,11 +34,11 @@ XILINX_IP_LIST_XCI = ${XILINX_COMMON_IP_LIST_XCI}
 ifeq (${SOC_CONFIG}, hpc)
 	XILINX_IP_LIST += ${XILINX_HPC_IP_LIST}
 	XILINX_IP_LIST_XCI += ${XILINX_HPC_IP_LIST_XCI}
-else ifeq (${SOC_CONFIG}, embedded) 
+else ifeq (${SOC_CONFIG}, embedded)
 	XILINX_IP_LIST += ${XILINX_EMBEDDED_IP_LIST}
 	XILINX_IP_LIST_XCI += ${XILINX_EMBEDDED_IP_LIST_XCI}
 else
-$(error "Unsupported config ${SOC_CONFIG}") 
+$(error "Unsupported config ${SOC_CONFIG}")
 endif
 
 # Runtime optimized run strategies
@@ -46,6 +49,9 @@ IMPL_STRATEGY ?= Flow_RuntimeOptimized
 # XILINX_PROJECT_LTX=${XILINX_PROJECT_LTX}
 XILINX_BITSTREAM ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.bit
 XILINX_VIVADO_ENV ?=              					\
+	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
+	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
+	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
     XILINX_PART_NUMBER=${XILINX_PART_NUMBER}   		\
@@ -132,12 +138,12 @@ ${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
 ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
-bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom 
+bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom
 base_address ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
 
 # Load the binary into SoC memory (BRAM for now)
-# Call the specific load script based on the SOC_CONFIG (HPC or EMBEDDED) 
+# Call the specific load script based on the SOC_CONFIG (HPC or EMBEDDED)
 load_binary: load_binary_${SOC_CONFIG}
 
 # Write the binary to BRAM through jtag2axi
