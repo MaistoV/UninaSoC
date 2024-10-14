@@ -70,7 +70,7 @@ if { "$::env(SOC_CONFIG)" == "hpc" } {
 }
 
 # Import IPS
-read_ip $::env(XILINX_IP_LIST_XCI)
+read_ip $::env(IP_LIST_XCI)
 
 ######################
 # Project properties #

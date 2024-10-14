@@ -116,8 +116,8 @@ bitstream: ips
 	${XILINX_VIVADO} -source ${XILINX_ROOT}/synth/tcl/build_bitstream.tcl
 
 # Generate ips
-XILINX_IP_NAMES ?= $(addsuffix .xci, ${XILINX_IP_LIST})
-ips: ${XILINX_IP_NAMES}
+IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
+ips: ${IP_NAMES}
 
 # Build single IP
 %.xci: IP_NAME=$*
