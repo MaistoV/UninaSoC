@@ -12,7 +12,7 @@
 ########################
 # Create new project (no force)
 create_project $::env(XILINX_PROJECT_NAME) . -part $::env(XILINX_PART_NUMBER) -force
-set_property board_part $::env(XILINX_BOARD_PART) [current_project]
+#set_property board_part $::env(XILINX_BOARD_PART) [current_project]
 
 #######################
 # Suppress Message(s) #
@@ -58,6 +58,16 @@ source $::env(XILINX_SYNTH_TCL_ROOT)/add_xilinx_sources.tcl
 # Load constraints
 import_files -fileset constrs_1 -norecurse $::env(XILINX_ROOT)/synth/constraints/$::env(XILINX_PROJECT_NAME).xdc
 import_files -fileset constrs_1 -norecurse $::env(XILINX_ROOT)/synth/constraints/$::env(BOARD).xdc
+
+# Verilog define HPC/EMBEDDED
+if { "$::env(SOC_CONFIG)" == "hpc" } {
+    set_property verilog_define HPC=1 [current_fileset]
+} elseif { "$::env(SOC_CONFIG)" == "embedded" } { 
+    set_property verilog_define EMBEDDED=1 [current_fileset]
+} else {
+    puts "Unsupported board $::env(SOC_CONFIG)"
+    exit 1 
+}
 
 # Import IPS
 read_ip $::env(XILINX_IP_LIST_XCI)

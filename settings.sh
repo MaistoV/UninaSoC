@@ -13,7 +13,7 @@ fi
 
 # Check if Questa/ModelSim is in path
 if ! command -v vsim &> /dev/null; then
-    echo "[Error] Can't find vsim in PATH!" >&2 ;
+    echo "[Warning] Can't find vsim in PATH!" >&2 ;
 fi
 
 #################
@@ -44,7 +44,7 @@ export VLTSTD_INC=/usr/share/verilator/include/vltstd/
 # Xilinx project name
 export XILINX_PROJECT_NAME=uninasoc
 
-# SoC Configuration - Select the board 
+# SoC Configuration - Select the Target Device 
 # HPC      -> Alveo U250
 # EMBEDDED -> Nexys-A7
 SOC_CONFIG=$1

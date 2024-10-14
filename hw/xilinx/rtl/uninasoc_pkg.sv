@@ -14,10 +14,9 @@ package uninasoc_pkg;
     // AXI crossbar //
     //////////////////
     // Crosbar masters
-    // - RVM socket
+    // - RVM socket (instr and data)
     // - JTAG2AXI
-    // localparam int unsigned NUM_AXI_MASTERS = 2;
-    localparam int unsigned NUM_AXI_MASTERS = 1; // Just 1 for verify/jtag2axi
+    localparam int unsigned NUM_AXI_MASTERS = 3; // {socket_instr, socket_data, jtag2axi}
 
     // Crosbar slaves if EMBEDDED 
     // - GPIOs in input
