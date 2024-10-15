@@ -73,3 +73,16 @@ tbd
 
 ## Custom IPs
 TBD
+
+## In-system Debug Probing with Xilinx ILAs
+This environment supports the automatic insertion of Internal Logic Analyzer (ILA) probes, ([PG172](https://docs.amd.com/v/u/en-US/pg172-ila) ).
+
+ILA probes are enabled by default, and can be disabled by setting the envvar `XILINX_ILA=0`.
+To add probe on a net, you should mark it as `MARK_DEBUG=1` or `TRUE`, in one of the following ways:
+* Mark it in RTL with a source code specifier, e.g. `(* MARK_DEBUG = "TRUE" *) wire debug_wire;`
+* Mark it in the [hw/xilinx/synth/tcl/mark_debug_nets.tcl](hw/xilinx/synth/tcl/mark_debug_nets.tcl) script, e.g. `set_property MARK_DEBUG true [get_nets ...]`
+
+### Notes on Using ILAs
+1. Using the ILA core adds a couple of minutes to the flow to synthesize.
+2. Max 1023 nets can be probed in the current setup.
+3. Adding many probes might complicate the design and make it more difficult to build.
