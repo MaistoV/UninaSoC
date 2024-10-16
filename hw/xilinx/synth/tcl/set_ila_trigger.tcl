@@ -1,23 +1,43 @@
-E.g. imported from cheshire_fork
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Description: Set ILA triggers, control and arm
+# Note: Assuming a single ILA IP in the design
 
-#######################
-## ILA configuration ##
-#######################
-# Set triggers
-# Ara req/resp valid
-set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes {i_cheshire_soc/gen_cva6_cores[0].i_ara/acc_req_i[req_valid]} -of_objects [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]]
-set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes {i_cheshire_soc/gen_cva6_cores[0].i_ara/acc_resp_o[resp_valid]} -of_objects [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]]
-# CVA6 exception valid
-# set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes {i_cheshire_soc/gen_cva6_cores[0].i_core_cva6/commit_stage_i/exception_o[valid]} -of_objects [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]]
+##############
+# Probe file #
+##############
 
-# Debug, PC hang
-set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes {i_cheshire_soc/gen_cva6_cores[0].i_core_cva6/commit_stage_i/commit_instr_i[0][valid]} -of_objects [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]]
-set_property TRIGGER_COMPARE_VALUE eq64'hFFFF_FFFF_8000_331X [get_hw_probes {i_cheshire_soc/gen_cva6_cores[0].i_core_cva6/pc_commit} -of_objects [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]]
+# Add probe file
+puts "\[ILA\] Using probe file $::env(XILINX_PROBE_LTX)"
+set_property PROBES.FILE      $::env(XILINX_PROBE_LTX) $hw_device
+set_property FULL_PROBES.FILE $::env(XILINX_PROBE_LTX) $hw_device
+current_hw_device                                      $hw_device
 
+# Search for hw probes
+refresh_hw_device [lindex $hw_device 0]
+
+#####################
+# ILA configuration #
+#####################
+puts "\[ILA\] Setting triggers"
 
 # Set trigger control
-set_property CONTROL.TRIGGER_CONDITION OR [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]
-set_property CONTROL.TRIGGER_POSITION 4096 [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]
+set_property CONTROL.TRIGGER_MODE       BASIC_ONLY  [get_hw_ilas]
+set_property CONTROL.TRIGGER_CONDITION  OR          [get_hw_ilas]
+set_property CONTROL.TRIGGER_POSITION   4096        [get_hw_ilas]
+
+# Set triggers
+set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_arvalid -of_objects [get_hw_ilas]]
+set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_awvalid -of_objects [get_hw_ilas]]
+set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_wvalid  -of_objects [get_hw_ilas]]
+
+
+###########
+# Arm ILA #
+###########
+
+# Display (empty) waveforms -> run immediate trigger
+display_hw_ila_data [upload_hw_ila_data [get_hw_ilas]]
 
 # Arm ILA
-run_hw_ila [get_hw_ilas -of_objects [get_hw_devices $::env(XILINX_FPGA_DEVICE)] -filter {CELL_NAME=~"u_ila_0"}]
+# puts "\[ILA\] Arming ILA"
+# run_hw_ila [get_hw_ilas]
