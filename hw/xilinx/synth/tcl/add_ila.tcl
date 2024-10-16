@@ -45,6 +45,7 @@ foreach net [concat $debug_nets {""}] {
             # probe0 already exists, and does not need to be created
             if { $i != 0 } { create_debug_port ila_u probe }
             set_property port_width [llength $sig_list] [get_debug_ports ila_u/probe$i]
+            # Set all probes both as data and trigger, although it might be overkill and could be simplified for more challenging designs
             set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports ila_u/probe$i]
             connect_debug_port ila_u/probe$i [get_nets $sig_list]
             incr i
