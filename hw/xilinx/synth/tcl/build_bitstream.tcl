@@ -12,7 +12,7 @@
 ########################
 # Create new project (no force)
 create_project $::env(XILINX_PROJECT_NAME) . -part $::env(XILINX_PART_NUMBER) -force
-#set_property board_part $::env(XILINX_BOARD_PART) [current_project]
+set_property board_part $::env(XILINX_BOARD_PART) [current_project]
 
 #######################
 # Suppress Message(s) #

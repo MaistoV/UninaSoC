@@ -22,48 +22,48 @@ XILINX_EMBEDDED_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/embedde
 
 # List of the Custom IPs to build and import in the design
 # Parsing from directory ips/
-CIP_COMMON_IP_LIST 		= $(shell if ls ${XILINX_IPS_ROOT}/common/cip_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/common/cip_*; else echo ""; fi)
-CIP_HPC_IP_LIST 		= $(shell if ls ${XILINX_IPS_ROOT}/hpc/cip_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/hpc/cip_*; else echo ""; fi)
-CIP_EMBEDDED_IP_LIST 	= $(shell if ls ${XILINX_IPS_ROOT}/embedded/cip_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/embedded/cip_*; else echo ""; fi)
+CUSTOM_COMMON_IP_LIST	= $(shell if ls ${XILINX_IPS_ROOT}/common/custom_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/common/custom_*; else echo ""; fi)
+CUSTOM_HPC_IP_LIST 		= $(shell if ls ${XILINX_IPS_ROOT}/hpc/custom_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/hpc/custom_*; else echo ""; fi)
+CUSTOM_EMBEDDED_IP_LIST	= $(shell if ls ${XILINX_IPS_ROOT}/embedded/custom_* 1>/dev/null 2>&1; then basename --multiple ${XILINX_IPS_ROOT}/embedded/custom_*; else echo ""; fi)
 
 # Board-independent IP lists
 XILINX_IP_LIST	= ${XILINX_COMMON_IP_LIST}
-CIP_IP_LIST 	= ${CIP_COMMON_IP_LIST}
+CUSTOM_IP_LIST 	= ${CUSTOM_COMMON_IP_LIST}
 
 # List of IPs' xci files
 XILINX_COMMON_IP_LIST_XCI 	:= $(foreach ip,${XILINX_COMMON_IP_LIST},${XILINX_IPS_ROOT}/common/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
 XILINX_HPC_IP_LIST_XCI 		:= $(foreach ip,${XILINX_HPC_IP_LIST},${XILINX_IPS_ROOT}/hpc/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
 XILINX_EMBEDDED_IP_LIST_XCI := $(foreach ip,${XILINX_EMBEDDED_IP_LIST},${XILINX_IPS_ROOT}/embedded/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
-CIP_COMMON_IP_LIST_XCI 		:= $(foreach ip,${CIP_COMMON_IP_LIST},${XILINX_IPS_ROOT}/common/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
-CIP_HPC_IP_LIST_XCI 		:= $(foreach ip,${CIP_HPC_IP_LIST},${XILINX_IPS_ROOT}/hpc/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
-CIP_EMBEDDED_IP_LIST_XCI 	:= $(foreach ip,${CIP_EMBEDDED_IP_LIST},${XILINX_IPS_ROOT}/embedded/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+CUSTOM_COMMON_IP_LIST_XCI	:= $(foreach ip,${CUSTOM_COMMON_IP_LIST},${XILINX_IPS_ROOT}/common/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+CUSTOM_HPC_IP_LIST_XCI 		:= $(foreach ip,${CUSTOM_HPC_IP_LIST},${XILINX_IPS_ROOT}/hpc/${ip}/build/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
+CUSTOM_EMBEDDED_IP_LIST_XCI	:= $(foreach ip,${CUSTOM_EMBEDDED_IP_LIST},${XILINX_IPS_ROOT}/embedded/${ip}/build/${ip}/build/${ip}_prj.srcs/sources_1/ip/${ip}/${ip}.xci)
 
 # Board-independent XCI lists
 XILINX_IP_LIST_XCI 	= ${XILINX_COMMON_IP_LIST_XCI}
-CIP_IP_LIST_XCI		= ${CIP_COMMON_IP_LIST_XCI}
+CUSTOM_IP_LIST_XCI	= ${CUSTOM_COMMON_IP_LIST_XCI}
 
 # Selecting flow: HPC or EMBEDDED
 ifeq (${SOC_CONFIG}, hpc)
 	XILINX_IP_LIST 		+= ${XILINX_HPC_IP_LIST}
 	XILINX_IP_LIST_XCI 	+= ${XILINX_HPC_IP_LIST_XCI}
-	CIP_IP_LIST 		+= ${CIP_HPC_IP_LIST}
-	CIP_IP_LIST_XCI 	+= ${CIP_HPC_IP_LIST_XCI}
+	CUSTOM_IP_LIST 		+= ${CUSTOM_HPC_IP_LIST}
+	CUSTOM_IP_LIST_XCI 	+= ${CUSTOM_HPC_IP_LIST_XCI}
 else ifeq (${SOC_CONFIG}, embedded) 
 	XILINX_IP_LIST 		+= ${XILINX_EMBEDDED_IP_LIST}
 	XILINX_IP_LIST_XCI 	+= ${XILINX_EMBEDDED_IP_LIST_XCI}
-	CIP_IP_LIST 		+= ${CIP_EMBEDDED_IP_LIST}
-	CIP_IP_LIST_XCI 	+= ${CIP_EMBEDDED_IP_LIST_XCI}
+	CUSTOM_IP_LIST 		+= ${CUSTOM_EMBEDDED_IP_LIST}
+	CUSTOM_IP_LIST_XCI 	+= ${CUSTOM_EMBEDDED_IP_LIST_XCI}
 else
 $(error "Unsupported config ${SOC_CONFIG}") 
 endif
 
 # Concatenate/create the final IP lists
-IP_LIST 	= ${XILINX_IP_LIST} ${CIP_IP_LIST}
-IP_LIST_XCI = ${XILINX_IP_LIST_XCI} ${CIP_IP_LIST_XCI}
+IP_LIST 	= ${XILINX_IP_LIST} ${CUSTOM_IP_LIST}
+IP_LIST_XCI = ${XILINX_IP_LIST_XCI} ${CUSTOM_IP_LIST_XCI}
 
 # Runtime optimized run strategies
-SYNTH_STRATEGY ?= Flow_RuntimeOptimized
-IMPL_STRATEGY ?= Flow_RuntimeOptimized
+SYNTH_STRATEGY 	?= Flow_RuntimeOptimized
+IMPL_STRATEGY 	?= Flow_RuntimeOptimized
 
 # Full environment variables list for Vivado
 # XILINX_PROJECT_LTX=${XILINX_PROJECT_LTX}
@@ -162,8 +162,8 @@ ${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
 ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
-#bin_path ?= ${SW_ROOT}/src/PoC_jtag2axi/blink.bin # TODO: update this for bootrom 
-bin_path ?= /home/stefano/Desktop/PhD/Projects/UninaSoC/sw/template/bin/filename.bin
+
+bin_path ?= ${SW_ROOT}/template/bin/filename.bin
 base_address ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
 

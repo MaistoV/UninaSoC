@@ -26,7 +26,7 @@ export CONFIG_ROOT=${ROOT_DIR}/config
 ############
 export HW_ROOT=${ROOT_DIR}/hw
 export HW_RTL_ROOT=${ROOT_DIR}/hw/rtl
-# TBD
+export HW_UNITS_ROOT=${ROOT_DIR}/hw/units
 
 ###################
 # Unit Simulation #
@@ -58,7 +58,7 @@ if [[ ${SOC_CONFIG} == "hpc" ]]; then
 else
     # Nexsys A7
     export XILINX_PART_NUMBER=xc7a100tcsg324-1
-    export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.2
+    export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.0
     export SOC_CONFIG=embedded
     export XILINX_HW_DEVICE=xc7a100t_0
     export BOARD=Nexys-A7-100T-Master

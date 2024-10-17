@@ -1,4 +1,6 @@
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+// Author: Vincenzo Maisto      <vincenzo.maisto2@unina.it>
+// Author: Stefano Mercogliano  <stefano.mercogliano@unina.it>
+// Author: Manuel Maddaluno     <manuel.maddaluno@unina.it>
 // Description: Utility variables and macros for AXI interconnections in UninaSoC
 // Note: The main rationale behind this macro is to avoid the usage of structs and
 //       macros for the widest possible syntax compatibility.

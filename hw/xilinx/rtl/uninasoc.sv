@@ -42,7 +42,6 @@ import uninasoc_pkg::*;
 `endif
 
 // Module definition
-// Module definition
 module uninasoc (
 
     `ifdef EMBEDDED

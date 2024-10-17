@@ -32,4 +32,11 @@ package uninasoc_pkg;
         localparam int unsigned NUM_AXI_SLAVES = 2;
     `endif
 
+    //////////////////////////
+    // Supported Processors //
+    //////////////////////////
+
+    localparam int unsigned CORE_PICORV32 = 0;
+    localparam int unsigned CORE_CV32E40P = 1;
+
 endpackage : uninasoc_pkg
