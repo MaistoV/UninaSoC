@@ -65,13 +65,19 @@ IP_LIST_XCI = ${XILINX_IP_LIST_XCI} ${CUSTOM_IP_LIST_XCI}
 SYNTH_STRATEGY 	?= Flow_RuntimeOptimized
 IMPL_STRATEGY 	?= Flow_RuntimeOptimized
 
+# Implementation artifacts
+XILINX_BITSTREAM   ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.bit
+XILINX_PROBE_LTX ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.ltx
+
+# Whether to use ILA probes (0|1)
+XILINX_ILA ?= 1
+
 # Full environment variables list for Vivado
-# XILINX_PROJECT_LTX=${XILINX_PROJECT_LTX}
-XILINX_BITSTREAM ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.bit
 XILINX_VIVADO_ENV ?=              					\
 	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
 	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
 	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
+	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
     XILINX_PART_NUMBER=${XILINX_PART_NUMBER}   		\
@@ -82,7 +88,10 @@ XILINX_VIVADO_ENV ?=              					\
     XILINX_HW_SERVER_PORT=${XILINX_HW_SERVER_PORT}  \
     XILINX_FPGA_DEVICE=${XILINX_FPGA_DEVICE}		\
     XILINX_BITSTREAM=${XILINX_BITSTREAM}   			\
+
 	IP_LIST_XCI="${IP_LIST_XCI}" 					\
+	XILINX_PROBE_LTX=${XILINX_PROBE_LTX}		\
+
 	XILINX_ROOT=${XILINX_ROOT}						\
     QUESTA_PATH=${QUESTA_PATH}   					\
     GCC_PATH=${GCC_PATH}   							\
@@ -139,11 +148,16 @@ ips: ${IP_NAMES}
 start_hw_server:
 	hw_server -d -L- -stcp::${XILINX_HW_SERVER_PORT}
 
-# Open Vivado hardware manager
+# Open Vivado hardware manager in tcl mode
 open_hw_manager:
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode tcl \
 		-source ${XILINX_SYNTH_TCL_ROOT}/$@.tcl
-# -source ${XILINX_SYNTH_TCL_ROOT}/set_ila_trigger.tcl
+
+# Open ILA dashboard GUI
+open_ila:
+		${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode gui \
+		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
+		-source ${XILINX_SYNTH_TCL_ROOT}/set_ila_trigger.tcl
 
 program_bitstream:
 	${XILINX_VIVADO} \
