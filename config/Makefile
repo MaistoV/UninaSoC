@@ -6,14 +6,14 @@ all: config_axi config_ld config_xilinx
 
 OUTPUT_TCL_FILE ?= ${XILINX_ROOT}/ips/common/xlnx_axi_crossbar/config.tcl
 config_axi:
-	${PYTHON} ${CONFIG_ROOT}/create_crossbar_config.py \
+	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/create_crossbar_config.py \
 		${CONFIG_CSV} \
 		${OUTPUT_TCL_FILE}
 	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE}"
 
 OUTPUT_LD_FILE ?= ${SW_ROOT}/linker/UninaSoC.ld
 config_ld:
-	${PYTHON} ${CONFIG_ROOT}/create_linker_script.py \
+	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/create_linker_script.py \
 		${CONFIG_CSV} \
 		${OUTPUT_LD_FILE}
 	@echo "[CONFIG] Output file is at ${OUTPUT_LD_FILE}"

@@ -1,0 +1,3 @@
+# Downloaded RTL files
+custom_picorv32/rtl/*
+custom_cv32e40p/rtl/*

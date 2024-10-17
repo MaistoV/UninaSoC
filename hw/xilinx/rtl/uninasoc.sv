@@ -33,6 +33,7 @@
 // Import packages
 import uninasoc_pkg::*;
 
+
 // Import headers
 `include "uninasoc_axi.svh"
 
@@ -78,19 +79,16 @@ module uninasoc (
     logic sys_resetn;
     // clkwiz -> all
     logic soc_clk;
-    // vio -> all
-    logic vio_reset_n;
+
+    // VIO Signalss
+    logic         vio_probe_in0, vio_probe_in1, vio_probe_in2, vio_probe_in3;
+    logic [31:0]  vio_probe_in4, vio_probe_in5, vio_probe_in6, vio_probe_in7;
+    logic         vio_probe_out0, vio_probe_out1, vio_probe_out2, vio_probe_out3;
+    logic [31:0]  vio_probe_out4, vio_probe_out5, vio_probe_out6, vio_probe_out7;
 
     ///////////
     // Wires //
     ///////////
-    // TODO: add RVM socket
-    // vio -> rvm_socket
-    // logic [AXI_ADDR_WIDTH -1 : 0 ] vio_bootaddr;
-    // logic [NUM_IRQ        -1 : 0 ] vio_irq;
-    // uart -> rvm_socket
-    // logic uart_interrupt;
-
 
     //////////////////////////
     // AXI interconnections //
@@ -100,12 +98,12 @@ module uninasoc (
     // sys_master -> crossbar
     `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
-    // `DECLARE_AXI_BUS(rvm_socket, AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_instr, AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_data, AXI_DATA_WIDTH);
 
     // AXI slaves
     // xbar -> main memory
     `DECLARE_AXI_BUS(xbar_to_main_mem, AXI_DATA_WIDTH);
-
     // xbar -> GPIO out
     `ifdef EMBEDDED
         `DECLARE_AXI_BUS(xbar_to_gpio_out, AXI_DATA_WIDTH);
@@ -122,16 +120,13 @@ module uninasoc (
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                       array_name,       bus 0
-    `CONCAT_AXI_MASTERS_ARRAY1(xbar_masters, sys_master_to_xbar);
-    // TODO: add RVM socket
-    // //                       array_name,      bus 1,      bus 0
-    // `CONCAT_AXI_BUS_ARRAY2(xbar_masters, rvm_socket, sys_master_to_xbar);
+    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar)
 
     // Concatenate AXI slave buses
     `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus 1,           bus 0
-
+    
     `ifdef EMBEDDED
         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
     `elsif HPC
@@ -145,19 +140,53 @@ module uninasoc (
     // `CONCAT_AXI_BUS_ARRAY4(xbar_slaves, xbar_to_uart, xbar_to_gpio_in, xbar_to_gpio_out, xbar_to_main_mem);
 
 
+    ///////////////////////
+    // Local assignments //
+    ///////////////////////
+
     /////////////
     // Modules //
     /////////////
 
-    // // Virtual I/O
-    // xlnx_vio vio_inst (
-    //   .clk        ( soc_clk      ),
-    //   .probe_out0 ( vio_reset_n  ),
-    //   .probe_out1 ( vio_bootaddr ),
-    //   .probe_out2 ( vio_irq[0]    ),
-    //   .probe_out3 ( vio_irq[1]    ),
-    //   .probe_out3 ( vio_irq[2]    )
-    // );
+    // Virtual I/O
+
+    // The default VIO instance has 8 Input ports and 8 Output Ports
+    // VIO Is clocked by the sys_master
+    // Ports 0 to 3 are 1 bit wide
+    // Ports 4 to 7 are 32 bits wide
+    // It is directly connected to the Socket
+
+    logic vio_resetn;
+
+    assign vio_probe_in0 = sys_resetn;
+    assign vio_probe_in1 = '0;
+    assign vio_probe_in2 = '0;
+    assign vio_probe_in3 = '0;
+    assign vio_probe_in4 = '0;
+    assign vio_probe_in5 = '0;
+    assign vio_probe_in6 = '0;
+    assign vio_probe_in7 = '0;
+    assign vio_resetn = vio_probe_out0;
+
+    xlnx_vio vio_inst (
+      .clk        ( soc_clk         ),
+      .probe_out0 ( vio_probe_out0  ),
+      .probe_out1 ( vio_probe_out1  ),
+      .probe_out2 ( vio_probe_out2  ),
+      .probe_out3 ( vio_probe_out3  ),
+      .probe_out4 ( vio_probe_out4  ),
+      .probe_out5 ( vio_probe_out5  ),
+      .probe_out6 ( vio_probe_out6  ),
+      .probe_out7 ( vio_probe_out7  ),
+      .probe_in0  ( vio_probe_in0   ),
+      .probe_in1  ( vio_probe_in1   ),
+      .probe_in2  ( vio_probe_in2   ),
+      .probe_in3  ( vio_probe_in3   ),
+      .probe_in4  ( vio_probe_in4   ),
+      .probe_in5  ( vio_probe_in5   ),
+      .probe_in6  ( vio_probe_in6   ),
+      .probe_in7  ( vio_probe_in7   )
+    );
 
     // Axi Crossbar
     xlnx_axi_crossbar axi_xbar_u (
@@ -241,7 +270,7 @@ module uninasoc (
         .m_axi_rready   ( xbar_slaves_axi_rready    )  // output wire [1 : 0] m_axi_rready
     );
 
-
+    
     /////////////////
     // AXI masters //
     /////////////////
@@ -258,71 +287,147 @@ module uninasoc (
 
             // PCI interface
             .pci_exp_rxn_i(pci_exp_rxn_i),
-            .pci_exp_rxp_i(pci_exp_rxp_i),
+            .pci_exp_rxp_i(pci_exp_rxp_i), 
             .pci_exp_txn_o(pci_exp_txn_o),
-            .pci_exp_txp_o(pci_exp_txp_o),
+            .pci_exp_txp_o(pci_exp_txp_o), 
         `endif
-
+        
 
         // Output clock
         .soc_clk_o(soc_clk),
         .sys_resetn_o(sys_resetn),
 
         // AXI Master
-        .m_axi_awid     ( sys_master_to_xbar_axi_awid    ),
-        .m_axi_awaddr   ( sys_master_to_xbar_axi_awaddr  ),
-        .m_axi_awlen    ( sys_master_to_xbar_axi_awlen   ),
-        .m_axi_awsize   ( sys_master_to_xbar_axi_awsize  ),
-        .m_axi_awburst  ( sys_master_to_xbar_axi_awburst ),
-        .m_axi_awlock   ( sys_master_to_xbar_axi_awlock  ),
-        .m_axi_awcache  ( sys_master_to_xbar_axi_awcache ),
-        .m_axi_awprot   ( sys_master_to_xbar_axi_awprot  ),
-        .m_axi_awqos    ( sys_master_to_xbar_axi_awqos   ),
-        .m_axi_awvalid  ( sys_master_to_xbar_axi_awvalid ),
-        .m_axi_awready  ( sys_master_to_xbar_axi_awready ),
-        .m_axi_wdata    ( sys_master_to_xbar_axi_wdata   ),
-        .m_axi_wstrb    ( sys_master_to_xbar_axi_wstrb   ),
-        .m_axi_wlast    ( sys_master_to_xbar_axi_wlast   ),
-        .m_axi_wvalid   ( sys_master_to_xbar_axi_wvalid  ),
-        .m_axi_wready   ( sys_master_to_xbar_axi_wready  ),
-        .m_axi_bid      ( sys_master_to_xbar_axi_bid     ),
-        .m_axi_bresp    ( sys_master_to_xbar_axi_bresp   ),
-        .m_axi_bvalid   ( sys_master_to_xbar_axi_bvalid  ),
-        .m_axi_bready   ( sys_master_to_xbar_axi_bready  ),
-        .m_axi_arid     ( sys_master_to_xbar_axi_arid    ),
-        .m_axi_araddr   ( sys_master_to_xbar_axi_araddr  ),
-        .m_axi_arlen    ( sys_master_to_xbar_axi_arlen   ),
-        .m_axi_arsize   ( sys_master_to_xbar_axi_arsize  ),
-        .m_axi_arburst  ( sys_master_to_xbar_axi_arburst ),
-        .m_axi_arlock   ( sys_master_to_xbar_axi_arlock  ),
-        .m_axi_arcache  ( sys_master_to_xbar_axi_arcache ),
-        .m_axi_arprot   ( sys_master_to_xbar_axi_arprot  ),
-        .m_axi_arqos    ( sys_master_to_xbar_axi_arqos   ),
-        .m_axi_arvalid  ( sys_master_to_xbar_axi_arvalid ),
-        .m_axi_arready  ( sys_master_to_xbar_axi_arready ),
-        .m_axi_rid      ( sys_master_to_xbar_axi_rid     ),
-        .m_axi_rdata    ( sys_master_to_xbar_axi_rdata   ),
-        .m_axi_rresp    ( sys_master_to_xbar_axi_rresp   ),
-        .m_axi_rlast    ( sys_master_to_xbar_axi_rlast   ),
-        .m_axi_rvalid   ( sys_master_to_xbar_axi_rvalid  ),
+        .m_axi_awid     ( sys_master_to_xbar_axi_awid    ), 
+        .m_axi_awaddr   ( sys_master_to_xbar_axi_awaddr  ), 
+        .m_axi_awlen    ( sys_master_to_xbar_axi_awlen   ), 
+        .m_axi_awsize   ( sys_master_to_xbar_axi_awsize  ), 
+        .m_axi_awburst  ( sys_master_to_xbar_axi_awburst ), 
+        .m_axi_awlock   ( sys_master_to_xbar_axi_awlock  ), 
+        .m_axi_awcache  ( sys_master_to_xbar_axi_awcache ), 
+        .m_axi_awprot   ( sys_master_to_xbar_axi_awprot  ), 
+        .m_axi_awqos    ( sys_master_to_xbar_axi_awqos   ), 
+        .m_axi_awvalid  ( sys_master_to_xbar_axi_awvalid ), 
+        .m_axi_awready  ( sys_master_to_xbar_axi_awready ), 
+        .m_axi_awregion ( sys_master_to_xbar_axi_awregion ), 
+        .m_axi_wdata    ( sys_master_to_xbar_axi_wdata   ), 
+        .m_axi_wstrb    ( sys_master_to_xbar_axi_wstrb   ), 
+        .m_axi_wlast    ( sys_master_to_xbar_axi_wlast   ), 
+        .m_axi_wvalid   ( sys_master_to_xbar_axi_wvalid  ), 
+        .m_axi_wready   ( sys_master_to_xbar_axi_wready  ), 
+        .m_axi_bid      ( sys_master_to_xbar_axi_bid     ), 
+        .m_axi_bresp    ( sys_master_to_xbar_axi_bresp   ), 
+        .m_axi_bvalid   ( sys_master_to_xbar_axi_bvalid  ), 
+        .m_axi_bready   ( sys_master_to_xbar_axi_bready  ), 
+        .m_axi_arid     ( sys_master_to_xbar_axi_arid    ), 
+        .m_axi_araddr   ( sys_master_to_xbar_axi_araddr  ), 
+        .m_axi_arlen    ( sys_master_to_xbar_axi_arlen   ), 
+        .m_axi_arsize   ( sys_master_to_xbar_axi_arsize  ), 
+        .m_axi_arburst  ( sys_master_to_xbar_axi_arburst ), 
+        .m_axi_arlock   ( sys_master_to_xbar_axi_arlock  ), 
+        .m_axi_arcache  ( sys_master_to_xbar_axi_arcache ), 
+        .m_axi_arprot   ( sys_master_to_xbar_axi_arprot  ), 
+        .m_axi_arqos    ( sys_master_to_xbar_axi_arqos   ), 
+        .m_axi_arvalid  ( sys_master_to_xbar_axi_arvalid ), 
+        .m_axi_arready  ( sys_master_to_xbar_axi_arready ), 
+        .m_axi_arregion ( sys_master_to_xbar_axi_arregion ), 
+        .m_axi_rid      ( sys_master_to_xbar_axi_rid     ), 
+        .m_axi_rdata    ( sys_master_to_xbar_axi_rdata   ), 
+        .m_axi_rresp    ( sys_master_to_xbar_axi_rresp   ), 
+        .m_axi_rlast    ( sys_master_to_xbar_axi_rlast   ), 
+        .m_axi_rvalid   ( sys_master_to_xbar_axi_rvalid  ), 
         .m_axi_rready   ( sys_master_to_xbar_axi_rready  )
     );
 
+    // RVM Socket
+    rvm_socket rvm_socket_u (
+        .clk_i          ( soc_clk    ),
+        .rst_ni         ( vio_resetn ), //( sys_resetn ),
+        .bootaddr_i     ( '0         ),
+        .irq_i          ( '0         ),
 
+        // Instruction AXI Port
+        .rvm_socket_instr_axi_awid,
+        .rvm_socket_instr_axi_awaddr,
+        .rvm_socket_instr_axi_awlen,
+        .rvm_socket_instr_axi_awsize,
+        .rvm_socket_instr_axi_awburst,
+        .rvm_socket_instr_axi_awlock,
+        .rvm_socket_instr_axi_awcache,
+        .rvm_socket_instr_axi_awprot,
+        .rvm_socket_instr_axi_awqos,
+        .rvm_socket_instr_axi_awvalid,
+        .rvm_socket_instr_axi_awready,
+        .rvm_socket_instr_axi_awregion,
+        .rvm_socket_instr_axi_wdata,
+        .rvm_socket_instr_axi_wstrb,
+        .rvm_socket_instr_axi_wlast,
+        .rvm_socket_instr_axi_wvalid,
+        .rvm_socket_instr_axi_wready,
+        .rvm_socket_instr_axi_bid ,
+        .rvm_socket_instr_axi_bresp,
+        .rvm_socket_instr_axi_bvalid,
+        .rvm_socket_instr_axi_bready,
+        .rvm_socket_instr_axi_arid,
+        .rvm_socket_instr_axi_araddr,
+        .rvm_socket_instr_axi_arlen,
+        .rvm_socket_instr_axi_arsize,
+        .rvm_socket_instr_axi_arburst,
+        .rvm_socket_instr_axi_arlock,
+        .rvm_socket_instr_axi_arcache,
+        .rvm_socket_instr_axi_arprot,
+        .rvm_socket_instr_axi_arqos,
+        .rvm_socket_instr_axi_arvalid,
+        .rvm_socket_instr_axi_arready,
+        .rvm_socket_instr_axi_arregion,
+        .rvm_socket_instr_axi_rid,
+        .rvm_socket_instr_axi_rdata,
+        .rvm_socket_instr_axi_rresp,
+        .rvm_socket_instr_axi_rlast,
+        .rvm_socket_instr_axi_rvalid,
+        .rvm_socket_instr_axi_rready,
 
-    // // RVM Socket
-    // rvm_socket # (
-    //     .DATA_WIDTH ( AXI_DATA_WIDTH ),
-    //     .ADDR_WIDTH ( AXI_ADDR_WIDTH ),
-    //     .NUM_IRQ    ( NUM_IRQ        )
-    // ) rvm_socket_inst (
-    //     .clock_i        ( soc_clk      ),
-    //     .reset_ni       ( vio_reset_n  ),
-    //     .boot_address_i ( vio_bootaddr ),
-    //     .irq_i          ( vio_irq      )
-    //     .axi_master
-    //     .tbd()
-    // );
+        // Data AXI Port
+        .rvm_socket_data_axi_awid,
+        .rvm_socket_data_axi_awaddr,
+        .rvm_socket_data_axi_awlen,
+        .rvm_socket_data_axi_awsize,
+        .rvm_socket_data_axi_awburst,
+        .rvm_socket_data_axi_awlock,
+        .rvm_socket_data_axi_awcache,
+        .rvm_socket_data_axi_awprot,
+        .rvm_socket_data_axi_awqos,
+        .rvm_socket_data_axi_awvalid,
+        .rvm_socket_data_axi_awready,
+        .rvm_socket_data_axi_awregion,
+        .rvm_socket_data_axi_wdata,
+        .rvm_socket_data_axi_wstrb,
+        .rvm_socket_data_axi_wlast,
+        .rvm_socket_data_axi_wvalid,
+        .rvm_socket_data_axi_wready,
+        .rvm_socket_data_axi_bid ,
+        .rvm_socket_data_axi_bresp,
+        .rvm_socket_data_axi_bvalid,
+        .rvm_socket_data_axi_bready,
+        .rvm_socket_data_axi_arid,
+        .rvm_socket_data_axi_araddr,
+        .rvm_socket_data_axi_arlen,
+        .rvm_socket_data_axi_arsize,
+        .rvm_socket_data_axi_arburst,
+        .rvm_socket_data_axi_arlock,
+        .rvm_socket_data_axi_arcache,
+        .rvm_socket_data_axi_arprot,
+        .rvm_socket_data_axi_arqos,
+        .rvm_socket_data_axi_arvalid,
+        .rvm_socket_data_axi_arready,
+        .rvm_socket_data_axi_arregion,
+        .rvm_socket_data_axi_rid,
+        .rvm_socket_data_axi_rdata,
+        .rvm_socket_data_axi_rresp,
+        .rvm_socket_data_axi_rlast,
+        .rvm_socket_data_axi_rvalid,
+        .rvm_socket_data_axi_rready
+    );
 
     ////////////////
     // AXI slaves //
@@ -476,7 +581,7 @@ module uninasoc (
         // for ( genvar i = 0; i < NUM_GPIO_IN; i++ ) begin
         //     // axi4_to_axilite -> gpio_in
         //     `DECLARE_AXILITE_BUS(gpio_in);
-
+        
         //     // AXI4 to AXI4-Lite protocol converter
         //     xlnx_axi4_to_axilite_converter axi4_to_axilite_inst (
         //         .aclk           ( soc_clk                      ), // input wire s_axi_aclk
@@ -542,7 +647,7 @@ module uninasoc (
         //         .m_axi_rvalid   ( gpio_in_axilite_rvalid       ), // input wire m_axi_rvalid
         //         .m_axi_rready   ( gpio_in_axilite_rready       )  // output wire m_axi_rready
         //     );
-
+        
         //     axi_gpio_in gpio_in_inst (
         //         .s_axi_aclk     ( soc_clk                      ), // input wire s_axi_aclk
         //         .s_axi_aresetn  ( sys_resetn                   ), // input wire s_axi_aresetn

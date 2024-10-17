@@ -1,0 +1,259 @@
+commit a502fe5902ff7400dce2880228d591b9358dadb0
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Wed Oct 16 15:28:34 2024 +0200
+
+    [feature/ila_flow] Extend flow for ILA probes (#6)
+    
+    * [Flow][xilinx] Control ILA instantiation with envvar XILINX_ILA=(0|1)
+    * [xilinx] Add TCL script automatic ILA instantiation (add_ila)
+    * [xilinx] Fix TCL script for marking nets in the post-synthesis netlist (mark_debug_nets)
+    * [xilinx] Add open_ila Makefile target
+    * [xilinx] Add handling of probe file (.ltx)
+    * [Refactoring][xilinx] Minor refactoring on TCL build script for reports
+    * [Doc][xilinx] Update Xilinx doc
+
+commit b854e1bf615ab8ff7f17c25ea14ed8a4fbee3bb3
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri Oct 11 13:39:53 2024 +0200
+
+    [Config][xilinx] Extend config flow for Xilinx flow
+    
+    * Add axi_config.mk file to hold AXI configurations
+    
+    * Propagate configs in environment and Verilog macros
+    
+    * Update IPs' config.tcl and RTL sources
+    
+    * Update TCL build script
+    
+    * Re-organize config/ folder
+
+commit 970f87d5769aa1e1a03246df92dbb6cb49327e6b
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Thu Oct 10 15:16:58 2024 +0200
+
+    [XDMA] Refactor sys_master.sv
+    
+    * Support AXI_DATA_WIDTH=64 by conditionally instantiating data-width converter
+    
+    * Rename data-width converter for increased clarity on I/O widths
+
+commit c0354095024b1d827db88801eb2fefbf2a6cb508
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Thu Oct 10 13:37:19 2024 +0200
+
+    [Doc][xilinx] Refine and re-organize documentation for Xilinx flow
+    
+    * Also other minor edits to main doc for project status
+
+commit 822db8dd8c4126b2893d1d0ecb589ae34576cfbf
+Author: Gr4npasso <stefanomercogliano@gmail.com>
+Date:   Thu Oct 10 09:13:16 2024 +0200
+
+    Update instances name in uninasoc.sv
+
+commit 57f31fe56ef1be336cced85a265ad9bb0954ee4b
+Author: Manuel Maddaluno <manuelmaddaluno5@gmail.com>
+Date:   Wed Oct 9 17:17:38 2024 +0200
+
+    [feature/hpc/xdma_integration] Merging PR: Introduce HPC SoC configuration and XDMA IP
+    
+    * [Flow] Introduce SoC configuration: HPC and EMBEDDED
+    * [xilinx] Split IPs in common, hpc and embedded
+    * [xilinx] Add wrapper module sys_master for XDMA and JTAG2AXI
+    * [xilinx] Extend uninasoc_axi.sv with port definition
+    * [xilinx] Add uninasoc_pcie.sv for PCIe-specific macros
+    * [XDMA] Include XDMA IP
+    * [XDMA] Support binary loading with XDMA
+    * [Doc] Update doc for Alveo installation
+    * NOTE: this PR has a minor workaround for the available number of AXI masters, i.e. axi crossbar does not support just one master (J2A or XDMA) and one slave (BRAM), therefore we just added a second slave BRAM memory generator for now.
+
+commit 5b45e59a9ef29fe084a5023faaf50020247e6bd6
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Thu Oct 3 19:18:46 2024 +0200
+
+    [xilinx][Doc] Improve README.md documentation
+
+commit 4654b35e2308f4c782b356ebcef889f14141e65d
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Thu Oct 3 15:40:50 2024 +0200
+
+    [config] Rename SLAVE_NAMES in RANGE_NAMES
+
+commit f8831186927b6764a2379ec08b734f05f48d52b2
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Thu Oct 3 15:36:51 2024 +0200
+
+    [config] Update pictures
+
+commit 7e02643f9ac97d3a1731f7c26a605ae10b809576
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri Sep 27 18:25:48 2024 +0200
+
+    [verify/axi_crossbar_config] Merging branch after verification and debug
+    
+    [Config] Refactor and rename configuration scripts
+    
+    [Config] Refine documentation
+    
+    [Config] Remove old placeholder files
+    
+    [Config] Update output products
+    
+    [Flow] Minor updates
+    
+    Co-authored-by: StefT2800 <stefa.toscano@studenti.unina.it>
+
+commit 6ecf4db68aebbe238ea1e5a6a6cdc68242a9b0dd
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Sun Sep 8 17:22:03 2024 +0200
+
+    Update INSTALL_CABLE_DRIVERS.md
+
+commit 114e8c1f416ae30584935d71de15ebd6156e0b86
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Sun Sep 8 17:08:33 2024 +0200
+
+    Create VIVADO_PATCHES.md
+
+commit 1ca0e8a8ef640ba8f0148035fca6f8420d525533
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Sat Sep 7 18:46:56 2024 +0200
+
+    [verify/jtag2axi] Merging branch after verification and debug
+    
+    * [FLOW] Add hw_server launch and connection
+    
+    * [FLOW] Add note on Linux cable drivers
+    
+    * [FLOW] Finalize build and program flow
+    
+    * [AXI] Split RTL AXI declaration in dedicated RTL source
+    
+    * [JTAG2AXI] Add read-back option to jtag2axi load binary
+    
+    * [JTAG2AXI] Refactor PoC_jtag2axi, although this is meant to be removed for bootrom
+    
+    * [JTAG2AXI] Add PoC led blink tcl script
+    
+    Co-authored-by: Za-i-ra <z.abdelmajid@studenti.unina.it>
+
+commit c57b193bf3457bea2b6b2992a3ab46c359736341
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri Sep 6 11:56:56 2024 +0200
+
+    Create INSTALL_CABLE_DRIVERS.md
+
+commit bf4c9f80f85850450d86b8a77823923d7f280ced
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Wed Aug 21 13:03:50 2024 +0200
+
+    Update README.md for new student project
+
+commit 3e318bdddf1fe6fd0ff0496485c50702ef5c1c9a
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Tue Jul 9 16:02:45 2024 +0200
+
+    Update README.md for summer projects
+
+commit acc9ae36f9022c38c89b6e9c3f6a94cd46c5657f
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Mon Jun 17 16:15:47 2024 +0200
+
+    Add files via upload
+
+commit 71684656abf65a0e0bd3cc3bb990eb6b045b76e8
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Mon Jun 17 16:15:28 2024 +0200
+
+    Update README.md
+
+commit 59c395cad311e88fd0ba1a528d477177262e3391
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri May 31 19:22:05 2024 +0200
+
+    [Xilinx Sim] Update flow for Xilinx IP simulation (WIP)
+    
+    * Add placeholder script for MIG IP simulation
+    
+    * Fix typo in tcl scripts $env:: -> $::env
+    
+    * Restructure hw/xilinx folder in four main subfolders, namely ips, rtl, sim and synth
+    
+    * Update environment setup in settings.sh
+    
+    * Add gitignore for Xilinx compiled simulation libraries
+    
+    * Various doc update, not exhaustive
+
+commit b8d99fb6af8c3e6c8c28e12b047c7da4ce1468ff
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri May 31 19:12:40 2024 +0200
+
+    [Verilator] Update and cleanup verilator flow (untested)
+    
+    * Some TODOs still open
+
+commit 0a54e182f97d2b52adefbe6712e706f805c4d9fc
+Author: Gr4npasso <stefanomercogliano@gmail.com>
+Date:   Wed May 8 15:15:53 2024 +0200
+
+    Update to the general simulation structure
+
+commit b28bd9a538a9fefacf662f648ab7e31687054168
+Author: Stefano Mercogliano <stefanomercogliano@gmail.com>
+Date:   Mon Apr 29 15:36:52 2024 +0200
+
+    Update README.md
+
+commit 9a11d794e224cb48c69b171926608ce9f2c4e6e1
+Author: Gr4npasso <stefanomercogliano@gmail.com>
+Date:   Mon Apr 29 15:35:01 2024 +0200
+
+    Updating SIM
+
+commit d64c31d337920043022d36fb8d5e16c36a318a81
+Author: Vincenzo Maisto <maisto_v@libero.it>
+Date:   Mon Apr 22 14:56:12 2024 +0200
+
+    Further edits for basic flow
+    
+    * Add Xilinx BRAM generator IP
+    
+    * Add config/ dir polaceholder
+    
+    * Add template linker script placehoder
+    
+    * Add sw/ dir sources' placeholders
+
+commit 5eab13d885a591a83c488691bbb91e83b31675e7
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Sat Apr 20 21:26:07 2024 +0200
+
+    Adding RTL edits and including more Xilinx IPs
+    
+    * Also add initial draft for Xilinx-realted README.md documentation
+    
+    * Adding placeholders for other README.md
+
+commit 9413f7e4a7e0d78b063ea4a1317d98b08dc289e0
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri Apr 19 17:03:34 2024 +0200
+
+    Update README.md with comments from last meeting
+
+commit fc8afbc693a34cc87e9fa3864a79a45985ed20f0
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri Apr 5 20:08:09 2024 +0200
+
+    Initial commit outlying project flow
+    
+    * Most of the work so far has been in the xilinx/ folder
+    
+    * Most of the files and directories are still placeholders
+
+commit b8b5b3593ca08fa3d33328248f5aaa74100fbf60
+Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+Date:   Fri Apr 5 11:33:04 2024 +0200
+
+    Initial commit
