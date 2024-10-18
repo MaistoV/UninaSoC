@@ -3,6 +3,10 @@
 // Note: The main rationale behind this macro is to avoid the usage of structs and
 //       macros for the widest possible syntax compatibility.
 
+
+// Include AXI headers
+`include "uninasoc_axi.svh"
+
 `ifndef UNINASOC_MEM_SVH__
 `define UNINASOC_MEM_SVH__
 
@@ -17,10 +21,8 @@ import uninasoc_pkg::*;
 //                                                  //
 //////////////////////////////////////////////////////
 
-// MEM bus parameters
-localparam int unsigned MEM_DATA_WIDTH   = 32;
-localparam int unsigned MEM_ADDR_WIDTH   = 32;
-localparam int unsigned MEM_STRB_WIDTH   = 4;
+// MEM parameters, such as strobe, data and address width,
+// must be compatible with AXI, therefore we directly reuse them.
 
 //////////////////////////////////
 //    _____                     //
@@ -31,9 +33,9 @@ localparam int unsigned MEM_STRB_WIDTH   = 4;
 //////////////////////////////////
 
 // MEM signal types
-typedef logic [MEM_DATA_WIDTH   -1 : 0] mem_data_t;
-typedef logic [MEM_ADDR_WIDTH   -1 : 0] mem_addr_t;
-typedef logic [MEM_STRB_WIDTH   -1 : 0] mem_strb_t;
+typedef logic [AXI_DATA_WIDTH   -1 : 0] mem_data_t;
+typedef logic [AXI_DATA_WIDTH   -1 : 0] mem_addr_t;
+typedef logic [AXI_DATA_WIDTH   -1 : 0] mem_strb_t;
 typedef logic                           mem_logic_t;
 
 ////////////////////////////////////////

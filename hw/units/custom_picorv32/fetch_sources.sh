@@ -1,4 +1,7 @@
 #!/bin/bash
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+# Description:
+# This script downloads picorv32 sources and flattens them into the rtl directory
 
 RED='\033[1;31m'
 GREEN='\033[1;32m'
