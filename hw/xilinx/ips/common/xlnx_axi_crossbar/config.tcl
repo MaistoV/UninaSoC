@@ -7,7 +7,7 @@ set_property -dict [list CONFIG.PROTOCOL {AXI4} \
                          CONFIG.ADDR_WIDTH {32} \
                          CONFIG.DATA_WIDTH {32} \
                          CONFIG.ID_WIDTH {2} \
-                         CONFIG.NUM_SI {1} \
+                         CONFIG.NUM_SI {3} \
                          CONFIG.NUM_MI {2} \
                          CONFIG.ADDR_RANGES {1} \
                          CONFIG.STRATEGY {0} \
