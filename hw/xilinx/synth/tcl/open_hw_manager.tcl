@@ -17,3 +17,21 @@ set_property PARAM.FREQUENCY 15000000 [get_hw_targets $target]
 set hw_device [get_hw_devices $::env(XILINX_HW_DEVICE)]
 # Select hw device
 current_hw_device $hw_device
+
+# Set bitstream path
+set_property PROGRAM.FILE $::env(XILINX_BITSTREAM) $hw_device
+
+##############
+# Probe file #
+##############
+
+# Add probe file
+puts "\[ILA\] Using probe file $::env(XILINX_PROBE_LTX)"
+set_property PROBES.FILE      $::env(XILINX_PROBE_LTX) $hw_device
+set_property FULL_PROBES.FILE $::env(XILINX_PROBE_LTX) $hw_device
+current_hw_device                                      $hw_device
+
+###################
+# Get debug cores #
+###################
+refresh_hw_device [lindex $hw_device 0]

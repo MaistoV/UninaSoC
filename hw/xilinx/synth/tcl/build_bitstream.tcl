@@ -130,7 +130,7 @@ wait_on_run impl_1
 # Open implemented design
 open_run impl_1
 
-# Genate reports
+# Generate reports
 check_timing                                                              -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.check_timing.rpt
 report_timing -max_paths 100 -nworst 100 -delay_type max -sort_by slack   -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.timing_WORST_100.rpt
 report_timing -nworst 1 -delay_type max -sort_by group                    -file $report_dir/$::env(XILINX_PROJECT_NAME).post_impl.timing.rpt

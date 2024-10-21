@@ -4,6 +4,7 @@
 # Connects to hw_server and sets variable hw_device
 source  $::env(XILINX_SYNTH_TCL_ROOT)/open_hw_manager.tcl
 
+# Set programming files
 set_property PROGRAM.FILE $::env(XILINX_BITSTREAM) $hw_device
 program_hw_devices $hw_device
 refresh_hw_device [lindex $hw_device 0]

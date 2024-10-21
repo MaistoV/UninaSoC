@@ -2,18 +2,8 @@
 # Description: Set ILA triggers, control and arm
 # Note: Assuming a single ILA IP in the design
 
-##############
-# Probe file #
-##############
-
-# Add probe file
-puts "\[ILA\] Using probe file $::env(XILINX_PROBE_LTX)"
-set_property PROBES.FILE      $::env(XILINX_PROBE_LTX) $hw_device
-set_property FULL_PROBES.FILE $::env(XILINX_PROBE_LTX) $hw_device
-current_hw_device                                      $hw_device
-
-# Search for hw probes
-refresh_hw_device [lindex $hw_device 0]
+# Connects to hw_server and sets variable hw_device
+source  $::env(XILINX_SYNTH_TCL_ROOT)/open_hw_manager.tcl
 
 #####################
 # ILA configuration #
