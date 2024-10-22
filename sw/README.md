@@ -15,7 +15,7 @@ Clone sources:
 ``` bash
 git clone https://github.com/riscv/riscv-gnu-toolchain.git --depth 1 -b 2024.03.01
 cd riscv-gnu-toolchain
-git submodule update --init --recursive --depth 1 binutils gcc glibc dejagnu newlib gdb
+git submodule update --init --recursive --depth 1 binutils gcc glibc newlib gdb
 ```
 > NOTE: RISC-V GCC release 2024.03.01 has been verified with host GCC 11.4.0. Newer or older releases might require a different host GCC version.
 
@@ -24,12 +24,15 @@ Configure and build:
 cd riscv-gnu-toolchain
 mkdir build
 cd build
-../configure --prefix=$INSTALL_DIR/gnu-toolchain --enable-multilib
+# For RV32
+../configure --prefix=$INSTALL_DIR/gnu-toolchain32 --with-arch=rv32gc
+# For RV64
+../configure --prefix=$INSTALL_DIR/gnu-toolchain64 --enable-multilib
 # NOTE: this is going to take a while...
 make -j $(nproc)
 ```
 
-Install in `$INSTALL_DIR/gnu-toolchain`:
+Install in `--prefix`:
 ``` bash
 make install
 ```
