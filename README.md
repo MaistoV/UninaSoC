@@ -5,28 +5,32 @@ RISC-V soft-SoC extensible plaftorm for Xilinx FPGAs from University of Naples F
 # SoC Configuration Profile
 
 ```
-source settings.sh <soc_config>
+source settings.sh <soc_config> <board_config>
 ```
-The board is automatically selected based on the SoC configuration
+If no input parameter is specificed, the embedded Nexys A7-100T is selected.
 Valid Soc Configuration and boards are:
 
-| soc_config               | board            |
-|--------------------------|------------------|
-| embedded (Default)       | Nexsys A7        |
-| hpc                      | Alveo U250       |
+| soc_config               | board                    |
+|--------------------------|--------------------------|
+| embedded (Default)       | Nexsys A7-100T (Default) |
+| embedded (Default)       | Nexsys A7-50T            |
+| hpc                      | Alveo U250               |
 
 ## Supported boards:
 Embedded:
-- [Nexys A7](https://digilent.com/shop/nexys-a7-fpga-trainer-board-recommended-for-ece-curriculum/)
+- [Nexys A7-100T](https://digilent.com/reference/programmable-logic/nexys-a7/reference-manual)
+- [Nexys A7-50T](https://digilent.com/reference/programmable-logic/nexys-a7/reference-manual)
 
 HPC:
 - [Alveo U250](https://www.amd.com/en/products/accelerators/alveo/u250/a-u250-a64g-pq-g.html)
 
 Todo:
-- (TBD)[Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
-- (TBD)[ZCU102](https://www.xilinx.com/products/boards-and-kits/ek-u1-zcu102-g.html)
+- (TBD) [Zybo](https://digilent.com/reference/programmable-logic/zybo/reference-manual)
+- (TBD) [ZCU102](https://www.xilinx.com/products/boards-and-kits/ek-u1-zcu102-g.html)
+- (TBD) [Alveo U50](https://docs.amd.com/r/en-US/ug1371-u50-reconfig-accel)
+- (TBD) [Alveo U280](https://docs.amd.com/r/en-US/ug1314-alveo-u280-reconfig-accel)
 
-# Simulation flow:
+# Simulation flow (TBD):
 The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
 * Unit tests: Verilator
    * Royalty-free, good for students
@@ -52,15 +56,7 @@ W.r.t. the single tools:
 * Design address space
 	* Finalized linker script
  	* Device tree (template + generation)
-* Design interchangability of RVM cores in RVM socket, e.g.:
-```
-'RVM_CORE_WRAPPER # (
-'rvm_core_name_parameter_map
-)
-'{RVM_CORE_NAME}_inst
-'RVM_CORE_NAME_PORT_MAP
-)
-```
+
 
 # ES Project 2024
 Basic projects:
