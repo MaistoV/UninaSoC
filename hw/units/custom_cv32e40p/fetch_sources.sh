@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
-# This script downloads cv32e40p sources and flattens them into the rtl directory
+# This script downloads cv32e40p cv32e40p_v1.8.3 sources and flattens them into the rtl directory
 
 RED='\033[1;31m'
 GREEN='\033[1;32m'
@@ -11,23 +11,26 @@ NC='\033[0m' # No Color
 # Create rtl dir
 mkdir rtl
 
-# clone repo (Branch Master, Release v1.8.3 Jul 15, Commit 360d272)
+# clone repo (Release v1.8.3 Jul 15 2024)
+GIT_URL=https://github.com/openhwgroup/cv32e40p.git
+GIT_TAG=cv32e40p_v1.8.3
+CLONE_DIR=cv32e40p
 printf "${YELLOW}[FETCH_SOURCES] Cloning source repository${NC}\n"
-git clone https://github.com/openhwgroup/cv32e40p.git cv32e40p
-cd cv32e40p;  
+git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}
+cd ${CLONE_DIR};
 
 # Clone Bender
-printf "${YELLOW}[FETCH_SOURCES] Clone Bender${NC}\n"  
+printf "${YELLOW}[FETCH_SOURCES] Download Bender${NC}\n"
 curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf | sh
 
 # Download dependencies (specify Target RTL and FPGA)
-printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"  
+printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"
 ./bender checkout
-./bender script flist > ../remote.flist 
+./bender script flist > ../remote.flist
 cp cv32e40p_fpu_manifest.flist ../local.flist
 
 # Process remote.flist (just save the .bender files)
-printf "${YELLOW}[FETCH_SOURCES] Create final rtl file list${NC}\n"  
+printf "${YELLOW}[FETCH_SOURCES] Create final rtl file list${NC}\n"
 grep .bender ../remote.flist > ../rtl.flist
 
 # Process local.flist
@@ -43,11 +46,11 @@ cat local_tmp_3.flist >> rtl.flist
 # Copy all RTL files into rtl dir
 printf "${YELLOW}[FETCH_SOURCES] Copy all sources into rtl${NC}\n" s
 for rtl_file in $(cat rtl.flist) ; do
-    cp $rtl_file rtl 
+    cp $rtl_file rtl
 done;
 
-# Delete the repo AND flist
-printf "${YELLOW}[FETCH_SOURCES] Clean all artifacts${NC}\n"  
-sudo rm -r cv32e40p
+# Delete the cloned repo and temporary flist
+printf "${YELLOW}[FETCH_SOURCES] Clean all artifacts${NC}\n"
+sudo rm -r ${CLONE_DIR}
 rm *.flist
-printf "${GREEN}[FETCH_SOURCES] Completed${NC}\n"  
+printf "${GREEN}[FETCH_SOURCES] Completed${NC}\n"

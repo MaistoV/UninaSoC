@@ -27,14 +27,14 @@ STARTUP = 	startup
 # OBJDUMP = $(RV_PREFIX)objdump $(32BITODFLAGS)
 #
 
-RV_PREFIX = 	/opt/rv32/bin/riscv32-unknown-elf-
-CC = 			$(RV_PREFIX)gcc 
+RV_PREFIX = 	riscv32-unknown-elf-
+CC = 			$(RV_PREFIX)gcc
 LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
 OBJCOPY = 		$(RV_PREFIX)objcopy
 
-CFLAGS = 		-march=rv32im_zicsr_zifencei -O0 -c
-LDFLAGS = 		-nostdlib -T$(LD_SCRIPT) 
+CFLAGS = 		-march=rv32g_zicsr_zifencei -O0 -c
+LDFLAGS = 		-nostdlib -T$(LD_SCRIPT)
 
 ###############################################################################
 
@@ -48,7 +48,7 @@ MKDIR   = @mkdir -p $(@D) 			# Creates folders if not present
 
 all: bin/$(PROJECT).bin
 
-$(OBJ)%.o: src/%.c 
+$(OBJ)%.o: src/%.c
 	@echo "\n[OBJ]	Creating OBJs from src"
 	$(MKDIR)
 	$(CC) -o $@ $^ $(INC) $(CFLAGS)

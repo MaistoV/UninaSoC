@@ -1,20 +1,24 @@
 # TODO: this is just a skeleton
 
-# Init to your RISC-V installation
-RISCV 	?= 
-TARGET 	?= riscv32-unknown-elf
-GCC 	= ${RISCV}/${TARGET}-gcc
-AS 		= ${RISCV}/${TARGET}-as
-OBJCOPY = ${RISCV}/${TARGET}-objcopy
-RISCV_MARCH ?= rv32i
+# RISC-V toolchain
+XLEN	?= 32
+TARGET 	?= riscv${XLEN}-unknown-elf
+CC 		:= ${TARGET}-gcc
+LD 		:= ${TARGET}-ld
+AS 		:= ${TARGET}-as
+OBJCOPY := ${TARGET}-objcopy
+OBJDUMP := ${TARGET}-objdump
+RISCV_MARCH ?= rv32gc_zicsr_zifencei
 
 LD_GEN = TBD
 BIN2COE = bin2coe
 
+all: template
+
 # Only temporary, until bootrom is added
-PoC_jtag2axi:
-	cd ${SW_ROOT}/src/PoC_jtag2axi; \
-	./compile.sh
+.PHONY: template
+template:
+	${MAKE} -C template
 
 linker/UninaSoC.ld: linker/UninaSoC.ld.tpl
 	${LD_GEN} $< -o $@
@@ -24,7 +28,7 @@ objs/bootrom.o: src/bootrom.s
 
 objs/bootrom.elf: src/bootrom.c objs/bootrom.o linker/UninaSoC.ld
 	mkdir -p objs
-	${GCC} src/bootrom.c objs/bootrom.o -o $@ -T linker/UninaSoC.ld
+	${CC} src/bootrom.c objs/bootrom.o -o $@ -T linker/UninaSoC.ld
 
 # Convert ELF to binary
 objs/bootrom.bin: objs/bootrom.elf
