@@ -30,6 +30,18 @@ Todo:
 - (TBD) [Alveo U50](https://docs.amd.com/r/en-US/ug1371-u50-reconfig-accel)
 - (TBD) [Alveo U280](https://docs.amd.com/r/en-US/ug1314-alveo-u280-reconfig-accel)
 
+# Build and Run:
+The top-level Makefile can be used to build the system-on-chip for the specific target board.
+First, define environmental variables by using:
+```
+source settings.sh
+```
+Then, download rtl sources for non-xilinx IPS and build the SoC by running:
+```
+make 
+```
+If you need further customizations and options, refers to `README.md` and `Makefile` in this repo subdirectories.
+
 # Simulation flow (TBD):
 The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
 * Unit tests: Verilator
