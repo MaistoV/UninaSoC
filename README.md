@@ -69,9 +69,9 @@ W.r.t. the single tools:
 ## Documentation Index
 
 If you need finer-grained documentation and insights to control the building flow, refer to the documentation:
-- Units RTL (hw/units/README.md)[hw/units/README.md]
-- Xilinx FPGA (hw/xilinx/README.md)[hw/xilinx/README.md]
-- Software build (hw/sw/README.md)[hw/sw/README.md]
+- Units RTL [hw/units/README.md](hw/units/README.md)
+- Xilinx FPGA [hw/xilinx/README.md](hw/xilinx/README.md)
+- Software build [hw/sw/README.md](hw/sw/README.md)
 
 ## Building and Loading Software 
 TBD
@@ -92,7 +92,7 @@ Basic projects:
 7. Interrupts: interrupt system design
 8. SPI flash: Integrate + PoC boot from SPI flash
 9. Debugger: JTAG debug core + OpenOCD/GDB
-10. Design probing: ILA integration in SoC flow
+10. ~~Design probing: ILA integration in SoC flow~~
 
 Advanced projects:
 
