@@ -8,7 +8,7 @@ More technical documentation can be found in the `doc/` folder for:
 
 ## Build Bitstream and Program Device
 In order to build the bitstream all sources for custom IPs must be available for the project.
-Check `hw/units/README.md` for more info regarding it.
+Check [hw/units/README.md](../units/README.md) for more info regarding it.
 To build the bitstream just run:
 ``` bash
 make bistream
