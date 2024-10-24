@@ -77,7 +77,7 @@ update_compile_order -fileset sources_1
 # Reports directory
 set project_dir [get_property directory [current_project]]
 set report_dir $project_dir/report
-exec mkdir $report_dir
+exec mkdir -p $report_dir
 
 ###################
 # RTL elaboration #

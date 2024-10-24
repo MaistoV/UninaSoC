@@ -1,8 +1,5 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Description: Program bitstream
-
-# Connects to hw_server and sets variable hw_device
-source  $::env(XILINX_SYNTH_TCL_ROOT)/open_hw_manager.tcl
+# Description: Program bitstream, assuming an open connection to a device
 
 # Set programming files
 set_property PROGRAM.FILE $::env(XILINX_BITSTREAM) $hw_device
