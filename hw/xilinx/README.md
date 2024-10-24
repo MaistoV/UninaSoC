@@ -7,7 +7,9 @@ More technical documentation can be found in the `doc/` folder for:
 * [Vivado-specific patches](doc/VIVADO_PATCHES.md).
 
 ## Build Bitstream and Program Device
-Once rtl files are fetched in `hw/units`, to build the bitstream just run:
+In order to build the bitstream all sources for custom IPs must be available for the project.
+Check `hw/units/README.md` for more info regarding it.
+To build the bitstream just run:
 ``` bash
 make bistream
 ```

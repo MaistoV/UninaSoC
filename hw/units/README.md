@@ -10,12 +10,7 @@ The `/custom_template` directory contains a template project for custom IPs, inc
 
 The file `/custom_template/custom_top_wrapper.sv` is a wrapper module designed to make the custom IP compatible with the SoC. It leverages the `hw/xilinx/rtl/uninasoc_mem.svh` and `hw/xilinx/rtl/uninasoc_axi.svh` headers (which are already included in the Vivado project packaging flow) to define macros for the MEM and AXI bus interfaces. While custom signals are allowed, we expect the custom IP to primarily communicate via either AXI (preferably) or MEM.
 
-To build and package custom ips, use the root Makefile:
-```
-cd ../..
-make
-```
-Otherwise, if you only need rtl sources, just use:
+To fetch rtl sources, just use:
 ```
 make units
 ```

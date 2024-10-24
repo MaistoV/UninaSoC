@@ -36,11 +36,17 @@ First, define environmental variables by using:
 ```
 source settings.sh
 ```
-Then, download rtl sources for non-xilinx IPS and build the SoC by running:
+Then, download rtl sources for non-xilinx IPS
+```
+make units
+```
+Finally, build the SoC by running:
 ```
 make 
 ```
-If you need further customizations and options, refers to `README.md` and `Makefile` in this repo subdirectories.
+If you need finer-grained options to control the building flow, refer to the documentation:
+*`hw/units/README.md`
+*`hw/xilinx/README.md`
 
 # Simulation flow (TBD):
 The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
