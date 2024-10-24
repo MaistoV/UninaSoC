@@ -47,7 +47,7 @@ module sys_master
     logic ibuf_out;
     logic ibuf_os_odiv2;
 
-    IBUFDS_GTE4 IBUFDS_GTE4_inst (
+    IBUFDS_GTE4 IBUFDS_GTE4_u (
         .O(ibuf_out),
         .ODIV2(ibuf_os_odiv2),
         .CEB(1'b0),
@@ -64,7 +64,7 @@ module sys_master
     `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
 
     // XDMA Master 
-    xlnx_xdma xlnx_xdma_inst (
+    xlnx_xdma xlnx_xdma_u (
         // Input clock and reset
         .sys_clk      ( ibuf_os_odiv2 ),
         .sys_clk_gt   ( ibuf_out      ),
@@ -144,7 +144,7 @@ module sys_master
         .s_axil_arprot  (3'b0)
     );
 
-    xlnx_axi_dwidth_converter xlnx_axi_dwidth_converter_inst (
+    xlnx_axi_dwidth_64to32_converter xlnx_axi_dwidth_64to32_converter_u (
         .s_axi_aclk     ( axi_aclk    ),
         .s_axi_aresetn  ( axi_aresetn ),
 
@@ -238,7 +238,7 @@ module sys_master
     assign m_axi_arregion = '0;
     // PLL
 
-    xlnx_clk_wiz clkwiz_inst (
+    xlnx_clk_wiz clkwiz_u (
         .clk_in1  ( sys_clock_i  ),
         .resetn   ( sys_resetn_o ),
         .locked   ( ),
@@ -250,7 +250,7 @@ module sys_master
 
     // JTAG2AXI Master
 
-    xlnx_jtag_axi jtag_axi_inst (
+    xlnx_jtag_axi jtag_axi_u (
         .aclk           ( soc_clk_o       ), // input wire aclk
         .aresetn        ( sys_resetn_o    ), // input wire aresetn
         .m_axi_awid     ( m_axi_awid    ), // output wire [1 : 0] m_axi_awid
