@@ -1,3 +1,6 @@
+// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+// Description: Virtual Uart - This module simulates the physical uart connected to XDMA through AXI lite 
+
 
 // Import packages
 import uninasoc_pkg::*;
@@ -114,7 +117,7 @@ module virtual_uart (
         else begin
             if ( s_axilite_wvalid && s_axilite_wready && s_axilite_awvalid && s_axilite_awready ) begin                
                 // If there is a write on the control register
-                if ( s_axilite_awaddr[4:2] == CONTROL_REG && s_axilite_wstrb[0] ) begin
+                if ( s_axilite_awaddr[4:2] == CONTROL_REG /*&& s_axilite_wstrb[0]*/ ) begin
                     
                     // RST TX register
                     if (s_axilite_wdata[CTRL_RST_TX_BIT]) begin
@@ -139,7 +142,7 @@ module virtual_uart (
                 end
 
                 // There is a write on the RX register
-                else if ( s_axilite_awaddr[4:2] == RX_REG && s_axilite_wstrb[0] ) begin
+                else if ( s_axilite_awaddr[4:2] == RX_REG /*&& s_axilite_wstrb[0]*/ ) begin
                     // save data
                     uart_csr[RX_REG][7:0] <= s_axilite_wdata[7:0];
                     // RX register valid
@@ -149,7 +152,7 @@ module virtual_uart (
                 end
 
                 // There is a write on the TX register
-                else if ( s_axilite_awaddr[4:2] == TX_REG && s_axilite_wstrb[0] ) begin
+                else if ( s_axilite_awaddr[4:2] == TX_REG /*&& s_axilite_wstrb[0]*/ ) begin
                     // save data
                     uart_csr[TX_REG][7:0] <= s_axilite_wdata[7:0];
                     // TX register empty
@@ -192,12 +195,12 @@ module virtual_uart (
             if ( s_axilite_wvalid && s_axilite_wready && s_axilite_awvalid && s_axilite_awready ) begin
 
                 // There is a write on TX reg, need to interrupt the XDMA
-                if ( s_axilite_awaddr[4:2] == TX_REG && s_axilite_wstrb[0] ) begin
+                if ( s_axilite_awaddr[4:2] == TX_REG /*&& s_axilite_wstrb[0]*/ ) begin
                     int_o [XDMA_INT] <= 1'b1;
                 end
 
                 // There is a write on HOST ACK register reset the interrupt to the XDMA
-                else if ( s_axilite_awaddr[4:2] == HOST_INT_ACK_REG && s_axilite_wstrb[0] ) begin
+                else if ( s_axilite_awaddr[4:2] == HOST_INT_ACK_REG /*&& s_axilite_wstrb[0]*/ ) begin
                     int_o [XDMA_INT] <= 1'b0;
                 end
 

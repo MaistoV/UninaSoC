@@ -16,12 +16,17 @@ int main(){
     // }
 
 
-    uint32_t * bram = (uint32_t *) 0x00000000;
+    uint32_t * uart = (uint32_t *) 0x00001000;
+    char * str = "Hello world!!!";
+    uint8_t i = 0;
 
     while(1){
-        *bram = 0xAAAAAAAA; 
+        if (i<14) {
+            while( (*(uart+2)) != 0x04000000);  /* Wrong endianess - it has to be 0x00000004 */
+            *(char *)(uart+1) = str[i];
+            i++;
+        }
     }
-
     
     while(1);
     

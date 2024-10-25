@@ -1,3 +1,9 @@
+// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+// Description: AXI4 Uart - This module encapsulates the AXI lite uart and exposes it as AXI4 full. The uart is selected based on the SOC_CONFIG.
+//              EMBEDDED -> AXILITE UART 
+//              HPC      -> VIRTUAL UART
+
+
 // Import packages
 import uninasoc_pkg::*;
 
