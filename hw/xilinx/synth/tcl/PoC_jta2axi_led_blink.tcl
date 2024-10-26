@@ -9,8 +9,7 @@ proc leds_set { address value } {
 
 # Local variables
 set word_off 0x00000000
-set word_on  0xffffffff
-set base_address 0x0020000
+set word_on  0x00000001
 set base_address 0x100000
 set num_toggles 5
 
