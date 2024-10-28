@@ -3,11 +3,7 @@ RISC-V soft-SoC extensible plaftorm for Xilinx FPGAs from University of Naples F
 > NOTE: the name is temporary...
 
 # SoC Configuration Profile
-
-```
-source settings.sh <soc_config> <board_config>
-```
-If no input parameter is specificed, the embedded Nexys A7-100T is selected.
+The SoC comes in two flavors, `hpc` and `embedded`, with multiple boards supported for each configuration.
 Valid Soc Configuration and boards are:
 
 | soc_config               | board                    |
@@ -30,7 +26,26 @@ Todo:
 - (TBD) [Alveo U50](https://docs.amd.com/r/en-US/ug1371-u50-reconfig-accel)
 - (TBD) [Alveo U280](https://docs.amd.com/r/en-US/ug1314-alveo-u280-reconfig-accel)
 
-# Simulation flow (TBD):
+# Build and Run:
+The top-level Makefile can be used to build the System-on-Chip for the specific target board.
+
+First, setup environment with:
+```
+source settings.sh <soc_config> <board>
+```
+> NOTE: If no input parameter is specificed, the `embedded` profile and the Nexys A7-100T are selected.
+
+Then, download rtl sources for non-xilinx IPS
+```
+make units
+```
+
+Finally, build the SoC bitstream by running:
+```
+make xilinx
+```
+
+## Simulation flow (TBD):
 The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
 * Unit tests: Verilator
    * Royalty-free, good for students
@@ -40,7 +55,7 @@ The choice of the simulator is driven by the choice of the IPs and required lice
    * Supports Xilinx IPs
    * Students can access a licensed host for simulator access
 
-# Environment and Tools Version
+## Environment and Tools Version
 This project was verified on Ubuntu 22.04.
 W.r.t. the single tools:
 | Tool            | Verified version |
@@ -51,12 +66,19 @@ W.r.t. the single tools:
 | Verilator       | TBD              |
 | gtkwave         | TBD              |
 
+## Documentation Index
 
+If you need finer-grained documentation and insights to control the building flow, refer to the documentation:
+- Units RTL [hw/units/README.md](hw/units/README.md)
+- Xilinx FPGA [hw/xilinx/README.md](hw/xilinx/README.md)
+- Software build [hw/sw/README.md](hw/sw/README.md)
+
+## Building and Loading Software 
+TBD
 # TODO
 * Design address space
 	* Finalized linker script
  	* Device tree (template + generation)
-
 
 # ES Project 2024
 Basic projects:
@@ -70,7 +92,7 @@ Basic projects:
 7. Interrupts: interrupt system design
 8. SPI flash: Integrate + PoC boot from SPI flash
 9. Debugger: JTAG debug core + OpenOCD/GDB
-10. Design probing: ILA integration in SoC flow
+10. ~~Design probing: ILA integration in SoC flow~~
 
 Advanced projects:
 

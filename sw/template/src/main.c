@@ -1,5 +1,3 @@
-//#include "../lib/demo_system.h"
-//#include "../lib/dev_access.h"
 #include <stdint.h>
 
 int main(){
@@ -27,8 +25,8 @@ int main(){
             i++;
         }
     }
-    
+
     while(1);
-    
+
     return 0;
 }

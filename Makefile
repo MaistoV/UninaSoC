@@ -7,8 +7,11 @@ all: config
 
 hw:
 
-xilinx:
+xilinx: units
 	${MAKE} -C ${XILINX_ROOT}
+
+units:
+	${MAKE} -C ${HW_UNITS_ROOT}
 
 config:
 	${MAKE} -C ${CONFIG_ROOT} ${CONFIG_CSV}
