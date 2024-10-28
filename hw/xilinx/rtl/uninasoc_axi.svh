@@ -387,7 +387,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 `define DEFINE_AXI_MASTER_PORTS(master_name)          \
     // AW channel                                     \
     output axi_id_t     ``master_name``_axi_awid,     \
-    (* MARK_DEBUG=1 *) output axi_addr_t   ``master_name``_axi_awaddr,   \
+    output axi_addr_t   ``master_name``_axi_awaddr,   \
     output axi_len_t    ``master_name``_axi_awlen,    \
     output axi_size_t   ``master_name``_axi_awsize,   \
     output axi_burst_t  ``master_name``_axi_awburst,  \
@@ -395,14 +395,14 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     output axi_cache_t  ``master_name``_axi_awcache,  \
     output axi_prot_t   ``master_name``_axi_awprot,   \
     output axi_qos_t    ``master_name``_axi_awqos,    \
-    (* MARK_DEBUG=1 *) output axi_valid_t  ``master_name``_axi_awvalid,  \
+    output axi_valid_t  ``master_name``_axi_awvalid,  \
     input  axi_ready_t  ``master_name``_axi_awready,  \
     output axi_region_t ``master_name``_axi_awregion, \
     // W channel                                      \
-    (* MARK_DEBUG=1 *) output axi_data_t   ``master_name``_axi_wdata,    \
-    (* MARK_DEBUG=1 *) output axi_strb_t   ``master_name``_axi_wstrb,    \
+    output axi_data_t   ``master_name``_axi_wdata,    \
+    output axi_strb_t   ``master_name``_axi_wstrb,    \
     output axi_last_t   ``master_name``_axi_wlast,    \
-    (* MARK_DEBUG=1 *) output axi_valid_t  ``master_name``_axi_wvalid,   \
+    output axi_valid_t  ``master_name``_axi_wvalid,   \
     input  axi_ready_t  ``master_name``_axi_wready,   \
     // B channel                                      \
     input  axi_id_t     ``master_name``_axi_bid,      \
@@ -410,7 +410,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     input  axi_valid_t  ``master_name``_axi_bvalid,   \
     output axi_ready_t  ``master_name``_axi_bready,   \
     // AR channel                                     \
-    (* MARK_DEBUG=1 *) output axi_addr_t   ``master_name``_axi_araddr,   \
+    output axi_addr_t   ``master_name``_axi_araddr,   \
     output axi_len_t    ``master_name``_axi_arlen,    \
     output axi_size_t   ``master_name``_axi_arsize,   \
     output axi_burst_t  ``master_name``_axi_arburst,  \
@@ -418,16 +418,16 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     output axi_cache_t  ``master_name``_axi_arcache,  \
     output axi_prot_t   ``master_name``_axi_arprot,   \
     output axi_qos_t    ``master_name``_axi_arqos,    \
-    (* MARK_DEBUG=1 *) output axi_valid_t  ``master_name``_axi_arvalid,  \
+    output axi_valid_t  ``master_name``_axi_arvalid,  \
     input  axi_ready_t  ``master_name``_axi_arready,  \
     output axi_id_t     ``master_name``_axi_arid,     \
     output axi_region_t ``master_name``_axi_arregion, \
     // R channel                                      \
     input  axi_id_t     ``master_name``_axi_rid,      \
-    (* MARK_DEBUG=1 *) input  axi_data_t   ``master_name``_axi_rdata,    \
+    input  axi_data_t   ``master_name``_axi_rdata,    \
     input  axi_resp_t   ``master_name``_axi_rresp,    \
     input  axi_last_t   ``master_name``_axi_rlast,    \
-    (* MARK_DEBUG=1 *) input  axi_valid_t  ``master_name``_axi_rvalid,   \
+    input  axi_valid_t  ``master_name``_axi_rvalid,   \
     output axi_ready_t  ``master_name``_axi_rready
 
 
