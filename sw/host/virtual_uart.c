@@ -10,22 +10,10 @@
 #include <sys/mman.h>
 #include <stdint.h>
 #include <termios.h>
+#include "virtual_uart.h"
 
-typedef struct {
-    uint64_t paddr;               /* PCIe BAR of the device */
-    size_t length;                /* The length of the mapping */
-    off_t offset;                 /* The offset from the BAR*/
-} write_thread_arg_t;
-
-typedef struct {
-    uint64_t paddr;               /* PCIe BAR of the device */
-    size_t length;                /* The length of the mapping */
-    off_t offset;                 /* The offset from the BAR*/
-    unsigned int u_poll_period;   /* Poll period in microseconds */   
-} read_thread_arg_t;
-
-void * write_thread_function(void * arg) {
-    
+void * write_thread_function(void * arg) 
+{
     int fd;
     uint64_t paddr;
     size_t length;
@@ -64,9 +52,8 @@ void * write_thread_function(void * arg) {
     while(1) {
         c = getchar();
         /* Wait for the RX full bit is 0 - the core read the previous char */
-        while ( (*(uint32_t *) (map + 8) & 0x00000002) >> 1 == 1);
+        while ( (*(uint32_t *) (map + 8) & RX_FULL_BIT_MASK) >> 1 == 1);
         *(char *) map = c;
-
     }
 
     end:
@@ -79,8 +66,8 @@ void * write_thread_function(void * arg) {
 
 
 
-void * read_thread_function( void * arg ) {
-
+void * read_thread_function( void * arg ) 
+{
     int fd;
     uint64_t paddr;   
     size_t length;
@@ -120,10 +107,10 @@ void * read_thread_function( void * arg ) {
     while (1) {
         
         /* Poll on the status flag TX full */
-        status_tx_full = ((*(uint8_t *)(map+8) & 0b00001000) >> 3);
+        status_tx_full = ((*(uint8_t *)(map+8) & TX_FULL_BIT_MASK) >> 3);
         while( !status_tx_full ) {
             usleep(u_poll_period);
-            status_tx_full = ((*(uint8_t *)(map+8) & 0b00001000) >> 3);
+            status_tx_full = ((*(uint8_t *)(map+8) & TX_FULL_BIT_MASK) >> 3);
         }
 
         /* Directly read the data in the TX register, no need to check the status */
@@ -143,8 +130,8 @@ void * read_thread_function( void * arg ) {
 }
 
 
-
-void disable_buffering() {
+void disable_buffering () 
+{
     struct termios t;
     tcgetattr(STDIN_FILENO, &t);           // Get current terminal settings
     t.c_lflag &= ~ICANON;                  // Disable canonical mode (line buffering)
@@ -152,12 +139,25 @@ void disable_buffering() {
     tcsetattr(STDIN_FILENO, TCSANOW, &t);  // Apply new terminal settings
 }
 
-void enable_buffering() {
+void enable_buffering () 
+{
     struct termios t;
     tcgetattr(STDIN_FILENO, &t);           // Get current terminal settings
     t.c_lflag |= ICANON;                   // Enable canonical mode
     t.c_lflag |= ECHO;                     // Ensure echo is re-enabled
     tcsetattr(STDIN_FILENO, TCSANOW, &t);  // Apply new terminal settings
+}
+
+
+void help (char * ex_name)
+{
+    printf("------------------------------ VIRTUAL UART ----------------------------------- \n"); 
+    printf("Usage: %s <uart_paddr> <uart_length> <offset> <u_poll_period>\n", ex_name); 
+    printf("    uart_paddr    : UART physical address in hex 0x... (PCIe BAR)\n");
+    printf("    uart_length   : UART register length in byte, always 20\n");
+    printf("    offset        : UART offset, always 0\n");
+    printf("    u_poll_period : Poll period in microseconds, 10 is good\n");
+    printf("------------------------------------------------------------------------------- \n"); 
 }
 
 
@@ -168,11 +168,18 @@ int main ( int argc, char *argv[] )
     pthread_t write_thread;
 
     write_thread_arg_t * write_thread_arg = (write_thread_arg_t *) malloc (sizeof(write_thread_arg_t));
+    read_thread_arg_t * read_thread_arg = (read_thread_arg_t *) malloc (sizeof(read_thread_arg_t));
+
+    if ( argc < 5 ) {
+        help(argv[0]);
+        return -1;
+    }
+
     write_thread_arg->paddr = (uint64_t)strtol(argv[1], NULL, 0);
     write_thread_arg->length = atoi(argv[2]);
     write_thread_arg->offset = atoi(argv[3]);
 
-    read_thread_arg_t * read_thread_arg = (read_thread_arg_t *) malloc (sizeof(read_thread_arg_t));
+    
     read_thread_arg->paddr = (uint64_t)strtol(argv[1], NULL, 0);
     read_thread_arg->length = atoi(argv[2]);
     read_thread_arg->offset = atoi(argv[3]);
@@ -185,8 +192,18 @@ int main ( int argc, char *argv[] )
     /* Disable stdout buffering */ 
     setbuf(stdout, NULL);
 
-    pthread_create(&write_thread, NULL, write_thread_function, (void *) write_thread_arg ); 
-    pthread_create(&read_thread, NULL, read_thread_function, (void *) read_thread_arg); 
+    if ( pthread_create(&write_thread, NULL, write_thread_function, (void *) write_thread_arg ) != 0 ) {
+        printf("ERROR: pthread_create failed\n");
+        enable_buffering();
+        return -1;
+    } 
+
+
+    if ( pthread_create(&read_thread, NULL, read_thread_function, (void *) read_thread_arg) != 0 ) {
+        printf("ERROR: pthread_create failed\n");
+        enable_buffering();
+        return -1;
+    }
     
 
     pthread_join(write_thread, NULL);

@@ -4,9 +4,10 @@
 CC=gcc
 
 LIBS=-lc -lpthread
+LIB_DIR=.
 
 all:
-	$(CC) -o virtual_uart virtual_uart.c $(LIBS)
+	$(CC) -o virtual_uart virtual_uart.c $(LIBS) -I$(LIB_DIR)
 
 .PHONY: clean
 
