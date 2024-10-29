@@ -1,4 +1,8 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+// Description: Virtual Uart host application
+//              This is a two-posix-thread application. 
+//              The write_thread writes on the RX uart register (writes to the core) 
+//              The read_thread reads on the TX uart register (reads from the host) polling with u_poll_period microseconds           
 
 #include <fcntl.h>
 #include <poll.h>
@@ -17,7 +21,6 @@ void * write_thread_function(void * arg)
     int fd;
     uint64_t paddr;
     size_t length;
-    off_t offset;
     off_t pa_offset;    /* page aligned offset */
     void * map;         /* virtual address from mmap */
 
@@ -27,7 +30,6 @@ void * write_thread_function(void * arg)
     write_thread_arg_t * thread_arg = (write_thread_arg_t *) arg;
     paddr  = thread_arg->paddr;
     length = thread_arg->length;
-    offset = thread_arg->offset;
 
     /* Open the /dev/mem file */
     fd = open("/dev/mem", O_RDWR | O_SYNC);
@@ -37,10 +39,10 @@ void * write_thread_function(void * arg)
     }
 
     /* Compute the page aligned offset  */
-    pa_offset = paddr+offset & ~(sysconf(_SC_PAGE_SIZE) - 1);
+    pa_offset = paddr & ~(sysconf(_SC_PAGE_SIZE) - 1);
     
     /* Get the virtual address */
-    map = mmap(NULL, length + paddr+offset - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
+    map = mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
     if (map == MAP_FAILED) {
         printf("ERROR: Map failed\n");
         goto end;
@@ -58,7 +60,7 @@ void * write_thread_function(void * arg)
 
     end:
         if(map) 
-            munmap(map, length + offset - pa_offset);
+            munmap(map, length + paddr - pa_offset);
         if (fd)
             close(fd);
         return NULL;
@@ -71,7 +73,6 @@ void * read_thread_function( void * arg )
     int fd;
     uint64_t paddr;   
     size_t length;
-    off_t offset;
     off_t pa_offset;    /* page aligned offset */
     void * map;         /* virtual address from mmap */
     unsigned int u_poll_period; 
@@ -84,7 +85,6 @@ void * read_thread_function( void * arg )
     read_thread_arg_t * thread_arg = (read_thread_arg_t *) arg;
     paddr         = thread_arg->paddr;
     length        = thread_arg->length;
-    offset        = thread_arg->offset;
     u_poll_period = thread_arg->u_poll_period;
 
     /* Open the /dev/mem file */
@@ -95,10 +95,10 @@ void * read_thread_function( void * arg )
     }
 
     /* Compute the page aligned offset  */
-    pa_offset = paddr+offset & ~(sysconf(_SC_PAGE_SIZE) - 1);
+    pa_offset = paddr & ~(sysconf(_SC_PAGE_SIZE) - 1);
     
     /* Get the virtual address */
-    map = mmap(NULL, length + paddr+offset - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
+    map = mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
     if (map == MAP_FAILED) {
         printf("ERROR: Map failed\n");
         goto end;
@@ -123,7 +123,7 @@ void * read_thread_function( void * arg )
 
     end:
         if(map) 
-            munmap(map, length + offset - pa_offset);
+            munmap(map, length + paddr - pa_offset);
         if (fd)
             close(fd);
         return NULL;
@@ -152,11 +152,10 @@ void enable_buffering ()
 void help (char * ex_name)
 {
     printf("------------------------------ VIRTUAL UART ----------------------------------- \n"); 
-    printf("Usage: %s <uart_paddr> <uart_length> <offset> <u_poll_period>\n", ex_name); 
+    printf("Usage: %s <uart_paddr> [uart_length] [u_poll_period]\n", ex_name); 
     printf("    uart_paddr    : UART physical address in hex 0x... (PCIe BAR)\n");
-    printf("    uart_length   : UART register length in byte, always 20\n");
-    printf("    offset        : UART offset, always 0\n");
-    printf("    u_poll_period : Poll period in microseconds, 10 is good\n");
+    printf("    uart_length   : UART register length in byte (decimal), default 20\n");
+    printf("    u_poll_period : Poll period in microseconds, default 10\n");
     printf("------------------------------------------------------------------------------- \n"); 
 }
 
@@ -170,20 +169,17 @@ int main ( int argc, char *argv[] )
     write_thread_arg_t * write_thread_arg = (write_thread_arg_t *) malloc (sizeof(write_thread_arg_t));
     read_thread_arg_t * read_thread_arg = (read_thread_arg_t *) malloc (sizeof(read_thread_arg_t));
 
-    if ( argc < 5 ) {
+    if ( argc < 2 ) {
         help(argv[0]);
         return -1;
     }
 
     write_thread_arg->paddr = (uint64_t)strtol(argv[1], NULL, 0);
     write_thread_arg->length = atoi(argv[2]);
-    write_thread_arg->offset = atoi(argv[3]);
 
-    
     read_thread_arg->paddr = (uint64_t)strtol(argv[1], NULL, 0);
     read_thread_arg->length = atoi(argv[2]);
-    read_thread_arg->offset = atoi(argv[3]);
-    read_thread_arg->u_poll_period = atoi(argv[4]);
+    read_thread_arg->u_poll_period = atoi(argv[3]);
 
 
     /* Disable stdin buffering*/

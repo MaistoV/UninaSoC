@@ -36,3 +36,33 @@ Install in `--prefix`:
 ``` bash
 make install
 ```
+
+# Directory structure
+```
+.
+├── examples                             # Example projects 
+│   └── <project_name>                   # Project directory
+│       ├── ld                           # Linker script directory
+│       │   └── <LINKERSCRIPT>.ld        # Linker script
+│       ├── Makefile                     # Makefile
+│       └── src                          # Sources
+│           ├── main.c                   # Main
+│           ├── startup.s                # Startup file
+|           └── ...
+├── host                                 # Host applications
+│   └── <application_name>               # Application directory
+│       ├── Makefile                     # Makefile
+│       └── src                          # Sources 
+│           └── ...
+├── linker
+│   ├── UninaSoC.ld
+│   └── UninaSoC.ld.tpl
+├── Makefile
+└── template                             # Template project directory
+    ├── ld
+    │   └── DEMOSYSTEM_FLASH.ld
+    ├── Makefile
+    └── src
+        ├── main.c
+        └── startup.s
+```

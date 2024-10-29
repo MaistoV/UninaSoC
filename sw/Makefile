@@ -16,9 +16,12 @@ BIN2COE = bin2coe
 all: template
 
 # Only temporary, until bootrom is added
-.PHONY: template
+.PHONY: template host_virtual_uart
 template:
 	${MAKE} -C template
+
+host_virtual_uart:
+	${MAKE} -C host/virtual_uart
 
 linker/UninaSoC.ld: linker/UninaSoC.ld.tpl
 	${LD_GEN} $< -o $@
