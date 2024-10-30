@@ -1,5 +1,5 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: Virtual Uart host application
+// Description: Virtual Uart host application - utility functions
 //              This is a two-posix-thread application. 
 //              The write_thread writes on the RX uart register (writes to the core) 
 //              The read_thread reads on the TX uart register (reads from the host) polling with u_poll_period microseconds           
@@ -21,10 +21,10 @@ void * write_thread_function(void * arg)
     int fd;
     uint64_t paddr;
     size_t length;
-    off_t pa_offset;    /* page aligned offset */
-    void * map;         /* virtual address from mmap */
+    off_t pa_offset;     /* page aligned offset */
+    uart_csr * map;      /* virtual address from mmap */
 
-    char c;             /* Char to send when write on the console */ 
+    char c;              /* Char to send when write on the console */ 
 
     /* Get the arguments */
     write_thread_arg_t * thread_arg = (write_thread_arg_t *) arg;
@@ -42,7 +42,7 @@ void * write_thread_function(void * arg)
     pa_offset = paddr & ~(sysconf(_SC_PAGE_SIZE) - 1);
     
     /* Get the virtual address */
-    map = mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
+    map = (uart_csr *) mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
     if (map == MAP_FAILED) {
         printf("ERROR: Map failed\n");
         goto end;
@@ -54,8 +54,8 @@ void * write_thread_function(void * arg)
     while(1) {
         c = getchar();
         /* Wait for the RX full bit is 0 - the core read the previous char */
-        while ( (*(uint32_t *) (map + 8) & RX_FULL_BIT_MASK) >> 1 == 1);
-        *(char *) map = c;
+        while ( ( (map->sts_reg) & RX_FULL_BIT_MASK) >> 1 == 1);
+        map->rx_reg = (uint32_t) c;
     }
 
     end:
@@ -74,7 +74,7 @@ void * read_thread_function( void * arg )
     uint64_t paddr;   
     size_t length;
     off_t pa_offset;    /* page aligned offset */
-    void * map;         /* virtual address from mmap */
+    uart_csr * map;         /* virtual address from mmap */
     unsigned int u_poll_period; 
 
     char c;           /* Char to send when write on the console */ 
@@ -98,7 +98,7 @@ void * read_thread_function( void * arg )
     pa_offset = paddr & ~(sysconf(_SC_PAGE_SIZE) - 1);
     
     /* Get the virtual address */
-    map = mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
+    map = (uart_csr *) mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
     if (map == MAP_FAILED) {
         printf("ERROR: Map failed\n");
         goto end;
@@ -107,18 +107,18 @@ void * read_thread_function( void * arg )
     while (1) {
         
         /* Poll on the status flag TX full */
-        status_tx_full = ((*(uint8_t *)(map+8) & TX_FULL_BIT_MASK) >> 3);
+        status_tx_full = (((uint8_t)map->sts_reg & TX_FULL_BIT_MASK) >> 3);
         while( !status_tx_full ) {
             usleep(u_poll_period);
-            status_tx_full = ((*(uint8_t *)(map+8) & TX_FULL_BIT_MASK) >> 3);
+            status_tx_full = (((uint8_t)map->sts_reg & TX_FULL_BIT_MASK) >> 3);
         }
 
         /* Directly read the data in the TX register, no need to check the status */
-        c = *(char *) (map+4);
+        c = (char) map->tx_reg;
         putchar(c);
 
         /* ACK the interrupt */
-        *(uint32_t *) (map+16) = 0x000000FF;
+        map->int_ack_reg = 0x000000FF;
     }
 
     end:
@@ -151,61 +151,10 @@ void enable_buffering ()
 
 void help (char * ex_name)
 {
-    printf("------------------------------ VIRTUAL UART ----------------------------------- \n"); 
+    printf("------------------------------ VIRTUAL UART ------------------------------------- \n"); 
     printf("Usage: %s <uart_paddr> [uart_length] [u_poll_period]\n", ex_name); 
     printf("    uart_paddr    : UART physical address in hex 0x... (PCIe BAR)\n");
-    printf("    uart_length   : UART register length in byte (decimal), default 20\n");
+    printf("    uart_length   : UART total registers length in byte (decimal), default 20\n");
     printf("    u_poll_period : Poll period in microseconds, default 10\n");
-    printf("------------------------------------------------------------------------------- \n"); 
-}
-
-
-int main ( int argc, char *argv[] )
-{
-
-    pthread_t read_thread;
-    pthread_t write_thread;
-
-    write_thread_arg_t * write_thread_arg = (write_thread_arg_t *) malloc (sizeof(write_thread_arg_t));
-    read_thread_arg_t * read_thread_arg = (read_thread_arg_t *) malloc (sizeof(read_thread_arg_t));
-
-    if ( argc < 2 ) {
-        help(argv[0]);
-        return -1;
-    }
-
-    write_thread_arg->paddr = (uint64_t)strtol(argv[1], NULL, 0);
-    write_thread_arg->length = atoi(argv[2]);
-
-    read_thread_arg->paddr = (uint64_t)strtol(argv[1], NULL, 0);
-    read_thread_arg->length = atoi(argv[2]);
-    read_thread_arg->u_poll_period = atoi(argv[3]);
-
-
-    /* Disable stdin buffering*/
-    disable_buffering();
-    setbuf(stdin, NULL);
-    /* Disable stdout buffering */ 
-    setbuf(stdout, NULL);
-
-    if ( pthread_create(&write_thread, NULL, write_thread_function, (void *) write_thread_arg ) != 0 ) {
-        printf("ERROR: pthread_create failed\n");
-        enable_buffering();
-        return -1;
-    } 
-
-
-    if ( pthread_create(&read_thread, NULL, read_thread_function, (void *) read_thread_arg) != 0 ) {
-        printf("ERROR: pthread_create failed\n");
-        enable_buffering();
-        return -1;
-    }
-    
-
-    pthread_join(write_thread, NULL);
-    pthread_join(read_thread, NULL);
-
-    enable_buffering();
-	
-    return 0;
+    printf("--------------------------------------------------------------------------------- \n"); 
 }
