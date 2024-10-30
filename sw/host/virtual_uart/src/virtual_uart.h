@@ -9,7 +9,7 @@
 #define TX_FULL_BIT_MASK 0b00001000
 
 /* UART registers struct */
-typedef struct {
+typedef volatile struct {
     uint32_t rx_reg;            /* RX register - host to core   */
     uint32_t tx_reg;            /* TX register - core to host   */
     uint32_t sts_reg;           /* Status register              */

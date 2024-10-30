@@ -60,7 +60,7 @@ void * write_thread_function(void * arg)
 
     end:
         if(map) 
-            munmap(map, length + paddr - pa_offset);
+            munmap((void *)map, length + paddr - pa_offset);
         if (fd)
             close(fd);
         return NULL;
@@ -123,7 +123,7 @@ void * read_thread_function( void * arg )
 
     end:
         if(map) 
-            munmap(map, length + paddr - pa_offset);
+            munmap((void *)map, length + paddr - pa_offset);
         if (fd)
             close(fd);
         return NULL;
