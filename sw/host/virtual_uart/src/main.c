@@ -8,7 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "virtual_uart.h"
+#include "utils.h"
+#include "threads.h"
 
 int main ( int argc, char *argv[] )
 {
