@@ -3,6 +3,3 @@
 
 # System master AXI interface
 set_property MARK_DEBUG 1 [get_nets -of [get_cells sys_master_u]]
-
-# RVM socket nets
-# set_property MARK_DEBUG 1 [get_nets -of [get_cells rvm_socket_u]]

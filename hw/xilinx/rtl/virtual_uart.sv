@@ -186,7 +186,8 @@ module virtual_uart (
         end
     end
 
-    // Interrupts logic
+    // Interrupts logic 
+    // THIS IS A STUB - TO DO
     always_ff @( posedge clock_i or negedge reset_ni ) begin
         if ( !reset_ni ) begin
             int_o <= 2'b00;
