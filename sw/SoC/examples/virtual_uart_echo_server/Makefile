@@ -9,12 +9,13 @@ MCU = DEMOSYSTEM
 ###############################################################################
 # Directories
 
-SRCS = 		$(wildcard src/*.c) $(wildcard lib/*.c)
-OBJ = 		obj/
-OBJS = 		$(addprefix $(OBJ), $(notdir $(SRCS:.c=.o)))
-LD_SCRIPT = ld/$(MCU)_FLASH.ld
-INC = 		-Iinc
-STARTUP = 	startup
+SOC_SW_ROOT_DIR = ../..
+SRCS = 		      $(wildcard src/*.c) $(wildcard lib/*.c)
+OBJ = 		      obj/
+OBJS = 		      $(addprefix $(OBJ), $(notdir $(SRCS:.c=.o)))
+LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/$(MCU)_FLASH.ld
+INC = 		      -Iinc
+STARTUP = 	      startup
 
 ###############################################################################
 # Toolchain
@@ -58,10 +59,10 @@ $(OBJ)%.o: lib/%.c
 	$(MKDIR)
 	$(CC) -o $@ $^ $(INC) $(CFLAGS)
 
-obj/$(STARTUP).o: src/$(STARTUP).s
+obj/$(STARTUP).o: $(SOC_SW_ROOT_DIR)/startup/$(STARTUP).s
 	@echo "\n[OBJ]	Creating OBJs from $(STARTUP).s"
 	$(MKDIR)
-	$(CC) -o obj/$(STARTUP).o src/$(STARTUP).s $(INC) $(CFLAGS)
+	$(CC) -o obj/$(STARTUP).o $(SOC_SW_ROOT_DIR)/startup/$(STARTUP).s $(INC) $(CFLAGS)
 
 bin/$(PROJECT).elf: $(OBJS) obj/$(STARTUP).o
 	@echo "\n[ELF]	Creating elf file"

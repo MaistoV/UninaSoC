@@ -37,32 +37,44 @@ Install in `--prefix`:
 make install
 ```
 
-# Directory structure
+# Build flow
+The sw directory is divided in two sub-directories:
+* host - software for the host
+* SoC  - software for the SoC
+### Directory structure
 ```
 .
-├── examples                             # Example projects 
-│   └── <project_name>                   # Project directory
-│       ├── ld                           # Linker script directory
-│       │   └── <LINKERSCRIPT>.ld        # Linker script
-│       ├── Makefile                     # Makefile
-│       └── src                          # Sources
-│           ├── main.c                   # Main
-│           ├── startup.s                # Startup file
-|           └── ...
-├── host                                 # Host applications
-│   └── <application_name>               # Application directory
-│       ├── Makefile                     # Makefile
-│       └── src                          # Sources 
+├── host                                  # Host software
+│   └── <project_name>                    # Project directory
+│       ├── Makefile                      # Makefile
+│       └── src                           # Sources
 │           └── ...
-├── linker
-│   ├── UninaSoC.ld
-│   └── UninaSoC.ld.tpl
-├── Makefile
-└── template                             # Template project directory
-    ├── ld
-    │   └── DEMOSYSTEM_FLASH.ld
-    ├── Makefile
-    └── src
-        ├── main.c
-        └── startup.s
+├── Makefile                              # Top level Makefile
+└── SoC                                   # SoC software
+    ├── examples                          # Example projects 
+    │   └── <project_name>                # Project directory
+    │       ├── Makefile                  # Makefile
+    │       └── src                       # Sources
+    │           └── ...
+    ├── linker                            # Linker script directory
+    │   └── <LINKER_SCRIPT>.ld
+    ├── startup                           # Startup directory
+    │   └── startup.s
+    └── template                          # Template project
+        ├── Makefile
+        └── src
+            └── main.c
 ```
+
+The top level Makefile contains targets for both host software and SoC software.
+
+### Build command
+To build for the host:
+```
+make host_<project_name>
+```
+To build for the SoC:
+```
+make soc_<project_name>
+```
+The relative output product (objs, bin, elf ...) can be found in the <project_name> directory
