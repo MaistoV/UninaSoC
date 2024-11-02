@@ -11,7 +11,7 @@ config_axi:
 		${OUTPUT_TCL_FILE}
 	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE}"
 
-OUTPUT_LD_FILE ?= ${SW_ROOT}/linker/UninaSoC.ld
+OUTPUT_LD_FILE ?= ${SW_ROOT}/SoC/linker/UninaSoC.ld
 config_ld:
 	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/create_linker_script.py \
 		${CONFIG_CSV} \

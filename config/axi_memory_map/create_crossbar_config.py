@@ -47,10 +47,10 @@ def compose_index ( index_int : int ):
 
     # Add a zero char and cast
     if (index_int < 10):
-        index_string = "0" + str(i)
+        index_string = "0" + str(index_int)
     # just cast
     else:
-        index_string = str(i)
+        index_string = str(index_int)
 
     # Return
     return index_string
