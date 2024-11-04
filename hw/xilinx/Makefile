@@ -175,7 +175,7 @@ ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
 
-bin_path ?= ${SW_ROOT}/template/bin/filename.bin
+bin_path ?= ${SW_ROOT}/SoC/template/bin/filename.bin
 base_address ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
 

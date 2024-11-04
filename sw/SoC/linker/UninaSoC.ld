@@ -12,7 +12,7 @@ SECTIONS
 {
 	_slave_BRAM_base = 0x0;
 	_slave_BRAM_end = 0x20000;
-	_slave_GPIO_out_base = 0x20000;
-	_slave_GPIO_out_end = 0x22000;
+	_slave_GPIO_out_base = 0x100000;
+	_slave_GPIO_out_end = 0x102000;
 }
 

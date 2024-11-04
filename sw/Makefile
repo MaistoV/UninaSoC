@@ -16,9 +16,25 @@ BIN2COE = bin2coe
 all: template
 
 # Only temporary, until bootrom is added
-.PHONY: template
+
+.PHONY: template host_virtual_uart soc_virtual_uart_hello_world soc_virtual_uart_echo_server
+
+# For now the selection of the application is a mare target, we could also pass the application to this Makefile (i.e. make APP=...)
+# SoC applications
 template:
-	${MAKE} -C template
+	${MAKE} -C SoC/template
+
+soc_virtual_uart_hello_world:
+	${MAKE} -C SoC/examples/virtual_uart_hello_world
+
+soc_virtual_uart_echo_server:
+	${MAKE} -C SoC/examples/virtual_uart_echo_server
+
+# Host applications
+host_virtual_uart:
+	${MAKE} -C host/virtual_uart
+
+###############################################################################################################
 
 linker/UninaSoC.ld: linker/UninaSoC.ld.tpl
 	${LD_GEN} $< -o $@

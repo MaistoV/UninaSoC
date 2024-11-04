@@ -1,3 +1,5 @@
+/* NOTE: this is a temporary file */
+
 OUTPUT_ARCH("riscv")
 
 /* Entry Point */
@@ -11,16 +13,16 @@ MEMORY
 
 /* Sections */
 SECTIONS
-{ 
+{
 
   .isr_vector :
   {
-    KEEP(*(.isr_vector))  
+    KEEP(*(.isr_vector))
     . = ALIGN(32);
   } >DDR
 
   .text :
-  { 
+  {
 	  *(.init)
     *(.text)
 	  *(.text.*)
@@ -30,14 +32,14 @@ SECTIONS
 	  . = ALIGN(32);
 	  _etext = .;
   }> DDR
-  
+
   .data :
   {
     *(.data)
     *(.data.*)
     . = ALIGN(32);
   }> DDR
-  
+
   .bss :
   {
 	  *(.bss)
@@ -46,9 +48,9 @@ SECTIONS
 	  . = ALIGN(32);
 	  end = .;
 	  __end__ = .;
-  }> DDR 
+  }> DDR
 
-  PROVIDE( _vectors_start = ADDR(.isr_vector));  
+  PROVIDE( _vectors_start = ADDR(.isr_vector));
   PROVIDE( _start_of_ddr = ORIGIN(DDR) );
   PROVIDE( _stack_start = ORIGIN(DDR) + LENGTH(DDR) );
   PROVIDE( _estack = ORIGIN(DDR) + LENGTH(DDR) );    /* TO CHECK*/

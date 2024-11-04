@@ -114,7 +114,7 @@ module uninasoc (
     // xbar -> GPIO in
     // `DECLARE_AXI_BUS(xbar_to_gpio_in, AXI_DATA_WIDTH);
     // xbar -> UART
-    // `DECLARE_AXI_BUS(xbar_to_uart, AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(xbar_to_uart, AXI_DATA_WIDTH);
 
     // Concatenate AXI master buses
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
@@ -130,7 +130,7 @@ module uninasoc (
     `ifdef EMBEDDED
         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
     `elsif HPC
-         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_second_mem, xbar_to_main_mem);
+         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_uart, xbar_to_main_mem);
     `endif
     // TODO: add GPIO in
     // //                      array_name,           bus 2,           bus 1,             bus 0
@@ -473,106 +473,52 @@ module uninasoc (
     //////////
     // UART //
     //////////
-    // TODO: integrate and verify UART
-    // xbar -> axi4_to_axilite -> uart
-    //
-    // // axi4_to_axilite -> uart
-    // `DECLARE_AXILITE_BUS(uart);
-    //
-    // // AXI4 to AXI4-Lite protocol converter
-    // xlnx_axi4_to_axilite_converter axi4_to_axilite_uart_inst (
-    //     .aclk           ( soc_clk                   ), // input wire s_axi_aclk
-    //     .aresetn        ( sys_resetn                ), // input wire s_axi_aresetn
-    //     // AXI4 slave port (from xbar)
-    //     .s_axi_awid     ( xbar_to_uart_axi_awid     ), // input wire [1 : 0] s_axi_awid
-    //     .s_axi_awaddr   ( xbar_to_uart_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
-    //     .s_axi_awlen    ( xbar_to_uart_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
-    //     .s_axi_awsize   ( xbar_to_uart_axi_awsize   ), // input wire [2 : 0] s_axi_awsize
-    //     .s_axi_awburst  ( xbar_to_uart_axi_awburst  ), // input wire [1 : 0] s_axi_awburst
-    //     .s_axi_awlock   ( xbar_to_uart_axi_awlock   ), // input wire [0 : 0] s_axi_awlock
-    //     .s_axi_awcache  ( xbar_to_uart_axi_awcache  ), // input wire [3 : 0] s_axi_awcache
-    //     .s_axi_awprot   ( xbar_to_uart_axi_awprot   ), // input wire [2 : 0] s_axi_awprot
-    //     .s_axi_awregion ( xbar_to_uart_axi_awregion ), // input wire [3 : 0] s_axi_awregion
-    //     .s_axi_awqos    ( xbar_to_uart_axi_awqos    ), // input wire [3 : 0] s_axi_awqos
-    //     .s_axi_awvalid  ( xbar_to_uart_axi_awvalid  ), // input wire s_axi_awvalid
-    //     .s_axi_awready  ( xbar_to_uart_axi_awready  ), // output wire s_axi_awready
-    //     .s_axi_wdata    ( xbar_to_uart_axi_wdata    ), // input wire [31 : 0] s_axi_wdata
-    //     .s_axi_wstrb    ( xbar_to_uart_axi_wstrb    ), // input wire [3 : 0] s_axi_wstrb
-    //     .s_axi_wlast    ( xbar_to_uart_axi_wlast    ), // input wire s_axi_wlast
-    //     .s_axi_wvalid   ( xbar_to_uart_axi_wvalid   ), // input wire s_axi_wvalid
-    //     .s_axi_wready   ( xbar_to_uart_axi_wready   ), // output wire s_axi_wready
-    //     .s_axi_bid      ( xbar_to_uart_axi_bid      ), // output wire [1 : 0] s_axi_bid
-    //     .s_axi_bresp    ( xbar_to_uart_axi_bresp    ), // output wire [1 : 0] s_axi_bresp
-    //     .s_axi_bvalid   ( xbar_to_uart_axi_bvalid   ), // output wire s_axi_bvalid
-    //     .s_axi_bready   ( xbar_to_uart_axi_bready   ), // input wire s_axi_bready
-    //     .s_axi_arid     ( xbar_to_uart_axi_arid     ), // input wire [1 : 0] s_axi_arid
-    //     .s_axi_araddr   ( xbar_to_uart_axi_araddr   ), // input wire [31 : 0] s_axi_araddr
-    //     .s_axi_arlen    ( xbar_to_uart_axi_arlen    ), // input wire [7 : 0] s_axi_arlen
-    //     .s_axi_arsize   ( xbar_to_uart_axi_arsize   ), // input wire [2 : 0] s_axi_arsize
-    //     .s_axi_arburst  ( xbar_to_uart_axi_arburst  ), // input wire [1 : 0] s_axi_arburst
-    //     .s_axi_arlock   ( xbar_to_uart_axi_arlock   ), // input wire [0 : 0] s_axi_arlock
-    //     .s_axi_arcache  ( xbar_to_uart_axi_arcache  ), // input wire [3 : 0] s_axi_arcache
-    //     .s_axi_arprot   ( xbar_to_uart_axi_arprot   ), // input wire [2 : 0] s_axi_arprot
-    //     .s_axi_arregion ( xbar_to_uart_axi_arregion ), // input wire [3 : 0] s_axi_arregion
-    //     .s_axi_arqos    ( xbar_to_uart_axi_arqos    ), // input wire [3 : 0] s_axi_arqos
-    //     .s_axi_arvalid  ( xbar_to_uart_axi_arvalid  ), // input wire s_axi_arvalid
-    //     .s_axi_arready  ( xbar_to_uart_axi_arready  ), // output wire s_axi_arready
-    //     .s_axi_rid      ( xbar_to_uart_axi_rid      ), // output wire [1 : 0] s_axi_rid
-    //     .s_axi_rdata    ( xbar_to_uart_axi_rdata    ), // output wire [31 : 0] s_axi_rdata
-    //     .s_axi_rresp    ( xbar_to_uart_axi_rresp    ), // output wire [1 : 0] s_axi_rresp
-    //     .s_axi_rlast    ( xbar_to_uart_axi_rlast    ), // output wire s_axi_rlast
-    //     .s_axi_rvalid   ( xbar_to_uart_axi_rvalid   ), // output wire s_axi_rvalid
-    //     .s_axi_rready   ( xbar_to_uart_axi_rready   ), // input wire s_axi_rready
-    //     // Master port (to GPIO)
-    //     .m_axi_awaddr   ( uart_axilite_awaddr       ), // output wire [31 : 0] m_axi_awaddr
-    //     .m_axi_awprot   ( uart_axilite_awprot       ), // output wire [2 : 0] m_axi_awprot
-    //     .m_axi_awvalid  ( uart_axilite_awvalid      ), // output wire m_axi_awvalid
-    //     .m_axi_awready  ( uart_axilite_awready      ), // input wire m_axi_awready
-    //     .m_axi_wdata    ( uart_axilite_wdata        ), // output wire [31 : 0] m_axi_wdata
-    //     .m_axi_wstrb    ( uart_axilite_wstrb        ), // output wire [3 : 0] m_axi_wstrb
-    //     .m_axi_wvalid   ( uart_axilite_wvalid       ), // output wire m_axi_wvalid
-    //     .m_axi_wready   ( uart_axilite_wready       ), // input wire m_axi_wready
-    //     .m_axi_bresp    ( uart_axilite_bresp        ), // input wire [1 : 0] m_axi_bresp
-    //     .m_axi_bvalid   ( uart_axilite_bvalid       ), // input wire m_axi_bvalid
-    //     .m_axi_bready   ( uart_axilite_bready       ), // output wire m_axi_bready
-    //     .m_axi_araddr   ( uart_axilite_araddr       ), // output wire [31 : 0] m_axi_araddr
-    //     .m_axi_arprot   ( uart_axilite_arprot       ), // output wire [2 : 0] m_axi_arprot
-    //     .m_axi_arvalid  ( uart_axilite_arvalid      ), // output wire m_axi_arvalid
-    //     .m_axi_arready  ( uart_axilite_arready      ), // input wire m_axi_arready
-    //     .m_axi_rdata    ( uart_axilite_rdata        ), // input wire [31 : 0] m_axi_rdata
-    //     .m_axi_rresp    ( uart_axilite_rresp        ), // input wire [1 : 0] m_axi_rresp
-    //     .m_axi_rvalid   ( uart_axilite_rvalid       ), // input wire m_axi_rvalid
-    //     .m_axi_rready   ( uart_axilite_rready       )  // output wire m_axi_rready
-    // );
-    //
-    // // UART
-    // xlnx_axi_uartlite axi_uartlite_inst (
-    //     // AXI Slave
-    //     .s_axi_aclk     ( s_axi_aclk     ), // input wire s_axi_aclk
-    //     .s_axi_aresetn  ( s_axi_aresetn  ), // input wire s_axi_aresetn
-    //     .s_axi_awaddr   ( s_axi_awaddr   ), // input wire [3 : 0] s_axi_awaddr
-    //     .s_axi_awvalid  ( s_axi_awvalid  ), // input wire s_axi_awvalid
-    //     .s_axi_awready  ( s_axi_awready  ), // output wire s_axi_awready
-    //     .s_axi_wdata    ( s_axi_wdata    ), // input wire [31 : 0] s_axi_wdata
-    //     .s_axi_wstrb    ( s_axi_wstrb    ), // input wire [3 : 0] s_axi_wstrb
-    //     .s_axi_wvalid   ( s_axi_wvalid   ), // input wire s_axi_wvalid
-    //     .s_axi_wready   ( s_axi_wready   ), // output wire s_axi_wready
-    //     .s_axi_bresp    ( s_axi_bresp    ), // output wire [1 : 0] s_axi_bresp
-    //     .s_axi_bvalid   ( s_axi_bvalid   ), // output wire s_axi_bvalid
-    //     .s_axi_bready   ( s_axi_bready   ), // input wire s_axi_bready
-    //     .s_axi_araddr   ( s_axi_araddr   ), // input wire [3 : 0] s_axi_araddr
-    //     .s_axi_arvalid  ( s_axi_arvalid  ), // input wire s_axi_arvalid
-    //     .s_axi_arready  ( s_axi_arready  ), // output wire s_axi_arready
-    //     .s_axi_rdata    ( s_axi_rdata    ), // output wire [31 : 0] s_axi_rdata
-    //     .s_axi_rresp    ( s_axi_rresp    ), // output wire [1 : 0] s_axi_rresp
-    //     .s_axi_rvalid   ( s_axi_rvalid   ), // output wire s_axi_rvalid
-    //     .s_axi_rready   ( s_axi_rready   ), // input wire s_axi_rready
-    //     // Interrupt signal
-    //     .interrupt      ( uart_interrupt ), // output wire interrupt
-    //     // UART RX and TX
-    //     .rx             ( uart_rx_i      ), // input wire rx
-    //     .tx             ( uart_tx_o      )  // output wire tx
-    // );
+
+    // AXI4 FULL UART
+    axi4_full_uart axi4_full_uart_u (
+        .clock_i         ( soc_clk                   ), // input wire s_axi_aclk
+        .reset_ni        ( sys_resetn                ), // input wire s_axi_aresetn
+        // AXI4 slave port (from xbar)
+        .s_axi_awid     ( xbar_to_uart_axi_awid     ), // input wire [1 : 0] s_axi_awid
+        .s_axi_awaddr   ( xbar_to_uart_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
+        .s_axi_awlen    ( xbar_to_uart_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
+        .s_axi_awsize   ( xbar_to_uart_axi_awsize   ), // input wire [2 : 0] s_axi_awsize
+        .s_axi_awburst  ( xbar_to_uart_axi_awburst  ), // input wire [1 : 0] s_axi_awburst
+        .s_axi_awlock   ( xbar_to_uart_axi_awlock   ), // input wire [0 : 0] s_axi_awlock
+        .s_axi_awcache  ( xbar_to_uart_axi_awcache  ), // input wire [3 : 0] s_axi_awcache
+        .s_axi_awprot   ( xbar_to_uart_axi_awprot   ), // input wire [2 : 0] s_axi_awprot
+        .s_axi_awregion ( xbar_to_uart_axi_awregion ), // input wire [3 : 0] s_axi_awregion
+        .s_axi_awqos    ( xbar_to_uart_axi_awqos    ), // input wire [3 : 0] s_axi_awqos
+        .s_axi_awvalid  ( xbar_to_uart_axi_awvalid  ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_uart_axi_awready  ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_uart_axi_wdata    ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_uart_axi_wstrb    ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wlast    ( xbar_to_uart_axi_wlast    ), // input wire s_axi_wlast
+        .s_axi_wvalid   ( xbar_to_uart_axi_wvalid   ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_uart_axi_wready   ), // output wire s_axi_wready
+        .s_axi_bid      ( xbar_to_uart_axi_bid      ), // output wire [1 : 0] s_axi_bid
+        .s_axi_bresp    ( xbar_to_uart_axi_bresp    ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_uart_axi_bvalid   ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_uart_axi_bready   ), // input wire s_axi_bready
+        .s_axi_arid     ( xbar_to_uart_axi_arid     ), // input wire [1 : 0] s_axi_arid
+        .s_axi_araddr   ( xbar_to_uart_axi_araddr   ), // input wire [31 : 0] s_axi_araddr
+        .s_axi_arlen    ( xbar_to_uart_axi_arlen    ), // input wire [7 : 0] s_axi_arlen
+        .s_axi_arsize   ( xbar_to_uart_axi_arsize   ), // input wire [2 : 0] s_axi_arsize
+        .s_axi_arburst  ( xbar_to_uart_axi_arburst  ), // input wire [1 : 0] s_axi_arburst
+        .s_axi_arlock   ( xbar_to_uart_axi_arlock   ), // input wire [0 : 0] s_axi_arlock
+        .s_axi_arcache  ( xbar_to_uart_axi_arcache  ), // input wire [3 : 0] s_axi_arcache
+        .s_axi_arprot   ( xbar_to_uart_axi_arprot   ), // input wire [2 : 0] s_axi_arprot
+        .s_axi_arregion ( xbar_to_uart_axi_arregion ), // input wire [3 : 0] s_axi_arregion
+        .s_axi_arqos    ( xbar_to_uart_axi_arqos    ), // input wire [3 : 0] s_axi_arqos
+        .s_axi_arvalid  ( xbar_to_uart_axi_arvalid  ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_uart_axi_arready  ), // output wire s_axi_arready
+        .s_axi_rid      ( xbar_to_uart_axi_rid      ), // output wire [1 : 0] s_axi_rid
+        .s_axi_rdata    ( xbar_to_uart_axi_rdata    ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_uart_axi_rresp    ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rlast    ( xbar_to_uart_axi_rlast    ), // output wire s_axi_rlast
+        .s_axi_rvalid   ( xbar_to_uart_axi_rvalid   ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_uart_axi_rready   ) // input wire s_axi_rready
+    );
 
 `ifdef EMBEDDED
     // GPIOs

@@ -36,3 +36,46 @@ Install in `--prefix`:
 ``` bash
 make install
 ```
+
+# Building Software
+The sw directory is divided in two sub-directories:
+* host - software for the host
+* SoC  - software for the SoC
+
+### Directory structure
+```
+.
+├── host                                  # Host software
+│   └── <project_name>                    # Project directory
+│       ├── Makefile                      # Makefile
+│       └── src                           # Sources
+│           └── ...
+├── Makefile                              # Top level Makefile
+└── SoC                                   # SoC software
+    ├── examples                          # Example projects
+    │   └── <project_name>                # Project directory
+    │       ├── Makefile                  # Makefile
+    │       └── src                       # Sources
+    │           └── ...
+    ├── linker                            # Linker script directory
+    │   └── <LINKER_SCRIPT>.ld
+    ├── startup                           # Startup directory
+    │   └── startup.s
+    └── template                          # Template project
+        ├── Makefile
+        └── src
+            └── main.c
+```
+
+The top level Makefile contains targets for both host software and SoC software.
+
+### Build command
+To build software for the host:
+```
+make host_<project_name>
+```
+To build software for the SoC:
+```
+make soc_<project_name>
+```
+The relative output product (objs, `.bin`, `.elf` ...) can be found in the `sw/[host|SoC]/<project_name>` directory.

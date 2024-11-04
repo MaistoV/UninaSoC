@@ -478,4 +478,33 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
   output axi_valid_t  ``slave_name``_axi_rvalid,   \
   input  axi_ready_t  ``slave_name``_axi_rready
 
+// AXI4 LITE SLAVE PORTS
+`define DEFINE_AXILITE_SLAVE_PORTS(slave_name)           \
+    // AW channel                                        \
+    input  axi_addr_t   ``slave_name``_axilite_awaddr,   \
+    input  axi_prot_t   ``slave_name``_axilite_awprot,   \
+    input  axi_valid_t  ``slave_name``_axilite_awvalid,  \
+    output axi_ready_t  ``slave_name``_axilite_awready,  \
+    // W channel                                         \
+    input  axi_data_t   ``slave_name``_axilite_wdata,    \
+    input  axi_strb_t   ``slave_name``_axilite_wstrb,    \
+    input  axi_valid_t  ``slave_name``_axilite_wvalid,   \
+    output axi_ready_t  ``slave_name``_axilite_wready,   \
+    // B channel                                         \
+    output axi_resp_t   ``slave_name``_axilite_bresp,    \
+    output axi_valid_t  ``slave_name``_axilite_bvalid,   \
+    input  axi_ready_t  ``slave_name``_axilite_bready,   \
+    // AR channel                                        \
+    input  axi_addr_t   ``slave_name``_axilite_araddr,   \
+    input  axi_prot_t   ``slave_name``_axilite_arprot,   \
+    input  axi_valid_t  ``slave_name``_axilite_arvalid,  \
+    output axi_ready_t  ``slave_name``_axilite_arready,  \
+    // R channel                                         \
+    output axi_data_t   ``slave_name``_axilite_rdata,    \
+    output axi_resp_t   ``slave_name``_axilite_rresp,    \
+    output axi_valid_t  ``slave_name``_axilite_rvalid,   \
+    input  axi_ready_t  ``slave_name``_axilite_rready
+
+
+
 `endif // UNINASOC_AXI_SVH__

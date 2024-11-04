@@ -1,5 +1,6 @@
 #!/bin/bash
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+# Description: Load a binary into the SoC memory through the XDMA and PCIe
 # This is a bash script in the "tcl" directory ...
 
 EXPECTED_ARGC=3;

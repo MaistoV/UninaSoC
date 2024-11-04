@@ -13,7 +13,6 @@ webtalk*
 
 # Build outputs
 build/
-*/*/bin/*
 
 # Temporary files and directories
 tmp*

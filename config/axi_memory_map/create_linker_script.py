@@ -30,7 +30,7 @@ if len(sys.argv) >= 2:
 	config_file_name = sys.argv[1]
 
 # Target TCL file
-ld_file_name = 'sw/linker/UninaSoC.ld'
+ld_file_name = 'sw/SoC/linker/UninaSoC.ld'
 if len(sys.argv) >= 3:
 	ld_file_name = sys.argv[2]
 
