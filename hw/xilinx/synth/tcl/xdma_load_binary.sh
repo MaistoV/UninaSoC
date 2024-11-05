@@ -34,7 +34,7 @@ FILE_SIZE=$(stat -c%s "$FILE_NAME");
 # Read the entire file in hexadecimal
 hex_file=$(xxd -p -u -c 9999999999 $FILE_NAME);
 
-# Set the transaction size to 8 bytes
+# Set the transaction size
 trans_size=4;
 
 num_trans=$(($FILE_SIZE/$trans_size));
@@ -46,7 +46,12 @@ echo "Start writing...";
 
 for i in $(seq 0 $(($num_trans-1)));
 do
-    hex_data=${hex_file:$(($i*$trans_size*2)):$(($trans_size*2))};
+    # step needed to get the right endiannes - basically if have 0xAABBCCDD -> 0xDDCCBBAA
+    hex_data="";
+    for((j=$trans_size*$i*2-1+$trans_size*2;j>=$i*2*$trans_size;j=j-2));
+    do
+        hex_data=${hex_data}${hex_file:$((j-1)):$((2))};
+    done
     hex_addr=$(printf "%x" $addr);
     sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
     addr=$(($addr+$trans_size));
@@ -55,7 +60,12 @@ done
 # Write remaining bytes
 if [ $remaining_bytes -gt 0 ]; 
 then
-    hex_data=${hex_file:$((($i+1)*$trans_size*2)):$remaining_bytes*2};
+    hex_data="";
+    # step needed to get the right endiannes - basically if have 0xAABBCCDD -> 0xDDCCBBAA
+    for((j=$trans_size*($i+1)*2-1+$remaining_bytes*2;j>=($i+1)*2*$trans_size;j=j-2));
+    do
+        hex_data=${hex_data}${hex_file:$((j-1)):$((2))};
+    done
     hex_addr=$(printf "%x" $addr);
     sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
 fi
@@ -72,15 +82,34 @@ then
     do
         hex_addr=$(printf "%x" $addr);
         read_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
-        readback_data=$readback_data${read_data:2:$(($trans_size*2))};
+        read_data=${read_data:$((2))};
+        tmp_data="";
+
+        # Restore the inverse endianness reading the data
+        for((j=$trans_size*2-1;j>=0;j=j-2));
+        do
+            tmp_data=${tmp_data}${read_data:$((j-1)):$((2))};
+        done
+
+        readback_data=$readback_data${tmp_data};
+
         addr=$(($addr+$trans_size));
     done
+    
     if [ $remaining_bytes -gt 0 ]; 
     then
         hex_addr=$(printf "%x" $addr);
         read_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
+        read_data=${read_data:$((2))};
+        tmp_data="";
+
+        # Restore the inverse endianness reading the data
+        for((j=$trans_size*2-1;j>=0;j=j-2));
+        do
+            tmp_data=${tmp_data}${read_data:$((j-1)):$((2))};
+        done
         remaining_index=$((($trans_size-$remaining_bytes)*2));
-        readback_data=$readback_data${read_data:$((2+$remaining_index)):$(($trans_size*2))};
+        readback_data=$readback_data${tmp_data:$((0)):$(($remaining_index))};
     fi
     echo "Readback complete!";
     echo "Original hexadecimal binary:";

@@ -87,6 +87,15 @@ set remaining_bytes [expr {$fsize % $burst_size}]
 for {set i 0} {$i < $num_bursts} {incr i} {
     # Select segment to read
     set segment [string range $data_list [expr {$i * 4}] [expr {$i * 4 + 3}]]
+    
+    # to be tested
+    # invert endiannes - could be done better... 
+    set str_tmp ""
+    for {set j 0} {$j < 4} {incr j} {
+        set str_tmp [string index $segment $j]$str_tmp
+    }
+    set segment $str_tmp
+
     # Convert to binary
     binary scan $segment H* Memword
 
@@ -108,6 +117,14 @@ if {$remaining_bytes > 0} {
     set segment [string range $data_list $start end]
 
     append segment [string repeat \0 [expr {$burst_size - $remaining_bytes}]]
+
+    # to be tested
+    # invert endiannes - could be done better... 
+    set str_tmp ""
+    for {set j 0} {$j < 4} {incr j} {
+        set str_tmp [string index $segment $j]$str_tmp
+    }
+    set segment $str_tmp
 
     # Convert in hex
     binary scan $segment H* word

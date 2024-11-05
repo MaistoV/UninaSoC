@@ -45,11 +45,6 @@ module rvm_socket # (
     `ASSIGN_AXI_BUS(rvm_socket_instr, core_instr_to_socket_instr);
     `ASSIGN_AXI_BUS(rvm_socket_data, core_data_to_socket_data);
 
-    // MEM endianess signals
-    logic [31:0]  core_instr_mem_end_rdata;
-    logic [31:0]  core_data_mem_end_rdata;
-    logic [31:0]  core_data_mem_end_wdata;
-    logic [3:0]   core_data_mem_end_be;
 
 	//////////////////////////////////////////////////////
 	//     ___               ___          _          	//
@@ -82,7 +77,7 @@ module rvm_socket # (
                 .instr_mem_gnt      ( core_instr_mem_gnt        ),
                 .instr_mem_valid    ( core_instr_mem_valid      ),
                 .instr_mem_addr     ( core_instr_mem_addr       ),
-                .instr_mem_rdata    ( core_instr_mem_end_rdata  ),
+                .instr_mem_rdata    ( core_instr_mem_rdata  ),
  
                 .data_mem_req       ( core_data_mem_req         ),
                 .data_mem_valid     ( core_data_mem_valid       ),
@@ -91,7 +86,7 @@ module rvm_socket # (
                 .data_mem_be        ( core_data_mem_be          ),
                 .data_mem_addr      ( core_data_mem_addr        ),
                 .data_mem_wdata     ( core_data_mem_wdata       ),
-                .data_mem_rdata     ( core_data_mem_end_rdata   ),
+                .data_mem_rdata     ( core_data_mem_rdata   ),
  
                 .irq_i		        ( irq_i                     ),
 
@@ -147,7 +142,7 @@ module rvm_socket # (
                 .instr_mem_gnt          ( core_instr_mem_gnt        ),
                 .instr_mem_valid        ( core_instr_mem_valid      ),
                 .instr_mem_addr         ( core_instr_mem_addr       ),
-                .instr_mem_rdata        ( core_instr_mem_end_rdata  ),
+                .instr_mem_rdata        ( core_instr_mem_rdata      ),
  
                 // Data memory interface 
                 .data_mem_req           ( core_data_mem_req         ),
@@ -157,7 +152,7 @@ module rvm_socket # (
                 .data_mem_be            ( core_data_mem_be          ),
                 .data_mem_addr          ( core_data_mem_addr        ),
                 .data_mem_wdata         ( core_data_mem_wdata       ),
-                .data_mem_rdata         ( core_data_mem_end_rdata   ),
+                .data_mem_rdata         ( core_data_mem_rdata       ),
  
                 // Interrupt inputs 
                 .irq_i                  ( irq_i                     ),  // CLINT interrupts + CLINT extension interrupts
@@ -189,21 +184,7 @@ module rvm_socket # (
 
     //////////////////////////////////////////////////////////////////////////
     // Here we are allocating commong module and signals.                   //
-    // Endianess adapter is required at the moment, since the AXI Xbar      //
-    // is using an opposite endinaess compared to the core we are using.    //
-    // AXI adapters are instead required for all the RVM cores we know;     //
-    // As such, they are commong among multiple core choices.               //
     //////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////
-    //  Endianess Adapter   //
-    //////////////////////////
-
-    // Adapt Data endianess from mem to AXI
-    assign core_data_mem_end_rdata  =   {core_data_mem_rdata[7:0], core_data_mem_rdata[15:8], core_data_mem_rdata[23:16], core_data_mem_rdata[31:24]};
-    assign core_data_mem_end_wdata  =   {core_data_mem_wdata[7:0], core_data_mem_wdata[15:8], core_data_mem_wdata[23:16], core_data_mem_wdata[31:24]};
-    assign core_instr_mem_end_rdata =   {core_instr_mem_rdata[7:0], core_instr_mem_rdata[15:8], core_instr_mem_rdata[23:16], core_instr_mem_rdata[31:24]};
-    assign core_data_mem_end_be     =   {core_data_mem_be[0], core_data_mem_be[1], core_data_mem_be[2], core_data_mem_be[3]};
 
     //////////////////////////////////////////////////////////
     //  MEM to AXI-Full converters (Instruction and Data)   //
@@ -313,8 +294,8 @@ module rvm_socket # (
         .m_mem_req          ( core_data_mem_req         ),
         .m_mem_addr         ( core_data_mem_addr        ),
         .m_mem_we           ( core_data_mem_we          ),
-        .m_mem_wdata        ( core_data_mem_end_wdata   ),	
-        .m_mem_be	        ( core_data_mem_end_be      ),	
+        .m_mem_wdata        ( core_data_mem_wdata       ),	
+        .m_mem_be	        ( core_data_mem_be          ),	
         .m_mem_gnt	        ( core_data_mem_gnt         ),	
         .m_mem_valid        ( core_data_mem_valid       ),
         .m_mem_rdata	    ( core_data_mem_rdata       ),
