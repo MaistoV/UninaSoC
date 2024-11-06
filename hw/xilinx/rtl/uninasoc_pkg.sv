@@ -23,7 +23,8 @@ package uninasoc_pkg;
     // - GPIOs in outputs
     // - Main memory
     `ifdef EMBEDDED
-        localparam int unsigned NUM_AXI_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 1;
+        // NB: we should find a better and automatic way of count AXI and MASTERs
+        localparam int unsigned NUM_AXI_SLAVES = 3;//NUM_GPIO_IN + NUM_GPIO_OUT + 1;
     
     // Crosbar slaves if HPC
     // - Main memory

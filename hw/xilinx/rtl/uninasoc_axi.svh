@@ -5,6 +5,7 @@
 // Note: The main rationale behind this macro is to avoid the usage of structs and
 //       macros for the widest possible syntax compatibility.
 
+
 `ifndef UNINASOC_AXI_SVH__
 `define UNINASOC_AXI_SVH__
 

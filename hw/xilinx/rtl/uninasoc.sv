@@ -28,6 +28,7 @@
 //                                                    |__________|
 //
 
+
 // Import packages
 import uninasoc_pkg::*;
 
@@ -48,8 +49,8 @@ module uninasoc (
         input logic sys_reset_i,
 
         // // UART interface
-        // input  logic                        uart_rx_i,
-        // output logic                        uart_tx_o
+        input  logic                        uart_rx_i,
+        output logic                        uart_tx_o,
 
         // GPIOs
         // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
@@ -106,17 +107,19 @@ module uninasoc (
     // Concatenate AXI master buses
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
-    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar)
+    //                       array_name,       bus 0
+    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
 
     // Concatenate AXI slave buses
     `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
-    // NOTE: The order in this macro expansion is must match with xbar master ports!
-    `ifdef EMBEDDED
-        `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
-    `elsif HPC
-         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_uart, xbar_to_main_mem);
-    `endif
 
+    // NOTE: The order in this macro expansion must match with xbar master ports!
+    //                      array_name,            bus N,           bus N-1,    ...     bus 0
+    `ifdef EMBEDDED
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_uart, xbar_to_gpio_out, xbar_to_main_mem);
+    `elsif HPC
+        `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_uart, xbar_to_main_mem);
+    `endif
 
     ///////////////////////
     // Local assignments //
@@ -426,8 +429,14 @@ module uninasoc (
 
     // AXI4 FULL UART
     axi4_full_uart axi4_full_uart_u (
-        .clock_i         ( soc_clk                   ), // input wire s_axi_aclk
-        .reset_ni        ( sys_resetn                ), // input wire s_axi_aresetn
+        .clock_i        ( soc_clk                   ), // input wire s_axi_aclk
+        .reset_ni       ( sys_resetn                ), // input wire s_axi_aresetn
+        .int_core_o     (                           ), // TBD
+        .int_xdma_o     (                           ), // TBD
+        .int_ack_i      ( '0                        ), // TBD
+        .tx_o           ( uart_tx_o                 ), // Transmission signal (SoC output signal)
+        .rx_i           ( uart_rx_i                 ), // Receive signal (SoC input signal)
+
         // AXI4 slave port (from xbar)
         .s_axi_awid     ( xbar_to_uart_axi_awid     ), // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr   ( xbar_to_uart_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr

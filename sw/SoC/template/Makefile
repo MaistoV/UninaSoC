@@ -27,7 +27,7 @@ STARTUP = 	      startup
 # OBJDUMP = $(RV_PREFIX)objdump $(32BITODFLAGS)
 #
 
-RV_PREFIX = 	riscv32-unknown-elf-
+RV_PREFIX = 	/opt/rv32/bin/riscv32-unknown-elf-
 CC = 			$(RV_PREFIX)gcc
 LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
