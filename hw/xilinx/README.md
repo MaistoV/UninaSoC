@@ -29,7 +29,8 @@ You can load your binary into the device memory running the following command, o
 ``` bash
 make load_binary bin_path=<path-to-bin> base_address=<value> JTAG_READBACK=<false|true>
 ```
-The default configuration load the bootrom.
+The default configuration loads the bootrom.
+> NOTE: this loading flow does not support C-extension yet.
 
 ## Directory Structure
 This tree is structured as follows:
