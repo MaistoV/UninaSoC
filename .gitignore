@@ -16,4 +16,5 @@ build/
 
 # Temporary files and directories
 tmp*
+backup*
 

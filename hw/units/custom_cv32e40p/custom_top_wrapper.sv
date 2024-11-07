@@ -1,7 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description:
 // This module is intended as a top-level wrapper for the code in ./rtl
-// IT might support either MEM protocol or AXI protocol, using the 
+// IT might support either MEM protocol or AXI protocol, using the
 // uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
 
 
@@ -61,11 +61,16 @@ module custom_top_wrapper # (
     //  Bus Array Interfaces  //
     ////////////////////////////
 
-    // MEM Master Interface Array 
+    // MEM Master Interface Array
     `DEFINE_MEM_MASTER_PORTS(instr),
-    // MEM Slave Interface Array 
+    // MEM Slave Interface Array
     `DEFINE_MEM_MASTER_PORTS(data)
 );
+
+    // Tie-off non-driven signals
+    assign instr_mem_wdata = '0;
+    assign instr_mem_we    = '0;
+    assign instr_mem_be    = '0;
 
     cv32e40p_top #(
         .COREV_PULP             ( COREV_PULP        ),  // PULP ISA Extension (incl. custom CSRs and hardware loop, excl. cv.elw)
@@ -74,7 +79,7 @@ module custom_top_wrapper # (
         .FPU_ADDMUL_LAT         ( FPU_ADDMUL_LAT    ),  // Floating-Point ADDition/MULtiplication computing lane pipeline registers number
         .FPU_OTHERS_LAT         ( FPU_OTHERS_LAT    ),  // Floating-Point COMParison/CONVersion computing lanes pipeline registers number
         .ZFINX                  ( ZFINX             ),  // Float-in-General Purpose registers
-        .NUM_MHPMCOUNTERS       ( NUM_MHPMCOUNTERS  )   
+        .NUM_MHPMCOUNTERS       ( NUM_MHPMCOUNTERS  )
     ) (
         // Clock and Reset
         .clk_i                  ( clk_i               ),
@@ -121,7 +126,7 @@ module custom_top_wrapper # (
         // CPU Control Signals
         .fetch_enable_i         ( fetch_enable_i        ),
         .core_sleep_o           ( core_sleep_o          )
-);
+    );
 
 endmodule : custom_top_wrapper
 
