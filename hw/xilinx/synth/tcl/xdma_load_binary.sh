@@ -16,7 +16,7 @@ help (){
 }
 
 # Check the argc
-if [ $ARGC -ne $EXPECTED_ARGC ]; 
+if [ $ARGC -ne $EXPECTED_ARGC ];
 then
     echo  "Invalid number of arguments, please check the inputs and try again";
     help;
@@ -34,7 +34,7 @@ FILE_SIZE=$(stat -c%s "$FILE_NAME");
 # Read the entire file in hexadecimal
 hex_file=$(xxd -p -u -c 9999999999 $FILE_NAME);
 
-# Set the transaction size
+# Set the transaction size in bytes
 trans_size=4;
 
 num_trans=$(($FILE_SIZE/$trans_size));
@@ -46,7 +46,14 @@ echo "Start writing...";
 
 for i in $(seq 0 $(($num_trans-1)));
 do
-    # step needed to get the right endiannes - basically if have 0xAABBCCDD -> 0xDDCCBBAA
+    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
+    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
+    #   - no C-extension
+    #   - no 8-byte (or longer) transactions
+    if [ $burst_size -neq 4 ] {
+        echo "Unsupported burst_size=$burst_size! Supported value is 4, for now." >&2
+        return 1
+    }
     hex_data="";
     for((j=$trans_size*$i*2-1+$trans_size*2;j>=$i*2*$trans_size;j=j-2));
     do
@@ -58,10 +65,18 @@ do
 done
 
 # Write remaining bytes
-if [ $remaining_bytes -gt 0 ]; 
+if [ $remaining_bytes -gt 0 ];
 then
     hex_data="";
-    # step needed to get the right endiannes - basically if have 0xAABBCCDD -> 0xDDCCBBAA
+
+    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
+    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
+    #   - no C-extension
+    #   - no 8-byte (or longer) transactions
+    if [ $burst_size -neq 4 ] {
+        echo "Unsupported burst_size=$burst_size! Supported value is 4, for now." >&2
+        return 1
+    }
     for((j=$trans_size*($i+1)*2-1+$remaining_bytes*2;j>=($i+1)*2*$trans_size;j=j-2));
     do
         hex_data=${hex_data}${hex_file:$((j-1)):$((2))};
@@ -73,7 +88,7 @@ fi
 echo "Write complete!";
 
 # Readback
-if [[ ${READBACK} == "true" ]]; 
+if [[ ${READBACK} == "true" ]];
 then
     echo "Start readback...";
     addr=$BASE_ADDRESS;
@@ -95,8 +110,8 @@ then
 
         addr=$(($addr+$trans_size));
     done
-    
-    if [ $remaining_bytes -gt 0 ]; 
+
+    if [ $remaining_bytes -gt 0 ];
     then
         hex_addr=$(printf "%x" $addr);
         read_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
@@ -115,12 +130,12 @@ then
     echo "Original hexadecimal binary:";
     echo $hex_file;
     echo "Readback hexadecimal data:";
-    echo $readback_data; 
+    echo $readback_data;
 
     if [[ ${hex_file} == ${readback_data} ]];
     then
         echo "Test passed :)";
-    else 
+    else
         echo "Test failed :(";
     fi
 fi

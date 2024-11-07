@@ -67,15 +67,15 @@ set gpio_rd_txn gpio_rd_txn
 
 # Internal variables:
 #	-data_list: binary file read at absolute path
-#	-num_bursts: size of each "burst" (data sent) in each transaction in bytes (4= 32 bits). This parameter is architecture dependent.
+#	-num_bursts: size of each "burst" (data sent) in each transaction in bytes (4 -> 32 bits). This parameter is architecture dependent.
 #	-remaining bytes: reminder in terms of bytes that will handled with padding.
-#	-segment: chunk of 4 bytes extracted from data_lists and converted in hexadecimal
+#	-segment: chunk of $burst_size bytes extracted from data_lists and converted in hexadecimal
 
 # Read file
 set data_list [read_file_to_words $filename $fsize]
-# 4 bytes
+# Burst size in bytes
 set burst_size 4
-# Number of 4-bytes transaction
+# Number of $burst_size-bytes transaction
 set num_bursts [expr {int( $fsize / $burst_size)}]
 # Remining bytes
 set remaining_bytes [expr {$fsize % $burst_size}]
@@ -86,12 +86,17 @@ set remaining_bytes [expr {$fsize % $burst_size}]
 # Run burst-based transactions
 for {set i 0} {$i < $num_bursts} {incr i} {
     # Select segment to read
-    set segment [string range $data_list [expr {$i * 4}] [expr {$i * 4 + 3}]]
-    
-    # to be tested
-    # invert endiannes - could be done better... 
+    set segment [string range $data_list [expr {$i * $burst_size}] [expr {($i + 1) * $burst_size}]]
+
+    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
+    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
+    #   - no C-extension
+    #   - no 8-byte (or longer) transactions
+    if {$burst_size != 4} {
+        return -code error "Unsupported burst_size=$burst_size! Supported value is 4, for now."
+    }
     set str_tmp ""
-    for {set j 0} {$j < 4} {incr j} {
+    for {set j 0} {$j < $burst_size} {incr j} {
         set str_tmp [string index $segment $j]$str_tmp
     }
     set segment $str_tmp
@@ -100,10 +105,10 @@ for {set i 0} {$i < $num_bursts} {incr i} {
     binary scan $segment H* Memword
 
     # Calculate address
-    set address [format 0x%x [expr {$base_address + $i * 4}]]
+    set address [format 0x%x [expr {$base_address + $i * $burst_size}]]
 
     # Create and run transaction
-    create_hw_axi_txn $gpio_wr_txn [get_hw_axis hw_axi_1] -type write -force -address $address -data $Memword -len 4
+    create_hw_axi_txn $gpio_wr_txn [get_hw_axis hw_axi_1] -type write -force -address $address -data $Memword -len $burst_size
     run_hw_axi [get_hw_axi_txns $gpio_wr_txn]
 
     # Debug
@@ -118,10 +123,15 @@ if {$remaining_bytes > 0} {
 
     append segment [string repeat \0 [expr {$burst_size - $remaining_bytes}]]
 
-    # to be tested
-    # invert endiannes - could be done better... 
+    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
+    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
+    #   - no C-extension
+    #   - no 8-byte (or longer) transactions
+    if {$burst_size != 4} {
+        return -code error "Unsupported burst_size=$burst_size! Supported value is 4, for now."
+    }
     set str_tmp ""
-    for {set j 0} {$j < 4} {incr j} {
+    for {set j 0} {$j < $burst_size} {incr j} {
         set str_tmp [string index $segment $j]$str_tmp
     }
     set segment $str_tmp
@@ -130,10 +140,10 @@ if {$remaining_bytes > 0} {
     binary scan $segment H* word
 
     # Compose address
-    set address [format 0x%x [expr {$base_address + ($num_bursts * 4)}]]
+    set address [format 0x%x [expr {$base_address + ($num_bursts * $burst_size)}]]
 
     # Execute axi transaction
-    create_hw_axi_txn $gpio_wr_txn [get_hw_axis hw_axi_1] -type write -force -address $address -data $word -len 4
+    create_hw_axi_txn $gpio_wr_txn [get_hw_axis hw_axi_1] -type write -force -address $address -data $word -len $burst_size
     run_hw_axi [get_hw_axi_txns $gpio_wr_txn]
 
     # Debug
@@ -148,7 +158,7 @@ if {$remaining_bytes > 0} {
 if { $read_back == "true" } {
     for {set i 0} {$i < $num_bursts} {incr i} {
         # Compose address
-        set address [format 0x%x [expr {$base_address + $i * 4}]]
+        set address [format 0x%x [expr {$base_address + $i * $burst_size}]]
 
         # Create and run transaction
         create_hw_axi_txn $gpio_rd_txn [get_hw_axis hw_axi_1] -type read -force -address $address
