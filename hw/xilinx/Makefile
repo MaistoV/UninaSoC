@@ -71,9 +71,11 @@ XILINX_PROBE_LTX ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl
 
 # Whether to use ILA probes (0|1)
 XILINX_ILA ?= 0
+DEBUG_MODULE ?= 1
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=								\
+	DEBUG_MODULE=${DEBUG_MODULE}					\
 	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
 	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
 	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\

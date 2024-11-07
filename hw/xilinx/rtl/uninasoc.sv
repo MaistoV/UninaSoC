@@ -81,6 +81,7 @@ module uninasoc (
 
     // VIO Signals
     logic vio_resetn;
+    logic vio_jtag_trst_n;
 
     //////////////////////////
     // AXI interconnections //
@@ -90,8 +91,11 @@ module uninasoc (
     // sys_master -> crossbar
     `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
-    `DECLARE_AXI_BUS(rvm_socket_instr, AXI_DATA_WIDTH);
-    `DECLARE_AXI_BUS(rvm_socket_data, AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_instr , AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_data  , AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(dbg_master       , AXI_DATA_WIDTH);.
+    // crossbar -> rvm_socket
+    `DECLARE_AXI_BUS(dbg_slave        , AXI_DATA_WIDTH);
 
     // AXI slaves
     // xbar -> main memory
@@ -106,15 +110,14 @@ module uninasoc (
     // Concatenate AXI master buses
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
-    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar)
+    `CONCAT_AXI_MASTERS_ARRAY4(xbar_masters, dbg_master, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
 
     // Concatenate AXI slave buses
     `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
-    // NOTE: The order in this macro expansion is must match with xbar master ports!
     `ifdef EMBEDDED
-        `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, dbg_slave, xbar_to_gpio_out, xbar_to_main_mem);
     `elsif HPC
-         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_uart, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, dbg_slave, xbar_to_uart, xbar_to_main_mem);
     `endif
 
 
@@ -295,6 +298,7 @@ module uninasoc (
         .rst_ni         ( vio_resetn ), //( sys_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( '0         ),
+        .jtag_trst_ni   ( vio_jtag_trst_n ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,
@@ -376,7 +380,89 @@ module uninasoc (
         .rvm_socket_data_axi_rresp,
         .rvm_socket_data_axi_rlast,
         .rvm_socket_data_axi_rvalid,
-        .rvm_socket_data_axi_rready
+        .rvm_socket_data_axi_rready,
+
+        // Debug AXI master
+        .dbg_master_axi_awid,
+        .dbg_master_axi_awaddr,
+        .dbg_master_axi_awlen,
+        .dbg_master_axi_awsize,
+        .dbg_master_axi_awburst,
+        .dbg_master_axi_awlock,
+        .dbg_master_axi_awcache,
+        .dbg_master_axi_awprot,
+        .dbg_master_axi_awqos,
+        .dbg_master_axi_awvalid,
+        .dbg_master_axi_awready,
+        .dbg_master_axi_awregion,
+        .dbg_master_axi_wdata,
+        .dbg_master_axi_wstrb,
+        .dbg_master_axi_wlast,
+        .dbg_master_axi_wvalid,
+        .dbg_master_axi_wready,
+        .dbg_master_axi_bid ,
+        .dbg_master_axi_bresp,
+        .dbg_master_axi_bvalid,
+        .dbg_master_axi_bready,
+        .dbg_master_axi_arid,
+        .dbg_master_axi_araddr,
+        .dbg_master_axi_arlen,
+        .dbg_master_axi_arsize,
+        .dbg_master_axi_arburst,
+        .dbg_master_axi_arlock,
+        .dbg_master_axi_arcache,
+        .dbg_master_axi_arprot,
+        .dbg_master_axi_arqos,
+        .dbg_master_axi_arvalid,
+        .dbg_master_axi_arready,
+        .dbg_master_axi_arregion,
+        .dbg_master_axi_rid,
+        .dbg_master_axi_rdata,
+        .dbg_master_axi_rresp,
+        .dbg_master_axi_rlast,
+        .dbg_master_axi_rvalid,
+        .dbg_master_axi_rready,
+
+        // Debug AXI slave
+        .dbg_slave_axi_awid,
+        .dbg_slave_axi_awaddr,
+        .dbg_slave_axi_awlen,
+        .dbg_slave_axi_awsize,
+        .dbg_slave_axi_awburst,
+        .dbg_slave_axi_awlock,
+        .dbg_slave_axi_awcache,
+        .dbg_slave_axi_awprot,
+        .dbg_slave_axi_awqos,
+        .dbg_slave_axi_awvalid,
+        .dbg_slave_axi_awready,
+        .dbg_slave_axi_awregion,
+        .dbg_slave_axi_wdata,
+        .dbg_slave_axi_wstrb,
+        .dbg_slave_axi_wlast,
+        .dbg_slave_axi_wvalid,
+        .dbg_slave_axi_wready,
+        .dbg_slave_axi_bid ,
+        .dbg_slave_axi_bresp,
+        .dbg_slave_axi_bvalid,
+        .dbg_slave_axi_bready,
+        .dbg_slave_axi_arid,
+        .dbg_slave_axi_araddr,
+        .dbg_slave_axi_arlen,
+        .dbg_slave_axi_arsize,
+        .dbg_slave_axi_arburst,
+        .dbg_slave_axi_arlock,
+        .dbg_slave_axi_arcache,
+        .dbg_slave_axi_arprot,
+        .dbg_slave_axi_arqos,
+        .dbg_slave_axi_arvalid,
+        .dbg_slave_axi_arready,
+        .dbg_slave_axi_arregion,
+        .dbg_slave_axi_rid,
+        .dbg_slave_axi_rdata,
+        .dbg_slave_axi_rresp,
+        .dbg_slave_axi_rlast,
+        .dbg_slave_axi_rvalid,
+        .dbg_slave_axi_rready
     );
 
     ////////////////
