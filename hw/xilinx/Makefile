@@ -17,8 +17,8 @@ XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_PROJECT_BUILD_DIR}/reports
 # List of the Xilinx IPs to build and import in the design
 # Parsing from directory ips/
 XILINX_COMMON_IP_LIST 	= $(shell basename --multiple ${XILINX_IPS_ROOT}/common/xlnx_*)
-XILINX_HPC_IP_LIST 		= $(shell basename --multiple ${XILINX_IPS_ROOT}/hpc/xlnx_*) 
-XILINX_EMBEDDED_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/embedded/xlnx_*) 
+XILINX_HPC_IP_LIST 		= $(shell basename --multiple ${XILINX_IPS_ROOT}/hpc/xlnx_*)
+XILINX_EMBEDDED_IP_LIST = $(shell basename --multiple ${XILINX_IPS_ROOT}/embedded/xlnx_*)
 
 # List of the Custom IPs to build and import in the design
 # Parsing from directory ips/
@@ -48,13 +48,13 @@ ifeq (${SOC_CONFIG}, hpc)
 	XILINX_IP_LIST_XCI 	+= ${XILINX_HPC_IP_LIST_XCI}
 	CUSTOM_IP_LIST 		+= ${CUSTOM_HPC_IP_LIST}
 	CUSTOM_IP_LIST_XCI 	+= ${CUSTOM_HPC_IP_LIST_XCI}
-else ifeq (${SOC_CONFIG}, embedded) 
+else ifeq (${SOC_CONFIG}, embedded)
 	XILINX_IP_LIST 		+= ${XILINX_EMBEDDED_IP_LIST}
 	XILINX_IP_LIST_XCI 	+= ${XILINX_EMBEDDED_IP_LIST_XCI}
 	CUSTOM_IP_LIST 		+= ${CUSTOM_EMBEDDED_IP_LIST}
 	CUSTOM_IP_LIST_XCI 	+= ${CUSTOM_EMBEDDED_IP_LIST_XCI}
 else
-$(error "Unsupported config ${SOC_CONFIG}") 
+$(error "Unsupported config ${SOC_CONFIG}")
 endif
 
 # Concatenate/create the final IP lists
@@ -70,10 +70,10 @@ XILINX_BITSTREAM   ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/im
 XILINX_PROBE_LTX ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.ltx
 
 # Whether to use ILA probes (0|1)
-XILINX_ILA ?= 1
+XILINX_ILA ?= 0
 
 # Full environment variables list for Vivado
-XILINX_VIVADO_ENV ?=              					\
+XILINX_VIVADO_ENV ?=								\
 	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
 	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
 	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
@@ -94,8 +94,6 @@ XILINX_VIVADO_ENV ?=              					\
     QUESTA_PATH=${QUESTA_PATH}   					\
     GCC_PATH=${GCC_PATH}   							\
     XILINX_SIMLIB_PATH=${XILINX_SIMLIB_PATH}
-	
-	
 
 # Package Vivado command in a single variable
 XILINX_VIVADO := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode ${XILINX_VIVADO_MODE}
@@ -117,7 +115,6 @@ open_gui:
 
 # Build bitstream from scratch
 bitstream: ips
-	mkdir -p ${XILINX_PROJECT_BUILD_DIR}
 	mkdir -p ${XILINX_PROJECT_REPORTS_DIR}
 	cd ${XILINX_PROJECT_BUILD_DIR};			\
 	${XILINX_VIVADO} -source ${XILINX_ROOT}/synth/tcl/build_bitstream.tcl
@@ -136,9 +133,10 @@ ips: ${IP_NAMES}
 	cd       ${IP_BUILD_DIR}; 						 		\
 	export IP_DIR=${IP_DIR};								\
 	export IP_PRJ_NAME=${IP_NAME}_prj;						\
-	export IP_NAME=${IP_NAME}; ${XILINX_VIVADO_BATCH}		\
+	export IP_NAME=${IP_NAME}; 								\
+	${XILINX_VIVADO_BATCH}									\
 		-source ${XILINX_IPS_ROOT}/common/tcl/pre_config.tcl 	\
-		-source ${IP_DIR}/config.tcl			\
+		-source ${IP_DIR}/config.tcl							\
 		-source ${XILINX_IPS_ROOT}/common/tcl/post_config.tcl
 	touch $@
 
@@ -157,8 +155,14 @@ open_ila:
 		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SYNTH_TCL_ROOT}/set_ila_trigger.tcl
 
+vio_reset:
+	${XILINX_VIVADO_ENV} ${XILINX_VIVADO} \
+		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
+		-source ${XILINX_SYNTH_TCL_ROOT}/vio_reset_core.tcl
+
 program_bitstream:
 	${XILINX_VIVADO} \
+		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SYNTH_TCL_ROOT}/$@.tcl
 
 # Simulation
@@ -180,7 +184,7 @@ base_address ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
 
 # Load the binary into SoC memory (BRAM for now)
-# Call the specific load script based on the SOC_CONFIG (HPC or EMBEDDED) 
+# Call the specific load script based on the SOC_CONFIG (HPC or EMBEDDED)
 load_binary: load_binary_${SOC_CONFIG}
 
 # Write the binary to BRAM through jtag2axi

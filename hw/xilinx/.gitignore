@@ -1,2 +1,5 @@
 # Phony xci IP files
 *.xci
+
+# Xilinx artifacts
+.Xil

@@ -17,36 +17,12 @@ set_property board_part $::env(XILINX_BOARD_PART) [current_project]
 #######################
 # Suppress Message(s) #
 #######################
-# The IP file <...> has been moved from its original location, as a result the outputs for this IP will now be generated in <...>. Alternatively a copy of the IP can be imported into the project using one of the 'import_ip' or 'import_files' commands.
-set_msg_config -id {[Vivado 12-13650]} -suppress
-# INFO: [Synth 8-11241] undeclared symbol 'REGCCE', assumed default net type 'wire' [<vivado install>/data/verilog/src/unimacro/BRAM_SINGLE_MACRO.v:2170]
-set_msg_config -id {[Synth 8-11241]} -suppress
-# WARNING: [Board 49-26] cannot add Board Part<...> available at <vivado install>/data/xhub/boards/XilinxBoardStore/boards<...> as part <...> specified in board_part file is either invalid or not available
-set_msg_config -id {[Board 49-26]} -suppress
+source $::env(XILINX_SYNTH_TCL_ROOT)/suppress_messages.tcl
 
 ###################
 # Verilog defines #
 ###################
-# Prepare list
-set verilog_defines ""
-
-# HPC/EMBEDDED
-if { "$::env(SOC_CONFIG)" == "hpc" } {
-    lappend verilog_defines HPC=1
-} elseif { "$::env(SOC_CONFIG)" == "embedded" } {
-    lappend verilog_defines EMBEDDED=1
-} else {
-    puts "Unsupported board $::env(SOC_CONFIG)"
-    exit 1
-}
-
-# AXI config
-lappend verilog_defines AXI_DATA_WIDTH=$::env(AXI_DATA_WIDTH)
-lappend verilog_defines AXI_ADDR_WIDTH=$::env(AXI_ADDR_WIDTH)
-lappend verilog_defines AXI_ID_WIDTH=$::env(AXI_ID_WIDTH)
-
-# Set property to list
-set_property verilog_define $verilog_defines [current_fileset]
+source $::env(XILINX_SYNTH_TCL_ROOT)/verilog_defines.tcl
 
 ###############
 # Add sources #
@@ -76,8 +52,8 @@ update_compile_order -fileset sources_1
 
 # Reports directory
 set project_dir [get_property directory [current_project]]
-set report_dir $project_dir/report
-exec mkdir $report_dir
+set report_dir $project_dir/reports
+exec mkdir -p $report_dir
 
 ###################
 # RTL elaboration #
