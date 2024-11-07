@@ -8,9 +8,6 @@
 `ifndef UNINASOC_AXI_SVH__
 `define UNINASOC_AXI_SVH__
 
-// Import sub-package
-import uninasoc_pkg::*;
-
 //////////////////////////////////////////////////////
 //    ___                         _                 //
 //   | _ \__ _ _ _ __ _ _ __  ___| |_ ___ _ _ ___   //
@@ -248,6 +245,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 // Effectively, just renaming the signals
 `define CONCAT_AXI_MASTERS_ARRAY1(array_name, bus_name0) \
     `ASSIGN_AXI_BUS(``array_name``, ``bus_name0``)
+
 `define CONCAT_AXI_SLAVES_ARRAY1(array_name, bus_name0) \
     `ASSIGN_AXI_BUS(``bus_name0``, ``array_name``)
 
@@ -335,7 +333,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``array_name``_axi_rlast   = {``bus_name1``_axi_rlast      , ``bus_name0``_axi_rlast    }; \
     assign ``array_name``_axi_rvalid  = {``bus_name1``_axi_rvalid     , ``bus_name0``_axi_rvalid   };
 
-    // Concatenate 3 master buses
+// Concatenate 3 master buses
 `define CONCAT_AXI_MASTERS_ARRAY3(array_name, bus_name2, bus_name1, bus_name0) \
     assign ``array_name``_axi_awid     = {``bus_name2``_axi_awid      , ``bus_name1``_axi_awid      , ``bus_name0``_axi_awid     }; \
     assign ``array_name``_axi_awaddr   = {``bus_name2``_axi_awaddr    , ``bus_name1``_axi_awaddr    , ``bus_name0``_axi_awaddr   }; \
@@ -377,7 +375,89 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign {``bus_name2``_axi_rlast      , ``bus_name1``_axi_rlast     , ``bus_name0``_axi_rlast    } = ``array_name``_axi_rlast   ; \
     assign {``bus_name2``_axi_rvalid     , ``bus_name1``_axi_rvalid    , ``bus_name0``_axi_rvalid   } = ``array_name``_axi_rvalid  ;
 
-// TODO: add macros for 3, 4, ... buses, both for masters and slaves
+// Concatenate 3 slave buses
+`define CONCAT_AXI_SLAVES_ARRAY3(array_name, bus_name2, bus_name1, bus_name0) \
+    assign {``bus_name2``_axi_awid       , ``bus_name1``_axi_awid       , ``bus_name0``_axi_awid     } = ``array_name``_axi_awid    ; \
+    assign {``bus_name2``_axi_awaddr     , ``bus_name1``_axi_awaddr     , ``bus_name0``_axi_awaddr   } = ``array_name``_axi_awaddr  ; \
+    assign {``bus_name2``_axi_awlen      , ``bus_name1``_axi_awlen      , ``bus_name0``_axi_awlen    } = ``array_name``_axi_awlen   ; \
+    assign {``bus_name2``_axi_awsize     , ``bus_name1``_axi_awsize     , ``bus_name0``_axi_awsize   } = ``array_name``_axi_awsize  ; \
+    assign {``bus_name2``_axi_awburst    , ``bus_name1``_axi_awburst    , ``bus_name0``_axi_awburst  } = ``array_name``_axi_awburst ; \
+    assign {``bus_name2``_axi_awlock     , ``bus_name1``_axi_awlock     , ``bus_name0``_axi_awlock   } = ``array_name``_axi_awlock  ; \
+    assign {``bus_name2``_axi_awcache    , ``bus_name1``_axi_awcache    , ``bus_name0``_axi_awcache  } = ``array_name``_axi_awcache ; \
+    assign {``bus_name2``_axi_awprot     , ``bus_name1``_axi_awprot     , ``bus_name0``_axi_awprot   } = ``array_name``_axi_awprot  ; \
+    assign {``bus_name2``_axi_awqos      , ``bus_name1``_axi_awqos      , ``bus_name0``_axi_awqos    } = ``array_name``_axi_awqos   ; \
+    assign {``bus_name2``_axi_awvalid    , ``bus_name1``_axi_awvalid    , ``bus_name0``_axi_awvalid  } = ``array_name``_axi_awvalid ; \
+    assign {``bus_name2``_axi_awregion   , ``bus_name1``_axi_awregion   , ``bus_name0``_axi_awregion } = ``array_name``_axi_awregion; \
+    assign {``bus_name2``_axi_wdata      , ``bus_name1``_axi_wdata      , ``bus_name0``_axi_wdata    } = ``array_name``_axi_wdata   ; \
+    assign {``bus_name2``_axi_wstrb      , ``bus_name1``_axi_wstrb      , ``bus_name0``_axi_wstrb    } = ``array_name``_axi_wstrb   ; \
+    assign {``bus_name2``_axi_wlast      , ``bus_name1``_axi_wlast      , ``bus_name0``_axi_wlast    } = ``array_name``_axi_wlast   ; \
+    assign {``bus_name2``_axi_wvalid     , ``bus_name1``_axi_wvalid     , ``bus_name0``_axi_wvalid   } = ``array_name``_axi_wvalid  ; \
+    assign {``bus_name2``_axi_bready     , ``bus_name1``_axi_bready     , ``bus_name0``_axi_bready   } = ``array_name``_axi_bready  ; \
+    assign {``bus_name2``_axi_araddr     , ``bus_name1``_axi_araddr     , ``bus_name0``_axi_araddr   } = ``array_name``_axi_araddr  ; \
+    assign {``bus_name2``_axi_arlen      , ``bus_name1``_axi_arlen      , ``bus_name0``_axi_arlen    } = ``array_name``_axi_arlen   ; \
+    assign {``bus_name2``_axi_arsize     , ``bus_name1``_axi_arsize     , ``bus_name0``_axi_arsize   } = ``array_name``_axi_arsize  ; \
+    assign {``bus_name2``_axi_arburst    , ``bus_name1``_axi_arburst    , ``bus_name0``_axi_arburst  } = ``array_name``_axi_arburst ; \
+    assign {``bus_name2``_axi_arlock     , ``bus_name1``_axi_arlock     , ``bus_name0``_axi_arlock   } = ``array_name``_axi_arlock  ; \
+    assign {``bus_name2``_axi_arcache    , ``bus_name1``_axi_arcache    , ``bus_name0``_axi_arcache  } = ``array_name``_axi_arcache ; \
+    assign {``bus_name2``_axi_arprot     , ``bus_name1``_axi_arprot     , ``bus_name0``_axi_arprot   } = ``array_name``_axi_arprot  ; \
+    assign {``bus_name2``_axi_arqos      , ``bus_name1``_axi_arqos      , ``bus_name0``_axi_arqos    } = ``array_name``_axi_arqos   ; \
+    assign {``bus_name2``_axi_arvalid    , ``bus_name1``_axi_arvalid    , ``bus_name0``_axi_arvalid  } = ``array_name``_axi_arvalid ; \
+    assign {``bus_name2``_axi_arid       , ``bus_name1``_axi_arid       , ``bus_name0``_axi_arid     } = ``array_name``_axi_arid    ; \
+    assign {``bus_name2``_axi_arregion   , ``bus_name1``_axi_arregion   , ``bus_name0``_axi_arregion } = ``array_name``_axi_arregion; \
+    assign {``bus_name2``_axi_rready     , ``bus_name1``_axi_rready     , ``bus_name0``_axi_rready   } = ``array_name``_axi_rready  ; \
+    assign ``array_name``_axi_awready = {``bus_name2``_axi_awready    , ``bus_name1``_axi_awready    , ``bus_name0``_axi_awready  }; \
+    assign ``array_name``_axi_wready  = {``bus_name2``_axi_wready     , ``bus_name1``_axi_wready     , ``bus_name0``_axi_wready   }; \
+    assign ``array_name``_axi_bid     = {``bus_name2``_axi_bid        , ``bus_name1``_axi_bid        , ``bus_name0``_axi_bid      }; \
+    assign ``array_name``_axi_bresp   = {``bus_name2``_axi_bresp      , ``bus_name1``_axi_bresp      , ``bus_name0``_axi_bresp    }; \
+    assign ``array_name``_axi_bvalid  = {``bus_name2``_axi_bvalid     , ``bus_name1``_axi_bvalid     , ``bus_name0``_axi_bvalid   }; \
+    assign ``array_name``_axi_arready = {``bus_name2``_axi_arready    , ``bus_name1``_axi_arready    , ``bus_name0``_axi_arready  }; \
+    assign ``array_name``_axi_rid     = {``bus_name2``_axi_rid        , ``bus_name1``_axi_rid        , ``bus_name0``_axi_rid      }; \
+    assign ``array_name``_axi_rdata   = {``bus_name2``_axi_rdata      , ``bus_name1``_axi_rdata      , ``bus_name0``_axi_rdata    }; \
+    assign ``array_name``_axi_rresp   = {``bus_name2``_axi_rresp      , ``bus_name1``_axi_rresp      , ``bus_name0``_axi_rresp    }; \
+    assign ``array_name``_axi_rlast   = {``bus_name2``_axi_rlast      , ``bus_name1``_axi_rlast      , ``bus_name0``_axi_rlast    }; \
+    assign ``array_name``_axi_rvalid  = {``bus_name2``_axi_rvalid     , ``bus_name1``_axi_rvalid     , ``bus_name0``_axi_rvalid   };
+
+// Concatenate 4 master buses
+`define CONCAT_AXI_MASTERS_ARRAY4(array_name, bus_name3, bus_name2, bus_name1, bus_name0) \
+    assign ``array_name``_axi_awid     = {``bus_name3``_axi_awid      , ``bus_name2``_axi_awid      , ``bus_name1``_axi_awid      , ``bus_name0``_axi_awid     }; \
+    assign ``array_name``_axi_awaddr   = {``bus_name3``_axi_awaddr    , ``bus_name2``_axi_awaddr    , ``bus_name1``_axi_awaddr    , ``bus_name0``_axi_awaddr   }; \
+    assign ``array_name``_axi_awlen    = {``bus_name3``_axi_awlen     , ``bus_name2``_axi_awlen     , ``bus_name1``_axi_awlen     , ``bus_name0``_axi_awlen    }; \
+    assign ``array_name``_axi_awsize   = {``bus_name3``_axi_awsize    , ``bus_name2``_axi_awsize    , ``bus_name1``_axi_awsize    , ``bus_name0``_axi_awsize   }; \
+    assign ``array_name``_axi_awburst  = {``bus_name3``_axi_awburst   , ``bus_name2``_axi_awburst   , ``bus_name1``_axi_awburst   , ``bus_name0``_axi_awburst  }; \
+    assign ``array_name``_axi_awlock   = {``bus_name3``_axi_awlock    , ``bus_name2``_axi_awlock    , ``bus_name1``_axi_awlock    , ``bus_name0``_axi_awlock   }; \
+    assign ``array_name``_axi_awcache  = {``bus_name3``_axi_awcache   , ``bus_name2``_axi_awcache   , ``bus_name1``_axi_awcache   , ``bus_name0``_axi_awcache  }; \
+    assign ``array_name``_axi_awprot   = {``bus_name3``_axi_awprot    , ``bus_name2``_axi_awprot    , ``bus_name1``_axi_awprot    , ``bus_name0``_axi_awprot   }; \
+    assign ``array_name``_axi_awqos    = {``bus_name3``_axi_awqos     , ``bus_name2``_axi_awqos     , ``bus_name1``_axi_awqos     , ``bus_name0``_axi_awqos    }; \
+    assign ``array_name``_axi_awvalid  = {``bus_name3``_axi_awvalid   , ``bus_name2``_axi_awvalid   , ``bus_name1``_axi_awvalid   , ``bus_name0``_axi_awvalid  }; \
+    assign ``array_name``_axi_awregion = {``bus_name3``_axi_awregion  , ``bus_name2``_axi_awregion  , ``bus_name1``_axi_awregion  , ``bus_name0``_axi_awregion }; \
+    assign ``array_name``_axi_wdata    = {``bus_name3``_axi_wdata     , ``bus_name2``_axi_wdata     , ``bus_name1``_axi_wdata     , ``bus_name0``_axi_wdata    }; \
+    assign ``array_name``_axi_wstrb    = {``bus_name3``_axi_wstrb     , ``bus_name2``_axi_wstrb     , ``bus_name1``_axi_wstrb     , ``bus_name0``_axi_wstrb    }; \
+    assign ``array_name``_axi_wlast    = {``bus_name3``_axi_wlast     , ``bus_name2``_axi_wlast     , ``bus_name1``_axi_wlast     , ``bus_name0``_axi_wlast    }; \
+    assign ``array_name``_axi_wvalid   = {``bus_name3``_axi_wvalid    , ``bus_name2``_axi_wvalid    , ``bus_name1``_axi_wvalid    , ``bus_name0``_axi_wvalid   }; \
+    assign ``array_name``_axi_bready   = {``bus_name3``_axi_bready    , ``bus_name2``_axi_bready    , ``bus_name1``_axi_bready    , ``bus_name0``_axi_bready   }; \
+    assign ``array_name``_axi_araddr   = {``bus_name3``_axi_araddr    , ``bus_name2``_axi_araddr    , ``bus_name1``_axi_araddr    , ``bus_name0``_axi_araddr   }; \
+    assign ``array_name``_axi_arlen    = {``bus_name3``_axi_arlen     , ``bus_name2``_axi_arlen     , ``bus_name1``_axi_arlen     , ``bus_name0``_axi_arlen    }; \
+    assign ``array_name``_axi_arsize   = {``bus_name3``_axi_arsize    , ``bus_name2``_axi_arsize    , ``bus_name1``_axi_arsize    , ``bus_name0``_axi_arsize   }; \
+    assign ``array_name``_axi_arburst  = {``bus_name3``_axi_arburst   , ``bus_name2``_axi_arburst   , ``bus_name1``_axi_arburst   , ``bus_name0``_axi_arburst  }; \
+    assign ``array_name``_axi_arlock   = {``bus_name3``_axi_arlock    , ``bus_name2``_axi_arlock    , ``bus_name1``_axi_arlock    , ``bus_name0``_axi_arlock   }; \
+    assign ``array_name``_axi_arcache  = {``bus_name3``_axi_arcache   , ``bus_name2``_axi_arcache   , ``bus_name1``_axi_arcache   , ``bus_name0``_axi_arcache  }; \
+    assign ``array_name``_axi_arprot   = {``bus_name3``_axi_arprot    , ``bus_name2``_axi_arprot    , ``bus_name1``_axi_arprot    , ``bus_name0``_axi_arprot   }; \
+    assign ``array_name``_axi_arqos    = {``bus_name3``_axi_arqos     , ``bus_name2``_axi_arqos     , ``bus_name1``_axi_arqos     , ``bus_name0``_axi_arqos    }; \
+    assign ``array_name``_axi_arvalid  = {``bus_name3``_axi_arvalid   , ``bus_name2``_axi_arvalid   , ``bus_name1``_axi_arvalid   , ``bus_name0``_axi_arvalid  }; \
+    assign ``array_name``_axi_arid     = {``bus_name3``_axi_arid      , ``bus_name2``_axi_arid      , ``bus_name1``_axi_arid      , ``bus_name0``_axi_arid     }; \
+    assign ``array_name``_axi_arregion = {``bus_name3``_axi_arregion  , ``bus_name2``_axi_arregion  , ``bus_name1``_axi_arregion  , ``bus_name0``_axi_arregion }; \
+    assign ``array_name``_axi_rready   = {``bus_name3``_axi_rready    , ``bus_name2``_axi_rready    , ``bus_name1``_axi_rready    , ``bus_name0``_axi_rready   }; \
+    assign {``bus_name3``_axi_awready    , ``bus_name2``_axi_awready    , ``bus_name1``_axi_awready   , ``bus_name0``_axi_awready  } = ``array_name``_axi_awready ; \
+    assign {``bus_name3``_axi_wready     , ``bus_name2``_axi_wready     , ``bus_name1``_axi_wready    , ``bus_name0``_axi_wready   } = ``array_name``_axi_wready  ; \
+    assign {``bus_name3``_axi_bid        , ``bus_name2``_axi_bid        , ``bus_name1``_axi_bid       , ``bus_name0``_axi_bid      } = ``array_name``_axi_bid     ; \
+    assign {``bus_name3``_axi_bresp      , ``bus_name2``_axi_bresp      , ``bus_name1``_axi_bresp     , ``bus_name0``_axi_bresp    } = ``array_name``_axi_bresp   ; \
+    assign {``bus_name3``_axi_bvalid     , ``bus_name2``_axi_bvalid     , ``bus_name1``_axi_bvalid    , ``bus_name0``_axi_bvalid   } = ``array_name``_axi_bvalid  ; \
+    assign {``bus_name3``_axi_arready    , ``bus_name2``_axi_arready    , ``bus_name1``_axi_arready   , ``bus_name0``_axi_arready  } = ``array_name``_axi_arready ; \
+    assign {``bus_name3``_axi_rid        , ``bus_name2``_axi_rid        , ``bus_name1``_axi_rid       , ``bus_name0``_axi_rid      } = ``array_name``_axi_rid     ; \
+    assign {``bus_name3``_axi_rdata      , ``bus_name2``_axi_rdata      , ``bus_name1``_axi_rdata     , ``bus_name0``_axi_rdata    } = ``array_name``_axi_rdata   ; \
+    assign {``bus_name3``_axi_rresp      , ``bus_name2``_axi_rresp      , ``bus_name1``_axi_rresp     , ``bus_name0``_axi_rresp    } = ``array_name``_axi_rresp   ; \
+    assign {``bus_name3``_axi_rlast      , ``bus_name2``_axi_rlast      , ``bus_name1``_axi_rlast     , ``bus_name0``_axi_rlast    } = ``array_name``_axi_rlast   ; \
+    assign {``bus_name3``_axi_rvalid     , ``bus_name2``_axi_rvalid     , ``bus_name1``_axi_rvalid    , ``bus_name0``_axi_rvalid   } = ``array_name``_axi_rvalid  ;
 
 //////////////////
 //  Bus Ports   //

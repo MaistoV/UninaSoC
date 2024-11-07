@@ -10,9 +10,6 @@
 `ifndef UNINASOC_MEM_SVH__
 `define UNINASOC_MEM_SVH__
 
-// Import sub-package
-import uninasoc_pkg::*;
-
 //////////////////////////////////////////////////////
 //    ___                         _                 //
 //   | _ \__ _ _ _ __ _ _ __  ___| |_ ___ _ _ ___   //
@@ -34,8 +31,8 @@ import uninasoc_pkg::*;
 
 // MEM signal types
 typedef logic [AXI_DATA_WIDTH   -1 : 0] mem_data_t;
-typedef logic [AXI_DATA_WIDTH   -1 : 0] mem_addr_t;
-typedef logic [AXI_DATA_WIDTH   -1 : 0] mem_strb_t;
+typedef logic [AXI_ADDR_WIDTH   -1 : 0] mem_addr_t;
+typedef logic [AXI_DATA_WIDTH/8 -1 : 0] mem_strb_t;
 typedef logic                           mem_logic_t;
 
 ////////////////////////////////////////
@@ -61,8 +58,8 @@ typedef logic                           mem_logic_t;
     mem_data_t      ``bus_name``_mem_wdata;     \
     mem_logic_t     ``bus_name``_mem_we;        \
     mem_strb_t      ``bus_name``_mem_be;        \
-    mem_logic_t     ``bus_name``_mem_error;     
-    
+    mem_logic_t     ``bus_name``_mem_error;
+
 // Declare MEM array
 `define DECLARE_MEM_BUS_ARRAY(array_name, size)   \
                                                 \
@@ -74,7 +71,7 @@ typedef logic                           mem_logic_t;
     mem_data_t  [``size`` -1 : 0]   ``bus_name``_mem_wdata;     \
     mem_logic_t [``size`` -1 : 0]   ``bus_name``_mem_we;        \
     mem_strb_t  [``size`` -1 : 0]   ``bus_name``_mem_be;        \
-    mem_logic_t [``size`` -1 : 0]   ``bus_name``_mem_error;     
+    mem_logic_t [``size`` -1 : 0]   ``bus_name``_mem_error;
 
 ///////////////////////
 //  Bus Assignment   //
@@ -115,7 +112,7 @@ typedef logic                           mem_logic_t;
     assign ``array_name``_mem_wdata     = {``bus_name1``_mem_wdata      , ``bus_name0``_mem_wdata   }; \
     assign ``array_name``_mem_we        = {``bus_name1``_mem_we         , ``bus_name0``_mem_we      }; \
     assign ``array_name``_mem_be        = {``bus_name1``_mem_be         , ``bus_name0``_mem_be      }; \
-    assign ``array_name``_mem_error     = {``bus_name1``_mem_error      , ``bus_name0``_mem_error   }; 
+    assign ``array_name``_mem_error     = {``bus_name1``_mem_error      , ``bus_name0``_mem_error   };
 
 //////////////////
 //  Bus Ports   //
@@ -131,7 +128,7 @@ typedef logic                           mem_logic_t;
     output mem_data_t      ``bus_name``_mem_wdata,      \
     output mem_logic_t     ``bus_name``_mem_we,         \
     output mem_strb_t      ``bus_name``_mem_be,         \
-    input  mem_logic_t     ``bus_name``_mem_error     
+    input  mem_logic_t     ``bus_name``_mem_error
 
 `define DEFINE_MEM_SLAVE_PORTS(bus_name)                \
     input  mem_logic_t     ``bus_name``_mem_req,        \
@@ -142,7 +139,7 @@ typedef logic                           mem_logic_t;
     input  mem_data_t      ``bus_name``_mem_wdata,      \
     input  mem_logic_t     ``bus_name``_mem_we,         \
     input  mem_strb_t      ``bus_name``_mem_be,         \
-    output mem_logic_t     ``bus_name``_mem_error     
+    output mem_logic_t     ``bus_name``_mem_error
 
 
 `endif // UNINASOC_MEM_SVH__

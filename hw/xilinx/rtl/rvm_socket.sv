@@ -72,13 +72,13 @@ module rvm_socket # (
                 .clk_i              ( clk_i                     ),
                 .rst_ni   	        ( rst_ni                    ),
                 .trap_o     	    (                           ),
- 
+
                 .instr_mem_req      ( core_instr_mem_req        ),
                 .instr_mem_gnt      ( core_instr_mem_gnt        ),
                 .instr_mem_valid    ( core_instr_mem_valid      ),
                 .instr_mem_addr     ( core_instr_mem_addr       ),
                 .instr_mem_rdata    ( core_instr_mem_rdata  ),
- 
+
                 .data_mem_req       ( core_data_mem_req         ),
                 .data_mem_valid     ( core_data_mem_valid       ),
                 .data_mem_gnt       ( core_data_mem_gnt         ),
@@ -87,7 +87,7 @@ module rvm_socket # (
                 .data_mem_addr      ( core_data_mem_addr        ),
                 .data_mem_wdata     ( core_data_mem_wdata       ),
                 .data_mem_rdata     ( core_data_mem_rdata   ),
- 
+
                 .irq_i		        ( irq_i                     ),
 
             `ifdef RISCV_FORMAL
@@ -115,6 +115,7 @@ module rvm_socket # (
                 .trace_valid_o      (                           ), // Unmapped atm
                 .trace_data_o       (                           )  // Unmapped atm
             );
+
         end
         else if (CORE_SELECTOR == CORE_CV32E40P) begin: core_cv32e40p
 
@@ -126,7 +127,7 @@ module rvm_socket # (
                 // Clock and Reset
                 .clk_i                  ( clk_i                     ),
                 .rst_ni                 ( rst_ni                    ),
- 
+
                 .pulp_clock_en_i        ( '0                        ),  // PULP clock enable (only used if COREV_CLUSTER = 1)
                 .scan_cg_en_i           ( '0                        ),  // Enable all clock gates for testing
 
@@ -143,8 +144,8 @@ module rvm_socket # (
                 .instr_mem_valid        ( core_instr_mem_valid      ),
                 .instr_mem_addr         ( core_instr_mem_addr       ),
                 .instr_mem_rdata        ( core_instr_mem_rdata      ),
- 
-                // Data memory interface 
+
+                // Data memory interface
                 .data_mem_req           ( core_data_mem_req         ),
                 .data_mem_valid         ( core_data_mem_valid       ),
                 .data_mem_gnt           ( core_data_mem_gnt         ),
@@ -153,24 +154,25 @@ module rvm_socket # (
                 .data_mem_addr          ( core_data_mem_addr        ),
                 .data_mem_wdata         ( core_data_mem_wdata       ),
                 .data_mem_rdata         ( core_data_mem_rdata       ),
- 
-                // Interrupt inputs 
+
+                // Interrupt inputs
                 .irq_i                  ( irq_i                     ),  // CLINT interrupts + CLINT extension interrupts
                 .irq_ack_o              (                           ),  // TBD
                 .irq_id_o               (                           ),  // TBD
- 
-                // Debug Interface 
-                .debug_req_i            ( '0                        ),  // TBD
+
+                // Debug Interface
+                .debug_req_i            ( debug_req_core            ),
                 .debug_havereset_o      (                           ),  // TBD
                 .debug_running_o        (                           ),  // TBD
                 .debug_halted_o         (                           ),  // TBD
- 
-                // CPU Control Signals 
+
+                // CPU Control Signals
                 .fetch_enable_i         ( 1'b1                      ),
                 .core_sleep_o           (                           )   // TBD
-            ); 
+            );
 
         end
+
     endgenerate
 
 
@@ -190,6 +192,7 @@ module rvm_socket # (
     //  MEM to AXI-Full converters (Instruction and Data)   //
     //////////////////////////////////////////////////////////
 
+    // Instruction interface conversion
 	custom_axi_from_mem axi_from_mem_instr_u (
 		// AXI side
         .m_axi_awid			( core_instr_to_socket_instr_axi_awid       ),
@@ -235,17 +238,18 @@ module rvm_socket # (
         // MEM side
         .clk_i				( clk_i                 ),
         .rst_ni				( rst_ni                ),
-        .m_mem_req			( core_instr_mem_req    ),
-        .m_mem_addr			( core_instr_mem_addr   ),
-        .m_mem_we			( '0                    ),	// RO Interface
-        .m_mem_wdata		( '0                    ),	// RO Interface
-        .m_mem_be			( '0                    ),	// RO Interface
-        .m_mem_gnt			( core_instr_mem_gnt    ),		
-        .m_mem_valid	    ( core_instr_mem_valid  ),
-        .m_mem_rdata	    ( core_instr_mem_rdata  ),
-        .m_mem_error	    ( core_instr_mem_error  )		
+        .s_mem_req			( core_instr_mem_req    ),
+        .s_mem_addr			( core_instr_mem_addr   ),
+        .s_mem_we			( '0                    ),	// RO Interface
+        .s_mem_wdata		( '0                    ),	// RO Interface
+        .s_mem_be			( '0                    ),	// RO Interface
+        .s_mem_gnt			( core_instr_mem_gnt    ),
+        .s_mem_valid	    ( core_instr_mem_valid  ),
+        .s_mem_rdata	    ( core_instr_mem_rdata  ),
+        .s_mem_error	    ( core_instr_mem_error  )
     );
 
+    // Data interface conversion
 	custom_axi_from_mem axi_from_mem_data_u (
 		// AXI side
         .m_axi_awid			( core_data_to_socket_data_axi_awid       ),
@@ -294,9 +298,9 @@ module rvm_socket # (
         .m_mem_req          ( core_data_mem_req         ),
         .m_mem_addr         ( core_data_mem_addr        ),
         .m_mem_we           ( core_data_mem_we          ),
-        .m_mem_wdata        ( core_data_mem_wdata       ),	
-        .m_mem_be	        ( core_data_mem_be          ),	
-        .m_mem_gnt	        ( core_data_mem_gnt         ),	
+        .m_mem_wdata        ( core_data_mem_wdata       ),
+        .m_mem_be	        ( core_data_mem_be          ),
+        .m_mem_gnt	        ( core_data_mem_gnt         ),
         .m_mem_valid        ( core_data_mem_valid       ),
         .m_mem_rdata	    ( core_data_mem_rdata       ),
         .m_mem_error	    ( core_data_mem_error       )
