@@ -3,9 +3,7 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
 // Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
-// NOTE: vio and rvm_socket are commented off in this version
 
-// Scheme made with: https://asciiflow.com/#/
 // System architecture:
 //                                                                                    ________
 //   _________              ____________               __________                    |        |
@@ -101,9 +99,6 @@ module uninasoc (
     // xbar -> GPIO out
     `ifdef EMBEDDED
         `DECLARE_AXI_BUS(xbar_to_gpio_out, AXI_DATA_WIDTH);
-    `elsif HPC
-        // need secondary memory because the xbar wants one side with only 1 port ( no both slaves and masters can be 1 at the same time )
-        `DECLARE_AXI_BUS(xbar_to_second_mem, AXI_DATA_WIDTH);
     `endif
     // xbar -> UART
     `DECLARE_AXI_BUS(xbar_to_uart, AXI_DATA_WIDTH);
@@ -111,11 +106,11 @@ module uninasoc (
     // Concatenate AXI master buses
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
-    //                       array_name,       bus 0
     `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar)
 
     // Concatenate AXI slave buses
     `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
+    // NOTE: The order in this macro expansion is must match with xbar master ports!
     `ifdef EMBEDDED
         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
     `elsif HPC
@@ -669,42 +664,6 @@ module uninasoc (
             );
         end
     endgenerate
-`elsif HPC
-    xlnx_blk_mem_gen second_mem_u (
-        .rsta_busy      ( /* open */                   ), // output wire rsta_busy
-        .rstb_busy      ( /* open */                   ), // output wire rstb_busy
-        .s_aclk         ( soc_clk                      ), // input wire s_aclk
-        .s_aresetn      ( sys_resetn                   ), // input wire s_aresetn
-        .s_axi_awid     ( xbar_to_second_mem_axi_awid    ), // input wire [3 : 0] s_axi_awid
-        .s_axi_awaddr   ( xbar_to_second_mem_axi_awaddr  ), // input wire [31 : 0] s_axi_awaddr
-        .s_axi_awlen    ( xbar_to_second_mem_axi_awlen   ), // input wire [7 : 0] s_axi_awlen
-        .s_axi_awsize   ( xbar_to_second_mem_axi_awsize  ), // input wire [2 : 0] s_axi_awsize
-        .s_axi_awburst  ( xbar_to_second_mem_axi_awburst ), // input wire [1 : 0] s_axi_awburst
-        .s_axi_awvalid  ( xbar_to_second_mem_axi_awvalid ), // input wire s_axi_awvalid
-        .s_axi_awready  ( xbar_to_second_mem_axi_awready ), // output wire s_axi_awready
-        .s_axi_wdata    ( xbar_to_second_mem_axi_wdata   ), // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb    ( xbar_to_second_mem_axi_wstrb   ), // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wlast    ( xbar_to_second_mem_axi_wlast   ), // input wire s_axi_wlast
-        .s_axi_wvalid   ( xbar_to_second_mem_axi_wvalid  ), // input wire s_axi_wvalid
-        .s_axi_wready   ( xbar_to_second_mem_axi_wready  ), // output wire s_axi_wready
-        .s_axi_bid      ( xbar_to_second_mem_axi_bid     ), // output wire [3 : 0] s_axi_bid
-        .s_axi_bresp    ( xbar_to_second_mem_axi_bresp   ), // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid   ( xbar_to_second_mem_axi_bvalid  ), // output wire s_axi_bvalid
-        .s_axi_bready   ( xbar_to_second_mem_axi_bready  ), // input wire s_axi_bready
-        .s_axi_arid     ( xbar_to_second_mem_axi_arid    ), // input wire [3 : 0] s_axi_arid
-        .s_axi_araddr   ( xbar_to_second_mem_axi_araddr  ), // input wire [31 : 0] s_axi_araddr
-        .s_axi_arlen    ( xbar_to_second_mem_axi_arlen   ), // input wire [7 : 0] s_axi_arlen
-        .s_axi_arsize   ( xbar_to_second_mem_axi_arsize  ), // input wire [2 : 0] s_axi_arsize
-        .s_axi_arburst  ( xbar_to_second_mem_axi_arburst ), // input wire [1 : 0] s_axi_arburst
-        .s_axi_arvalid  ( xbar_to_second_mem_axi_arvalid ), // input wire s_axi_arvalid
-        .s_axi_arready  ( xbar_to_second_mem_axi_arready ), // output wire s_axi_arready
-        .s_axi_rid      ( xbar_to_second_mem_axi_rid     ), // output wire [3 : 0] s_axi_rid
-        .s_axi_rdata    ( xbar_to_second_mem_axi_rdata   ), // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp    ( xbar_to_second_mem_axi_rresp   ), // output wire [1 : 0] s_axi_rresp
-        .s_axi_rlast    ( xbar_to_second_mem_axi_rlast   ), // output wire s_axi_rlast
-        .s_axi_rvalid   ( xbar_to_second_mem_axi_rvalid  ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_second_mem_axi_rready  )  // input wire s_axi_rready
-    );
 `endif
 
 
