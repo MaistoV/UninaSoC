@@ -185,7 +185,7 @@ module rvm_socket # (
 	xlnx_microblaze_riscv your_instance_name (
   		.Clk(clk_i),                              // input wire Clk
   		.Reset(rst_ni),                          // input wire Reset
-  		.Interrupt(irq_i),                  // input wire Interrupt
+  		.Interrupt(irq_i),                  	// input wire Interrupt
  		.Interrupt_Address(Interrupt_Address),  // input wire [0 : 31] Interrupt_Address
   		.Interrupt_Ack(Interrupt_Ack),          // output wire [0 : 1] Interrupt_Ack
  		.Instr_Addr(Instr_Addr),                // output wire [0 : 31] Instr_Addr
