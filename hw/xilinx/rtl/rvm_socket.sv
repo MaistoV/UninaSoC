@@ -11,7 +11,7 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rvm_socket # (
-    parameter CORE_SELECTOR = CORE_PICORV32,
+    parameter CORE_SELECTOR = CORE_MICROBLAZEV,
     parameter DATA_WIDTH    = 32,
     parameter ADDR_WIDTH    = 32,
     parameter NUM_IRQ       = 3
@@ -171,11 +171,94 @@ module rvm_socket # (
                 .core_sleep_o           (                           )   // TBD
             );
 
+
+
+
+        else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin: xlnx_microblaze_riscv
+
+            //////////////////////////
+            //      CV32E40P        //
+            //////////////////////////
+	    `DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
+	    `DECLARE_AXI_BUS(core_data_to_socket_data, DATA_WIDTH);
+
+	xlnx_microblaze_riscv your_instance_name (
+  		.Clk(clk_i),                              // input wire Clk
+  		.Reset(rst_ni),                          // input wire Reset
+  		.Interrupt(irq_i),                  // input wire Interrupt
+ 		.Interrupt_Address(Interrupt_Address),  // input wire [0 : 31] Interrupt_Address
+  		.Interrupt_Ack(Interrupt_Ack),          // output wire [0 : 1] Interrupt_Ack
+ 		.Instr_Addr(Instr_Addr),                // output wire [0 : 31] Instr_Addr
+ 		.Instr(Instr),                          // input wire [0 : 31] Instr
+ 		.IFetch(IFetch),                        // output wire IFetch
+  		.I_AS(I_AS),                            // output wire I_AS
+ 		.IReady(IReady),                        // input wire IReady
+ 		.IWAIT(IWAIT),                          // input wire IWAIT
+  		.ICE(ICE),                              // input wire ICE
+  		.IUE(IUE),                              // input wire IUE
+ 		.M_AXI_IP_AWADDR(M_AXI_IP_AWADDR),      // output wire [31 : 0] M_AXI_IP_AWADDR
+  		.M_AXI_IP_AWPROT(M_AXI_IP_AWPROT),      // output wire [2 : 0] M_AXI_IP_AWPROT
+  		.M_AXI_IP_AWVALID(M_AXI_IP_AWVALID),    // output wire M_AXI_IP_AWVALID
+  		.M_AXI_IP_AWREADY(M_AXI_IP_AWREADY),    // input wire M_AXI_IP_AWREADY
+ 		.M_AXI_IP_WDATA(M_AXI_IP_WDATA),        // output wire [31 : 0] M_AXI_IP_WDATA
+  		.M_AXI_IP_WSTRB(M_AXI_IP_WSTRB),        // output wire [3 : 0] M_AXI_IP_WSTRB
+  		.M_AXI_IP_WVALID(M_AXI_IP_WVALID),      // output wire M_AXI_IP_WVALID
+  		.M_AXI_IP_WREADY(M_AXI_IP_WREADY),      // input wire M_AXI_IP_WREADY
+  		.M_AXI_IP_BRESP(M_AXI_IP_BRESP),        // input wire [1 : 0] M_AXI_IP_BRESP
+  		.M_AXI_IP_BVALID(M_AXI_IP_BVALID),      // input wire M_AXI_IP_BVALID
+ 		.M_AXI_IP_BREADY(M_AXI_IP_BREADY),      // output wire M_AXI_IP_BREADY
+ 		.M_AXI_IP_ARADDR(M_AXI_IP_ARADDR),      // output wire [31 : 0] M_AXI_IP_ARADDR
+ 		.M_AXI_IP_ARPROT(M_AXI_IP_ARPROT),      // output wire [2 : 0] M_AXI_IP_ARPROT
+  		.M_AXI_IP_ARVALID(M_AXI_IP_ARVALID),    // output wire M_AXI_IP_ARVALID
+  		.M_AXI_IP_ARREADY(M_AXI_IP_ARREADY),    // input wire M_AXI_IP_ARREADY
+ 		.M_AXI_IP_RDATA(M_AXI_IP_RDATA),        // input wire [31 : 0] M_AXI_IP_RDATA
+ 		.M_AXI_IP_RRESP(M_AXI_IP_RRESP),        // input wire [1 : 0] M_AXI_IP_RRESP
+ 		.M_AXI_IP_RVALID(M_AXI_IP_RVALID),      // input wire M_AXI_IP_RVALID
+  		.M_AXI_IP_RREADY(M_AXI_IP_RREADY),      // output wire M_AXI_IP_RREADY
+ 		.Data_Addr(Data_Addr),                  // output wire [0 : 31] Data_Addr
+ 		.Data_Read(Data_Read),                  // input wire [0 : 31] Data_Read
+  		.Data_Write(Data_Write),                // output wire [0 : 31] Data_Write
+ 		.D_AS(D_AS),                            // output wire D_AS
+ 		.Read_Strobe(Read_Strobe),              // output wire Read_Strobe
+ 		.Write_Strobe(Write_Strobe),            // output wire Write_Strobe
+ 		.DReady(DReady),                        // input wire DReady
+ 		.DWait(DWait),                          // input wire DWait
+ 		.DCE(DCE),                              // input wire DCE
+ 		.DUE(DUE),                              // input wire DUE
+ 		.Byte_Enable(Byte_Enable),              // output wire [0 : 3] Byte_Enable
+ 		.M_AXI_DP_AWADDR(M_AXI_DP_AWADDR),      // output wire [31 : 0] M_AXI_DP_AWADDR
+		.M_AXI_DP_AWPROT(M_AXI_DP_AWPROT),      // output wire [2 : 0] M_AXI_DP_AWPROT
+ 		.M_AXI_DP_AWVALID(M_AXI_DP_AWVALID),    // output wire M_AXI_DP_AWVALID
+ 		.M_AXI_DP_AWREADY(M_AXI_DP_AWREADY),    // input wire M_AXI_DP_AWREADY
+ 		.M_AXI_DP_WDATA(M_AXI_DP_WDATA),        // output wire [31 : 0] M_AXI_DP_WDATA
+ 		.M_AXI_DP_WSTRB(M_AXI_DP_WSTRB),        // output wire [3 : 0] M_AXI_DP_WSTRB
+		.M_AXI_DP_WVALID(M_AXI_DP_WVALID),      // output wire M_AXI_DP_WVALID
+		.M_AXI_DP_WREADY(M_AXI_DP_WREADY),      // input wire M_AXI_DP_WREADY
+ 		.M_AXI_DP_BRESP(M_AXI_DP_BRESP),        // input wire [1 : 0] M_AXI_DP_BRESP
+ 		.M_AXI_DP_BVALID(M_AXI_DP_BVALID),      // input wire M_AXI_DP_BVALID
+ 		.M_AXI_DP_BREADY(M_AXI_DP_BREADY),      // output wire M_AXI_DP_BREADY
+		.M_AXI_DP_ARADDR(M_AXI_DP_ARADDR),      // output wire [31 : 0] M_AXI_DP_ARADDR
+ 		.M_AXI_DP_ARPROT(M_AXI_DP_ARPROT),      // output wire [2 : 0] M_AXI_DP_ARPROT
+ 		.M_AXI_DP_ARVALID(M_AXI_DP_ARVALID),    // output wire M_AXI_DP_ARVALID
+ 		.M_AXI_DP_ARREADY(M_AXI_DP_ARREADY),    // input wire M_AXI_DP_ARREADY
+ 		.M_AXI_DP_RDATA(M_AXI_DP_RDATA),        // input wire [31 : 0] M_AXI_DP_RDATA
+ 		.M_AXI_DP_RRESP(M_AXI_DP_RRESP),        // input wire [1 : 0] M_AXI_DP_RRESP
+ 		.M_AXI_DP_RVALID(M_AXI_DP_RVALID),      // input wire M_AXI_DP_RVALID
+ 		.M_AXI_DP_RREADY(M_AXI_DP_RREADY)      // output wire M_AXI_DP_RREADY
+);
+
         end
 
     endgenerate
 
-
+    
+    
+    if(CORE_SELECTOR==CORE_MICROBLAZEV)
+    
+    
+    
+    
+    
     //////////////////////////////////////////
     //     ___                              //
     //    / __|___ _ __  _ __  ___ _ _      //
