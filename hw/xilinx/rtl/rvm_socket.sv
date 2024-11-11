@@ -181,7 +181,7 @@ module rvm_socket # (
             //////////////////////////
 	`DECLARE_AXI_BUS(microblaze_instr, DATA_WIDTH);
 	`DECLARE_AXI_BUS(microblaze_data, DATA_WIDTH);
-    	`ASSIGN_AXI_BUS(rvm_socket_instr, microblaze_instruction);
+    	`ASSIGN_AXI_BUS(rvm_socket_instr, microblaze_instr);
     	`ASSIGN_AXI_BUS(rvm_socket_data, microblaze_data);
 
 	xlnx_microblaze_riscv microblaze_riscv (
@@ -189,11 +189,11 @@ module rvm_socket # (
   		.Reset(rst_ni),                          // input wire Reset
   		.Interrupt(irq_i),                  	// input wire Interrupt
  		.Interrupt_Address(),  // input wire [0 : 31] Interrupt_Address
-  		.Interrupt_Ack(),          // output wire [0 : 1] Interrupt_Ack
- 		.Instr_Addr(),                // output wire [0 : 31] Instr_Addr
+  		.Interrupt_Ack('0),          // output wire [0 : 1] Interrupt_Ack
+ 		.Instr_Addr('0),                // output wire [0 : 31] Instr_Addr
  		.Instr(),                          // input wire [0 : 31] Instr
- 		.IFetch(),                        // output wire IFetch
-  		.I_AS(),                            // output wire I_AS
+ 		.IFetch('0),                        // output wire IFetch
+  		.I_AS('0),                            // output wire I_AS
  		.IReady(),                        // input wire IReady
  		.IWAIT(),                          // input wire IWAIT
   		.ICE(),                              // input wire ICE
@@ -217,17 +217,17 @@ module rvm_socket # (
  		.M_AXI_IP_RRESP(microblaze_instr_rresp),        // input wire [1 : 0] M_AXI_IP_RRESP
  		.M_AXI_IP_RVALID(microblaze_instr_rvalid),      // input wire M_AXI_IP_RVALID
   		.M_AXI_IP_RREADY(microblaze_instr_rready),      // output wire M_AXI_IP_RREADY
- 		.Data_Addr(),                  // output wire [0 : 31] Data_Addr
+ 		.Data_Addr('0),                  // output wire [0 : 31] Data_Addr
  		.Data_Read(),                  // input wire [0 : 31] Data_Read
-  		.Data_Write(),                // output wire [0 : 31] Data_Write
- 		.D_AS(),                            // output wire D_AS
- 		.Read_Strobe(),              // output wire Read_Strobe
- 		.Write_Strobe(),            // output wire Write_Strobe
+  		.Data_Write('0),                // output wire [0 : 31] Data_Write
+ 		.D_AS('0),                            // output wire D_AS
+ 		.Read_Strobe('0),              // output wire Read_Strobe
+ 		.Write_Strobe('0),            // output wire Write_Strobe
  		.DReady(),                        // input wire DReady
  		.DWait(),                          // input wire DWait
  		.DCE(),                              // input wire DCE
  		.DUE(),                              // input wire DUE
- 		.Byte_Enable(),              // output wire [0 : 3] Byte_Enable
+ 		.Byte_Enable('0),              // output wire [0 : 3] Byte_Enable
  		.M_AXI_DP_AWADDR(microblaze_data_awaddr),      // output wire [31 : 0] M_AXI_DP_AWADDR
 		.M_AXI_DP_AWPROT(microblaze_data_awprot),      // output wire [2 : 0] M_AXI_DP_AWPROT
  		.M_AXI_DP_AWVALID(microblaze_data_awvalid),    // output wire M_AXI_DP_AWVALID
@@ -255,12 +255,12 @@ module rvm_socket # (
 
     
     
-    if(CORE_SELECTOR==CORE_MICROBLAZEV)
-    	`ASSIGN_AXI_BUS( core_instr,microblaze_instr ):
-    	`ASSIGN_AXI_BUS( core_data,microblaze_data );
-    );
+    //if(CORE_SELECTOR==CORE_MICROBLAZEV)
+    	//`ASSIGN_AXI_BUS( core_instr,microblaze_instr ):
+    	//`ASSIGN_AXI_BUS( core_data,microblaze_data );
+    //);
     
-    else
+    //else
     
     //////////////////////////////////////////
     //     ___                              //
