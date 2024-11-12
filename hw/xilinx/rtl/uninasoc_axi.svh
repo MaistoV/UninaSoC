@@ -19,7 +19,7 @@
 // AXI4 bus parameters
 localparam int unsigned AXI_DATA_WIDTH   = 32;
 localparam int unsigned AXI_ADDR_WIDTH   = 32;
-localparam int unsigned AXI_STRB_WIDTH   = AXI_ADDR_WIDTH / 8;
+localparam int unsigned AXI_STRB_WIDTH   = 4;
 localparam int unsigned AXI_ID_WIDTH     = 2;
 localparam int unsigned AXI_LEN_WIDTH    = 8;
 localparam int unsigned AXI_SIZE_WIDTH   = 3;

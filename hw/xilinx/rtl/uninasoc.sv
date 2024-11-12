@@ -288,8 +288,8 @@ module uninasoc (
     // RVM Socket
     rvm_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
-        .DEBUG_MODULE  ( DEBUG_MODULE   )
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH )
+        //.DEBUG_MODULE  ( DEBUG_MODULE   )
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( vio_resetn ), //( sys_resetn ),

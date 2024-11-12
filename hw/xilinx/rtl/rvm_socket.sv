@@ -295,15 +295,15 @@ module rvm_socket # (
 		// MEM side
         .clk_i              ( clk_i                     ),
         .rst_ni             ( rst_ni                    ),
-        .m_mem_req          ( core_data_mem_req         ),
-        .m_mem_addr         ( core_data_mem_addr        ),
-        .m_mem_we           ( core_data_mem_we          ),
-        .m_mem_wdata        ( core_data_mem_wdata       ),
-        .m_mem_be	        ( core_data_mem_be          ),
-        .m_mem_gnt	        ( core_data_mem_gnt         ),
-        .m_mem_valid        ( core_data_mem_valid       ),
-        .m_mem_rdata	    ( core_data_mem_rdata       ),
-        .m_mem_error	    ( core_data_mem_error       )
+        .s_mem_req          ( core_data_mem_req         ),
+        .s_mem_addr         ( core_data_mem_addr        ),
+        .s_mem_we           ( core_data_mem_we          ),
+        .s_mem_wdata        ( core_data_mem_wdata       ),
+        .s_mem_be	        ( core_data_mem_be          ),
+        .s_mem_gnt	        ( core_data_mem_gnt         ),
+        .s_mem_valid        ( core_data_mem_valid       ),
+        .s_mem_rdata	    ( core_data_mem_rdata       ),
+        .s_mem_error	    ( core_data_mem_error       )
     );
 
 
