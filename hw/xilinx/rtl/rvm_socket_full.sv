@@ -14,7 +14,7 @@ module rvm_socket # (
     parameter CORE_SELECTOR = CORE_MICROBLAZEV,
     parameter DATA_WIDTH    = 32,
     parameter ADDR_WIDTH    = 32,
-    parameter NUM_IRQ       = 2
+    parameter NUM_IRQ       = 3
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,
@@ -37,16 +37,16 @@ module rvm_socket # (
 	
 	
     // Declare AXI interfaces for instruction memory port and data memory port
-    
-    // Declare MEM ports
-
-	`DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
+    `DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
     `DECLARE_AXI_BUS(core_data_to_socket_data, DATA_WIDTH);
-	`DECLARE_AXI_BUS(microblaze_instr,DATA_WIDTH);
-	`DECLARE_AXI_BUS(microblaze_data,DATA_WIDTH);
-	`DECLARE_MEM_BUS(core_instr, DATA_WIDTH);
+
+    // Declare MEM ports
+    `DECLARE_MEM_BUS(core_instr, DATA_WIDTH);
     `DECLARE_MEM_BUS(core_data, DATA_WIDTH);
 	
+	`DECLARE_AXI_BUS(microblaze_instr,DATA_WIDTH);
+	`DECLARE_AXI_BUS(microblaze_data,DATA_WIDTH);
+
 	
 
 	//////////////////////////////////////////////////////
@@ -58,8 +58,126 @@ module rvm_socket # (
 	//////////////////////////////////////////////////////
 
     generate
-        
-        if (CORE_SELECTOR == CORE_MICROBLAZEV) begin: xlnx_microblaze_riscv
+        if (CORE_SELECTOR == CORE_PICORV32) begin: core_picorv32
+
+            //////////////////////////
+            //      PicoRV32        //
+            //////////////////////////
+
+            ///////////////////////////////////////////////////////////////////////////
+            //  Pico has a custom interrupt handling mechanisms. I am not sure if    //
+            //  it is just an alternative to standard risc-v interrupt handling,     //
+            //  or if it is incompatible. Therefore, beware of it and use Pico       //
+            //  only for interrupt-less applications.                                //
+            ///////////////////////////////////////////////////////////////////////////
+
+            custom_picorv32 picorv32_core (
+                .clk_i              ( clk_i                     ),
+                .rst_ni   	    	( rst_ni                    ),
+                .trap_o     	    (                           ),
+
+                .instr_mem_req      ( core_instr_mem_req        ),
+                .instr_mem_gnt      ( core_instr_mem_gnt        ),
+                .instr_mem_valid    ( core_instr_mem_valid      ),
+                .instr_mem_addr     ( core_instr_mem_addr       ),
+                .instr_mem_rdata    ( core_instr_mem_rdata  ),
+
+                .data_mem_req       ( core_data_mem_req         ),
+                .data_mem_valid     ( core_data_mem_valid       ),
+                .data_mem_gnt       ( core_data_mem_gnt         ),
+                .data_mem_we        ( core_data_mem_we          ),
+                .data_mem_be        ( core_data_mem_be          ),
+                .data_mem_addr      ( core_data_mem_addr        ),
+                .data_mem_wdata     ( core_data_mem_wdata       ),
+                .data_mem_rdata     ( core_data_mem_rdata   ),
+
+                .irq_i		        ( irq_i                     ),
+
+            `ifdef RISCV_FORMAL
+                .rvfi_valid         (                           ),
+                .rvfi_order         (                           ),
+                .rvfi_insn          (                           ),
+                .rvfi_trap          (                           ),
+                .rvfi_halt          (                           ),
+                .rvfi_intr          (                           ),
+                .rvfi_rs1_addr      (                           ),
+                .rvfi_rs2_addr      (                           ),
+                .rvfi_rs1_rdata     (                           ),
+                .rvfi_rs2_rdata     (                           ),
+                .rvfi_rd_addr       (                           ),
+                .rvfi_rd_wdata      (                           ),
+                .rvfi_pc_rdata      (                           ),
+                .rvfi_pc_wdata      (                           ),
+                .rvfi_mem_addr      (                           ),
+                .rvfi_mem_rmask     (                           ),
+                .rvfi_mem_wmask     (                           ),
+                .rvfi_mem_rdata     (                           ),
+                .rvfi_mem_wdata     (                           ),
+            `endif
+
+                .trace_valid_o      (                           ), // Unmapped atm
+                .trace_data_o       (                           )  // Unmapped atm
+            );
+
+        end
+        else if (CORE_SELECTOR == CORE_CV32E40P) begin: core_cv32e40p
+
+            //////////////////////////
+            //      CV32E40P        //
+            //////////////////////////
+
+            custom_cv32e40p cv32e40p_core (
+                // Clock and Reset
+                .clk_i                  ( clk_i                     ),
+                .rst_ni                 ( rst_ni                    ),
+
+                .pulp_clock_en_i        ( '0                        ),  // PULP clock enable (only used if COREV_CLUSTER = 1)
+                .scan_cg_en_i           ( '0                        ),  // Enable all clock gates for testing
+
+                // Core ID, Cluster ID, debug mode halt address and boot address are considered more or less static
+                .boot_addr_i            ( bootaddr_i                ),
+                .mtvec_addr_i           ( '0                        ),  // TBD
+                .dm_halt_addr_i         ( '0                        ),  // TBD
+                .hart_id_i              ( '0                        ),  // TBD
+                .dm_exception_addr_i    ( '0                        ),  // TBD
+
+                // Instruction memory interface
+                .instr_mem_req          ( core_instr_mem_req        ),
+                .instr_mem_gnt          ( core_instr_mem_gnt        ),
+                .instr_mem_valid        ( core_instr_mem_valid      ),
+                .instr_mem_addr         ( core_instr_mem_addr       ),
+                .instr_mem_rdata        ( core_instr_mem_rdata      ),
+
+                // Data memory interface
+                .data_mem_req           ( core_data_mem_req         ),
+                .data_mem_valid         ( core_data_mem_valid       ),
+                .data_mem_gnt           ( core_data_mem_gnt         ),
+                .data_mem_we            ( core_data_mem_we          ),
+                .data_mem_be            ( core_data_mem_be          ),
+                .data_mem_addr          ( core_data_mem_addr        ),
+                .data_mem_wdata         ( core_data_mem_wdata       ),
+                .data_mem_rdata         ( core_data_mem_rdata       ),
+
+                // Interrupt inputs
+                .irq_i                  ( irq_i                     ),  // CLINT interrupts + CLINT extension interrupts
+                .irq_ack_o              (                           ),  // TBD
+                .irq_id_o               (                           ),  // TBD
+
+                // Debug Interface
+                .debug_req_i            ( debug_req_core            ),
+                .debug_havereset_o      (                           ),  // TBD
+                .debug_running_o        (                           ),  // TBD
+                .debug_halted_o         (                           ),  // TBD
+
+                // CPU Control Signals
+                .fetch_enable_i         ( 1'b1                      ),
+                .core_sleep_o           (                           )   // TBD
+            );
+
+
+
+		end
+        else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin: xlnx_microblaze_riscv
 
             //////////////////////////
             //      MICROBLAZE      //
@@ -72,14 +190,14 @@ module rvm_socket # (
   				.Reset(rst_ni),                        		  // input wire Reset
   				.Interrupt(irq_i),                  			// input wire Interrupt
  				.Interrupt_Address(bootaddr_i),  // input wire [0 : 31] Interrupt_Address
-  				.Interrupt_Ack('0),          // output wire [0 : 1] Interrupt_Ack
+  				.Interrupt_Ack(Interrupt_Ack),          // output wire [0 : 1] Interrupt_Ack
  				.M_AXI_IC_AWID(microblaze_instr_axi_awid),			// input wire [0 : 31] Interrupt_Address
  				.M_AXI_IC_AWADDR(microblaze_instr_axi_awaddr),      // output wire [31 : 0] M_AXI_IP_AWADDR
- 				.M_AXI_IC_AWLEN(microblaze_instr_axi_awlen),        // output wire [7 : 0] M_AXI_IC_AWLEN
+ 				.M_AXI_IC_AWLEN(microblaze_axi_awlen),        // output wire [7 : 0] M_AXI_IC_AWLEN
  				.M_AXI_IC_AWSIZE(microblaze_instr_axi_awsize),      // output wire [2 : 0] M_AXI_IC_AWSIZE
  				.M_AXI_IC_AWBURST(microblaze_instruction_axi_awburst),    // output wire [1 : 0] M_AXI_IC_AWBURST
  				.M_AXI_IC_AWLOCK(microblaze_instruction_axi_awlock),      // output wire M_AXI_IC_AWLOCK
-  				.M_AXI_IC_AWCACHE(microblaze_instr_axi_awcache),    // output wire [3 : 0] M_AXI_IC_AWCACHE
+  				.M_AXI_IC_AWCACHE(microblaze_axi_awcache),    // output wire [3 : 0] M_AXI_IC_AWCACHE
   				.M_AXI_IC_AWPROT(microblaze_instr_axi_awprot),      // output wire [2 : 0] M_AXI_IP_AWPROT
   				.M_AXI_IC_AWQOS(microblaze_instr_axi_awqos),        // output wire [3 : 0] M_AXI_IC_AWQOS
   				.M_AXI_IC_AWVALID(microblaze_instr_axi_awvalid),    // output wire M_AXI_IP_AWVALID
@@ -106,7 +224,7 @@ module rvm_socket # (
   				.M_AXI_IC_ARVALID(microblaze_instr_axi_arvalid),    // output wire M_AXI_IP_ARVALID
   				.M_AXI_IC_ARREADY(microblaze_instr_axi_arready),    // input wire M_AXI_IP_ARREADY
   				.M_AXI_IC_ARUSER(microblaze_instr_axi_aruser),      // output wire [4 : 0] M_AXI_IC_ARUSER
-  				.M_AXI_IC_RID(microblaze_instr_axi_rid),            // input wire [0 : 0] M_AXI_IC_RID
+  				.M_AXI_IC_RID(microblaze_isntr_axi_rid),            // input wire [0 : 0] M_AXI_IC_RID
  				.M_AXI_IC_RDATA(microblaze_instr_axi_rdata),        // input wire [31 : 0] M_AXI_IP_RDATA
  				.M_AXI_IC_RRESP(microblaze_instr_axi_rresp),        // input wire [1 : 0] M_AXI_IP_RRESP
  				.M_AXI_IC_RLAST(microblaze_instr_axi_rlast),        // input wire M_AXI_IC_RLAST
@@ -117,7 +235,7 @@ module rvm_socket # (
  				.M_AXI_DC_AWADDR(microblaze_data_axi_awaddr),		// output wire [31 : 0] M_AXI_DP_AWADDR
  				.M_AXI_DC_AWLEN(microblaze_data_axi_awlen),        // output wire [7 : 0] M_AXI_IC_AWLEN
  				.M_AXI_DC_AWSIZE(microblaze_data_axi_awsize),      // output wire [2 : 0] M_AXI_IC_AWSIZE
- 				.M_AXI_DC_AWBURST(microblaze_data_axi_awburst),    // output wire [1 : 0] M_AXI_IC_AWBURST
+ 				.M_AXI_DC_AWBURST(microblaze_instruction_axi_awburst),    // output wire [1 : 0] M_AXI_IC_AWBURST
  				.M_AXI_DC_AWLOCK(microblaze_data_axi_awlock),      // output wire M_AXI_IC_AWLOCK
   				.M_AXI_DC_AWCACHE(microblaze_data_axi_awcache),    // output wire [3 : 0] M_AXI_IC_AWCACHE
 				.M_AXI_DC_AWPROT(microblaze_data_axi_awprot),      // output wire [2 : 0] M_AXI_DP_AWPROT
@@ -179,12 +297,20 @@ module rvm_socket # (
     //////////////////////////////////////////////////////////
 
     // Instruction interface conversion
-    	`ASSIGN_AXI_BUS(core_instr_to_socket_instr,microblaze_instr );
-		`ASSIGN_AXI_BUS(core_data_to_socket_instr,microblaze_instr );
-		`ASSIGN_AXI_BUS( rvm_socket_instr,core_instr_to_socket_instr );
-    	`ASSIGN_AXI_BUS( rvm_socket_data,core_data_to_socket_instr );
+    if(CORE_SELECTOR == CORE_MICROBLAZEV)
 
-		custom_axi_from_mem axi_from_mem_instr_u (
+    	`ASSIGN_AXI_BUS( rvm_socket_instr,microblaze_instr );
+    	`ASSIGN_AXI_BUS( rvm_socket_data,microblaze_data );
+    	
+	if(CORE_SELECTOR != CORE_MICROBLAZEV)
+	
+	 // Connect memory interfaces to socket output memory ports
+   		`ASSIGN_AXI_BUS(rvm_socket_instr, core_instr_to_socket_instr);
+    	`ASSIGN_AXI_BUS(rvm_socket_data, core_data_to_socket_data);
+	
+	
+	
+	custom_axi_from_mem axi_from_mem_instr_u (
 		// AXI side
         .m_axi_awid			( core_instr_to_socket_instr_axi_awid       ),
         .m_axi_awaddr		( core_instr_to_socket_instr_axi_awaddr     ),
@@ -229,15 +355,15 @@ module rvm_socket # (
         // MEM side
         .clk_i				( clk_i                 ),
         .rst_ni				( rst_ni                ),
-        .s_mem_req			( '0    ),
-        .s_mem_addr			( '0   ),
+        .s_mem_req			( core_instr_mem_req    ),
+        .s_mem_addr			( core_instr_mem_addr   ),
         .s_mem_we			( '0                    ),	// RO Interface
         .s_mem_wdata		( '0                    ),	// RO Interface
         .s_mem_be			( '0                    ),	// RO Interface
-        .s_mem_gnt			( '0    ),
-        .s_mem_valid	    ('0  ),
-        .s_mem_rdata	    ( '0  ),
-        .s_mem_error	    ( '0  )
+        .s_mem_gnt			( core_instr_mem_gnt    ),
+        .s_mem_valid	    ( core_instr_mem_valid  ),
+        .s_mem_rdata	    ( core_instr_mem_rdata  ),
+        .s_mem_error	    ( core_instr_mem_error  )
     );
 
     // Data interface conversion
@@ -286,18 +412,17 @@ module rvm_socket # (
 		// MEM side
         .clk_i              ( clk_i                     ),
         .rst_ni             ( rst_ni                    ),
-        .s_mem_req          ( '0        ),
-        .s_mem_addr         ( '0        ),
-        .s_mem_we           ('0          ),
-        .s_mem_wdata        ( '0       ),
-        .s_mem_be	        ( '0         ),
-        .s_mem_gnt	        ( '0         ),
-        .s_mem_valid        ( '0      ),
-        .s_mem_rdata	    ( '0       ),
-        .s_mem_error	    ( '0       )
+        .s_mem_req          ( core_data_mem_req         ),
+        .s_mem_addr         ( core_data_mem_addr        ),
+        .s_mem_we           ( core_data_mem_we          ),
+        .s_mem_wdata        ( core_data_mem_wdata       ),
+        .s_mem_be	        ( core_data_mem_be          ),
+        .s_mem_gnt	        ( core_data_mem_gnt         ),
+        .s_mem_valid        ( core_data_mem_valid       ),
+        .s_mem_rdata	    ( core_data_mem_rdata       ),
+        .s_mem_error	    ( core_data_mem_error       )
     );
-    	
-	
+
 
 
 endmodule : rvm_socket
