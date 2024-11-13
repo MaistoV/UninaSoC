@@ -182,14 +182,17 @@ module rvm_socket # (
             //////////////////////////
             //      MICROBLAZE      //
             //////////////////////////
-			
+			`DECLARE_AXI_BUS(microblaze_instr,DATA_WIDTH);
+			`DECLARE_AXI_BUS(microblaze_data,DATA_WIDTH);
+			`ASSIGN_AXI_BUS( rvm_socket_instr,microblaze_instr ):
+    		`ASSIGN_AXI_BUS( rvm_socket_data,microblaze_data );
 
 			xlnx_microblaze_riscv microblaze_riscv (
   				.Clk(clk_i),                             		 // input wire Clk
   				.Reset(rst_ni),                        		  // input wire Reset
   				.Interrupt(irq_i),                  			// input wire Interrupt
- 				.Interrupt_Address(bootaddr_i),
- 				
+ 				.Interrupt_Address(Interrupt_Address),  // input wire [0 : 31] Interrupt_Address
+  				.Interrupt_Ack(Interrupt_Ack),          // output wire [0 : 1] Interrupt_Ack
  				.M_AXI_IC_AWID(microblaze_instr_axi_awid),			// input wire [0 : 31] Interrupt_Address
  				.M_AXI_IC_AWADDR(microblaze_instr_axi_awaddr),      // output wire [31 : 0] M_AXI_IP_AWADDR
  				.M_AXI_IC_AWLEN(microblaze_axi_awlen),        // output wire [7 : 0] M_AXI_IC_AWLEN
