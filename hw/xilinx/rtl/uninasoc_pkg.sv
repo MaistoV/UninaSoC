@@ -38,5 +38,5 @@ package uninasoc_pkg;
 
     localparam int unsigned CORE_PICORV32 = 0;
     localparam int unsigned CORE_CV32E40P = 1;
-    localparam int unsigner CORE_MICROBLAZEV = 2;
+    localparam int unsigned CORE_MICROBLAZEV = 2;
 endpackage : uninasoc_pkg
