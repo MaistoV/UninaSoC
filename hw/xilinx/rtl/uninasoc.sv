@@ -292,7 +292,7 @@ module uninasoc (
         //.DEBUG_MODULE  ( DEBUG_MODULE   )
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
-        .rst_ni         ( sys_resetn ), //( sys_resetn ),
+        .rst_ni         ( vio_resetn ), //( sys_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( '0         ),
 
