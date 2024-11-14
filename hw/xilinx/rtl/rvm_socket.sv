@@ -302,16 +302,16 @@ module rvm_socket # (
     //////////////////////////////////////////////////////////
 
     // Instruction interface conversion
-    if(CORE_SELECTOR == CORE_MICROBLAZEV) begin : microblaze
+    if( CORE_SELECTOR == CORE_MICROBLAZEV ) begin : microblaze
 
-    	`ASSIGN_AXI_BUS( rvm_socket_instr,microblaze_instr );
-    	`ASSIGN_AXI_BUS( rvm_socket_data,microblaze_data );
+    	`ASSIGN_AXI_BUS( rvm_socket_instr , microblaze_instr );
+    	`ASSIGN_AXI_BUS( rvm_socket_data , microblaze_data );
     end
-	else if(CORE_SELECTOR != CORE_MICROBLAZEV) begin : not_microblaze
+	else if( CORE_SELECTOR != CORE_MICROBLAZEV ) begin : not_microblaze
 	
 	 // Connect memory interfaces to socket output memory ports
-   		`ASSIGN_AXI_BUS(rvm_socket_instr, core_instr_to_socket_instr);
-    	`ASSIGN_AXI_BUS(rvm_socket_data, core_data_to_socket_data);
+   		`ASSIGN_AXI_BUS( rvm_socket_instr, core_instr_to_socket_instr );
+    	`ASSIGN_AXI_BUS( rvm_socket_data, core_data_to_socket_data );
 	
 	
 	
