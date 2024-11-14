@@ -44,6 +44,7 @@ module rvm_socket # (
     `DECLARE_MEM_BUS(core_instr, DATA_WIDTH);
     `DECLARE_MEM_BUS(core_data, DATA_WIDTH);
 	
+	// Declare AXI interfaces for instruction memory port and data memory port for MicroblazeV 
 	`DECLARE_AXI_BUS(microblaze_instr,DATA_WIDTH);
 	`DECLARE_AXI_BUS(microblaze_data,DATA_WIDTH);
 
@@ -183,19 +184,12 @@ module rvm_socket # (
             //      MICROBLAZE      //
             //////////////////////////
 
-			// da commentare warning corretti = non usati e differenti dimensioni
-			// assegnare zero ai non usati
-			// _bid[0]
-			//assign __bid[1]=0
-			//per quelli piu grandi concatenazione {4'b0000, signal_name} {4'b0000,microblaze_instr_axi_awuser}
-			//assign microblaze_instr_axi_awregion=0
-			//assign nome{4'b0000}
 			
 			////////////////////////////
 			// Compatibility settings //
 			////////////////////////////
 			
-			// ID's are of size one in microblaze, while the BUS has size 2
+			// ID's are of size one in microblaze, while the BUS has size 2. First bit is assigned, second is set to 0.
 			assign microblaze_instr_axi_awid[1]='0;
 			assign microblaze_instr_axi_bid[1]='0;
 			assign microblaze_instr_axi_arid[1]='0;
@@ -205,60 +199,64 @@ module rvm_socket # (
 			assign microblaze_data_axi_arid[1]='0;
 			assign microblaze_data_axi_rid[1]='0;
 			
-			// Regions are not present in microblaze implementation
+			// Regions are not present in microblaze implementation so they are set to 0.
 			assign microblaze_instr_axi_awregion='0;
-			assign microblaze_data_axi_awregion='0;
 			assign microblaze_instr_axi_arregion='0;
+			assign microblaze_data_axi_awregion='0;
 			assign microblaze_data_axi_arregion='0;
+			
 			// Users are not implemented in bus but are present in microblaze, so they are not set.
 			// Microblaze takes Reset as 1 so rst_ni is negated.
 			// Last warning to be solved is about interrupt irq_i size (rvm has 2, microblaze has 1)
 			
+			//assign irq_i[1]='0;
+			//assign irq_i[2]='0;
+			
 			xlnx_microblaze_riscv microblaze_riscv (
-  				.Clk(clk_i),                             				 // input wire Clk
-  				.Reset(~rst_ni),                        				  // input wire Reset
-  				.Interrupt(irq_i),                  						// input wire Interrupt
- 				.Interrupt_Address(bootaddr_i),  							// input wire [0 : 31] Interrupt_Address
-  				.Interrupt_Ack(),          								// output wire [0 : 1] Interrupt_Ack
- 				.M_AXI_IC_AWID(microblaze_instr_axi_awid[0]),			// input wire [0 : 31] Interrupt_Address
- 				.M_AXI_IC_AWADDR(microblaze_instr_axi_awaddr),      
- 				.M_AXI_IC_AWLEN(microblaze_instr_axi_awlen),       
- 				.M_AXI_IC_AWSIZE(microblaze_instr_axi_awsize),      
- 				.M_AXI_IC_AWBURST(microblaze_instr_axi_awburst),    
- 				.M_AXI_IC_AWLOCK(microblaze_instr_axi_awlock),      
-  				.M_AXI_IC_AWCACHE(microblaze_instr_axi_awcache),   
-  				.M_AXI_IC_AWPROT(microblaze_instr_axi_awprot),      
-  				.M_AXI_IC_AWQOS(microblaze_instr_axi_awqos),        
-  				.M_AXI_IC_AWVALID(microblaze_instr_axi_awvalid),   
-  				.M_AXI_IC_AWREADY(microblaze_instr_axi_awready),    
-  				.M_AXI_IC_AWUSER(),      							
- 				.M_AXI_IC_WDATA(microblaze_instr_axi_wdata),        
-  				.M_AXI_IC_WSTRB(microblaze_instr_axi_wstrb),        
-  				.M_AXI_IC_WLAST(microblaze_instr_axi_wlast),        
-  				.M_AXI_IC_WVALID(microblaze_instr_axi_wvalid),      
-  				.M_AXI_IC_WREADY(microblaze_instr_axi_wready),      
-  				.M_AXI_IC_BID(microblaze_instr_axi_bid[0]),            
-  				.M_AXI_IC_BRESP(microblaze_instr_axi_bresp),        
-  				.M_AXI_IC_BVALID(microblaze_instr_axi_bvalid),      
- 				.M_AXI_IC_BREADY(microblaze_instr_axi_bready),      
- 				.M_AXI_IC_ARID(microblaze_instr_axi_arid[0]),          
- 				.M_AXI_IC_ARADDR(microblaze_instr_axi_araddr),      
- 				.M_AXI_IC_ARLEN(microblaze_instr_axi_arlen),        
- 				.M_AXI_IC_ARSIZE(microblaze_instr_axi_arsize),      
-  				.M_AXI_IC_ARBURST(microblaze_instr_axi_arburst),    
-  				.M_AXI_IC_ARLOCK(microblaze_instr_axi_arlock),      
-  				.M_AXI_IC_ARCACHE(microblaze_instr_axi_arcache),    
- 				.M_AXI_IC_ARPROT(microblaze_instr_axi_arprot),      
- 				.M_AXI_IC_ARQOS(microblaze_instr_axi_arqos),        
-  				.M_AXI_IC_ARVALID(microblaze_instr_axi_arvalid),    
-  				.M_AXI_IC_ARREADY(microblaze_instr_axi_arready),    
-  				.M_AXI_IC_ARUSER(),     							
-  				.M_AXI_IC_RID(microblaze_instr_axi_rid[0]),            
- 				.M_AXI_IC_RDATA(microblaze_instr_axi_rdata),        
- 				.M_AXI_IC_RRESP(microblaze_instr_axi_rresp),        
- 				.M_AXI_IC_RLAST(microblaze_instr_axi_rlast),       
- 				.M_AXI_IC_RVALID(microblaze_instr_axi_rvalid),      
-  				.M_AXI_IC_RREADY(microblaze_instr_axi_rready),      
+  				.Clk					( clk_i),                             				 // input wire Clk
+  				.Reset					( ~rst_ni),                        				  // input wire Reset
+  				.Interrupt				( irq_i[0]),                  						// input wire Interrupt
+ 				.Interrupt_Address		( bootaddr_i),  							// input wire [0 : 31] Interrupt_Address
+  				.Interrupt_Ack			( ),          								// output wire [0 : 1] Interrupt_Ack
+ 				.M_AXI_IC_AWID			( microblaze_instr_axi_awid[0]),			
+ 				.M_AXI_IC_AWADDR		( microblaze_instr_axi_awaddr),      
+ 				.M_AXI_IC_AWLEN			( microblaze_instr_axi_awlen),       
+ 				.M_AXI_IC_AWSIZE		( microblaze_instr_axi_awsize),      
+ 				.M_AXI_IC_AWBURST		( microblaze_instr_axi_awburst),    
+ 				.M_AXI_IC_AWLOCK		( microblaze_instr_axi_awlock),      
+  				.M_AXI_IC_AWCACHE		( microblaze_instr_axi_awcache),   
+  				.M_AXI_IC_AWPROT		( microblaze_instr_axi_awprot),      
+  				.M_AXI_IC_AWQOS			( microblaze_instr_axi_awqos),        
+  				.M_AXI_IC_AWVALID		( microblaze_instr_axi_awvalid),   
+  				.M_AXI_IC_AWREADY		( microblaze_instr_axi_awready),    
+  				.M_AXI_IC_AWUSER		( ),      							
+ 				.M_AXI_IC_WDATA			( microblaze_instr_axi_wdata),        
+  				.M_AXI_IC_WSTRB			( microblaze_instr_axi_wstrb),        
+  				.M_AXI_IC_WLAST			( microblaze_instr_axi_wlast),        
+  				.M_AXI_IC_WVALID		( microblaze_instr_axi_wvalid),      
+  				.M_AXI_IC_WREADY		( microblaze_instr_axi_wready),      
+  				.M_AXI_IC_BID			( microblaze_instr_axi_bid[0]),            
+  				.M_AXI_IC_BRESP			( microblaze_instr_axi_bresp),        
+  				.M_AXI_IC_BVALID		( microblaze_instr_axi_bvalid),      
+ 				.M_AXI_IC_BREADY		( microblaze_instr_axi_bready),      
+ 				.M_AXI_IC_ARID			( microblaze_instr_axi_arid[0]),          
+ 				.M_AXI_IC_ARADDR		( microblaze_instr_axi_araddr),      
+ 				.M_AXI_IC_ARLEN			( microblaze_instr_axi_arlen),        
+ 				.M_AXI_IC_ARSIZE		( microblaze_instr_axi_arsize),      
+  				.M_AXI_IC_ARBURST		( microblaze_instr_axi_arburst),    
+  				.M_AXI_IC_ARLOCK		( microblaze_instr_axi_arlock),      
+  				.M_AXI_IC_ARCACHE		( microblaze_instr_axi_arcache),    
+ 				.M_AXI_IC_ARPROT		( microblaze_instr_axi_arprot),      
+ 				.M_AXI_IC_ARQOS			( microblaze_instr_axi_arqos),        
+  				.M_AXI_IC_ARVALID		( microblaze_instr_axi_arvalid),    
+  				.M_AXI_IC_ARREADY		( microblaze_instr_axi_arready),    
+  				.M_AXI_IC_ARUSER		( ),     							
+  				.M_AXI_IC_RID			( microblaze_instr_axi_rid[0]),            
+ 				.M_AXI_IC_RDATA			( microblaze_instr_axi_rdata),        
+ 				.M_AXI_IC_RRESP			( microblaze_instr_axi_rresp),        
+ 				.M_AXI_IC_RLAST			( microblaze_instr_axi_rlast),       
+ 				.M_AXI_IC_RVALID		( microblaze_instr_axi_rvalid),      
+  				.M_AXI_IC_RREADY		( microblaze_instr_axi_rready),      
 				
 				.M_AXI_DC_AWID(microblaze_data_axi_awid[0]),
  				.M_AXI_DC_AWADDR(microblaze_data_axi_awaddr),		
