@@ -330,7 +330,7 @@ module rvm_socket # (
     	`ASSIGN_AXI_BUS( rvm_socket_data , microblaze_data );
     	
     end
-	else if( CORE_SELECTOR != CORE_MICROBLAZEV ) begin : not_microblaze
+	else begin : not_microblaze
 	
 	 // Connect memory interfaces to socket output memory ports
    		`ASSIGN_AXI_BUS( rvm_socket_instr, core_instr_to_socket_instr );
