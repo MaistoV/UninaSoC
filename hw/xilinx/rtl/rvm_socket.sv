@@ -48,6 +48,17 @@ module rvm_socket # (
 	`DECLARE_AXI_BUS(microblaze_instr,DATA_WIDTH);
 	`DECLARE_AXI_BUS(microblaze_data,DATA_WIDTH);
 
+	// Debug interface connections definition 
+	
+	logic [0:0] dbg_clk;          // output wire Dbg_Clk_0
+	logic [0:0] dbg_tdi;          // output wire Dbg_TDI_0
+  	logic [0:0] dbg_tdo;          // input wire Dbg_TDO_0
+  	logic [0:7] dbg_reg_en;    // output wire [0 : 7] Dbg_Reg_En_0
+  	logic [0:0] dbg_capture;  // output wire Dbg_Capture_0
+  	logic [0:0] dbg_shift;      // output wire Dbg_Shift_0
+  	logic [0:0] dbg_update;    // output wire Dbg_Update_0
+  	logic [0:0] dbg_rst;          // output wire Dbg_Rst_0
+  	logic [0:0] dbg_disable;  // output wire Dbg_Disable_0
 	
 
 	//////////////////////////////////////////////////////
@@ -219,15 +230,15 @@ module rvm_socket # (
  				.Interrupt_Address		( bootaddr_i),  							// input wire [0 : 31] Interrupt_Address
   				.Interrupt_Ack			( ),          								// output wire [0 : 1] Interrupt_Ack
  				
-				.Dbg_Clk(Dbg_Clk),                      // input wire Dbg_Clk
-  				.Dbg_TDI(Dbg_TDI),                      // input wire Dbg_TDI
- 				.Dbg_TDO(Dbg_TDO),                      // output wire Dbg_TDO
- 				.Dbg_Reg_En(Dbg_Reg_En_0),                // input wire [0 : 7] Dbg_Reg_En
- 				.Dbg_Shift(Dbg_Shift),                  // input wire Dbg_Shift
- 				.Dbg_Capture(Dbg_Capture),              // input wire Dbg_Capture
- 				.Dbg_Update(Dbg_Update),                // input wire Dbg_Update
- 				.Debug_Rst(Debug_Rst),                  // input wire Debug_Rst
-  				.Dbg_Disable(Dbg_Disable),              // input wire Dbg_Disable
+				.Dbg_Clk(dbg_clk),                      // input wire Dbg_Clk
+  				.Dbg_TDI(dbg_tdi),                      // input wire Dbg_TDI
+ 				.Dbg_TDO(dbg_tdo),                      // output wire Dbg_TDO
+ 				.Dbg_Reg_En(dbg_reg_en),                // input wire [0 : 7] Dbg_Reg_En
+ 				.Dbg_Shift(dbg_shift),                  // input wire Dbg_Shift
+ 				.Dbg_Capture(dbg_capture),              // input wire Dbg_Capture
+ 				.Dbg_Update(dbg_update),                // input wire Dbg_Update
+ 				.Debug_Rst(dbg_reset),                  // input wire Debug_Rst
+  				.Dbg_Disable(dbg_disable),              // input wire Dbg_Disable
  				
  				.M_AXI_IC_AWID			( microblaze_instr_axi_awid[0]),			
  				.M_AXI_IC_AWADDR		( microblaze_instr_axi_awaddr),      
@@ -343,15 +354,15 @@ module rvm_socket # (
     	
     	xlnx_microblaze_debug_module_v your_instance_name (
     		.Debug_SYS_Rst(rst_ni),  // output wire Debug_SYS_Rst
-  			.Dbg_Clk_0(Dbg_Clk),          // output wire Dbg_Clk_0
-  			.Dbg_TDI_0(Dbg_TDI),          // output wire Dbg_TDI_0
-  			.Dbg_TDO_0(Dbg_TDO),          // input wire Dbg_TDO_0
-  			.Dbg_Reg_En_0(Dbg_Reg_En_0),    // output wire [0 : 7] Dbg_Reg_En_0
-  			.Dbg_Capture_0(Dbg_Capture),  // output wire Dbg_Capture_0
-  			.Dbg_Shift_0(Dbg_Shift),      // output wire Dbg_Shift_0
-  			.Dbg_Update_0(Dbg_Update),    // output wire Dbg_Update_0
-  			.Dbg_Rst_0(Dbg_Rst),          // output wire Dbg_Rst_0
-  			.Dbg_Disable_0(Dbg_Disable)  // output wire Dbg_Disable_0
+  			.Dbg_Clk_0(dbg_cll),          // output wire Dbg_Clk_0
+  			.Dbg_TDI_0(dbg_tdi),          // output wire Dbg_TDI_0
+  			.Dbg_TDO_0(dbg_tdi),          // input wire Dbg_TDO_0
+  			.Dbg_Reg_En_0(dbg_reg_en),    // output wire [0 : 7] Dbg_Reg_En_0
+  			.Dbg_Capture_0(dbg_capture),  // output wire Dbg_Capture_0
+  			.Dbg_Shift_0(dbg_shift),      // output wire Dbg_Shift_0
+  			.Dbg_Update_0(dbg_update),    // output wire Dbg_Update_0
+  			.Dbg_Rst_0(dbg_rst),          // output wire Dbg_Rst_0
+  			.Dbg_Disable_0(dbg_disable)  // output wire Dbg_Disable_0
 		);
     	
     end
