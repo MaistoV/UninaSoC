@@ -2,7 +2,7 @@
 create_ip -name microblaze_riscv -vendor xilinx.com -library ip -version 1.0 -module_name $::env(IP_NAME)
 
 # Configure IP
-set_property -dict [list CONFIG.C_DEBUG_ENABLED {0} \
+set_property -dict [list CONFIG.C_DEBUG_ENABLED {1} \
   CONFIG.C_DEBUG_EVENT_COUNTERS {0} \
   CONFIG.C_DEBUG_LATENCY_COUNTERS {0} \
   CONFIG.C_BRANCH_TARGET_CACHE_SIZE {0} \
