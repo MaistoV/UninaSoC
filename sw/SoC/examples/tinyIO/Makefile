@@ -34,8 +34,10 @@ LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
 OBJCOPY = 		$(RV_PREFIX)objcopy
 
-CFLAGS = 		-march=rv32g_zicsr_zifencei -O0 -c
-LDFLAGS = 		-nostdlib -T$(LD_SCRIPT)
+CFLAGS = 		-march=rv32g_zicsr_zifencei -O0 -c 
+LDFLAGS = 		$(LIBGCC) -nostdlib -T$(LD_SCRIPT)
+
+LIBGCC = /opt/rv32/lib/gcc/riscv32-unknown-elf/12.2.0/libgcc.a
 
 ###############################################################################
 
@@ -81,5 +83,4 @@ clean:
 
 dump:
 	$(OBJDUMP) -D bin/$(PROJECT).elf
-
 

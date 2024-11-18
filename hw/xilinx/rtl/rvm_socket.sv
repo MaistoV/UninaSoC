@@ -161,7 +161,7 @@ module rvm_socket # (
                 .irq_id_o               (                           ),  // TBD
 
                 // Debug Interface
-                .debug_req_i            ( debug_req_core            ),
+                .debug_req_i            (     '0                    ),
                 .debug_havereset_o      (                           ),  // TBD
                 .debug_running_o        (                           ),  // TBD
                 .debug_halted_o         (                           ),  // TBD

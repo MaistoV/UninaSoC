@@ -5,15 +5,15 @@
 
 #include <stdint.h>
 
-#define UART_ADDR           0x00001000
-#define TX_EMPTY_BIT_MASK   0x04000000 /* Wrong endianess - it should be 0x00000004 */
-#define RX_FULL_BIT_MASK    0x02000000 
+#define UART_ADDR           0x00200000
+#define TX_EMPTY_BIT_MASK   0x00000004 /* Wrong endianess - it should be 0x00000004 */
+#define RX_FULL_BIT_MASK    0x00000002 
 
 
 void __putchar (uint32_t * uart, char c) 
 {
     /* Wait for the TX reg is empty */
-    while( (((*(uart+2)) & TX_EMPTY_BIT_MASK) > 24 ) != 1 );  
+    while( (((*(uart+2)) & TX_EMPTY_BIT_MASK)) != 1 );  
     /* Put the char */
     *(char *)(uart+1) = c;
 }

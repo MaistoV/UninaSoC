@@ -36,6 +36,11 @@ OBJCOPY = 		$(RV_PREFIX)objcopy
 CFLAGS = 		-march=rv32g_zicsr_zifencei -O0 -c
 LDFLAGS = 		-nostdlib -T$(LD_SCRIPT)
 
+# Optional Libraries
+# For processors without M extension support, linking libgcc is mandatory for % and / operations.
+LIBGCC = /opt/rv32/lib/gcc/riscv32-unknown-elf/12.2.0/libgcc.a
+
+
 ###############################################################################
 
 ###############################################################################
