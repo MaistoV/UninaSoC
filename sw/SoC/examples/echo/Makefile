@@ -17,6 +17,10 @@ LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/$(MCU)_FLASH.ld
 INC = 		      -Iinc
 STARTUP = 	      startup
 
+LIBTINYIO = lib/tinyio.a
+LIBGCC = /opt/rv32/lib/gcc/riscv32-unknown-elf/12.2.0/libgcc.a
+LIBLIST = $(LIBTINYIO)  
+
 ###############################################################################
 # Toolchain
 
@@ -34,10 +38,10 @@ LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
 OBJCOPY = 		$(RV_PREFIX)objcopy
 
-CFLAGS = 		-march=rv32g_zicsr_zifencei -O0 -c 
-LDFLAGS = 		$(LIBGCC) -nostdlib -T$(LD_SCRIPT)
+CFLAGS = 		-march=rv32ima_zicsr_zifencei -O0 -c 
+LDFLAGS = 		$(LIBLIST) -nostdlib -T$(LD_SCRIPT)
 
-LIBGCC = /opt/rv32/lib/gcc/riscv32-unknown-elf/12.2.0/libgcc.a
+
 
 ###############################################################################
 
