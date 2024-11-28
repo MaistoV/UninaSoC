@@ -5,6 +5,8 @@
 *.d
 # Object files
 *.o
+# Static libraries
+*.a
 
 # Vivado outputs
 .Xil

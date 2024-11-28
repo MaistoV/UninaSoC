@@ -17,6 +17,8 @@ LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/$(MCU)_FLASH.ld
 INC = 		      -Iinc
 STARTUP = 	      startup
 
+LIBLIST = 
+
 ###############################################################################
 # Toolchain
 
@@ -28,14 +30,16 @@ STARTUP = 	      startup
 # OBJDUMP = $(RV_PREFIX)objdump $(32BITODFLAGS)
 #
 
-RV_PREFIX = 	/opt/rv32/bin/riscv32-unknown-elf-
+RV_PREFIX = 		$(RV_TOOLCHAIN_PATH)
 CC = 			$(RV_PREFIX)gcc
 LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
 OBJCOPY = 		$(RV_PREFIX)objcopy
 
-CFLAGS = 		-march=rv32g_zicsr_zifencei -O0 -c
-LDFLAGS = 		-nostdlib -T$(LD_SCRIPT)
+CFLAGS = 		-march=rv32ima_zicsr_zifencei -O0 -c 
+LDFLAGS = 		$(LIBLIST) -nostdlib -T$(LD_SCRIPT)
+
+
 
 ###############################################################################
 
@@ -81,5 +85,4 @@ clean:
 
 dump:
 	$(OBJDUMP) -D bin/$(PROJECT).elf
-
 

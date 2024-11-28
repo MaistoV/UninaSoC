@@ -7,10 +7,13 @@ int main()
   tinyIO_init();
 
   char c;
+  uint32_t u;
+  int d;
 
   while(1){
-    scanf("%c",&c);
-    printf("%c", c);
+    scanf("%d",&d);
+    //c = _getchar();
+    printf("%d", d);
   }
 
   return 0;

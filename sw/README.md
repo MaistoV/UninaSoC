@@ -57,14 +57,33 @@ The sw directory is divided in two sub-directories:
     │       ├── Makefile                  # Makefile
     │       └── src                       # Sources
     │           └── ...
+    └── template                          # Template project
+    |   ├── Makefile
+    |   └── src
+    |       └── main.c
     ├── linker                            # Linker script directory
     │   └── <LINKER_SCRIPT>.ld
     ├── startup                           # Startup directory
     │   └── startup.s
-    └── template                          # Template project
-        ├── Makefile
-        └── src
-            └── main.c
+
+
+├── host                                  # Host software
+│   └── <project_name>                    # Project directory
+│       ├── Makefile                      # Makefile
+│       └── src                           # Sources
+│           └── ...
+├── Makefile                              # Top level Makefile
+└── SoC                                   # SoC software
+    ├── examples                          # Example projects
+    │   └── <project_name>                # Project directory
+    │       ├── Makefile                  # Makefile
+    │       └── src                       # Sources
+    │           └── ...
+    ├── linker                            # Linker script directory
+    │   └── <LINKER_SCRIPT>.ld
+    ├── startup                           # Startup directory
+    │   └── startup.s
+
 ```
 
 The top level Makefile contains targets for both host software and SoC software.

@@ -1,0 +1,3 @@
+[submodule "sw/SoC/ext_lib/tinyio"]
+	path = sw/SoC/ext_lib/tinyio
+	url = https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-.git
