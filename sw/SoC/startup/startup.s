@@ -5,25 +5,6 @@
 
 .section .text
 
-test_loop:
-  li	x4, 0x3340006f
-  #bne	x2, x3, sleep_loop
-  ###
-fin:
-  li	x3, 0xffffffff
-  sw	x3, 0(x0)
-  lw	x2, 0(x0)
-  bne	x3, x2, wrong_loop
-  #bne   x2, x4, wrong_loop
- 
-ok_loop:
-  j	ok_loop
-
-sleep_loop:
-  j sleep_loop
-  
-wrong_loop:
-  j wrong_loop
 
 reset_handler:
 
@@ -59,22 +40,10 @@ reset_handler:
   mv x29, x1
   mv x30, x1
   mv x31, x1
-  
-  #li	x5, 0x001000ff
-  #li	x4, 0xffffffff
-  #sw	x4, 0(x5)
-  #li	x6, 0x1080006f
-  
-  #lw	x2, 0(x0)
-  #bne 	x2, x0, test_loop
-  #j default_exc_handler
 
   /* stack initilization */
   la   sp, _stack_start
-  #sw   x5, 0(x0)
-  #lw   x4, 0(x0)
-  #bne  x5, x4, wrong_loop
-  #j ok_loop
+  
 _start:
   .global _start
 

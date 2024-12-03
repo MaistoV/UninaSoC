@@ -11,7 +11,7 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rvm_socket # (
-    parameter CORE_SELECTOR = CORE_PICORV32,
+    parameter CORE_SELECTOR = CORE_CV32E40P,
     parameter DATA_WIDTH    = 32,
     parameter ADDR_WIDTH    = 32,
     parameter NUM_IRQ       = 3
@@ -161,7 +161,7 @@ module rvm_socket # (
                 .irq_id_o               (                           ),  // TBD
 
                 // Debug Interface
-                .debug_req_i            ( debug_req_core            ),
+                .debug_req_i            (     '0                    ),
                 .debug_havereset_o      (                           ),  // TBD
                 .debug_running_o        (                           ),  // TBD
                 .debug_halted_o         (                           ),  // TBD

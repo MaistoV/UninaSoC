@@ -8,13 +8,16 @@ MCU = DEMOSYSTEM
 
 ###############################################################################
 # Directories
-SOC_SW_ROOT_DIR = ../
-SRCS = 	 	      $(wildcard src/*.c) $(wildcard lib/*.c)
+
+SOC_SW_ROOT_DIR = ../..
+SRCS = 		      $(wildcard src/*.c) $(wildcard lib/*.c)
 OBJ = 		      obj/
 OBJS = 		      $(addprefix $(OBJ), $(notdir $(SRCS:.c=.o)))
 LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/$(MCU)_FLASH.ld
 INC = 		      -Iinc
 STARTUP = 	      startup
+
+LIBLIST = 
 
 ###############################################################################
 # Toolchain
@@ -33,8 +36,10 @@ LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
 OBJCOPY = 		$(RV_PREFIX)objcopy
 
-CFLAGS = 		-march=rv32g_zicsr_zifencei -O0 -c
-LDFLAGS = 		-nostdlib -T$(LD_SCRIPT)
+CFLAGS = 		-march=rv32imad_zicsr_zifencei -O0 -c 
+LDFLAGS = 		$(LIBLIST) -nostdlib -T$(LD_SCRIPT)
+
+
 
 ###############################################################################
 
@@ -80,5 +85,4 @@ clean:
 
 dump:
 	$(OBJDUMP) -D bin/$(PROJECT).elf
-
 

@@ -50,10 +50,10 @@ do
     # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
     #   - no C-extension
     #   - no 8-byte (or longer) transactions
-    if [ $burst_size -neq 4 ] {
-        echo "Unsupported burst_size=$burst_size! Supported value is 4, for now." >&2
+    if [ $trans_size != 4 ]; then
+        echo "Unsupported trans_size=$trans_size! Supported value is 4, for now." >&2
         return 1
-    }
+    fi
     hex_data="";
     for((j=$trans_size*$i*2-1+$trans_size*2;j>=$i*2*$trans_size;j=j-2));
     do
@@ -73,10 +73,10 @@ then
     # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
     #   - no C-extension
     #   - no 8-byte (or longer) transactions
-    if [ $burst_size -neq 4 ] {
-        echo "Unsupported burst_size=$burst_size! Supported value is 4, for now." >&2
+    if [ $trans_size != 4 ]; then
+        echo "Unsupported trans_size=$trans_size! Supported value is 4, for now." >&2
         return 1
-    }
+    fi
     for((j=$trans_size*($i+1)*2-1+$remaining_bytes*2;j>=($i+1)*2*$trans_size;j=j-2));
     do
         hex_data=${hex_data}${hex_file:$((j-1)):$((2))};

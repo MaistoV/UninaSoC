@@ -15,11 +15,16 @@ module axi4_full_uart (
     input logic clock_i,
     input logic reset_ni,
 
-    // Interrupts 
-    // 0 - to the Core 
-    // 1 - to the XDMA
-    output logic [1:0] int_o,
-    input  logic [1:0] int_ack_i,
+    // Interrupts
+    output logic        int_core_o,
+    output logic        int_xdma_o,
+    input  logic [1:0]  int_ack_i,
+
+    `ifdef EMBEDDED 
+    // RX and TX signas (for embedded only)
+    output logic        tx_o,
+    input  logic        rx_i,
+    `endif
 
     // AXI4 Slave interface
     `DEFINE_AXI_SLAVE_PORTS(s)
@@ -98,7 +103,8 @@ module axi4_full_uart (
         virtual_uart virtual_uart_u (
             .clock_i    ( clock_i                       ),
             .reset_ni   ( reset_ni                      ),
-            .int_o      ( /* empty */                   ),
+            .int_core_o ( int_core_o                    ),
+            .int_xdma_o ( int_xdma_o                    ),
             .int_ack_i  ( 2'b00                         ),
 
             .s_axilite_awaddr   ( uart_axilite_awaddr       ), // output wire [31 : 0] s_axilite_awaddr
@@ -124,7 +130,33 @@ module axi4_full_uart (
         );
 
     `elsif EMBEDDED
-        // TBD
+        xlnx_axi_uartlite uart_u (
+            .s_axi_aclk         ( clock_i                           ),      // input wire s_axi_aclk
+            .s_axi_aresetn      ( reset_ni                          ),      // input wire s_axi_aresetn
+            .interrupt          ( int_core_o                        ),      // output wire interrupt
+            .s_axi_awaddr       ( uart_axilite_awaddr               ),      // input wire [3 : 0] s_axi_awaddr
+            .s_axi_awvalid      ( uart_axilite_awvalid              ),      // input wire s_axi_awvalid
+            .s_axi_awready      ( uart_axilite_awready              ),      // output wire s_axi_awready
+            .s_axi_wdata        ( uart_axilite_wdata                ),      // input wire [31 : 0] s_axi_wdata
+            .s_axi_wstrb        ( uart_axilite_wstrb                ),      // input wire [3 : 0] s_axi_wstrb
+            .s_axi_wvalid       ( uart_axilite_wvalid               ),      // input wire s_axi_wvalid
+            .s_axi_wready       ( uart_axilite_wready               ),      // output wire s_axi_wready
+            .s_axi_bresp        ( uart_axilite_bresp                ),      // output wire [1 : 0] s_axi_bresp
+            .s_axi_bvalid       ( uart_axilite_bvalid               ),      // output wire s_axi_bvalid
+            .s_axi_bready       ( uart_axilite_bready               ),      // input wire s_axi_bready
+            .s_axi_araddr       ( uart_axilite_araddr               ),      // input wire [3 : 0] s_axi_araddr
+            .s_axi_arvalid      ( uart_axilite_arvalid              ),      // input wire s_axi_arvalid
+            .s_axi_arready      ( uart_axilite_arready              ),      // output wire s_axi_arready
+            .s_axi_rdata        ( uart_axilite_rdata                ),      // output wire [31 : 0] s_axi_rdata
+            .s_axi_rresp        ( uart_axilite_rresp                ),      // output wire [1 : 0] s_axi_rresp
+            .s_axi_rvalid       ( uart_axilite_rvalid               ),      // output wire s_axi_rvalid
+            .s_axi_rready       ( uart_axilite_rready               ),      // input wire s_axi_rready
+            .rx                 ( rx_i                              ),      // input wire rx
+            .tx                 ( tx_o                              )       // output wire tx
+            );
+
+        assign int_xdma_o = '0;
+
     `endif
 
 endmodule

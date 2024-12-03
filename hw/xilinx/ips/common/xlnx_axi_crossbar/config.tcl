@@ -8,7 +8,7 @@ set_property -dict [list CONFIG.PROTOCOL {AXI4} \
                          CONFIG.DATA_WIDTH {32} \
                          CONFIG.ID_WIDTH {2} \
                          CONFIG.NUM_SI {3} \
-                         CONFIG.NUM_MI {2} \
+                         CONFIG.NUM_MI {3} \
                          CONFIG.ADDR_RANGES {1} \
                          CONFIG.STRATEGY {0} \
                          CONFIG.R_REGISTER {0} \
@@ -19,6 +19,8 @@ set_property -dict [list CONFIG.PROTOCOL {AXI4} \
                          CONFIG.BUSER_WIDTH {0} \
                          CONFIG.M00_A00_BASE_ADDR {0x0} \
                          CONFIG.M01_A00_BASE_ADDR {0x100000} \
+                         CONFIG.M02_A00_BASE_ADDR {0x200000} \
                          CONFIG.M00_A00_ADDR_WIDTH {16} \
                          CONFIG.M01_A00_ADDR_WIDTH {12} \
+                         CONFIG.M02_A00_ADDR_WIDTH {12} \
                          ] [get_ips $::env(IP_NAME)]
