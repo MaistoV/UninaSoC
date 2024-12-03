@@ -14,10 +14,10 @@ SRCS = 		      $(wildcard src/*.c) $(wildcard lib/*.c)
 OBJ = 		      obj/
 OBJS = 		      $(addprefix $(OBJ), $(notdir $(SRCS:.c=.o)))
 LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/$(MCU)_FLASH.ld
-INC = 		      -Iinc
+INC = 		      -Iinc -I../../ext_lib/tinyio/inc
 STARTUP = 	      startup
 
-LIBTINYIO = lib/tinyio.a
+LIBTINYIO = ../../ext_lib/tinyio/lib/tinyio.a
 LIBLIST = $(LIBTINYIO)  
 
 ###############################################################################
@@ -31,13 +31,13 @@ LIBLIST = $(LIBTINYIO)
 # OBJDUMP = $(RV_PREFIX)objdump $(32BITODFLAGS)
 #
 
-RV_PREFIX = 	$(RV_TOOLCHAIN_PATH)
+RV_PREFIX = 	riscv32-unknown-elf-
 CC = 			$(RV_PREFIX)gcc
 LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
 OBJCOPY = 		$(RV_PREFIX)objcopy
 
-CFLAGS = 		-march=rv32ima_zicsr_zifencei -O0 -c 
+CFLAGS = 		-march=rv32imad_zicsr_zifencei -O0 -c 
 LDFLAGS = 		$(LIBLIST) -nostdlib -T$(LD_SCRIPT)
 
 

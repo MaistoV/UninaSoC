@@ -133,7 +133,6 @@ export QUESTA_PATH=$(dirname $(which vsim))
 # Add GCC and Spike to path
 export SW_ROOT=${ROOT_DIR}/sw
 export BOOTROM_COE=${SW_ROOT}/bootrom.coe
-export RV_TOOLCHAIN_PATH=/opt/rv32/bin/riscv32-unknown-elf-
 
 
 

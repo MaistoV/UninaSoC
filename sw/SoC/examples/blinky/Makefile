@@ -30,13 +30,13 @@ LIBLIST =
 # OBJDUMP = $(RV_PREFIX)objdump $(32BITODFLAGS)
 #
 
-RV_PREFIX = 	$(RV_TOOLCHAIN_PATH)
+RV_PREFIX = 	riscv32-unknown-elf-
 CC = 			$(RV_PREFIX)gcc
 LD = 			$(RV_PREFIX)ld
 OBJDUMP = 		$(RV_PREFIX)objdump
 OBJCOPY = 		$(RV_PREFIX)objcopy
 
-CFLAGS = 		-march=rv32ima_zicsr_zifencei -O0 -c 
+CFLAGS = 		-march=rv32imad_zicsr_zifencei -O0 -c 
 LDFLAGS = 		$(LIBLIST) -nostdlib -T$(LD_SCRIPT)
 
 

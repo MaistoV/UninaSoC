@@ -434,8 +434,10 @@ module uninasoc (
         .int_core_o     (                           ), // TBD
         .int_xdma_o     (                           ), // TBD
         .int_ack_i      ( '0                        ), // TBD
+        `ifdef EMBEDDED
         .tx_o           ( uart_tx_o                 ), // Transmission signal (SoC output signal)
         .rx_i           ( uart_rx_i                 ), // Receive signal (SoC input signal)
+        `endif
 
         // AXI4 slave port (from xbar)
         .s_axi_awid     ( xbar_to_uart_axi_awid     ), // input wire [1 : 0] s_axi_awid

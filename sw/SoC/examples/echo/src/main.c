@@ -4,16 +4,14 @@
 int main()
 { 
 
-  tinyIO_init();
-
+  uint32_t uart_base_address = 0x200000;
   char c;
-  uint32_t u;
-  int d;
+
+  tinyIO_init(uart_base_address);
 
   while(1){
-    scanf("%d",&d);
-    //c = _getchar();
-    printf("%d", d);
+    scanf("%c",&c);
+    printf("%c", c);
   }
 
   return 0;

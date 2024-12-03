@@ -20,9 +20,11 @@ module axi4_full_uart (
     output logic        int_xdma_o,
     input  logic [1:0]  int_ack_i,
 
-    // RX and TX signas
+    `ifdef EMBEDDED 
+    // RX and TX signas (for embedded only)
     output logic        tx_o,
     input  logic        rx_i,
+    `endif
 
     // AXI4 Slave interface
     `DEFINE_AXI_SLAVE_PORTS(s)
@@ -128,7 +130,7 @@ module axi4_full_uart (
         );
 
     `elsif EMBEDDED
-        xlnx_axi_uart uart_u (
+        xlnx_axi_uartlite uart_u (
             .s_axi_aclk         ( clock_i                           ),      // input wire s_axi_aclk
             .s_axi_aresetn      ( reset_ni                          ),      // input wire s_axi_aresetn
             .interrupt          ( int_core_o                        ),      // output wire interrupt

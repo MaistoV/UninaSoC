@@ -4,8 +4,10 @@
 int main()
 { 
 
-  tinyIO_init();
+  uint32_t uart_base_address = 0x200000;
 
+  tinyIO_init(uart_base_address);
+  
   printf("Hello World!\n");
 
   while(1);
