@@ -242,7 +242,7 @@ module sys_master
         .clk_in1  ( sys_clock_i  ),
         .resetn   ( sys_resetn_o ),
         .locked   ( ),
-        .clk_100  ( ),        
+        .clk_100  ( ),
         .clk_50   ( soc_clk_o   ),
         .clk_20   ( ),
         .clk_10   ( )
