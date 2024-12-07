@@ -38,6 +38,7 @@ import uninasoc_pkg::*;
 
 `ifdef HPC
     `include "uninasoc_pcie.svh"
+    `include "uninasoc_ddr4.svh"
 `endif
 
 // Module definition
@@ -56,6 +57,15 @@ module uninasoc (
         // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `elsif HPC
+        // DDR4 CH0 clock and reset
+        input logic clk_300mhz_0_p_i,
+        input logic clk_300mhz_0_n_i,
+        input logic c0_ddr4_reset_n_i,
+
+        // DDR4 CH0 interface 
+        `DEFINE_DDR4_PORTS(c0), 
+
+        // PCIe clock and reset
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
         input logic pcie_resetn_i,
