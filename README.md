@@ -77,7 +77,7 @@ If you need finer-grained documentation and insights to control the building flo
 TBD
 # TODO
 * Design address space
-	* Finalized linker script
+	* Finalized linker script and sw
  	* Device tree (template + generation)
 
 # ES Project 2024
