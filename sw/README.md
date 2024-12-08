@@ -1,7 +1,5 @@
-# RISC-V Software Flow
+# Building RISC-V GCC Toolchain from Sources
 This tree requires [RISC-V GCC](https://github.com/riscv/riscv-gnu-toolchain.git) to be installed on the developement host.
-
-## Building GCC from Sources
 You can build GCC from sources, as in the following.
 
 Download prerequisites, e.g. for Debian:
@@ -37,64 +35,7 @@ Install in `--prefix`:
 make install
 ```
 
-# Building Software
-The sw directory is divided in two sub-directories:
-* host - software for the host
-* SoC  - software for the SoC
-
-### Directory structure
-```
-.
-├── host                                  # Host software
-│   └── <project_name>                    # Project directory
-│       ├── Makefile                      # Makefile
-│       └── src                           # Sources
-│           └── ...
-├── Makefile                              # Top level Makefile
-└── SoC                                   # SoC software
-    ├── examples                          # Example projects
-    │   └── <project_name>                # Project directory
-    │       ├── Makefile                  # Makefile
-    │       └── src                       # Sources
-    │           └── ...
-    └── template                          # Template project
-    |   ├── Makefile
-    |   └── src
-    |       └── main.c
-    ├── linker                            # Linker script directory
-    │   └── <LINKER_SCRIPT>.ld
-    ├── startup                           # Startup directory
-    │   └── startup.s
-
-
-├── host                                  # Host software
-│   └── <project_name>                    # Project directory
-│       ├── Makefile                      # Makefile
-│       └── src                           # Sources
-│           └── ...
-├── Makefile                              # Top level Makefile
-└── SoC                                   # SoC software
-    ├── examples                          # Example projects
-    │   └── <project_name>                # Project directory
-    │       ├── Makefile                  # Makefile
-    │       └── src                       # Sources
-    │           └── ...
-    ├── linker                            # Linker script directory
-    │   └── <LINKER_SCRIPT>.ld
-    ├── startup                           # Startup directory
-    │   └── startup.s
-
-```
-
-The top level Makefile contains targets for both host software and SoC software.
-
-### Build command
-To build software for the host:
-```
-make host_<project_name>
-```
-To build software for the SoC:
-```
-make soc_<project_name>
-```
-The relative output product (objs, `.bin`, `.elf` ...) can be found in the `sw/[host|SoC]/<project_name>` directory.
+# Software Tree Structure
+The sw directory is organized in two major components:
+* host - Contains software that runs on the host side, typically x86-based systems. This includes Linux drivers for interfacing with the UninaSoC. Currently, it only applies to HPC configurations. ([README](https://github.com/MaistoV/UninaSoC/tree/feature/linker_and_software/sw/host))
+* SoC  - Contains software running on the UninaSoC itself. Currently, only bare-metal projects are supported, as embedded Linux is not yet implemented. ([README](https://github.com/MaistoV/UninaSoC/tree/feature/linker_and_software/sw/SoC))
