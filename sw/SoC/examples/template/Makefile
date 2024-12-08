@@ -13,7 +13,7 @@ SOC_SW_ROOT_DIR = ../..
 SRCS = 		      $(wildcard src/*.c) $(wildcard lib/*.c)
 OBJ = 		      obj/
 OBJS = 		      $(addprefix $(OBJ), $(notdir $(SRCS:.c=.o)))
-LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/$(MCU)_FLASH.ld
+LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/UninaSoC.ld
 INC = 		      -Iinc 
 STARTUP = 	      startup
 
