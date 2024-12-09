@@ -114,6 +114,11 @@ module uninasoc (
     // xbar -> UART
     `DECLARE_AXI_BUS(xbar_to_uart, AXI_DATA_WIDTH);
 
+    `ifdef HPC
+        // xbar -> DDR4
+        `DECLARE_AXI_BUS(xbar_to_ddr4, AXI_DATA_WIDTH);
+    `endif
+
     // Concatenate AXI master buses
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
@@ -126,9 +131,9 @@ module uninasoc (
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `ifdef EMBEDDED
-    `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_gpio_out, xbar_to_uart, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_gpio_out, xbar_to_uart, xbar_to_main_mem);
     `elsif HPC
-        `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_uart, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_ddr4, xbar_to_uart, xbar_to_main_mem); // TODO - Define the order
     `endif
 
     ///////////////////////
@@ -685,6 +690,75 @@ module uninasoc (
             );
         end
     endgenerate
+
+`elsif HPC
+
+    ddr4_wrapper  ddr4_wrapper_u (
+        .clock_i              ( soc_clk           ),
+        .reset_ni             ( sys_resetn        ),
+
+        .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
+        .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
+        .c0_ddr4_reset_n_i    ( c0_ddr4_reset_n_i ),
+
+        .ddr4_c0_adr          ( ddr4_c0_adr       ),
+        .ddr4_c0_ba           ( ddr4_c0_ba        ),
+        .ddr4_c0_cke          ( ddr4_c0_cke       ),
+        .ddr4_c0_cs_n         ( ddr4_c0_cs_n      ),
+        .ddr4_c0_dq           ( ddr4_c0_dq        ),
+        .ddr4_c0_dqs_t        ( ddr4_c0_dqs_t     ),
+        .ddr4_c0_dqs_c        ( ddr4_c0_dqs_c     ),
+        .ddr4_c0_odt          ( ddr4_c0_odt       ),
+        .ddr4_c0_par          ( ddr4_c0_par       ),
+        .ddr4_c0_bg           ( ddr4_c0_bg        ),
+        .ddr4_c0_act_n        ( ddr4_c0_act_n     ),
+        .ddr4_c0_ck_t         ( ddr4_c0_ck_t      ),
+        .ddr4_c0_ck_c         ( ddr4_c0_ck_c      ),
+
+
+        .s_axi_awid           ( xbar_to_ddr4_axi_awid     ), 
+        .s_axi_awaddr         ( xbar_to_ddr4_axi_awaddr   ), 
+        .s_axi_awlen          ( xbar_to_ddr4_axi_awlen    ), 
+        .s_axi_awsize         ( xbar_to_ddr4_axi_awsize   ), 
+        .s_axi_awburst        ( xbar_to_ddr4_axi_awburst  ), 
+        .s_axi_awlock         ( xbar_to_ddr4_axi_awlock   ), 
+        .s_axi_awcache        ( xbar_to_ddr4_axi_awcache  ), 
+        .s_axi_awprot         ( xbar_to_ddr4_axi_awprot   ), 
+        .s_axi_awregion       ( xbar_to_ddr4_axi_awregion ), 
+        .s_axi_awqos          ( xbar_to_ddr4_axi_awqos    ), 
+        .s_axi_awvalid        ( xbar_to_ddr4_axi_awvalid  ), 
+        .s_axi_awready        ( xbar_to_ddr4_axi_awready  ), 
+        .s_axi_wdata          ( xbar_to_ddr4_axi_wdata    ), 
+        .s_axi_wstrb          ( xbar_to_ddr4_axi_wstrb    ), 
+        .s_axi_wlast          ( xbar_to_ddr4_axi_wlast    ), 
+        .s_axi_wvalid         ( xbar_to_ddr4_axi_wvalid   ), 
+        .s_axi_wready         ( xbar_to_ddr4_axi_wready   ), 
+        .s_axi_bid            ( xbar_to_ddr4_axi_bid      ), 
+        .s_axi_bresp          ( xbar_to_ddr4_axi_bresp    ), 
+        .s_axi_bvalid         ( xbar_to_ddr4_axi_bvalid   ),
+        .s_axi_bready         ( xbar_to_ddr4_axi_bready   ), 
+        .s_axi_arid           ( xbar_to_ddr4_axi_arid     ), 
+        .s_axi_araddr         ( xbar_to_ddr4_axi_araddr   ), 
+        .s_axi_arlen          ( xbar_to_ddr4_axi_arlen    ), 
+        .s_axi_arsize         ( xbar_to_ddr4_axi_arsize   ), 
+        .s_axi_arburst        ( xbar_to_ddr4_axi_arburst  ), 
+        .s_axi_arlock         ( xbar_to_ddr4_axi_arlock   ), 
+        .s_axi_arcache        ( xbar_to_ddr4_axi_arcache  ), 
+        .s_axi_arprot         ( xbar_to_ddr4_axi_arprot   ), 
+        .s_axi_arregion       ( xbar_to_ddr4_axi_arregion ), 
+        .s_axi_arqos          ( xbar_to_ddr4_axi_arqos    ), 
+        .s_axi_arvalid        ( xbar_to_ddr4_axi_arvalid  ), 
+        .s_axi_arready        ( xbar_to_ddr4_axi_arready  ), 
+        .s_axi_rid            ( xbar_to_ddr4_axi_rid      ), 
+        .s_axi_rdata          ( xbar_to_ddr4_axi_rdata    ), 
+        .s_axi_rresp          ( xbar_to_ddr4_axi_rresp    ), 
+        .s_axi_rlast          ( xbar_to_ddr4_axi_rlast    ), 
+        .s_axi_rvalid         ( xbar_to_ddr4_axi_rvalid   ), 
+        .s_axi_rready         ( xbar_to_ddr4_axi_rready   ) 
+
+    );
+
+
 `endif
 
 

@@ -6,7 +6,7 @@
 
 // DDR4 Ports
 // ch admitted values: c0, c1, c2, c3
-`define DEFINE_DDR4_PORTS(ch)                   \
+`define DEFINE_DDR4_PORTS(ch)                  \
     output logic [16:0]  ddr4_``ch``_adr_o,     \          
     output logic [1:0]   ddr4_``ch``_ba_o,      \          
     output logic [1:0]   ddr4_``ch``_bg_o,      \
