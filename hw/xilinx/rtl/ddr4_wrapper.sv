@@ -1,5 +1,19 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: This is a DDR4 wrapper ... TODO
+// Description: This module is a DDR4 wrapper. 
+//              It includes :
+//                 - A clock converter to increase the frequency to 300 MHz
+//                 - A datawidth converter to increase the datawidth to 512 bit
+//                 - A DDR4 (MIG) IP
+//
+//              It has the following sub-architecture
+//
+//
+//             _______________                         ____________                      ____________
+//   250 MHz  |     Clock     | 300 MHz        32 bit |   Dwidth   | 512 bit            |            |
+// ---------> |   Converter   |---------------------->| Converter  |------------------->| DDR4 (MIG) |
+//            |_______________|                       |____________|                    |____________|
+//
+
 
 `include "uninasoc_pcie.svh"
 `include "uninasoc_ddr4.svh"
@@ -12,7 +26,6 @@ module ddr4_wrapper (
     // DDR4 CH0 clock and reset
     input logic clk_300mhz_0_p_i,
     input logic clk_300mhz_0_n_i,
-    input logic c0_ddr4_reset_n_i,
 
     // DDR4 CH0 interface 
     `DEFINE_DDR4_PORTS(c0),
@@ -23,8 +36,15 @@ module ddr4_wrapper (
 );
 
     // DDR4 sys reset - it is active high
-    logic ddr4_reset; 
-    assign ddr4_reset = ~c0_ddr4_reset_n_i;  
+    logic ddr4_reset = 1'b1;
+
+    always @(posedge clock_i or negedge reset_ni) begin
+        if (reset_ni == 1'b0) begin
+            ddr4_reset <= 1'b1;
+        end else begin
+            ddr4_reset <= 1'b0;
+        end
+    end 
 
     // DDR4 output clk and rst
     logic ddr_clk;

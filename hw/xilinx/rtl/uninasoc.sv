@@ -60,11 +60,11 @@ module uninasoc (
         // DDR4 CH0 clock and reset
         input logic clk_300mhz_0_p_i,
         input logic clk_300mhz_0_n_i,
-        input logic c0_ddr4_reset_n_i,
 
         // DDR4 CH0 interface 
         `DEFINE_DDR4_PORTS(c0), 
-
+        
+        
         // PCIe clock and reset
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
@@ -699,7 +699,6 @@ module uninasoc (
 
         .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
         .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
-        .c0_ddr4_reset_n_i    ( c0_ddr4_reset_n_i ),
 
         .ddr4_c0_adr          ( ddr4_c0_adr       ),
         .ddr4_c0_ba           ( ddr4_c0_ba        ),
@@ -712,6 +711,7 @@ module uninasoc (
         .ddr4_c0_par          ( ddr4_c0_par       ),
         .ddr4_c0_bg           ( ddr4_c0_bg        ),
         .ddr4_c0_act_n        ( ddr4_c0_act_n     ),
+        .ddr4_c0_reset_n      ( ddr4_c0_reset_n   ),
         .ddr4_c0_ck_t         ( ddr4_c0_ck_t      ),
         .ddr4_c0_ck_c         ( ddr4_c0_ck_c      ),
 
