@@ -67,90 +67,113 @@ assert (NUM_MI == len(RANGE_NAMES)) & (NUM_MI == len(RANGE_BASE_ADDR) ) & (NUM_M
 	"Mismatch in lenght of configurations: NUM_MI(" + str(NUM_MI) + "), RANGE_NAMES (" + str(len(RANGE_NAMES)) + \
 	"), RANGE_BASE_ADDR(" + str(len(RANGE_BASE_ADDR)) + ") RANGE_ADDR_WIDTH(" + str(len(RANGE_ADDR_WIDTH)) + ")"
 
-###########################
-# Calculate memory blocks #
-###########################
-# NOTE: this assumes peripherals slaves to always be after memory regions
+
+
+##########################
+# Generate memory blocks #
+##########################
+# Currently only one copy of BRAM, DDR and HBM memory ranges are supported.
+
+DEVICE_NAME = 0
+DEVICE_ORIGIN = 1
+DEVICE_LENGTH = 2
+
+memory_block_list = []
+peripheral_list = []
 counter = 0
-PERIPHERALS_LENGTH = 0
-BRAM_LENGTH = 0
-DDR_LENGTH = 0
-HBM_LENGTH = 0
-BRAM_END = 0
-DDR_END = 0
-HBM_END = 0
-for name in RANGE_NAMES:
-	match name:
-		# BRAM
-		case "BRAM":
-			BRAM_ORIGIN = int(RANGE_BASE_ADDR[counter], 16)
-			BRAM_LENGTH = 2 << RANGE_ADDR_WIDTH[counter]
-			BRAM_END 	= BRAM_ORIGIN + BRAM_LENGTH
-		# DDR
-		case "DDR":
-			DDR_ORIGIN = int(RANGE_BASE_ADDR[counter], 16)
-			DDR_LENGTH = 2 << RANGE_ADDR_WIDTH[counter]
-			DDR_END    = DDR_ORIGIN + DDR_LENGTH
-		# HBM
-		case "HBM":
-			HBM_ORIGIN = int(RANGE_BASE_ADDR[counter], 16)
-			HBM_LENGTH = 2 << RANGE_ADDR_WIDTH[counter]
-			HBM_END    = HBM_ORIGIN + HBM_LENGTH
+for device in RANGE_NAMES:
+	match device:
+		# memory blocks
+		case "BRAM" | "DDR" | "HBM":
+			memory_block_list.append([device, int(RANGE_BASE_ADDR[counter], 16), 2 << RANGE_ADDR_WIDTH[counter]])
+
 		# Peripherals
 		case _:
-			# Max reduce
-			PERIPHERALS_LENGTH = max(PERIPHERALS_LENGTH, 2 << RANGE_ADDR_WIDTH[counter])
+			peripheral_list.append([device, int(RANGE_BASE_ADDR[counter], 16), 2 << RANGE_ADDR_WIDTH[counter]])
 
 	# Increment counter
 	counter += 1
 
-# Peripherals base, soon as the memory space ends
-PERIPHERALS_ORIGIN = max(BRAM_END, DDR_END, HBM_END)
+print(memory_block_list)
+print(peripheral_list)
 
-# Peripherals length,
-PERIPHERALS_LENGTH = 0
-for i in range(1, len(RANGE_ADDR_WIDTH)):
-	PERIPHERALS_LENGTH += (2 << RANGE_ADDR_WIDTH[i])
+###############################
+# Generate Linker Script File #
+###############################
 
-#################
-# Write to file #
-#################
-# Open output file
+# Create the Linker Script File
 fd = open(ld_file_name,  "w")
 
 # Write header
 fd.write("/* This file is auto-generated with " + os.path.basename(__file__) + " */\n")
 
-# BLOCKS
+# Write memory blocks
 fd.write("\n")
 fd.write("/* Memory blocks */\n")
 fd.write("MEMORY\n")
 fd.write("{\n")
-# Memories
-if BRAM_LENGTH != 0:
-	fd.write("\tBRAM (xrw) : ORIGIN = " + hex(BRAM_ORIGIN) + ",  LENGTH = " + hex(BRAM_LENGTH) + "\n")
-if DDR_LENGTH != 0:
-	fd.write("\tDDR (xrw) : ORIGIN = " + hex(DDR_ORIGIN) + ",  LENGTH = " + hex(DDR_LENGTH) + "\n")
-if HBM_LENGTH != 0:
-	fd.write("\tHBM (xrw) : ORIGIN = " + hex(HBM_ORIGIN) + ",  LENGTH = " + hex(HBM_LENGTH) + "\n")
-# Peripherals
-fd.write("\tPERIPHERALS (rw) : ORIGIN = " + hex(PERIPHERALS_ORIGIN) + ",  LENGTH = " + hex(PERIPHERALS_LENGTH) + "\n")
+
+# Generate the memory blocks layout
+for block in memory_block_list:
+	fd.write("\t" + block[DEVICE_NAME] + " (xrw) : ORIGIN = 0x" + format(block[DEVICE_ORIGIN], "08x") + ",  LENGTH = " + hex(block[DEVICE_LENGTH]) + "\n")
 fd.write("}\n")
 
-# SECTIONS
+# Generate symbols from peripherals
+fd.write("\n")
+fd.write("/* Peripherals symbols */\n")
+for peripheral in peripheral_list:
+	fd.write("_peripheral_" + peripheral[DEVICE_NAME] + "_start = 0x" + format(peripheral[DEVICE_ORIGIN], "08x") + ";\n")
+	fd.write("_peripheral_" + peripheral[DEVICE_NAME] + "_end = 0x" + format(peripheral[DEVICE_ORIGIN] + peripheral[DEVICE_LENGTH], "08x") + ";\n")
+
+# Generate global symbols
+fd.write("\n")
+fd.write("/* Global symbols */\n")
+# Vector table is placed at the beggining of the first memory block
+# aligned to 256 bytes (as specificed in the spec)
+# We allocate 128 Bytes for it
+vector_table_start  =  memory_block_list[0][DEVICE_ORIGIN]
+fd.write("_vector_table_start = 0x" + format(vector_table_start, "08x") + ";\n")
+fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "08x") + ";\n")
+
+# The stack is allocated at the end of first memory block
+# stack end can be user-defined for the application, as bss and rodata
+stack_start = memory_block_list[0][DEVICE_ORIGIN] + memory_block_list[0][DEVICE_LENGTH]
+fd.write("_stack_start = 0x" + format(stack_start, "08x") + ";\n")
+
+# Generate sections
+# Here we only write the standard sections (.text, .rodata, .bss, .data)
+# vector table, handlers, startup code and stack are contained within them
+
 fd.write("\n")
 fd.write("/* Sections */\n")
 fd.write("SECTIONS\n")
 fd.write("{\n")
-start = int(RANGE_BASE_ADDR[0], 16)
-for i in range(NUM_MI):
-	range_start = int(RANGE_BASE_ADDR[i], 16)
-	range_end = range_start + (2 << RANGE_ADDR_WIDTH[i])
-	fd.write("\t_slave_" + RANGE_NAMES[i] + "_base = " + hex(range_start) + ";\n")
-	fd.write("\t_slave_" + RANGE_NAMES[i] + "_end = "  + hex(range_end)   + ";\n")
+
+# Vector Table section
+fd.write("\t.vector_table _vector_table_start :\n")
+fd.write("\t{\n")
+fd.write("\t\tKEEP(*(.vector_table))\n")
+fd.write("\t}> " + memory_block_list[0][DEVICE_NAME] + "\n")
+
+# Text section
+fd.write("\n")
+fd.write("\t.text :\n")
+fd.write("\t{\n")
+fd.write("\t\t. = ALIGN(32);\n")
+fd.write("\t\t_text_start = .;\n")
+fd.write("\t\t*(.text.handlers)\n")
+fd.write("\t\t*(.text.start)\n")
+fd.write("\t\t*(.text)\n")
+fd.write("\t\t*(.text*)\n")
+fd.write("\t\t. = ALIGN(32);\n")
+fd.write("\t\t_text_end = .;\n")
+fd.write("\t}> " + memory_block_list[0][DEVICE_NAME] + "\n")
+
 fd.write("}\n")
 
 # Files closing
 fd.write("\n")
 fd.close()
+
+
 
