@@ -4,8 +4,8 @@
 create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name $::env(IP_NAME)
 
 set_property -dict [list \
-    CONFIG.ID_WIDTH {2} \
+    CONFIG.ID_WIDTH $::env(AXI_ID_WIDTH) \
     CONFIG.ACLK_ASYNC {1} \
-    CONFIG.DATA_WIDTH {32} \
+    CONFIG.DATA_WIDTH $::env(AXI_DATA_WIDTH) \
     CONFIG.SYNCHRONIZATION_STAGES {4} \
 ] [get_ips $::env(IP_NAME)]

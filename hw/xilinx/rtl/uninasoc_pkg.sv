@@ -39,7 +39,7 @@ package uninasoc_pkg;
     // Supported Processors //
     //////////////////////////
 
-    localparam int unsigned CORE_PICORV32 = 1;
-    localparam int unsigned CORE_CV32E40P = 0;
+    localparam int unsigned CORE_PICORV32 = 0;
+    localparam int unsigned CORE_CV32E40P = 1;
 
 endpackage : uninasoc_pkg

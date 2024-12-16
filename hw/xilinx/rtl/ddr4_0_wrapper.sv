@@ -8,17 +8,20 @@
 //              It has the following sub-architecture
 //
 //
-//             _______________                         ____________                      ____________
-//   250 MHz  |     Clock     | 300 MHz        32 bit |   Dwidth   | 512 bit            |            |
-// ---------> |   Converter   |---------------------->| Converter  |------------------->| DDR4 (MIG) |
-//            |_______________|                       |____________|                    |____________|
+//
+//
+//                                             
+//             _______________            ADDR: 32 bit  ____________  ADDR: 32 bit     ADDR: 34 bit    ____________
+//   250 MHz  |     Clock     | 300 MHz   DATA: 32 bit |   Dwidth   | DATA: 512 bit    DATA: 512 bit  |            |
+// ---------> |   Converter   |----------------------->| Converter  |-------------------------------->| DDR4 (MIG) |
+//            |_______________|                        |____________|                                 |____________|
 //
 
 
 `include "uninasoc_pcie.svh"
 `include "uninasoc_ddr4.svh"
 
-module ddr4_wrapper (
+module ddr4_0_wrapper (
     // SoC clock and reset
     input logic clock_i,
     input logic reset_ni,
@@ -28,7 +31,7 @@ module ddr4_wrapper (
     input logic clk_300mhz_0_n_i,
 
     // DDR4 CH0 interface 
-    `DEFINE_DDR4_PORTS(c0),
+    `DEFINE_DDR4_PORTS(0),
 
     // AXI4 Slave interface
     `DEFINE_AXI_SLAVE_PORTS(s)
@@ -242,26 +245,29 @@ module ddr4_wrapper (
 
         .sys_rst                     ( ddr4_reset       ),
 
+        // Output - Calibration complete, the memory controller waits for this
         .c0_init_calib_complete      ( /* empty */      ),
+        // Output - Interrupt about ECC
         .c0_ddr4_interrupt           ( /* empty */      ),
+        // Output - these two debug ports must be open, in the implementation phase Vivado connects these two properly
         .dbg_clk                     ( /* empty */      ),
         .dbg_bus                     ( /* empty */      ),
 
         // DDR4 interface - to the physical memory
-        .c0_ddr4_adr                 ( ddr4_c0_adr      ),
-        .c0_ddr4_ba                  ( ddr4_c0_ba       ),
-        .c0_ddr4_cke                 ( ddr4_c0_cke      ),
-        .c0_ddr4_cs_n                ( ddr4_c0_cs_n     ),
-        .c0_ddr4_dq                  ( ddr4_c0_dq       ),
-        .c0_ddr4_dqs_t               ( ddr4_c0_dqs_t    ),
-        .c0_ddr4_dqs_c               ( ddr4_c0_dqs_c    ),
-        .c0_ddr4_odt                 ( ddr4_c0_odt      ),
-        .c0_ddr4_parity              ( ddr4_c0_par      ),
-        .c0_ddr4_bg                  ( ddr4_c0_bg       ),
-        .c0_ddr4_reset_n             ( ddr4_c0_reset_n  ),
-        .c0_ddr4_act_n               ( ddr4_c0_act_n    ),
-        .c0_ddr4_ck_t                ( ddr4_c0_ck_t     ),
-        .c0_ddr4_ck_c                ( ddr4_c0_ck_c     ),
+        .c0_ddr4_adr                 ( c0_ddr4_adr      ),
+        .c0_ddr4_ba                  ( c0_ddr4_ba       ),
+        .c0_ddr4_cke                 ( c0_ddr4_cke      ),
+        .c0_ddr4_cs_n                ( c0_ddr4_cs_n     ),
+        .c0_ddr4_dq                  ( c0_ddr4_dq       ),
+        .c0_ddr4_dqs_t               ( c0_ddr4_dqs_t    ),
+        .c0_ddr4_dqs_c               ( c0_ddr4_dqs_c    ),
+        .c0_ddr4_odt                 ( c0_ddr4_odt      ),
+        .c0_ddr4_parity              ( c0_ddr4_par      ),
+        .c0_ddr4_bg                  ( c0_ddr4_bg       ),
+        .c0_ddr4_reset_n             ( c0_ddr4_reset_n  ),
+        .c0_ddr4_act_n               ( c0_ddr4_act_n    ),
+        .c0_ddr4_ck_t                ( c0_ddr4_ck_t     ),
+        .c0_ddr4_ck_c                ( c0_ddr4_ck_c     ),
 
         .c0_ddr4_ui_clk              ( ddr_clk          ),
         .c0_ddr4_ui_clk_sync_rst     ( ddr_rst          ),

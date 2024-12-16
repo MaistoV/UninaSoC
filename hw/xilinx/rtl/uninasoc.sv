@@ -62,7 +62,7 @@ module uninasoc (
         input logic clk_300mhz_0_n_i,
 
         // DDR4 CH0 interface 
-        `DEFINE_DDR4_PORTS(c0), 
+        `DEFINE_DDR4_PORTS(0), 
         
         
         // PCIe clock and reset
@@ -133,7 +133,7 @@ module uninasoc (
     `ifdef EMBEDDED
         `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_gpio_out, xbar_to_uart, xbar_to_main_mem);
     `elsif HPC
-        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_ddr4, xbar_to_uart, xbar_to_main_mem); // TODO - Define the order
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_ddr4, xbar_to_uart, xbar_to_main_mem);
     `endif
 
     ///////////////////////
@@ -693,27 +693,28 @@ module uninasoc (
 
 `elsif HPC
 
-    ddr4_wrapper  ddr4_wrapper_u (
+    // DDR4 Channel 0
+    ddr4_0_wrapper  ddr4_0_wrapper_u (
         .clock_i              ( soc_clk           ),
         .reset_ni             ( sys_resetn        ),
 
         .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
         .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
 
-        .ddr4_c0_adr          ( ddr4_c0_adr       ),
-        .ddr4_c0_ba           ( ddr4_c0_ba        ),
-        .ddr4_c0_cke          ( ddr4_c0_cke       ),
-        .ddr4_c0_cs_n         ( ddr4_c0_cs_n      ),
-        .ddr4_c0_dq           ( ddr4_c0_dq        ),
-        .ddr4_c0_dqs_t        ( ddr4_c0_dqs_t     ),
-        .ddr4_c0_dqs_c        ( ddr4_c0_dqs_c     ),
-        .ddr4_c0_odt          ( ddr4_c0_odt       ),
-        .ddr4_c0_par          ( ddr4_c0_par       ),
-        .ddr4_c0_bg           ( ddr4_c0_bg        ),
-        .ddr4_c0_act_n        ( ddr4_c0_act_n     ),
-        .ddr4_c0_reset_n      ( ddr4_c0_reset_n   ),
-        .ddr4_c0_ck_t         ( ddr4_c0_ck_t      ),
-        .ddr4_c0_ck_c         ( ddr4_c0_ck_c      ),
+        .c0_ddr4_adr          ( c0_ddr4_adr       ),
+        .c0_ddr4_ba           ( c0_ddr4_ba        ),
+        .c0_ddr4_cke          ( c0_ddr4_cke       ),
+        .c0_ddr4_cs_n         ( c0_ddr4_cs_n      ),
+        .c0_ddr4_dq           ( c0_ddr4_dq        ),
+        .c0_ddr4_dqs_t        ( c0_ddr4_dqs_t     ),
+        .c0_ddr4_dqs_c        ( c0_ddr4_dqs_c     ),
+        .c0_ddr4_odt          ( c0_ddr4_odt       ),
+        .c0_ddr4_par          ( c0_ddr4_par       ),
+        .c0_ddr4_bg           ( c0_ddr4_bg        ),
+        .c0_ddr4_act_n        ( c0_ddr4_act_n     ),
+        .c0_ddr4_reset_n      ( c0_ddr4_reset_n   ),
+        .c0_ddr4_ck_t         ( c0_ddr4_ck_t      ),
+        .c0_ddr4_ck_c         ( c0_ddr4_ck_c      ),
 
 
         .s_axi_awid           ( xbar_to_ddr4_axi_awid     ), 
