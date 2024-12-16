@@ -8,7 +8,7 @@ set_property -dict [list \
     CONFIG.C0.DDR4_AUTO_AP_COL_A3 {true} \
     CONFIG.C0.DDR4_AxiAddressWidth {34} \
     CONFIG.C0.DDR4_AxiDataWidth {512} \
-    CONFIG.C0.DDR4_AxiIDWidth {2} \
+    CONFIG.C0.DDR4_AxiIDWidth $::env(AXI_ID_WIDTH) \
     CONFIG.C0.DDR4_AxiSelection {true} \
     CONFIG.C0.DDR4_CasLatency {17} \
     CONFIG.C0.DDR4_Ecc {true} \
