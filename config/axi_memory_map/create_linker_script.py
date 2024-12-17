@@ -1,7 +1,7 @@
 #!/bin/python3.10
 # Author: Stefano Toscano 		<stefa.toscano@studenti.unina.it>
 # Author: Vincenzo Maisto 		<vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano 	<stefano.mercogliano@unina.it>
+# Author: Stefano Mercogliano 		<stefano.mercogliano@unina.it>
 # Description:
 #   Generate a linker script file from the CSV configuration.
 # Note:
