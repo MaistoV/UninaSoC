@@ -7,9 +7,6 @@
 //
 //              It has the following sub-architecture
 //
-//
-//
-//
 //                                             
 //             _______________            ADDR: 32 bit  ____________  ADDR: 32 bit     ADDR: 34 bit    ____________
 //   250 MHz  |     Clock     | 300 MHz   DATA: 32 bit |   Dwidth   | DATA: 512 bit    DATA: 512 bit  |            |
@@ -21,7 +18,7 @@
 `include "uninasoc_pcie.svh"
 `include "uninasoc_ddr4.svh"
 
-module ddr4_0_wrapper (
+module ddr4_channel_wrapper (
     // SoC clock and reset
     input logic clock_i,
     input logic reset_ni,
@@ -30,8 +27,10 @@ module ddr4_0_wrapper (
     input logic clk_300mhz_0_p_i,
     input logic clk_300mhz_0_n_i,
 
-    // DDR4 CH0 interface 
-    `DEFINE_DDR4_PORTS(0),
+    // DDR4 channel interface 
+    `DEFINE_DDR4_PORTS(x),
+
+    `DEFINE_AXILITE_SLAVE_PORTS(s_ctrl),
 
     // AXI4 Slave interface
     `DEFINE_AXI_SLAVE_PORTS(s)
@@ -254,43 +253,44 @@ module ddr4_0_wrapper (
         .dbg_bus                     ( /* empty */      ),
 
         // DDR4 interface - to the physical memory
-        .c0_ddr4_adr                 ( c0_ddr4_adr      ),
-        .c0_ddr4_ba                  ( c0_ddr4_ba       ),
-        .c0_ddr4_cke                 ( c0_ddr4_cke      ),
-        .c0_ddr4_cs_n                ( c0_ddr4_cs_n     ),
-        .c0_ddr4_dq                  ( c0_ddr4_dq       ),
-        .c0_ddr4_dqs_t               ( c0_ddr4_dqs_t    ),
-        .c0_ddr4_dqs_c               ( c0_ddr4_dqs_c    ),
-        .c0_ddr4_odt                 ( c0_ddr4_odt      ),
-        .c0_ddr4_parity              ( c0_ddr4_par      ),
-        .c0_ddr4_bg                  ( c0_ddr4_bg       ),
-        .c0_ddr4_reset_n             ( c0_ddr4_reset_n  ),
-        .c0_ddr4_act_n               ( c0_ddr4_act_n    ),
-        .c0_ddr4_ck_t                ( c0_ddr4_ck_t     ),
-        .c0_ddr4_ck_c                ( c0_ddr4_ck_c     ),
+        .c0_ddr4_adr                 ( cx_ddr4_adr      ),
+        .c0_ddr4_ba                  ( cx_ddr4_ba       ),
+        .c0_ddr4_cke                 ( cx_ddr4_cke      ),
+        .c0_ddr4_cs_n                ( cx_ddr4_cs_n     ),
+        .c0_ddr4_dq                  ( cx_ddr4_dq       ),
+        .c0_ddr4_dqs_t               ( cx_ddr4_dqs_t    ),
+        .c0_ddr4_dqs_c               ( cx_ddr4_dqs_c    ),
+        .c0_ddr4_odt                 ( cx_ddr4_odt      ),
+        .c0_ddr4_parity              ( cx_ddr4_par      ),
+        .c0_ddr4_bg                  ( cx_ddr4_bg       ),
+        .c0_ddr4_reset_n             ( cx_ddr4_reset_n  ),
+        .c0_ddr4_act_n               ( cx_ddr4_act_n    ),
+        .c0_ddr4_ck_t                ( cx_ddr4_ck_t     ),
+        .c0_ddr4_ck_c                ( cx_ddr4_ck_c     ),
 
         .c0_ddr4_ui_clk              ( ddr_clk          ),
         .c0_ddr4_ui_clk_sync_rst     ( ddr_rst          ),
 
         .c0_ddr4_aresetn             ( ~ddr_rst         ),
 
-        // AXILITE interface - for status and control, not connected
-        .c0_ddr4_s_axi_ctrl_awvalid  ( 1'b0  ),
-        .c0_ddr4_s_axi_ctrl_awready  (       ),
-        .c0_ddr4_s_axi_ctrl_awaddr   ( 32'd0 ),
-        .c0_ddr4_s_axi_ctrl_wvalid   ( 1'b0  ),
-        .c0_ddr4_s_axi_ctrl_wready   (       ),
-        .c0_ddr4_s_axi_ctrl_wdata    ( 32'd0 ),
-        .c0_ddr4_s_axi_ctrl_bvalid   (       ),
-        .c0_ddr4_s_axi_ctrl_bready   ( 1'b1  ),
-        .c0_ddr4_s_axi_ctrl_bresp    (       ),
-        .c0_ddr4_s_axi_ctrl_arvalid  ( 1'b0  ),
-        .c0_ddr4_s_axi_ctrl_arready  (       ),
-        .c0_ddr4_s_axi_ctrl_araddr   ( 31'd0 ),
-        .c0_ddr4_s_axi_ctrl_rvalid   (       ),
-        .c0_ddr4_s_axi_ctrl_rready   ( 1'b1  ),
-        .c0_ddr4_s_axi_ctrl_rdata    (       ),
-        .c0_ddr4_s_axi_ctrl_rresp    (       ),
+        // AXILITE interface - for status and control
+        .c0_ddr4_s_axi_ctrl_awvalid  ( s_ctrl_axilite_awvalid ),
+        .c0_ddr4_s_axi_ctrl_awready  ( s_ctrl_axilite_awready ),
+        .c0_ddr4_s_axi_ctrl_awaddr   ( s_ctrl_axilite_awaddr  ),
+        .c0_ddr4_s_axi_ctrl_wvalid   ( s_ctrl_axilite_wvalid  ),
+        .c0_ddr4_s_axi_ctrl_wready   ( s_ctrl_axilite_wready  ),
+        .c0_ddr4_s_axi_ctrl_wdata    ( s_ctrl_axilite_wdata   ),
+        .c0_ddr4_s_axi_ctrl_bvalid   ( s_ctrl_axilite_bvalid  ),
+        .c0_ddr4_s_axi_ctrl_bready   ( s_ctrl_axilite_bready  ),
+        .c0_ddr4_s_axi_ctrl_bresp    ( s_ctrl_axilite_bresp   ),
+        .c0_ddr4_s_axi_ctrl_arvalid  ( s_ctrl_axilite_arvalid ),
+        .c0_ddr4_s_axi_ctrl_arready  ( s_ctrl_axilite_arready ),
+        .c0_ddr4_s_axi_ctrl_araddr   ( s_ctrl_axilite_araddr  ),
+        .c0_ddr4_s_axi_ctrl_rvalid   ( s_ctrl_axilite_rvalid  ),
+        .c0_ddr4_s_axi_ctrl_rready   ( s_ctrl_axilite_rready  ),
+        .c0_ddr4_s_axi_ctrl_rdata    ( s_ctrl_axilite_rdata   ),
+        .c0_ddr4_s_axi_ctrl_rresp    ( s_ctrl_axilite_rresp   ),
+
 
         // AXI4 interface 
         .c0_ddr4_s_axi_awid          ( 0 /*dwidth_conv_to_ddr4_axi_awid*/    ),

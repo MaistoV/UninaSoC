@@ -694,27 +694,45 @@ module uninasoc (
 `elsif HPC
 
     // DDR4 Channel 0
-    ddr4_0_wrapper  ddr4_0_wrapper_u (
+    ddr4_channel_wrapper  ddr4_channel_wrapper_u (
         .clock_i              ( soc_clk           ),
         .reset_ni             ( sys_resetn        ),
 
         .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
         .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
 
-        .c0_ddr4_adr          ( c0_ddr4_adr       ),
-        .c0_ddr4_ba           ( c0_ddr4_ba        ),
-        .c0_ddr4_cke          ( c0_ddr4_cke       ),
-        .c0_ddr4_cs_n         ( c0_ddr4_cs_n      ),
-        .c0_ddr4_dq           ( c0_ddr4_dq        ),
-        .c0_ddr4_dqs_t        ( c0_ddr4_dqs_t     ),
-        .c0_ddr4_dqs_c        ( c0_ddr4_dqs_c     ),
-        .c0_ddr4_odt          ( c0_ddr4_odt       ),
-        .c0_ddr4_par          ( c0_ddr4_par       ),
-        .c0_ddr4_bg           ( c0_ddr4_bg        ),
-        .c0_ddr4_act_n        ( c0_ddr4_act_n     ),
-        .c0_ddr4_reset_n      ( c0_ddr4_reset_n   ),
-        .c0_ddr4_ck_t         ( c0_ddr4_ck_t      ),
-        .c0_ddr4_ck_c         ( c0_ddr4_ck_c      ),
+        .cx_ddr4_adr          ( c0_ddr4_adr       ),
+        .cx_ddr4_ba           ( c0_ddr4_ba        ),
+        .cx_ddr4_cke          ( c0_ddr4_cke       ),
+        .cx_ddr4_cs_n         ( c0_ddr4_cs_n      ),
+        .cx_ddr4_dq           ( c0_ddr4_dq        ),
+        .cx_ddr4_dqs_t        ( c0_ddr4_dqs_t     ),
+        .cx_ddr4_dqs_c        ( c0_ddr4_dqs_c     ),
+        .cx_ddr4_odt          ( c0_ddr4_odt       ),
+        .cx_ddr4_par          ( c0_ddr4_par       ),
+        .cx_ddr4_bg           ( c0_ddr4_bg        ),
+        .cx_ddr4_act_n        ( c0_ddr4_act_n     ),
+        .cx_ddr4_reset_n      ( c0_ddr4_reset_n   ),
+        .cx_ddr4_ck_t         ( c0_ddr4_ck_t      ),
+        .cx_ddr4_ck_c         ( c0_ddr4_ck_c      ),
+
+        // AXILITE interface - for ECC status and control - not connected
+        .s_ctrl_axilite_awvalid  ( 1'b0  ),
+        .s_ctrl_axilite_awready  (       ),
+        .s_ctrl_axilite_awaddr   ( 32'd0 ),
+        .s_ctrl_axilite_wvalid   ( 1'b0  ),
+        .s_ctrl_axilite_wready   (       ),
+        .s_ctrl_axilite_wdata    ( 32'd0 ),
+        .s_ctrl_axilite_bvalid   (       ),
+        .s_ctrl_axilite_bready   ( 1'b1  ),
+        .s_ctrl_axilite_bresp    (       ),
+        .s_ctrl_axilite_arvalid  ( 1'b0  ),
+        .s_ctrl_axilite_arready  (       ),
+        .s_ctrl_axilite_araddr   ( 31'd0 ),
+        .s_ctrl_axilite_rvalid   (       ),
+        .s_ctrl_axilite_rready   ( 1'b1  ),
+        .s_ctrl_axilite_rdata    (       ),
+        .s_ctrl_axilite_rresp    (       ),
 
 
         .s_axi_awid           ( xbar_to_ddr4_axi_awid     ), 
