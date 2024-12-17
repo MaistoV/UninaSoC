@@ -1,82 +1,87 @@
-###############################################################################
-# Propject Info
+# Author: Stefano Mercogliano 	<stefano.mercogliano@unina.it>
+# Description:
+#   Makefile for generating a bare-metal software PROGRAM_NAME.
+#	Currently, only rv32 is supported.
 
-PROJECT = filename
-MCU = DEMOSYSTEM
+################
+# Program Name #
+################
 
-###############################################################################
+PROGRAM_NAME = $(shell basename "$$PWD")
 
-###############################################################################
-# Directories
+#####################
+# Paths and Folders #
+#####################
 
-SOC_SW_ROOT_DIR = ../..
-SRCS = 		      $(wildcard src/*.c) $(wildcard lib/*.c)
-OBJ = 		      obj/
-OBJS = 		      $(addprefix $(OBJ), $(notdir $(SRCS:.c=.o)))
-LD_SCRIPT =       $(SOC_SW_ROOT_DIR)/linker/$(MCU)_FLASH.ld
-INC = 		      -Iinc -I../../ext_lib/tinyio/inc
-STARTUP = 	      startup
+SOC_SW_ROOT_DIR = $(SW_ROOT)/SoC
 
-LIBTINYIO = ../../ext_lib/tinyio/lib/tinyio.a
-LIBLIST = $(LIBTINYIO)  
+SRC_DIR		= src
+OBJ_DIR		= obj
+INC_DIR 	= inc 
+LD_SCRIPT 	= ld/user.ld
+STARTUP_DIR = $(SOC_SW_ROOT_DIR)/startup
+LIB_DIR		= $(SOC_SW_ROOT_DIR)/lib
 
-###############################################################################
-# Toolchain
+#############
+# Libraries #
+#############
 
-# If you have 64-bit toolchain
-# RV_PREFIX = riscv64-unknown-elf-
-# 32BITCCFLAGS = -march=rv32im -mabi=ilp32
-# 32BITODFLAGS = -mriscv:rv32
-# CC = $(RV_PREFIX)gcc $(32BITCCFLAGS)
-# OBJDUMP = $(RV_PREFIX)objdump $(32BITODFLAGS)
-#
+LIB_OBJ_TINYIO 	= $(LIB_DIR)/tinyio/lib/tinyio.a
+LIB_INC_TINYIO	= -I$(LIB_DIR)/tinyio/inc
 
-RV_PREFIX = 	riscv32-unknown-elf-
-CC = 			$(RV_PREFIX)gcc
-LD = 			$(RV_PREFIX)ld
-OBJDUMP = 		$(RV_PREFIX)objdump
-OBJCOPY = 		$(RV_PREFIX)objcopy
+LIB_OBJ_LIST 	= $(LIB_OBJ_TINYIO)
+LIB_INC_LIST 	= $(LIB_INC_TINYIO)
 
-CFLAGS = 		-march=rv32imad_zicsr_zifencei -O0 -c 
-LDFLAGS = 		$(LIBLIST) -nostdlib -T$(LD_SCRIPT)
+#############
+# Toolchain #
+#############
+
+RV_PREFIX 	= riscv32-unknown-elf-
+CC 			= $(RV_PREFIX)gcc
+LD 			= $(RV_PREFIX)ld
+OBJDUMP 	= $(RV_PREFIX)objdump
+OBJCOPY 	= $(RV_PREFIX)objcopy
+
+CFLAGS 		= -march=rv32imad_zicsr_zifencei -O0 -c 
+LDFLAGS 	= $(LIB_OBJ_LIST) -nostdlib -T$(LD_SCRIPT)
 
 
+########
+# Misc #
+########
 
-###############################################################################
-
-###############################################################################
-# Misc
+SRCS 	= $(wildcard src/*.c) $(wildcard lib/*.c)
+OBJS 	= $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.c=.o)))
 
 RM      = rm -rf 					# Remove recursively command
 MKDIR   = @mkdir -p $(@D) 			# Creates folders if not present
 
 ###############################################################################
 
-all: bin/$(PROJECT).bin
+###########
+# Targets #
+###########
 
-$(OBJ)%.o: src/%.c
+all: bin/$(PROGRAM_NAME).bin
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "\n[OBJ]	Creating OBJs from src"
 	$(MKDIR)
-	$(CC) -o $@ $^ $(INC) $(CFLAGS)
+	$(CC) -o $@ $^ -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS)
 
-$(OBJ)%.o: lib/%.c
-	@echo "\n[OBJ]	Creating OBJs from libs"
+obj/startup.o: 
+	@echo "\n[OBJ]	Creating OBJs from $(STARTUP_DIR)/startup.s"
 	$(MKDIR)
-	$(CC) -o $@ $^ $(INC) $(CFLAGS)
+	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s -I$(LIB_INC_LIST) $(CFLAGS)
 
-obj/$(STARTUP).o: $(SOC_SW_ROOT_DIR)/startup/$(STARTUP).s
-	@echo "\n[OBJ]	Creating OBJs from $(STARTUP).s"
-	$(MKDIR)
-	$(CC) -o obj/$(STARTUP).o $(SOC_SW_ROOT_DIR)/startup/$(STARTUP).s $(INC) $(CFLAGS)
-
-bin/$(PROJECT).elf: $(OBJS) obj/$(STARTUP).o
+bin/$(PROGRAM_NAME).elf: $(OBJS) obj/startup.o
 	@echo "\n[ELF]	Creating elf file"
 	$(MKDIR)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
-bin/$(PROJECT).bin: bin/$(PROJECT).elf
-	@echo "\n[ELF]	Creating bin file"
-	$(OBJCOPY) -O binary bin/$(PROJECT).elf bin/$(PROJECT).bin
+bin/$(PROGRAM_NAME).bin: bin/$(PROGRAM_NAME).elf
+	@echo "\n[BIN]	Creating bin file"
+	$(OBJCOPY) -O binary bin/$(PROGRAM_NAME).elf bin/$(PROGRAM_NAME).bin
 
 clean:
 	-$(RM) obj
@@ -85,5 +90,5 @@ clean:
 .PHONY: all clean
 
 dump:
-	$(OBJDUMP) -D bin/$(PROJECT).elf
+	$(OBJDUMP) -D bin/$(PROGRAM_NAME).elf
 
