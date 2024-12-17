@@ -14,7 +14,7 @@ EXAMPLES_LIST	:= $(foreach ip,${EXAMPLES_NAMES},$(SW_ROOT)/SoC/examples/${ip})
 
 PROJECT_NAME ?= dummy
 
-all: compile_examples
+all: cbuild_examples
 
 # Create a new project out of the template
 create_project:
@@ -26,7 +26,7 @@ create_example:
 	cp -r $(SW_ROOT)/SoC/examples/template $(SW_ROOT)/SoC/examples/$(PROJECT_NAME)
 
 # Compile all examples in the example dir
-compile_examples: 
+build_examples: 
 	@echo "[Make] Compile all the example project"
 	@for example in ${EXAMPLES_LIST}; do \
 		echo "[Make] Compiling project $$example" ; \
@@ -36,4 +36,4 @@ compile_examples:
 #${MAKE} -C SoC/examples/virtual_uart_hello_world
 
 
-.PHONY: create_project compile_examples create_example
+.PHONY: create_project build_examples create_example
