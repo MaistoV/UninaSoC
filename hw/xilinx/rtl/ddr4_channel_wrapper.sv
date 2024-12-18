@@ -1,5 +1,5 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: This module is a DDR4 wrapper. 
+// Description: This module is a wrapper for a single DDR4 channel. 
 //              It includes :
 //                 - A clock converter to increase the frequency to 300 MHz
 //                 - A datawidth converter to increase the datawidth to 512 bit
@@ -27,9 +27,10 @@ module ddr4_channel_wrapper (
     input logic clk_300mhz_0_p_i,
     input logic clk_300mhz_0_n_i,
 
-    // DDR4 channel interface 
+    // DDR4 channel interface (to PHYs)
     `DEFINE_DDR4_PORTS(x),
 
+    // AXI-lite CSR interface 
     `DEFINE_AXILITE_SLAVE_PORTS(s_ctrl),
 
     // AXI4 Slave interface
