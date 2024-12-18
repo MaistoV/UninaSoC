@@ -694,13 +694,15 @@ module uninasoc (
 `elsif HPC
 
     // DDR4 Channel 0
-    ddr4_channel_wrapper  ddr4_channel_wrapper_u (
+    ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
         .clock_i              ( soc_clk           ),
         .reset_ni             ( sys_resetn        ),
 
+        // DDR4 differential clock
         .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
         .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
 
+        // Connect DDR4 channel 0
         .cx_ddr4_adr          ( c0_ddr4_adr       ),
         .cx_ddr4_ba           ( c0_ddr4_ba        ),
         .cx_ddr4_cke          ( c0_ddr4_cke       ),
@@ -734,7 +736,7 @@ module uninasoc (
         .s_ctrl_axilite_rdata    (       ),
         .s_ctrl_axilite_rresp    (       ),
 
-
+        // Slave interface
         .s_axi_awid           ( xbar_to_ddr4_axi_awid     ), 
         .s_axi_awaddr         ( xbar_to_ddr4_axi_awaddr   ), 
         .s_axi_awlen          ( xbar_to_ddr4_axi_awlen    ), 
