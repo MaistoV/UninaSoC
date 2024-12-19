@@ -30,7 +30,7 @@ if len(sys.argv) >= 2:
 	config_file_name = sys.argv[1]
 
 # Target linker script file
-ld_file_name = 'sw/SoC/linker/UninaSoC.ld'
+ld_file_name = 'sw/SoC/common/UninaSoC.ld'
 if len(sys.argv) >= 3:
 	ld_file_name = sys.argv[2]
 
@@ -59,6 +59,10 @@ RANGE_ADDR_WIDTH = config_df.loc["RANGE_ADDR_WIDTH"]["Value"].split()
 for i in range(len(RANGE_ADDR_WIDTH)):
 	RANGE_ADDR_WIDTH[i] = int(RANGE_ADDR_WIDTH[i])
 
+# Currently the first memory device is selected as the boot memory device
+BOOT_MEMORY_BLOCK = 0x0
+
+
 ################
 # Sanity check #
 ################
@@ -71,22 +75,21 @@ assert (NUM_MI == len(RANGE_NAMES)) & (NUM_MI == len(RANGE_BASE_ADDR) ) & (NUM_M
 ##########################
 # Currently only one copy of BRAM, DDR and HBM memory ranges are supported.
 
-DEVICE_NAME = 0
-DEVICE_ORIGIN = 1
-DEVICE_LENGTH = 2
+device_dict = {
+	'memory':		[],
+	'peripheral':	[]
+}
 
-memory_block_list = []
-peripheral_list = []
 counter = 0
 for device in RANGE_NAMES:
 	match device:
 		# memory blocks
 		case "BRAM" | "DDR" | "HBM":
-			memory_block_list.append([device, int(RANGE_BASE_ADDR[counter], 16), 2 << RANGE_ADDR_WIDTH[counter]])
+			device_dict['memory'].append({'device': device, 'base': int(RANGE_BASE_ADDR[counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[counter]})
 
-		# Peripherals
+		# peripherals
 		case _:
-			peripheral_list.append([device, int(RANGE_BASE_ADDR[counter], 16), 2 << RANGE_ADDR_WIDTH[counter]])
+			device_dict['peripheral'].append({'device': device, 'base': int(RANGE_BASE_ADDR[counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[counter]})
 
 	# Increment counter
 	counter += 1
@@ -107,30 +110,31 @@ fd.write("/* Memory blocks */\n")
 fd.write("MEMORY\n")
 fd.write("{\n")
 
-for block in memory_block_list:
-	fd.write("\t" + block[DEVICE_NAME] + " (xrw) : ORIGIN = 0x" + format(block[DEVICE_ORIGIN], "08x") + ",  LENGTH = " + hex(block[DEVICE_LENGTH]) + "\n")
+for block in device_dict['memory']:
+	fd.write("\t" + block['device'] + " (xrw) : ORIGIN = 0x" + format(block['base'], "016x") + ",  LENGTH = " + hex(block['range']) + "\n")
 fd.write("}\n")
 
 # Generate symbols from peripherals
 fd.write("\n")
 fd.write("/* Peripherals symbols */\n")
-for peripheral in peripheral_list:
-	fd.write("_peripheral_" + peripheral[DEVICE_NAME] + "_start = 0x" + format(peripheral[DEVICE_ORIGIN], "08x") + ";\n")
-	fd.write("_peripheral_" + peripheral[DEVICE_NAME] + "_end = 0x" + format(peripheral[DEVICE_ORIGIN] + peripheral[DEVICE_LENGTH], "08x") + ";\n")
+for peripheral in device_dict['peripheral']:
+	fd.write("_peripheral_" + peripheral['device'] + "_start = 0x" + format(peripheral['base'], "016x") + ";\n")
+	fd.write("_peripheral_" + peripheral['device'] + "_end = 0x" + format(peripheral['base'] + peripheral['range'], "016x") + ";\n")
 
 # Generate global symbols
 fd.write("\n")
 fd.write("/* Global symbols */\n")
-# Vector table is placed at the beggining of the first memory block.
+# Vector table is placed at the beggining of the boot memory block.
 # It is aligned to 256 bytes and is 32 words deep. (as described in risc-v spec)
-vector_table_start  =  memory_block_list[0][DEVICE_ORIGIN]
-fd.write("_vector_table_start = 0x" + format(vector_table_start, "08x") + ";\n")
-fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "08x") + ";\n")
+#vector_table_start  =  memory_block_list[BOOT_MEMORY_BLOCK][DEVICE_ORIGIN]
+vector_table_start  =  device_dict['memory'][BOOT_MEMORY_BLOCK]['base']
+fd.write("_vector_table_start = 0x" + format(vector_table_start, "016x") + ";\n")
+fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "016x") + ";\n")
 
 # The stack is allocated at the end of first memory block
 # _stack_end can be user-defined for the application, as bss and rodata
-stack_start = memory_block_list[0][DEVICE_ORIGIN] + memory_block_list[0][DEVICE_LENGTH]
-fd.write("_stack_start = 0x" + format(stack_start, "08x") + ";\n")
+stack_start = device_dict['memory'][BOOT_MEMORY_BLOCK]['base'] + device_dict['memory'][BOOT_MEMORY_BLOCK]['range']
+fd.write("_stack_start = 0x" + format(stack_start, "016x") + ";\n")
 
 # Generate sections
 # vector table and text sections are here defined.
@@ -144,7 +148,7 @@ fd.write("{\n")
 fd.write("\t.vector_table _vector_table_start :\n")
 fd.write("\t{\n")
 fd.write("\t\tKEEP(*(.vector_table))\n")
-fd.write("\t}> " + memory_block_list[0][DEVICE_NAME] + "\n")
+fd.write("\t}> " + device_dict['memory'][BOOT_MEMORY_BLOCK]['device'] + "\n")
 
 # Text section
 fd.write("\n")
@@ -158,7 +162,7 @@ fd.write("\t\t*(.text)\n")
 fd.write("\t\t*(.text*)\n")
 fd.write("\t\t. = ALIGN(32);\n")
 fd.write("\t\t_text_end = .;\n")
-fd.write("\t}> " + memory_block_list[0][DEVICE_NAME] + "\n")
+fd.write("\t}> " + device_dict['memory'][BOOT_MEMORY_BLOCK]['device'] + "\n")
 
 fd.write("}\n")
 

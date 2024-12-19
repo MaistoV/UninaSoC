@@ -18,37 +18,37 @@ _reset_handler:
   .global _reset_handler
 
   # Clean all registers
-  mv  x1, zero
-  mv  x2, zero
-  mv  x3, zero
-  mv  x4, zero
-  mv  x5, zero
-  mv  x6, zero
-  mv  x7, zero
-  mv  x8, zero
-  mv  x9, zero
-  mv x10, zero
-  mv x11, zero
-  mv x12, zero
-  mv x13, zero
-  mv x14, zero
-  mv x15, zero
-  mv x16, zero
-  mv x17, zero
-  mv x18, zero
-  mv x19, zero
-  mv x20, zero
-  mv x21, zero
-  mv x22, zero
-  mv x23, zero
-  mv x24, zero
-  mv x25, zero
-  mv x26, zero
-  mv x27, zero
-  mv x28, zero
-  mv x29, zero
-  mv x30, zero
-  mv x31, zero
+  mv ra, zero
+  mv sp, zero
+  mv gp, zero
+  mv tp, zero
+  mv t0, zero
+  mv t1, zero
+  mv t2, zero
+  mv s0, zero
+  mv s1, zero
+  mv a0, zero
+  mv a1, zero
+  mv a2, zero
+  mv a3, zero
+  mv a4, zero
+  mv a5, zero
+  mv a6, zero
+  mv a7, zero
+  mv s2, zero
+  mv s3, zero
+  mv s4, zero
+  mv s5, zero
+  mv s6, zero
+  mv s7, zero
+  mv s8, zero
+  mv s9, zero
+  mv s10, zero
+  mv s11, zero
+  mv t3, zero
+  mv t4, zero
+  mv t5, zero
+  mv t6, zero
 
   # Initialize the stack
   la   sp, _stack_start
@@ -62,10 +62,10 @@ _start:
   .global _start
 
   # jump to main program entry point (argc = argv = 0) 
-  addi x10, x0, 0
-  addi x11, x0, 0
+  mv a0, zero
+  mv a1, zero
 
-  jal x1, main
+  jal ra, main
 
 
 

@@ -1,47 +1,10 @@
 # Author: Stefano Mercogliano 	<stefano.mercogliano@unina.it>
 # Description:
-#   Makefile for generating a bare-metal software PROGRAM_NAME.
-#	Currently, only rv32 is supported.
-
-################
-# Program Name #
-################
-
-PROGRAM_NAME = $(shell basename "$$PWD")
-
-#####################
-# Paths and Folders #
-#####################
+#   The common Makefile includes the standard targets to build bare-metal code.
+#	Each application will include this makefile and define the envvar related to path, dependencies and compilation flags.
 
 SOC_SW_ROOT_DIR = $(SW_ROOT)/SoC
-
-SRC_DIR		= src
-OBJ_DIR		= obj
-INC_DIR 	= inc 
-STARTUP_DIR = $(SOC_SW_ROOT_DIR)/startup
-
-LD_SCRIPT 	= ld/user.ld 
-
-#############
-# Libraries #
-#############
-
-LIB_OBJ_LIST = 
-LIB_INC_LIST =
-
-#############
-# Toolchain #
-#############
-
-RV_PREFIX 	= riscv32-unknown-elf-
-CC 			= $(RV_PREFIX)gcc
-LD 			= $(RV_PREFIX)ld
-OBJDUMP 	= $(RV_PREFIX)objdump
-OBJCOPY 	= $(RV_PREFIX)objcopy
-
-CFLAGS 		= -march=rv32imad_zicsr_zifencei -O0 -c 
-LDFLAGS 	= $(LIB_OBJ_LIST) -nostdlib -T$(LD_SCRIPT)
-
+LIB_DIR	= $(SOC_SW_ROOT_DIR)/lib
 
 ########
 # Misc #

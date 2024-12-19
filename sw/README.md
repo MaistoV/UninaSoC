@@ -37,5 +37,5 @@ make install
 
 # Software Tree Structure
 The sw directory is organized in two major components:
-* host - Contains software that runs on the host side, typically x86-based systems. This includes Linux drivers for interfacing with the UninaSoC.
-* SoC  - Contains software running on the UninaSoC itself. Currently, only bare-metal projects are supported, as embedded Linux is not yet implemented.
+* host - Contains software that runs on the host side, typically x86-based systems. This includes Linux drivers for interfacing with the UninaSoC. Currently, it only applies to HPC configurations. ([README](https://github.com/MaistoV/UninaSoC/tree/feature/linker_and_software/sw/host))
+* SoC  - Contains software running on the UninaSoC itself. Currently, only bare-metal projects are supported, as embedded Linux is not yet implemented. ([README](https://github.com/MaistoV/UninaSoC/tree/feature/linker_and_software/sw/SoC))

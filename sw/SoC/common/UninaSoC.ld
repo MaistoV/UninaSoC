@@ -3,19 +3,19 @@
 /* Memory blocks */
 MEMORY
 {
-	BRAM (xrw) : ORIGIN = 0x00000000,  LENGTH = 0x20000
+	BRAM (xrw) : ORIGIN = 0x0000000000000000,  LENGTH = 0x20000
 }
 
 /* Peripherals symbols */
-_peripheral_UART_start = 0x00010000;
-_peripheral_UART_end = 0x00012000;
-_peripheral_GPIO_out_start = 0x00020000;
-_peripheral_GPIO_out_end = 0x00022000;
+_peripheral_UART_start = 0x0000000000010000;
+_peripheral_UART_end = 0x0000000000012000;
+_peripheral_GPIO_out_start = 0x0000000000020000;
+_peripheral_GPIO_out_end = 0x0000000000022000;
 
 /* Global symbols */
-_vector_table_start = 0x00000000;
-_vector_table_end = 0x00000080;
-_stack_start = 0x00020000;
+_vector_table_start = 0x0000000000000000;
+_vector_table_end = 0x0000000000000080;
+_stack_start = 0x0000000000020000;
 
 /* Sections */
 SECTIONS

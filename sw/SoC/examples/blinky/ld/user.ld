@@ -6,4 +6,4 @@
 
 */
 
-INCLUDE ../../linker/UninaSoC.ld
+INCLUDE ../../common/UninaSoC.ld
