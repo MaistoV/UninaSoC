@@ -159,7 +159,7 @@ module ddr4_channel_wrapper (
 
 
     // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface DDR data width) 
-    xlnx_axi_dwidth_32to512_converter axi_dwidth_conv_u (
+    xlnx_axi_dwidth_to512_converter axi_dwidth_conv_u (
         .s_axi_aclk     ( ddr_clk      ),
         .s_axi_aresetn  ( ~ddr_rst     ),
 
