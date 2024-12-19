@@ -4,7 +4,8 @@
 MEMORY
 {
 	BRAM (xrw) : ORIGIN = 0x0,  LENGTH = 0x20000
-	PERIPHERALS (rw) : ORIGIN = 0x20000,  LENGTH = 0x4000
+	DDR (xrw) : ORIGIN = 0x20000,  LENGTH = 0x20000
+	PERIPHERALS (rw) : ORIGIN = 0x40000,  LENGTH = 0x40000
 }
 
 /* Sections */
@@ -12,9 +13,9 @@ SECTIONS
 {
 	_slave_BRAM_base = 0x0;
 	_slave_BRAM_end = 0x20000;
-	_slave_GPIO_out_base = 0x100000;
-	_slave_GPIO_out_end = 0x102000;
-	_slave_UART_base = 0x200000;
-	_slave_UART_end = 0x202000;
+	_slave_VIRTUAL_UART_base = 0x10000;
+	_slave_VIRTUAL_UART_end = 0x30000;
+	_slave_DDR_base = 0x20000;
+	_slave_DDR_end = 0x40000;
 }
 

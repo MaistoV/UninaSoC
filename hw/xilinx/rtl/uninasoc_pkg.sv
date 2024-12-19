@@ -28,10 +28,11 @@ package uninasoc_pkg;
         localparam int unsigned NUM_AXI_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 2;
     
     // Crosbar slaves if HPC
-    // - Main memory
+    // - Main memory (BRAM)
     // - UART (virtual)
+    // - DDR4
     `elsif HPC
-        localparam int unsigned NUM_AXI_SLAVES = 2;
+        localparam int unsigned NUM_AXI_SLAVES = 3;
     `endif
 
     //////////////////////////
