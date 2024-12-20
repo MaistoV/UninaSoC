@@ -24,4 +24,4 @@ build_examples:
 		echo "\n[Make] Done\n" ; \
     done
 
-.PHONY: create_project build_examples create_example
+.PHONY: build_examples
