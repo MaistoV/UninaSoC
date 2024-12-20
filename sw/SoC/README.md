@@ -7,7 +7,7 @@ All example applications, as well as custom projects, are built upon the `projec
 Projects rely on a common set of files in the `common` directory.
 
 * The `startup.s` that implements the very basic initialization operations
-* The `UninaSoC.ld`, automatically generated during the configuration flow (see the root README).
+* The `UninaSoC.ld`, automatically generated during the configuration flow (see the root [README](../../README.md)).
 * The `Makefile`, that implements all basic targets for building, shared among bare-metal applications.
 
 It is expected that libraries and projects depend at least on the common files, along with a `main.c` file, which users can customize.
@@ -22,11 +22,13 @@ The existing examples include:
 - `blinky` - Supported only on the embedded configuration.
 - `echo` and `hello_world` - Supported on both embedded and HPC configurations.
 
-`echo` and `hello_world` examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library. 
+`echo` and `hello_world` examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library to support `printf()` and `scanf()` on UART. 
 
 ## Create a new project
 
-To create a new application project, create a new folder with the following structure;
+To create a new application project, make a copy of the `template` directory and rename it accordingly to your application name.
+
+The tree must have the following structure:
 ```
 project_name
 ├── ld
@@ -36,13 +38,13 @@ project_name
 └── src
     └── main.c
 ```
-Alternatively, just copy the `template` directory and rename it accordingly to your application name.
+
 To add user-defined code, place source files in the `src` directory and header files in the `inc` directory.
 
 ### User-defined Makefile
 
-The `Makefile` in the project folder is a user-defined Makefile, that imports the common one.
-It assumes that the RISC-V toolchain is in your PATH. By default, it compiles 32-bit code with IMAD extensions.
+The `Makefile` in the project folder is a user-defined Makefile, that imports the common `Makefile`.
+We assume that the RISC-V toolchain is in your PATH. By default, it compiles 32-bit code with IMAD extensions.
 In this Makefile the user can customize its project structure, compilation flags alongside toolchain selection and also the external libraries dependencies.
 
 Default targets allow for code building and cleaning.
