@@ -1,6 +1,6 @@
 # Software for UninaSoC
 The sw directory is organized in two major components:
-* `host/` - Contains software that runs on the host side, typically x86-based systems. This includes host applications to interface with UninaSoC. Currently, it only applies to HPC configurations, see [host/README.md](host/README.md),
+* `host/` - Contains software that runs on the host side, typically x86-based systems. This includes host applications to interface with UninaSoC. Currently, it only applies to HPC configurations, see [host/virtual_uart/README.md](host/virtual_uart/README.md),
 * `SoC/`  - Contains software for UninaSoC, see [SoC/README.md](SoC/README.md),
 
 # Building RISC-V GCC Toolchain from Sources
