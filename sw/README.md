@@ -1,5 +1,10 @@
+# Software for UninaSoC
+The sw directory is organized in two major components:
+* `host/` - Contains software that runs on the host side, typically x86-based systems. This includes host applications to interface with UninaSoC. Currently, it only applies to HPC configurations, see [host/README.md](host/README.md),
+* `SoC/`  - Contains software for UninaSoC, see [SoC/README.md](SoC/README.md),
+
 # Building RISC-V GCC Toolchain from Sources
-This tree requires [RISC-V GCC](https://github.com/riscv/riscv-gnu-toolchain.git) to be installed on the developement host.
+To build SoC software, we require [RISC-V GCC](https://github.com/riscv/riscv-gnu-toolchain.git) to be installed on the developement host.
 You can build GCC from sources, as in the following.
 
 Download prerequisites, e.g. for Debian:
@@ -34,8 +39,3 @@ Install in `--prefix`:
 ``` bash
 make install
 ```
-
-# Software Tree Structure
-The sw directory is organized in two major components:
-* host - Contains software that runs on the host side, typically x86-based systems. This includes Linux drivers for interfacing with the UninaSoC. Currently, it only applies to HPC configurations. ([README](https://github.com/MaistoV/UninaSoC/tree/feature/linker_and_software/sw/host))
-* SoC  - Contains software running on the UninaSoC itself. Currently, only bare-metal projects are supported, as embedded Linux is not yet implemented. ([README](https://github.com/MaistoV/UninaSoC/tree/feature/linker_and_software/sw/SoC))
