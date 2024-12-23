@@ -1,8 +1,6 @@
 # UninaSoC Software Compilation and Usage
 
 This repository contains the software infrastructure needed to build bare-metal applications for UninaSoC.
-**Note**: For Linux-based configurations, please refer to the appropriate documentation, as this tree does not apply.
-
 All example applications, as well as custom projects, are built upon the `projects/template` project.
 Projects rely on a common set of files in the `common` directory.
 
@@ -11,6 +9,10 @@ Projects rely on a common set of files in the `common` directory.
 * The `Makefile`, that implements all basic targets for building, shared among bare-metal applications.
 
 It is expected that libraries and projects depend at least on the common files, along with a `main.c` file, which users can customize.
+
+**Notes**
+* For Linux-based configurations, please refer to the appropriate documentation, as this tree does not apply.
+* We assume that the RISC-V toolchain is in your PATH.
 
 ## Build examples
 
@@ -44,7 +46,6 @@ To add user-defined code, place source files in the `src` directory and header f
 ### User-defined Makefile
 
 The `Makefile` in the project folder is a user-defined Makefile, that imports the common `Makefile`.
-We assume that the RISC-V toolchain is in your PATH. By default, it compiles 32-bit code with IMAD extensions.
 In this Makefile the user can customize its project structure, compilation flags alongside toolchain selection and also the external libraries dependencies.
 
 Default targets allow for code building and cleaning.
