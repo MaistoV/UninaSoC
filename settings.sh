@@ -92,7 +92,7 @@ else
     else 
         # Nexsys A7-100T
         export XILINX_PART_NUMBER=xc7a100tcsg324-1
-        export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.0
+        export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.3
         export XILINX_HW_DEVICE=xc7a100t_0
         export BOARD=Nexys-A7-100T-Master
     fi

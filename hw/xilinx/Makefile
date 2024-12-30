@@ -70,7 +70,7 @@ XILINX_BITSTREAM   ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/im
 XILINX_PROBE_LTX ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.ltx
 
 # Whether to use ILA probes (0|1)
-XILINX_ILA ?= 0
+XILINX_ILA ?= 1
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=								\
@@ -179,7 +179,7 @@ ${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
 ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
-bin_path ?= ${SW_ROOT}/SoC/examples/blinky/bin/filename.bin
+bin_path ?= ${SW_ROOT}/SoC/examples/plic_test/bin/filename.bin
 base_address ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
 

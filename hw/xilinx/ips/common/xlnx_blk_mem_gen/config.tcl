@@ -14,7 +14,7 @@ set_property -dict [list CONFIG.Interface_Type {AXI4} \
                         CONFIG.Memory_Type {Simple_Dual_Port_RAM} \
                         CONFIG.Byte_Size {8} \
                         CONFIG.Assume_Synchronous_Clk {true} \
-                        CONFIG.Write_Depth_A {16384} \
+                        CONFIG.Write_Depth_A {8192} \
                         CONFIG.Operating_Mode_A {READ_FIRST} \
                         CONFIG.Operating_Mode_B {READ_FIRST} \
                         CONFIG.Enable_B {Use_ENB_Pin} \

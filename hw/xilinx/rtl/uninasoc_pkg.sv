@@ -7,8 +7,8 @@ package uninasoc_pkg;
     // SoC-level defines //
     ///////////////////////
     localparam int unsigned NUM_IRQ = 3;
-    localparam int unsigned NUM_GPIO_IN  = 0; //TBD
-    localparam int unsigned NUM_GPIO_OUT = 1;
+    localparam int unsigned NUM_GPIO_IN  = 16; 
+    localparam int unsigned NUM_GPIO_OUT = 16;
 
     //////////////////
     // AXI crossbar //
@@ -25,14 +25,14 @@ package uninasoc_pkg;
     // - Main memory
     `ifdef EMBEDDED
         // NB: we should find a better and automatic way of count AXI and MASTERs
-        localparam int unsigned NUM_AXI_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 2;
+        localparam int unsigned NUM_AXI_SLAVES = 6;
     
     // Crosbar slaves if HPC
     // - Main memory (BRAM)
     // - UART (virtual)
     // - DDR4
     `elsif HPC
-        localparam int unsigned NUM_AXI_SLAVES = 3;
+        localparam int unsigned NUM_AXI_SLAVES = 5;
     `endif
 
     //////////////////////////

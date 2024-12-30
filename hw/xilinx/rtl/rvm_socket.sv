@@ -14,7 +14,7 @@ module rvm_socket # (
     parameter CORE_SELECTOR = CORE_CV32E40P,
     parameter DATA_WIDTH    = 32,
     parameter ADDR_WIDTH    = 32,
-    parameter NUM_IRQ       = 3
+    parameter NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,
