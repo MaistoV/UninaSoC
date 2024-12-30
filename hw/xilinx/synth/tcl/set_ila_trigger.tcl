@@ -16,9 +16,14 @@ set_property CONTROL.TRIGGER_CONDITION  OR          [get_hw_ilas]
 set_property CONTROL.TRIGGER_POSITION   4096        [get_hw_ilas]
 
 # Set triggers
-set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_arvalid -of_objects [get_hw_ilas]]
-set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_awvalid -of_objects [get_hw_ilas]]
-set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_wvalid  -of_objects [get_hw_ilas]]
+#set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_arvalid -of_objects [get_hw_ilas]]
+#set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_awvalid -of_objects [get_hw_ilas]]
+#set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_wvalid  -of_objects [get_hw_ilas]]
+#set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_rvalid  -of_objects [get_hw_ilas]]
+#set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes xbar_to_plic_axi_arvalid -of_objects [get_hw_ilas]]
+#set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes xbar_to_plic_axi_rvalid -of_objects [get_hw_ilas]]
+
+#set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes irq_i -of_objects [get_hw_ilas]]
 
 
 ###########

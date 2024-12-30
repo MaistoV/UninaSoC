@@ -4,8 +4,6 @@ extern const volatile uint32_t _peripheral_GPIO_out_start;
 
 int main(){
 
-    /* Insert your code here */
-
     uint32_t * gpio_addr = (uint32_t *) &_peripheral_GPIO_out_start;
 
     while(1){

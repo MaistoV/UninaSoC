@@ -4,13 +4,13 @@
 // Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
 // Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
 
-// System architecture:
+// System architecture: (To Be Updated with GPIO, PLIC, UART and TIMER)
 //                                                                                    ________
 //   _________              ____________               __________                    |        |
 //  |         |            |            |             |          |                   |  Main  |
 //  |   vio   |----------->| rvm_socket |------------>|          |------------------>| Memory |
-//  |_________|            |____________|             |   AXI    |                   |________|
-//   ____________                                     | crossbar |                    ______________
+//  |_________|            |____________|             |          |                   |________|
+//   ____________                                     |          |                    ______________
 //  |            |                                    |          |                   |   (slave)    |
 //  | sys_master |----------------------------------->|          |------------------>| Debug Module |
 //  |____________|                                    |          |                   |______________|
@@ -20,6 +20,8 @@
 //  |______________|                                  |          |                   |     (PBUS)     |
 //                                                    |          |                   |________________|
 //                                                    |__________|
+//
+//
 //
 
 // Import packages
@@ -47,7 +49,7 @@ module uninasoc (
         output logic                        uart_tx_o,
 
         // GPIOs
-        // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
+        input  wire [NUM_GPIO_IN  -1 : 0]   gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `elsif HPC
         // DDR4 CH0 clock and reset
@@ -300,7 +302,7 @@ module uninasoc (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( sys_resetn & vio_resetn ),
         .bootaddr_i     ( '0         ),
-        .irq_i          ( '0         ),
+        .irq_i          ( cv32e40_int_line        ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,

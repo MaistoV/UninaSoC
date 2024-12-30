@@ -7,8 +7,8 @@ package uninasoc_pkg;
     // SoC-level defines //
     ///////////////////////
     localparam int unsigned NUM_IRQ = 3;
-    localparam int unsigned NUM_GPIO_IN  = 0; //TBD
-    localparam int unsigned NUM_GPIO_OUT = 1;
+    localparam int unsigned NUM_GPIO_IN  = 16; 
+    localparam int unsigned NUM_GPIO_OUT = 16;
 
     //////////////////
     // AXI crossbar //
@@ -30,7 +30,7 @@ package uninasoc_pkg;
     // - Peripheral bus
     // - DDR4
     `elsif HPC
-        localparam int unsigned NUM_AXI_SLAVES = 3;
+        localparam int unsigned NUM_AXI_SLAVES = 5;
     `endif
 
 
