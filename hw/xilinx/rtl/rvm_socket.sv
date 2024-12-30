@@ -3,7 +3,6 @@
 // Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
 // Description: Wrapper module for a RVM core
 
-
 // Import packages
 import uninasoc_pkg::*;
 

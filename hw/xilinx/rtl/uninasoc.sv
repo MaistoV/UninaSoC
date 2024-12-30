@@ -2,6 +2,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
 
 // System architecture: (To Be Updated with GPIO, PLIC, UART and TIMER)
@@ -24,11 +25,16 @@
 //
 //
 
-// Import packages
+/////////////////////
+// Import packages //
+/////////////////////
+
 import uninasoc_pkg::*;
 
+////////////////////
+// Import headers //
+////////////////////
 
-// Import headers
 `include "uninasoc_axi.svh"
 
 `ifdef HPC
@@ -36,7 +42,10 @@ import uninasoc_pkg::*;
     `include "uninasoc_ddr4.svh"
 `endif
 
-// Module definition
+///////////////////////
+// Module definition //
+///////////////////////
+
 module uninasoc (
 
     `ifdef EMBEDDED
@@ -52,13 +61,12 @@ module uninasoc (
         input  wire [NUM_GPIO_IN  -1 : 0]   gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `elsif HPC
-        // DDR4 CH0 clock and reset
+        // DDR4 Channel 0 clock and reset
         input logic clk_300mhz_0_p_i,
         input logic clk_300mhz_0_n_i,
 
-        // DDR4 CH0 interface 
+        // DDR4 Channel 0 interface 
         `DEFINE_DDR4_PORTS(0), 
-        
         
         // PCIe clock and reset
         input logic pcie_refclk_p_i,
@@ -88,18 +96,23 @@ module uninasoc (
     // VIO Signals
     logic vio_resetn;
 
-    //////////////////////////
-    // AXI interconnections //
-    //////////////////////////
+    // Socket interrupts
+    logic [31:0] socket_int;
 
-    // AXI masters
+    /////////////////
+    // AXI Masters //
+    /////////////////
+
     // sys_master -> crossbar
     `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
     `DECLARE_AXI_BUS(rvm_socket_instr, AXI_DATA_WIDTH);
     `DECLARE_AXI_BUS(rvm_socket_data, AXI_DATA_WIDTH);
 
-    // AXI slaves
+    /////////////////
+    // AXI Slaves  //
+    /////////////////
+
     // xbar -> main memory
     `DECLARE_AXI_BUS(xbar_to_main_mem, AXI_DATA_WIDTH);
     
@@ -111,7 +124,10 @@ module uninasoc (
         `DECLARE_AXI_BUS(xbar_to_ddr4, AXI_DATA_WIDTH);
     `endif
 
-    // Concatenate AXI master buses
+    ///////////////////////////
+    // Concatenate AXI buses //
+    ///////////////////////////
+
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
@@ -302,7 +318,7 @@ module uninasoc (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( sys_resetn & vio_resetn ),
         .bootaddr_i     ( '0         ),
-        .irq_i          ( cv32e40_int_line        ),
+        .irq_i          ( socket_int ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,

@@ -1,8 +1,8 @@
-// Author: 
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>, Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description:
-// This module is intended as a top-level wrapper for the code in ./rtl
-// IT might support either MEM protocol or AXI protocol, using the 
-// uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
+//  This module is intended as a top-level wrapper for the code in ./rtl
+//  It might support either MEM protocol or AXI protocol, using the 
+//  uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
 
 
 // Import headers
@@ -19,38 +19,40 @@ module custom_top_wrapper # (
     //////////////////////////////////////
     //  Add here IP-related parameters  //
     //////////////////////////////////////
-    parameter int unsigned NumSrc = 32,
-    parameter int unsigned NumTarget = 1, 
-    
-    parameter logic [NumSrc-1:0]    LevelEdgeTrig = '0, // 0: level, 1: edge
-    parameter int SRCW    = $clog2(NumSrc),
 
-    parameter int unsigned AxiAddrWidth     = 32,
-    parameter int unsigned AxiDataWidth     = 32, 
-    parameter int unsigned AxiIdWidth       = 2,
-    parameter int unsigned AxiUserWidth     = 2,
-    parameter int unsigned RegDataWidth     = 32,
-    parameter bit          CutMemReqs       = 1'b0,     
-    parameter bit          CutMemRsps       = 1'b0,     
+    // Sources are the number of possible interrupts
+    // Targets are the number of harts receiving interrupts
+    parameter int unsigned              SOURCE_NUM          = 32,
+    parameter int unsigned              TARGET_NUM          = 1, 
+    parameter logic [SOURCE_NUM-1:0]    LEVEL_EDGE_TRIGGER  = '0, 
+    parameter int                       SRCW                = $clog2(SOURCE_NUM),
     
-    parameter AXI_DATA_WIDTH    = 32,
-    parameter AXI_ADDR_WIDTH    = 32,
-    parameter AXI_STRB_WIDTH    = AXI_ADDR_WIDTH / 8,
-    parameter AXI_ID_WIDTH      = 2,
-    parameter AXI_REGION_WIDTH  = 4,
-    parameter AXI_LEN_WIDTH     = 8,
-    parameter AXI_SIZE_WIDTH    = 3,
-    parameter AXI_BURST_WIDTH   = 2,
-    parameter AXI_LOCK_WIDTH    = 1,
-    parameter AXI_CACHE_WIDTH   = 4,
-    parameter AXI_PROT_WIDTH    = 3,
-    parameter AXI_QOS_WIDTH     = 4,
-    parameter AXI_VALID_WIDTH   = 1,
-    parameter AXI_READY_WIDTH   = 1,
-    parameter AXI_LAST_WIDTH    = 1,
-    parameter AXI_RESP_WIDTH    = 2,
+    // AXI-related paraamters   
+    parameter                           AXI_DATA_WIDTH      = 32,
+    parameter                           AXI_ADDR_WIDTH      = 32,
+    parameter                           AXI_STRB_WIDTH      = AXI_ADDR_WIDTH / 8,
+    parameter                           AXI_ID_WIDTH        = 2,
+    parameter                           AXI_USER_WIDTH      = 2,
+    parameter                           AXI_REGION_WIDTH    = 4,
+    parameter                           AXI_LEN_WIDTH       = 8,
+    parameter                           AXI_SIZE_WIDTH      = 3,
+    parameter                           AXI_BURST_WIDTH     = 2,
+    parameter                           AXI_LOCK_WIDTH      = 1,
+    parameter                           AXI_CACHE_WIDTH     = 4,
+    parameter                           AXI_PROT_WIDTH      = 3,
+    parameter                           AXI_QOS_WIDTH       = 4,
+    parameter                           AXI_VALID_WIDTH     = 1,
+    parameter                           AXI_READY_WIDTH     = 1,
+    parameter                           AXI_LAST_WIDTH      = 1,
+    parameter                           AXI_RESP_WIDTH      = 2,
 
-    parameter [31:0] PLIC_BASE_ADDR = 32'h4000000
+    // REG-related parameters
+    parameter int unsigned              REG_DATA_WIDTH      = 32,
+    parameter bit                       CUT_MEM_REQS        = 1'b0,     
+    parameter bit                       CUT_MEM_RSPS        = 1'b0,  
+
+    // AXI-crossbar PLIC base address
+    parameter [AXI_DATA_WIDTH-1:0]      PLIC_BASE_ADDR      = 32'h4000000   
 
 
 ) (
@@ -63,21 +65,12 @@ module custom_top_wrapper # (
     input  logic    rst_ni,           
     
     // Interrupt Sources
-    input  [NumSrc-1:0] intr_src_i,
+    input  [SOURCE_NUM-1:0]             intr_src_i,
 
     // Interrupt notification to targets
-    output [NumTarget-1:0]          irq_o,
-    output [SRCW-1:0]               irq_id_o[NumTarget],
-    output logic [NumTarget-1:0]    msip_o,
-
-    output logic [AXI_ADDR_WIDTH-1:0] req_addr_o ,
-    output logic [AXI_ADDR_WIDTH-1:0] req_write_o,
-    output logic [AXI_ADDR_WIDTH-1:0] req_wdata_o,
-    output logic [AXI_ADDR_WIDTH-1:0] req_wstrb_o,
-    output logic [AXI_ADDR_WIDTH-1:0] req_valid_o,
-    output logic [AXI_ADDR_WIDTH-1:0] rsp_rdata_o,
-    output logic [AXI_ADDR_WIDTH-1:0] rsp_error_o,
-    output logic [AXI_ADDR_WIDTH-1:0] rsp_ready_o,
+    output [TARGET_NUM-1:0]             irq_o,
+    output [SRCW-1:0]                   irq_id_o[TARGET_NUM],
+    output logic [TARGET_NUM-1:0]       msip_o,
             
     ////////////////////////////
     //  Bus Array Interfaces  //
@@ -87,7 +80,12 @@ module custom_top_wrapper # (
     `DEFINE_AXI_SLAVE_PORTS(s) 
 );
 
-     // Define the req_t and resp_t type using axi_typedef.svh macro
+    ////////////////////////
+    // Signals Definition //
+    ////////////////////////
+
+    // First, we need to redefine the pulp axi types and reg types.
+    // Define the req_t and resp_t type using axi_typedef.svh macro
     `AXI_TYPEDEF_ALL(
         axi,
         logic [AXI_ADDR_WIDTH-1:0],
@@ -96,10 +94,6 @@ module custom_top_wrapper # (
         logic [AXI_STRB_WIDTH-1:0],
         logic [0:0]  // This is for the user field, which is missing from our interface (or unused)
     )
-
-    axi_req_t axi_req;
-    axi_resp_t axi_rsp;
-    
     // Define the req_t and resp_t type using reg_typedef.svh macro
     `REG_BUS_TYPEDEF_ALL(
         reg,
@@ -108,71 +102,78 @@ module custom_top_wrapper # (
         logic [AXI_STRB_WIDTH-1:0]
     )
 
+    // Instantiate intermediate signals to connect the axi converter to the reg-based plic interface
+    axi_req_t axi_req;
+    axi_resp_t axi_rsp;
     reg_req_t reg_req;
     reg_rsp_t reg_rsp;
 
-    // Create the modified_addr signal (shifted and subtracted)
-    logic [AXI_ADDR_WIDTH-1:0] modified_addr;
+    //////////////////////////
+    // Address Manipulation //
+    //////////////////////////
 
-    // Compute modified_addr: shift left by 2 and subtract PLIC_BASE_ADDR, then assign it to the PLIC input addr
-    assign modified_addr = (reg_req.addr - {PLIC_BASE_ADDR });
-    reg_req_t reg_req_modified;
+    // Create the correct_addr signal (shifted and subtracted)
+    reg_req_t reg_req_correct;
 
-    assign reg_req_modified.addr   = modified_addr;
-    assign reg_req_modified.write  = reg_req.write;
-    assign reg_req_modified.wdata  = reg_req.wdata;
-    assign reg_req_modified.wstrb  = reg_req.wstrb;
-    assign reg_req_modified.valid  = reg_req.valid;
+    // Compute correct_addr: shift left by 2 and subtract PLIC_BASE_ADDR, then assign it to the PLIC input addr
+    assign reg_req_correct.addr   = (reg_req.addr - {PLIC_BASE_ADDR});
+    assign reg_req_correct.write  = reg_req.write;
+    assign reg_req_correct.wdata  = reg_req.wdata;
+    assign reg_req_correct.wstrb  = reg_req.wstrb;
+    assign reg_req_correct.valid  = reg_req.valid;
+
+    ///////////////////////
+    // Instantiate Units //
+    ///////////////////////
 
     rv_plic #(
-    	.reg_req_t			(reg_req_t),
-    	.reg_rsp_t			(reg_rsp_t),
-    	.LevelEdgeTrig 		(LevelEdgeTrig)
+    	.reg_req_t			( reg_req_t             ),
+    	.reg_rsp_t			( reg_rsp_t             ),
+    	.LevelEdgeTrig 		( LEVEL_EDGE_TRIGGER    )
     
     ) rv_plic_u (
     	// Clock and Reset
-    	.clk_i				(clk_i),
-    	.rst_ni				(rst_ni),
-    	
-    	.reg_req_i          (reg_req_modified),
-    	.reg_rsp_o			(reg_rsp),
-    	
-    	// Interrupt Sources
-    	.intr_src_i			(intr_src_i),
-    	
+    	.clk_i				( clk_i                 ),
+    	.rst_ni				( rst_ni                ),
+    	.reg_req_i          ( reg_req_correct       ),
+    	.reg_rsp_o			( reg_rsp               ),
+    	 
+    	// Interrupt Sources 
+    	.intr_src_i			( intr_src_i            ),
+    	 
     	// Interrupt notification to targets
-    	.irq_o				(irq_o),
-    	.irq_id_o			(irq_id_o),
-    	.msip_o				(msip_o)
+    	.irq_o				( irq_o                 ),
+    	.irq_id_o			( irq_id_o              ),
+    	.msip_o				( msip_o                )
     	
     );
 
     axi_to_reg_v2 #(
-        .AxiAddrWidth       ( AxiAddrWidth ),
-        .AxiDataWidth       ( AxiDataWidth ),
-        .AxiIdWidth         ( AxiIdWidth ),
-        .AxiUserWidth       ( AxiUserWidth ),
-        .RegDataWidth       ( RegDataWidth ) ,
-        .CutMemReqs         ( CutMemReqs ) ,
-        .CutMemRsps         ( CutMemRsps ) , 
-        .axi_req_t          ( axi_req_t), 
-        .axi_rsp_t          ( axi_resp_t),
-        .reg_req_t          ( reg_req_t),
-        .reg_rsp_t          ( reg_rsp_t),
-        .id_t               ( logic[AxiIdWidth-1:0] )
-    )axi_to_reg_v2_u (  
-        .clk_i              (clk_i),
-        .rst_ni             (rst_ni),
-        .axi_req_i          (axi_req),
-        .axi_rsp_o          (axi_rsp),
-        .reg_req_o          (reg_req),
-        .reg_rsp_i          (reg_rsp),
+        .AxiAddrWidth       ( AXI_ADDR_WIDTH        ),
+        .AxiDataWidth       ( AXI_DATA_WIDTH        ),
+        .AxiIdWidth         ( AXI_ID_WIDTH          ),
+        .AxiUserWidth       ( AXI_USER_WIDTH        ),
+        .RegDataWidth       ( REG_DATA_WIDTH        ),
+        .CutMemReqs         ( CUT_MEM_REQS          ),
+        .CutMemRsps         ( CUT_MEM_RSPS          ), 
+        .axi_req_t          ( axi_req_t             ), 
+        .axi_rsp_t          ( axi_resp_t            ),
+        .reg_req_t          ( reg_req_t             ),
+        .reg_rsp_t          ( reg_rsp_t             ),
+        .id_t               ( logic[AXI_ID_WIDTH-1:0] )
+    ) axi_to_reg_v2_u (  
+        .clk_i              ( clk_i                 ),
+        .rst_ni             ( rst_ni                ),
+        .axi_req_i          ( axi_req               ),
+        .axi_rsp_o          ( axi_rsp               ),
+        .reg_req_o          ( reg_req               ),
+        .reg_rsp_i          ( reg_rsp               ),
         .reg_id_o           ( ),
         .busy_o             ( )
     );
 
 
-    // Map OUTPUT signals 
+    // Map output AXI port 
     assign   axi_req.aw.id        = s_axi_awid;
     assign   axi_req.aw.addr      = s_axi_awaddr;
     assign   axi_req.aw.len       = s_axi_awlen;
@@ -213,14 +214,5 @@ module custom_top_wrapper # (
     assign   s_axi_rresp          = axi_rsp.r.resp;      
     assign   s_axi_rlast          = axi_rsp.r.last;      
     assign   s_axi_rvalid         = axi_rsp.r_valid;
-
-    assign  req_addr_o  = reg_req_modified.addr   ; 
-    assign  req_write_o = reg_req_modified.write  ; 
-    assign  req_wdata_o = reg_req_modified.wdata  ;  
-    assign  req_wstrb_o = reg_req_modified.wstrb  ;  
-    assign  req_valid_o = reg_req_modified.valid  ;  
-    assign  rsp_rdata_o = reg_rsp.rdata  ; 
-    assign  rsp_error_o = reg_rsp.error  ;
-    assign  rsp_ready_o = reg_rsp.ready  ;
 
 endmodule : custom_top_wrapper

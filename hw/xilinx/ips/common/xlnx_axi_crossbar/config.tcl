@@ -20,6 +20,9 @@ set_property -dict [list CONFIG.PROTOCOL {AXI4} \
                          CONFIG.M00_A00_BASE_ADDR {0x0} \
                          CONFIG.M01_A00_BASE_ADDR {0x10000} \
                          CONFIG.M02_A00_BASE_ADDR {0x20000} \
+                         CONFIG.M03_A00_BASE_ADDR {0x30000} \
+                         CONFIG.M04_A00_BASE_ADDR {0x40000} \
+                         CONFIG.M05_A00_BASE_ADDR {0x4000000} \
                          CONFIG.M00_A00_ADDR_WIDTH {16} \
                          CONFIG.M01_A00_ADDR_WIDTH {12} \
                          CONFIG.M02_A00_ADDR_WIDTH {12} \

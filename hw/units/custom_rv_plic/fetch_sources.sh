@@ -1,7 +1,8 @@
 #!/bin/bash
-# Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+# Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>, Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
-# This script downloads specific files and organizes them into an rtl directory structure.
+#   This script fetches risc-v compliant PLIC sources.
+#   Files are mostly fetched from open-titan ips.
 
 RED='\033[1;31m'
 GREEN='\033[1;32m'
@@ -13,6 +14,7 @@ NC='\033[0m' # No Color
 RTL_DIR=rtl
 mkdir ${RTL_DIR}
 
+echo -e "${YELLOW}[FETCH_SOURCES] Fetching RISC-V Platform-Level Interrupt Controller (PLIC) sources${NC}"
 echo -e "${YELLOW}[FETCH_SOURCES] Creating the rtl directory structure${NC}"
 
 # List of files to download and their destinations

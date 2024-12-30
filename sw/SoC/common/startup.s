@@ -1,4 +1,6 @@
-# UninaSoC startup file
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+# Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+# Description: startup code for uninasoc
 
 .section .vector_table, "ax"
 .option norvc;
@@ -17,7 +19,10 @@
 _reset_handler:
   .global _reset_handler
 
-  # Clean all registers
+  #####################
+  # Registers Cleanup #
+  #####################
+
   mv ra, zero
   mv sp, zero
   mv gp, zero
@@ -50,7 +55,30 @@ _reset_handler:
   mv t5, zero
   mv t6, zero
 
-  # Initialize the stack
+  #####################
+  # Enable Interrupts #
+  #####################
+
+  # Set mtvec to vectored mode
+
+  la x5, _vector_table_start  # Load vector table base address
+  li x6, 1                    # Set vectored mode bit
+  or x5, x5, x6               
+  csrw mtvec, x5              # Commit on mtvec register
+
+  # Enable global interrupts
+  csrs mstatus, 0x8           # Enable MIE in mstatus
+
+  # Enable local interrupt lines
+  # MEI (External Interrupt), MSI (Software Interrupt) e MTI (Timer Interrupt) in mie register
+  li x6, 0x0888
+  csrs mie, x6
+
+  ########
+  # Tail #
+  ########
+
+  # Initialize the stack pointer
   la   sp, _stack_start
 
   # Jump to start function
@@ -67,6 +95,11 @@ _start:
   # jump to main program entry point (argc = argv = 0) 
   mv a0, zero
   mv a1, zero
+
+
+  la x5, 0x20000
+  li x6, 0xff
+  sw x6, 0(x5)
 
   jal ra, main
 

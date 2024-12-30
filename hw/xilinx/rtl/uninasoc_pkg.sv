@@ -1,4 +1,5 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description: Basic system variables for UninaSoC
 
 package uninasoc_pkg;
@@ -15,7 +16,7 @@ package uninasoc_pkg;
     //////////////////
     // Crosbar masters
     // - RVM socket (instr and data)
-    // - JTAG2AXI
+    // - Sys Master 
     localparam int unsigned NUM_AXI_MASTERS = 3; // {socket_instr, socket_data, jtag2axi}
 
     // Main Crosbar slaves if EMBEDDED
