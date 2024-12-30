@@ -2,6 +2,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
 
 // System architecture: (To Be Updated with GPIO, PLIC, UART and TIMER)
@@ -27,6 +28,11 @@
 //                                                    |          |                   |__________|
 //                                                    |          |                    __________      ________
 //                                                    |          |                   |          |    |        |
+//                                                    |          |------------------>| AXI4 to  |--->|  TIM   |
+//                                                    |          |                   | AXI-lite |    |________|
+//                                                    |          |                   |__________|
+//                                                    |          |                    __________      ________
+//                                                    |          |                   |          |    |        |
 //                                                    |          |------------------>| AXI4 to  |--->|  PLIC  |
 //                                                    |          |                   |   REG    |    |________|
 //                                                    |          |                   |__________|
@@ -36,11 +42,16 @@
 //
 
 
-// Import packages
+/////////////////////
+// Import packages //
+/////////////////////
+
 import uninasoc_pkg::*;
 
+////////////////////
+// Import headers //
+////////////////////
 
-// Import headers
 `include "uninasoc_axi.svh"
 
 `ifdef HPC
@@ -48,7 +59,10 @@ import uninasoc_pkg::*;
     `include "uninasoc_ddr4.svh"
 `endif
 
-// Module definition
+///////////////////////
+// Module definition //
+///////////////////////
+
 module uninasoc (
 
     `ifdef EMBEDDED
@@ -64,13 +78,12 @@ module uninasoc (
         input  wire [NUM_GPIO_IN  -1 : 0]   gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `elsif HPC
-        // DDR4 CH0 clock and reset
+        // DDR4 Channel 0 clock and reset
         input logic clk_300mhz_0_p_i,
         input logic clk_300mhz_0_n_i,
 
-        // DDR4 CH0 interface 
+        // DDR4 Channel 0 interface 
         `DEFINE_DDR4_PORTS(0), 
-        
         
         // PCIe clock and reset
         input logic pcie_refclk_p_i,
@@ -100,25 +113,25 @@ module uninasoc (
     // VIO Signals
     logic vio_resetn;
 
-    //////////////////////////
-    // AXI interconnections //
-    //////////////////////////
+    // Socket interrupts
+    logic [31:0] socket_int;
 
-    // AXI masters
+    /////////////////
+    // AXI Masters //
+    /////////////////
+
     // sys_master -> crossbar
     `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
     `DECLARE_AXI_BUS(rvm_socket_instr, AXI_DATA_WIDTH);
     `DECLARE_AXI_BUS(rvm_socket_data, AXI_DATA_WIDTH);
 
-    // AXI slaves
+    /////////////////
+    // AXI Slaves  //
+    /////////////////
+
     // xbar -> main memory
     `DECLARE_AXI_BUS(xbar_to_main_mem, AXI_DATA_WIDTH);
-    // xbar -> GPIO out
-    `ifdef EMBEDDED
-        `DECLARE_AXI_BUS(xbar_to_gpio_out, AXI_DATA_WIDTH);
-        `DECLARE_AXI_BUS(xbar_to_gpio_in, AXI_DATA_WIDTH);
-    `endif
     // xbar -> UART
     `DECLARE_AXI_BUS(xbar_to_uart, AXI_DATA_WIDTH);
     // xbar -> TIM
@@ -126,12 +139,21 @@ module uninasoc (
     // xbar -> PLIC
     `DECLARE_AXI_BUS(xbar_to_plic, AXI_DATA_WIDTH);
 
+    // xbar -> GPIO out
+    `ifdef EMBEDDED
+        `DECLARE_AXI_BUS(xbar_to_gpio_out, AXI_DATA_WIDTH);
+        `DECLARE_AXI_BUS(xbar_to_gpio_in, AXI_DATA_WIDTH);
+    `endif
+
     `ifdef HPC
         // xbar -> DDR4
         `DECLARE_AXI_BUS(xbar_to_ddr4, AXI_DATA_WIDTH);
     `endif
 
-    // Concatenate AXI master buses
+    ///////////////////////////
+    // Concatenate AXI buses //
+    ///////////////////////////
+
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
@@ -145,7 +167,7 @@ module uninasoc (
     `ifdef EMBEDDED
         `CONCAT_AXI_SLAVES_ARRAY6(xbar_slaves, xbar_to_plic, xbar_to_tim, xbar_to_gpio_in, xbar_to_gpio_out, xbar_to_uart, xbar_to_main_mem);
     `elsif HPC
-        `CONCAT_AXI_SLAVES_ARRAY5(xbar_slaves, xbar_to_plic, xbar_to_tim, xbar_to_ddr4, xbar_to_uart, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY5(xbar_slaves, xbar_to_plic, xbar_to_ddr4, xbar_to_tim, xbar_to_uart, xbar_to_main_mem);
     `endif
 
     ///////////////////////
@@ -324,7 +346,7 @@ module uninasoc (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( vio_resetn ), //( sys_resetn ),
         .bootaddr_i     ( '0         ),
-        .irq_i          ( cv32e40_int_line        ),
+        .irq_i          ( socket_int ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,
@@ -458,7 +480,7 @@ module uninasoc (
     axi4_full_uart axi4_full_uart_u (
         .clock_i        ( soc_clk                   ), // input wire s_axi_aclk
         .reset_ni       ( sys_resetn                ), // input wire s_axi_aresetn
-        .int_core_o     ( plic_int_line[3]          ), // TBD
+        .int_core_o     ( plic_int_src[3]           ), // Only support in embedded config
         .int_xdma_o     (                           ), // TBD
         .int_ack_i      ( '0                        ), // TBD
         `ifdef EMBEDDED
@@ -511,6 +533,7 @@ module uninasoc (
     ///////////
     // TIMER //
     ///////////
+    
     // axi4_to_axilite -> tim
     `DECLARE_AXILITE_BUS(tim);
 
@@ -558,7 +581,7 @@ module uninasoc (
         .s_axi_rlast    ( xbar_to_tim_axi_rlast    ), // output wire s_axi_rlast
         .s_axi_rvalid   ( xbar_to_tim_axi_rvalid   ), // output wire s_axi_rvalid
         .s_axi_rready   ( xbar_to_tim_axi_rready   ), // input wire s_axi_rready
-        // Master port (to GPIO)
+        // Master port 
         .m_axi_awaddr   ( tim_axilite_awaddr       ), // output wire [31 : 0] m_axi_awaddr
         .m_axi_awprot   ( tim_axilite_awprot       ), // output wire [2 : 0] m_axi_awprot
         .m_axi_awvalid  ( tim_axilite_awvalid      ), // output wire m_axi_awvalid
@@ -607,7 +630,7 @@ module uninasoc (
         .freeze         ( '0                        ), // input [0:0]
         .generateout0   (                           ), // output [0:0]
         .generateout1   (                           ), // output [0:0]
-        .interrupt      ( plic_int_line[2]          ), // output [0:0]
+        .interrupt      ( plic_int_src[2]           ), // output [0:0]
         .pwm0           (                           ) // output [0:0]
     );
 
@@ -615,60 +638,39 @@ module uninasoc (
     // PLIC //
     //////////
 
-    logic [31:0] plic_int_line;
-    logic [31:0] cv32e40_int_line;
-    logic plic_int_irq_o;
-    assign cv32e40_int_line [11] = plic_int_irq_o;
+    logic [31:0] plic_int_src;
+    logic plic_int_target;
 
-    //assign cv32e40_int_line[0]  = plic_int_irq_o;
-    //assign cv32e40_int_line[1]  = plic_int_irq_o;
-    //assign cv32e40_int_line[2]  = plic_int_irq_o;
-    //assign cv32e40_int_line[3]  = plic_int_irq_o;
-    //assign cv32e40_int_line[4]  = plic_int_irq_o;
-    //assign cv32e40_int_line[5]  = plic_int_irq_o;
-    //assign cv32e40_int_line[6]  = plic_int_irq_o;
-    //assign cv32e40_int_line[7]  = plic_int_irq_o;
-    //assign cv32e40_int_line[8]  = plic_int_irq_o;
-    //assign cv32e40_int_line[9]  = plic_int_irq_o;
-    //assign cv32e40_int_line[10] = plic_int_irq_o;
-    //assign cv32e40_int_line[11] = plic_int_irq_o;
-    //assign cv32e40_int_line[12] = plic_int_irq_o;
-    //assign cv32e40_int_line[13] = plic_int_irq_o;
-    //assign cv32e40_int_line[14] = plic_int_irq_o;
-    //assign cv32e40_int_line[15] = plic_int_irq_o;
-    //assign cv32e40_int_line[16] = plic_int_irq_o;
-    //assign cv32e40_int_line[17] = plic_int_irq_o;
-    //assign cv32e40_int_line[18] = plic_int_irq_o;
-    //assign cv32e40_int_line[19] = plic_int_irq_o;
-    //assign cv32e40_int_line[20] = plic_int_irq_o;
-    //assign cv32e40_int_line[21] = plic_int_irq_o;
-    //assign cv32e40_int_line[22] = plic_int_irq_o;
-    //assign cv32e40_int_line[23] = plic_int_irq_o;
-    //assign cv32e40_int_line[24] = plic_int_irq_o;
-    //assign cv32e40_int_line[25] = plic_int_irq_o;
-    //assign cv32e40_int_line[26] = plic_int_irq_o;
-    //assign cv32e40_int_line[27] = plic_int_irq_o;
-    //assign cv32e40_int_line[28] = plic_int_irq_o;
-    //assign cv32e40_int_line[29] = plic_int_irq_o;
-    //assign cv32e40_int_line[30] = plic_int_irq_o;
-    //assign cv32e40_int_line[31] = plic_int_irq_o;
-    // Currently, this is the interrupt line mapping
-    // 0 - RESERVED
-    // 1 - gpio_in mapping (for embedded only)
-    // 2 - timer interrupt
-    // 3 - UART (HPC implementation does not support interrupts yet)
-    // others - reserved
+    // Currently, the PLIC supports 32 source interrupts and 1 target (the Socket)
+    // Platform-level interrupt mapping is the following:
+    //      0 - RESERVED (do not use it)
+    //      1 - GPIO_IN (for embedded only)
+    //      2 - TIMER 
+    //      3 - UART (HPC implementation does not support interrupts yet)
+    //      others - reserved
 
-    assign plic_int_line[31:4] = '0; 
+    assign plic_int_src[31:4] = '0; 
+
+    // Currently, the only target available is the Socket.
+    // At the moment, the socket expects 32 bits of interrupts (as our main core cv32e40p does).
+    // In the future, when cores supporting U,S and H mode will be added, interrupts will
+    // be forwarded as organized in "contextes" (i.e. privilege levels), in groups of 
+    // Three bits corresponding to RISC-V standard interrupts per privilege level.
+    // (Software, Timer and External)
+
+    // The single target is connected to bit 11 (EXT interrupt)
+    // It also includes the timer, as it is passed through PLIC gateways instead
+    // of being directly connected to the socket interrupt line 7 (TIM interrupt)
+    assign socket_int = {21'b0, plic_int_target, 10'b0};
 
     custom_rv_plic custom_rv_plic_u (
         .clk_i          ( soc_clk                   ), // input wire s_axi_aclk
         .rst_ni         ( sys_resetn                ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
-        .intr_src_i     ( plic_int_line             ),
-        .irq_o          ( plic_int_irq_o            ),
-        .irq_id_o       (                           ),
-        .msip_o         (                           ),
+        .intr_src_i     ( plic_int_src              ),
+        .irq_o          ( plic_int_target           ), // Unused (currently)
+        .irq_id_o       (                           ), 
+        .msip_o         (                           ), // Unused (PULP specific)
         .s_axi_awid     ( xbar_to_plic_axi_awid     ), // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr   ( xbar_to_plic_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
         .s_axi_awlen    ( xbar_to_plic_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
@@ -707,15 +709,7 @@ module uninasoc (
         .s_axi_rresp    ( xbar_to_plic_axi_rresp    ), // output wire [1 : 0] s_axi_rresp
         .s_axi_rlast    ( xbar_to_plic_axi_rlast    ), // output wire s_axi_rlast
         .s_axi_rvalid   ( xbar_to_plic_axi_rvalid   ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_plic_axi_rready   ), // input wire s_axi_rready
-        .req_addr_o     (                           ),
-        .req_write_o    (                           ),
-        .req_wdata_o    (                           ),
-        .req_wstrb_o    (                           ),
-        .req_valid_o    (                           ),
-        .rsp_rdata_o    (                           ),
-        .rsp_error_o    (                           ),
-        .rsp_ready_o    (                           )
+        .s_axi_rready   ( xbar_to_plic_axi_rready   ) // input wire s_axi_rready
     );
 
 
@@ -906,7 +900,7 @@ module uninasoc (
         .s_axi_rvalid   ( gpio_in_axilite_rvalid        ), // output wire s_axi_rvalid
         .s_axi_rready   ( gpio_in_axilite_rready        ), // input wire s_axi_rready
         .gpio_io_i      ( gpio_in_i                     ),
-        .ip2intc_irpt   ( plic_int_line[1]              )  // output wire [0:0] (interrupt)
+        .ip2intc_irpt   ( plic_int_src[1]               )  // output wire [0:0] (interrupt)
     );
 
 `elsif HPC

@@ -1,4 +1,5 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description: Basic system variables for UninaSoC
 
 package uninasoc_pkg;
@@ -15,25 +16,30 @@ package uninasoc_pkg;
     //////////////////
     // Crosbar masters
     // - RVM socket (instr and data)
-    // - JTAG2AXI
+    // - Sys Master 
     localparam int unsigned NUM_AXI_MASTERS = 3; // {socket_instr, socket_data, jtag2axi}
 
     // Crosbar slaves if EMBEDDED 
     // - GPIOs in input
     // - GPIOs in outputs
     // - UART (physical)
+    // - TIMER
+    // - PLIC
     // - Main memory
     `ifdef EMBEDDED
-        // NB: we should find a better and automatic way of count AXI and MASTERs
         localparam int unsigned NUM_AXI_SLAVES = 6;
     
     // Crosbar slaves if HPC
     // - Main memory (BRAM)
     // - UART (virtual)
+    // - TIMER
+    // - PLIC
     // - DDR4
     `elsif HPC
         localparam int unsigned NUM_AXI_SLAVES = 5;
     `endif
+
+    // NB: we should find a better and automatic way to count AXI and MASTERs
 
     //////////////////////////
     // Supported Processors //

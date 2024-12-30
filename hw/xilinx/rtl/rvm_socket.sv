@@ -2,7 +2,6 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 // Description: Wrapper module for a RVM core
 
-
 // Import packages
 import uninasoc_pkg::*;
 
