@@ -133,7 +133,7 @@ fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "016x") + 
 
 # The stack is allocated at the end of first memory block
 # _stack_end can be user-defined for the application, as bss and rodata
-stack_start = device_dict['memory'][BOOT_MEMORY_BLOCK]['base'] + device_dict['memory'][BOOT_MEMORY_BLOCK]['range']
+stack_start = device_dict['memory'][BOOT_MEMORY_BLOCK]['base'] + device_dict['memory'][BOOT_MEMORY_BLOCK]['range'] - 0x4
 fd.write("_stack_start = 0x" + format(stack_start, "016x") + ";\n")
 
 # Generate sections

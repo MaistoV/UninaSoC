@@ -53,6 +53,9 @@ _reset_handler:
   # Initialize the stack
   la   sp, _stack_start
 
+  # Jump to start function
+  j _start
+
 _default_handler:
   j _default_handler
 
