@@ -74,6 +74,9 @@ By default, only a few symbols and sections are defined:
 
 Users can define custom linker script sections and symbols by editing the `ld/user.ld` file in the project directory.
 
+***Warning***: The stack is located at the end of the first memory device defined in `config/configs/config.csv`. Currently, the memory size specified in the 
+config.csv file may different from the phyisical memory allocated for the SoC (check `hw/xilinx/ips/common/xlnx_blk_mem_gen/config.tcl`).
+
 ### Importing new libraries
 
 Libraries, whether external or internal, are stored in the `lib` directory. To include libraries in your custom project, update the Makefile by specifying them in the libraries section.

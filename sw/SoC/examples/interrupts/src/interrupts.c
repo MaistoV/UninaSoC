@@ -6,7 +6,7 @@ int install_exception_handler(uint32_t vector_num, void (*handler_fn)(void)) {
 
     if (vector_num >= 32) return 1;
 
-    volatile uint32_t* vector_table_entry = (uint32_t *)(_vector_table_start + vector_num*4);
+    volatile uint32_t* vector_table_entry = (uint32_t *)(&_vector_table_start) + vector_num;
 
     // Compute the relative jump stride
     int32_t offset = (uint32_t)handler_fn - (uint32_t)vector_table_entry;
@@ -43,7 +43,8 @@ void _tim_handler() {
 void _ext_handler() {
 
     // Connected to the PLIC
-
+    uint32_t * addr = 0x20000;
+    *addr = 0xffff;
     // Is it coming from GPIO_in?
 
     // Is it coming from TIM?

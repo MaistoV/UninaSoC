@@ -3,10 +3,10 @@
 # Script per eseguire comandi make in sequenza
 
 echo "Compilazione nella directory ~/Desktop/UninaSoC_plic/sw"
-if make -C ~/Desktop/UninaSoC_PLIC/sw/SoC/examples/plic_test/; then
+if make -C /home/stefano/Desktop/Work/Projects/vesuvius/b_plic/sw/SoC/examples/interrupts/; then
     echo "Compilazione completata con successo."
 else
-    echo "Errore durante la compilazione nella directory ~/Desktop/UninaSoC_plic/sw."
+    echo "Errore durante la compilazione."
     exit 1
 fi
 
@@ -26,11 +26,11 @@ else
     exit 1
 fi
 
-echo "Esecuzione: make open_ila"
-if make open_ila; then
-    echo "Comando make open_ila completato con successo."
+echo "Esecuzione: make vio_reset"
+if make vio_reset; then
+    echo "Comando make vio_reset completato con successo."
 else
-    echo "Errore durante l'esecuzione di make open_ila."
+    echo "Errore durante l'esecuzione di make vio_reset."
     exit 1
 fi
 
