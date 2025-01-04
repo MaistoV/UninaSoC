@@ -661,7 +661,7 @@ module uninasoc (
     // The single target is connected to bit 11 (EXT interrupt)
     // It also includes the timer, as it is passed through PLIC gateways instead
     // of being directly connected to the socket interrupt line 7 (TIM interrupt)
-    assign socket_int = {21'b0, plic_int_target, 10'b0};
+    assign socket_int = {20'b0, plic_int_target, 11'b0};
 
     custom_rv_plic custom_rv_plic_u (
         .clk_i          ( soc_clk                   ), // input wire s_axi_aclk

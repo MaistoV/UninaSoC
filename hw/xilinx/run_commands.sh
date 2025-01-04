@@ -34,4 +34,12 @@ else
     exit 1
 fi
 
+#echo "Esecuzione: make open_ila"
+#if make open_ila; then
+#    echo "Comando make open_ila completato con successo."
+#else
+#    echo "Errore durante l'esecuzione di make open_ila."
+#    exit 1
+#fi
+
 echo "Tutti i comandi sono stati eseguiti con successo!"

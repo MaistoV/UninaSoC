@@ -26,18 +26,12 @@
 #set_property MARK_DEBUG 1 [get_nets custom_rv_plic_u/req_*]
 #set_property MARK_DEBUG 1 [get_nets custom_rv_plic_u/rsp_*]
 
-#set_property MARK_DEBUG 1 [get_nets custom_rv_plic_u/irq_o*]
-#set_property MARK_DEBUG 1 [get_nets tim_u/interrupt*]
-#set_property MARK_DEBUG 1 [get_nets gpio_in_u/ip2intc_irpt*]
-#set_property MARK_DEBUG 1 [get_nets rvm_socket_u/irq_i*]
+set_property MARK_DEBUG 1 [get_nets custom_rv_plic_u/irq_o*]
+set_property MARK_DEBUG 1 [get_nets tim_u/interrupt*]
+set_property MARK_DEBUG 1 [get_nets gpio_in_u/ip2intc_irpt*]
+set_property MARK_DEBUG 1 [get_nets rvm_socket_u/irq_i*]
 #
 #set_property MARK_DEBUG 1 [get_nets tim_u/s_axi_*]
-
-set_property MARK_DEBUG 1 [get_nets axi4_full_uart_u/s_axi_aw*]
-set_property MARK_DEBUG 1 [get_nets axi4_full_uart_u/s_axi_w*]
-set_property MARK_DEBUG 1 [get_nets axi4_full_uart_u/tx_o]
-set_property MARK_DEBUG 1 [get_nets axi4_full_uart_u/rx_i]
-
 #set_property MARK_DEBUG 1 [get_nets gpio_out_u/s_axi_ar*]
 #set_property MARK_DEBUG 1 [get_nets gpio_out_u/s_axi_r*]
 

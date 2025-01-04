@@ -15,7 +15,11 @@ int main(){
 
     uint32_t* uart_base_address = (uint32_t*) &_peripheral_UART_start;
 
-    uart_init((uint32_t) uart_base_address);
+    tinyIO_init((uint32_t) uart_base_address);
+
+    printf("\n\r");
+    printf("* Interrupt Tests *\n\r");
+    printf("\n\r");
 
     // This code is an example of PLIC and interrupts.
     // Phyisically, 3 interrupt lines are connected (plus line 0, which is reserved)
@@ -42,7 +46,7 @@ int main(){
     printf("Timer Handler Jump: 0x%08x\n\r", vt[TIM_ENTRY]);
     printf("External Handler Jump: 0x%08x\n\r", vt[EXT_ENTRY]);
     printf("\n\r");
-    
+
     // Configure the PLIC
     plic_configure();
     plic_enable();
@@ -52,6 +56,26 @@ int main(){
         gpio_in_configure();
         gpio_in_enable_int();
     }
+
+    ///////////////////////
+    // Debug Print Begin //
+    ///////////////////////
+
+    /*uint32_t result;
+
+    printf("Registers data:\n\r");
+
+    __asm__ volatile("csrr %0, mtvec;" : "=r"(result));
+    printf("mtvec: 0x%08x\n\r", result);
+    __asm__ volatile("csrr %0, mstatus;" : "=r"(result));
+    printf("mstatus: 0x%08x\n\r", result);
+    __asm__ volatile("csrr %0, mie;" : "=r"(result));
+    printf("mie: 0x%08x\n\r", result);*/
+
+    /////////////////////
+    // Debug Print End //
+    /////////////////////
+
 
     // Configure the timer
     /*tim_configure();
