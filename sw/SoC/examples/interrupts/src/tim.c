@@ -1,5 +1,7 @@
 
 #include "tim.h"
+#include "gpio.h"
+#include "print.h"
 
 void tim_configure(){
 
@@ -33,4 +35,19 @@ void tim_enable(){
     
     // Enable the timer
     *(tim_addr) |= 0x80;  // ENT0 = 1 (bit 7), timer enabled    
+}
+
+void tim_handler(){
+    
+    uint32_t * tim_addr = (uint32_t *) &_peripheral_TIM_start;
+
+    // Print
+    printf("\n\r******* Timer Interrupt! *******\n\r\n\r");
+
+    // Clear timer interrupt by setting TCSR0.T0INT
+    *tim_addr = 0x100;
+
+    // Restart the timer
+    *tim_addr = 0xD2;   
+
 }

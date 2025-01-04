@@ -38,7 +38,7 @@ void _sw_handler(void) {
     // Unused for this example
 }
 
-void _tim_handler(void) {
+void _timer_handler(void) {
     // Unused for this example
 }
 
@@ -68,6 +68,7 @@ void _ext_handler(void) {
         break;
         case 0x2:
             // Timer interrupt
+            tim_handler();
             break;
         default:
             break;

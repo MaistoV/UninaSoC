@@ -25,8 +25,8 @@ int install_exception_handler(uint32_t vector_num, void (*handler_fn)(void));
 
 // Note: compiling with D/F/V extension would also include the extra registers in the context.
 
-void _sw_handler(void) __attribute__ ((interrupt ("machine")));
-void _tim_handler(void) __attribute__ ((interrupt ("machine")));
-void _ext_handler(void) __attribute__ ((interrupt ("machine")));
+void _sw_handler(void)      __attribute__ ((interrupt ("machine")));
+void _timer_handler(void)   __attribute__ ((interrupt ("machine")));
+void _ext_handler(void)     __attribute__ ((interrupt ("machine")));
 
 #endif 

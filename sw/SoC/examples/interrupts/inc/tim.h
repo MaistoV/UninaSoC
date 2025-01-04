@@ -11,5 +11,7 @@ void tim_configure();
 void tim_enable_int();
 void tim_enable();
 
+void tim_handler();
+
 
 #endif 
