@@ -179,7 +179,7 @@ ${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
 ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
-bin_path ?= ${SW_ROOT}/SoC/examples/interrupts/bin/interrupts.bin
+bin_path ?= ${SW_ROOT}/SoC/projects/template/bin/template.bin
 base_address ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
 
@@ -196,7 +196,6 @@ load_binary_embedded: ${bin_path}
 # Write the binary to BRAM/DDR through XDMA
 load_binary_hpc: ${bin_path}
 	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${bin_path} ${base_address} ${LOAD_BINARY_READBACK}"
-
 
 # Clean up project
 clean:

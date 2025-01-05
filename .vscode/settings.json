@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "tim.h": "c",
-        "interrupts.h": "c"
+        "interrupts.h": "c",
+        "plic.h": "c",
+        "stdint.h": "c",
+        "serial.h": "c"
     }
 }

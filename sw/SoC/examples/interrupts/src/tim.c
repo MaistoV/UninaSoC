@@ -1,7 +1,6 @@
 
 #include "tim.h"
-#include "gpio.h"
-#include "print.h"
+#include "serial.h"
 
 void tim_configure(){
 

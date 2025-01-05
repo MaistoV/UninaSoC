@@ -55,9 +55,12 @@ _reset_handler:
   mv t5, zero
   mv t6, zero
 
-  #####################
-  # Enable Interrupts #
-  #####################
+  # Initialize the stack pointer
+  la   sp, _stack_start
+
+  #########################
+  # Enable CPU Interrupts #
+  #########################
 
   # Set mtvec to vectored mode
 
@@ -78,9 +81,6 @@ _reset_handler:
   # Tail #
   ########
 
-  # Initialize the stack pointer
-  la   sp, _stack_start
-
   # Jump to start function
   j _start
 
@@ -98,6 +98,10 @@ _start:
   mv a1, zero
 
   jal ra, main
+
+_epilogue:
+  # If application returns from main, loop here
+  j _epilogue
 
 
 

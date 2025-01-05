@@ -1,7 +1,12 @@
 
 #include "interrupts.h"
 #include "plic.h"
-#include "gpio.h"
+#include "tim.h"
+
+#ifdef IS_EMBEDDED
+    #include "gpio.h"
+#endif 
+
 
 // This function is based on low risc demo system hal
 int install_exception_handler(uint32_t vector_num, void (*handler_fn)(void)) {
@@ -63,8 +68,10 @@ void _ext_handler(void) {
         case 0x0: // unused
             break;
         case 0x1:
+        #ifdef IS_EMBEDDED
             // GPIO_in (Switch) interrupts (embedded config only)
             gpio_handler();
+        #endif
         break;
         case 0x2:
             // Timer interrupt
