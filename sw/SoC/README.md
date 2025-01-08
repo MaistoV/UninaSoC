@@ -26,6 +26,29 @@ The existing examples include:
 
 `echo` and `hello_world` examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library to support `printf()` and `scanf()` on UART. 
 
+You can build individual examples or create new projects as described in the following sections.
+Each directory under examples or projects includes a `common/Makefile` that provides baseline commands for building code.
+For instance, let’s explore the `examples/hello_world` example and build it:
+```
+cd examples/hello_world
+make
+```
+These simple steps will produce the `hello_world.bin` and `hello_world.elf` files in the `bin` directory.
+In general, the targets available in the `common/Makefile` are as follows:
+```
+make
+```
+This generates `.bin` and `.elf` files in the newly created bin directory.
+```
+make clean
+```
+This removes all previously generated build files.
+```
+make dump
+```
+This outputs the binary content of your program.
+
+
 ## Create a new project
 
 To create a new application project, make a copy of the `template` directory and rename it accordingly to your application name.
@@ -47,22 +70,8 @@ To add user-defined code, place source files in the `src` directory and header f
 
 The `Makefile` in the project folder is a user-defined Makefile, that imports the common `Makefile`.
 In this Makefile the user can customize its project structure, compilation flags alongside toolchain selection and also the external libraries dependencies.
-
-Default targets allow for code building and cleaning.
-To compile the project, run the following command from the project directory:
-```
-make
-```
-This will generate `.bin` and `.elf` files in the newly created bin directory.
-To clean all artifacts, just run:
-```
-make clean
-```
-To dump the binary content of your program, run:
-```
-make dump
-```
-A user can add new target rules in the user-defined Makefile.
+A user can add new target rules in the user-defined Makefile. However, despite changes inside the user-defined `Makefile`, all targets
+described in **Build examples** ca ne applied
 
 ### User-defined linker script
 

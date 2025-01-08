@@ -7,12 +7,9 @@
 # Program Name #
 ################
 
-# $(MAKEFILE_LIST)			: Contains a list of all Makefiles parsed (This Makefile and common Makefile)
-# $(first $(MAKEFILE_LIST))	: Extracts the first entry, which is the current Makefile.
-# $(abspath ...)			: Converts the relative path of the Makefile to an absolute path.
-# $(dir ...)				: Extracts the directory portion of the absolute path.
-# $(shell basename ...)		: Extracts the last component of the directory path, which is the name of the directory containing the Makefile.
-PROGRAM_NAME = $(shell basename $(dir $(abspath $(firstword $(MAKEFILE_LIST)))))
+# Get program name from directory name
+PROGRAM_NAME = $(shell basename $$PWD)
+
 
 #####################
 # Paths and Folders #
