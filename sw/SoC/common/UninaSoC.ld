@@ -15,7 +15,7 @@ _peripheral_GPIO_out_end = 0x0000000000022000;
 /* Global symbols */
 _vector_table_start = 0x0000000000000000;
 _vector_table_end = 0x0000000000000080;
-_stack_start = 0x000000000001fffc;
+_stack_start = 0x0000000000007ffc;
 
 /* Sections */
 SECTIONS
