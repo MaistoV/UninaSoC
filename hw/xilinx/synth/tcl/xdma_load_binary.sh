@@ -33,34 +33,45 @@ FILE_SIZE=$(stat -c%s "$FILE_NAME");
 
 # Read the entire file in hexadecimal
 hex_file=$(xxd -p -u -c 9999999999 $FILE_NAME);
+# echo $hex_file
 
 # Set the transaction size in bytes
-trans_size=4;
+trans_size=8;
 
 num_trans=$(($FILE_SIZE/$trans_size));
 remaining_bytes=$(($FILE_SIZE%$trans_size));
 
 # Write the binary
 addr=$BASE_ADDRESS;
-echo "Start writing...";
+# echo "Start writing...";
 
-for i in $(seq 0 $(($num_trans-1)));
+num_trans=4
+for i in $(seq 1 $(($num_trans)));
 do
-    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
     # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
     #   - no C-extension
     #   - no 8-byte (or longer) transactions
-    if [ $trans_size != 4 ]; then
-        echo "Unsupported trans_size=$trans_size! Supported value is 4, for now." >&2
-        return 1
-    fi
+    # if [ $trans_size != 4 ]; then
+    #     echo "Unsupported trans_size=$trans_size! Supported value is 4, for now." >&2
+    #     return 1
+    # fi
     hex_data="";
-    for((j=$trans_size*$i*2-1+$trans_size*2;j>=$i*2*$trans_size;j=j-2));
+    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
+    # for((j=$trans_size*$i*2-1+$trans_size*2;j>=$i*2*$trans_size;j=j-2));
+    # do
+    #     hex_data=${hex_data}${hex_file:$((j-1)):$((2))};
+    # done
+    # for((j=$trans_size*$i*2-1+$trans_size*2;j>=$i*2*$trans_size;j=j-2));
+    for((j=$i*2*$trans_size-2;j>$(($i-1))*2*$trans_size-2;j=j-2));
     do
-        hex_data=${hex_data}${hex_file:$((j-1)):$((2))};
+        # echo $i: {$j $(($j +1))}
+        hex_data=${hex_data}${hex_file:$((j)):$((2))};
     done
+
+    echo "0x$hex_data"
+
     hex_addr=$(printf "%x" $addr);
-    sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
+    # sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
     addr=$(($addr+$trans_size));
 done
 
