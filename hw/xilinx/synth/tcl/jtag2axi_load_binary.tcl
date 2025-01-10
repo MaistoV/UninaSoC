@@ -31,17 +31,21 @@ proc read_file_to_words {filename fsize} {
 ##############
 # Parse args #
 ##############
-if { $argc != 3 } {
-    puts "Usage <filename> <base_address> <read_back>"
-    puts "filename      : path to bin file to transfer"
-    puts "base_address  : base address of BRAM"
-    puts "read_back     : whether to read-back data after writing"
-    return
-} else {
-    set filename        [lindex $argv 0]
-	set base_address    [lindex $argv 1]
-	set read_back       [lindex $argv 2]
-}
+# if { $argc != 3 } {
+#     puts "Usage <filename> <base_address> <read_back>"
+#     puts "filename      : path to bin file to transfer"
+#     puts "base_address  : base address of BRAM"
+#     puts "read_back     : whether to read-back data after writing"
+#     return
+# } else {
+#     set filename        [lindex $argv 0]
+# 	set base_address    [lindex $argv 1]
+# 	set read_back       [lindex $argv 2]
+# }
+# Debug
+set filename        /home/vincenzo/RISC-V/prjs/UninaSoC/feature/c_extension/sw/SoC/examples/blinky/bin/filename.bin
+set base_address    0x0
+set read_back       false
 
 ########
 # Init #
@@ -60,11 +64,6 @@ set fsize [file size $filename]
 set gpio_wr_txn gpio_wr_txn
 set gpio_rd_txn gpio_rd_txn
 
-# Test read transaction
-# puts "create_hw_axi_txn $gpio_rd_txn [get_hw_axis hw_axi_1] -type read -force -address $base_address"
-# puts [get_hw_axis hw_axi_1]
-# create_hw_axi_txn $gpio_rd_txn [get_hw_axis hw_axi_1] -type read -force -address $base_address
-
 # Internal variables:
 #	-data_list: binary file read at absolute path
 #	-num_bursts: size of each "burst" (data sent) in each transaction in bytes (4 -> 32 bits). This parameter is architecture dependent.
@@ -80,21 +79,20 @@ set num_bursts [expr {int( $fsize / $burst_size)}]
 # Remining bytes
 set remaining_bytes [expr {$fsize % $burst_size}]
 
+# Print warning
+if { $remaining_bytes != 0 } {
+    puts stderr "[WARINING] Binary is has pending $remaining_bytes bytes the past $trans_size-byte aligned size, ignoring last bytes.."
+}
+
 ###################
 # Write to memory #
 ###################
 # Run burst-based transactions
 for {set i 0} {$i < $num_bursts} {incr i} {
-    # Select segment to read
-    set segment [string range $data_list [expr {$i * $burst_size}] [expr {($i + 1) * $burst_size}]]
+    # Select $burst_size-wide segment to read
+    set segment [string range $data_list [expr {$i * $burst_size}] [expr {($i + 1) * $burst_size} -1]]
 
-    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
-    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
-    #   - no C-extension
-    #   - no 8-byte (or longer) transactions
-    if {$burst_size != 4} {
-        return -code error "Unsupported burst_size=$burst_size! Supported value is 4, for now."
-    }
+    # Invert endiannes from string (0x01234567 -> 0x67543201)
     set str_tmp ""
     for {set j 0} {$j < $burst_size} {incr j} {
         set str_tmp [string index $segment $j]$str_tmp
@@ -114,42 +112,6 @@ for {set i 0} {$i < $num_bursts} {incr i} {
     # Debug
     # puts "Writing to address $address"
 }
-
-# Run for remaining bytes
-if {$remaining_bytes > 0} {
-    # Read remaining bytes
-    set start [expr {$num_bursts * $burst_size}]
-    set segment [string range $data_list $start end]
-
-    append segment [string repeat \0 [expr {$burst_size - $remaining_bytes}]]
-
-    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
-    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
-    #   - no C-extension
-    #   - no 8-byte (or longer) transactions
-    if {$burst_size != 4} {
-        return -code error "Unsupported burst_size=$burst_size! Supported value is 4, for now."
-    }
-    set str_tmp ""
-    for {set j 0} {$j < $burst_size} {incr j} {
-        set str_tmp [string index $segment $j]$str_tmp
-    }
-    set segment $str_tmp
-
-    # Convert in hex
-    binary scan $segment H* word
-
-    # Compose address
-    set address [format 0x%x [expr {$base_address + ($num_bursts * $burst_size)}]]
-
-    # Execute axi transaction
-    create_hw_axi_txn $gpio_wr_txn [get_hw_axis hw_axi_1] -type write -force -address $address -data $word -len $burst_size
-    run_hw_axi [get_hw_axi_txns $gpio_wr_txn]
-
-    # Debug
-    # puts "Writing to address $address"
-}
-
 
 #########################
 # Read-back from memory #
