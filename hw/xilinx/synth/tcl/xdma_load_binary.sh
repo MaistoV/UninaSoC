@@ -35,7 +35,13 @@ FILE_SIZE=$(stat -c%s "$FILE_NAME");
 hex_file=$(xxd -p -c 9999999999 $FILE_NAME);
 
 # Set the transaction size in bytes
-trans_size=4;
+trans_size=64; # XDMA supports 64-bytes transactions
+# Set size of endianess flip
+#   Every four bytes, we read 0x01234567 (nibble-order) from file (least to most significant byte),
+#   but we actually need to write those nibbles as 0x67543201 (most to least significant byte)
+endianess_flip_size=4;
+# Number of flips per transaction
+num_flips_per_trans=$(($trans_size/$endianess_flip_size))
 
 # Compute number of transactions
 num_trans=$(($FILE_SIZE/$trans_size));
@@ -52,13 +58,28 @@ golden_hex=""
 # Write the binary
 addr=$BASE_ADDRESS;
 echo "Start writing...";
-for i in $(seq 1 $(($num_trans)));
+# For each transaction
+for i in $(seq 0 $(($num_trans -1)));
 do
-    # Invert endiannes from string (0x01234567 -> 0x67543201)
+    # Clear accumulator
     hex_data="";
-    for((j=$i*2*$trans_size-2; j>$(($i-1))*2*$trans_size-2; j=j-2));
+
+    # For flips in a single transaction
+    for k in $(seq 1 $(($num_flips_per_trans)));
     do
-        hex_data=${hex_data}${hex_file:$((j)):$((2))}
+        # Clear accumulator
+        flipped_hex_data="";
+
+        # Flip endiannes from string (0x01234567 -> 0x67543201)
+        # For each byte in $endianess_flip_size
+        for((j=$k*2*$endianess_flip_size-2; j>$(($k-1))*2*$endianess_flip_size-2; j=j-2));
+        do
+            # Append a single byte (2 nibbles slice)
+            flipped_hex_data=${flipped_hex_data}${hex_file:$((j + i*$trans_size*2)):$((2))}
+        done
+
+        # Append
+        hex_data=${hex_data}${flipped_hex_data}
     done
 
     # Write to BAR-mapped physical address
