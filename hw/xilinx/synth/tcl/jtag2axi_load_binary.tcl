@@ -31,21 +31,17 @@ proc read_file_to_words {filename fsize} {
 ##############
 # Parse args #
 ##############
-# if { $argc != 3 } {
-#     puts "Usage <filename> <base_address> <read_back>"
-#     puts "filename      : path to bin file to transfer"
-#     puts "base_address  : base address of BRAM"
-#     puts "read_back     : whether to read-back data after writing"
-#     return
-# } else {
-#     set filename        [lindex $argv 0]
-# 	set base_address    [lindex $argv 1]
-# 	set read_back       [lindex $argv 2]
-# }
-# Debug
-set filename        /home/vincenzo/RISC-V/prjs/UninaSoC/feature/c_extension/sw/SoC/examples/blinky/bin/filename.bin
-set base_address    0x0
-set read_back       false
+if { $argc != 3 } {
+    puts "Usage <filename> <base_address> <read_back>"
+    puts "filename      : path to bin file to transfer"
+    puts "base_address  : base address of BRAM"
+    puts "read_back     : whether to read-back data after writing"
+    return
+} else {
+    set filename        [lindex $argv 0]
+	set base_address    [lindex $argv 1]
+	set read_back       [lindex $argv 2]
+}
 
 ########
 # Init #
@@ -81,7 +77,16 @@ set remaining_bytes [expr {$fsize % $burst_size}]
 
 # Print warning
 if { $remaining_bytes != 0 } {
-    puts stderr "[WARINING] Binary is has pending $remaining_bytes bytes the past $trans_size-byte aligned size, ignoring last bytes.."
+    # Padding size
+    set pad_size [expr $burst_size - $remaining_bytes ]
+    # Warning message
+    puts stderr "\[WARINING\] Binary has non $burst_size-aligned size ($fsize), padding with $pad_size zero-bytes"
+    # Pad with zeros
+    for {set i 0} {$i < $pad_size} {incr i} {
+        set data_list "$data_list\0"
+    }
+    # Add one burst
+    incr num_bursts
 }
 
 ###################

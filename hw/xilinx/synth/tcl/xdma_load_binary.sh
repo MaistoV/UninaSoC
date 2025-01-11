@@ -43,7 +43,17 @@ remaining_bytes=$(($FILE_SIZE%$trans_size));
 
 # Print warning
 if [ $remaining_bytes -ne 0 ]; then
-    echo "[WARINING] Binary is has pending $remaining_bytes bytes past the $trans_size-byte aligned size, ignoring last bytes..." >&2
+    # Padding size
+    pad_size=$(( $trans_size - $remaining_bytes ))
+    # Warning message
+    echo "[WARINING] Binary has non $trans_size-aligned size ($FILE_SIZE), padding with $pad_size zero-bytes" >&2
+    # Pad with zeros
+    for((i=0; i<$pad_size; i=i+1));
+    do
+        hex_file="$hex_file""00"
+    done
+    # Add one burst
+    num_trans=$(($num_trans +1))
 fi
 
 # Golden result for later readback check
