@@ -206,14 +206,22 @@ module rvm_socket # (
 			////////////////////////////
 			
 			// ID's are set to zero since they are not present in microblaze, while the crossbar have ID's of size 2.
-			assign microblaze_instr_axi_awid='0;
-			assign microblaze_instr_axi_bid='0;
-			assign microblaze_instr_axi_arid='0;
-			assign microblaze_instr_axi_rid='0;
-			assign microblaze_data_axi_awid='0;
-			assign microblaze_data_axi_bid='0;
-			assign microblaze_data_axi_arid='0;
-			assign microblaze_data_axi_rid='0;
+			assign microblaze_instr_axi_awid[0]='0;
+			assign microblaze_instr_axi_awid[1]='0;
+			assign microblaze_instr_axi_bid[0]='0;
+			assign microblaze_instr_axi_bid[1]='0;
+			assign microblaze_instr_axi_arid[0]='0;
+			assign microblaze_instr_axi_arid[1]='0;
+			assign microblaze_instr_axi_rid[0]='0;
+			assign microblaze_instr_axi_rid[1]='0;
+			assign microblaze_data_axi_awid[0]='0;
+			assign microblaze_data_axi_awid[1]='0;
+			assign microblaze_data_axi_bid[0]='0;
+			assign microblaze_data_axi_bid[1]='0;
+			assign microblaze_data_axi_arid[0]='0;
+			assign microblaze_data_axi_arid[1]='0;
+			assign microblaze_data_axi_rid[0]='0;
+			assign microblaze_data_axi_rid[1]='0;
 			
 			// Regions are not present in microblaze data implementation so they are set to 0.
 			assign microblaze_data_axi_awregion='0;
@@ -221,12 +229,15 @@ module rvm_socket # (
 			
 			// Users are not implemented in bus but are present in microblaze, so they are not set.
 			// Microblaze takes Reset as 1 so rst_ni has to be negated.
-			
+			assign irq_i[1]='0;
+			assign irq_i[2]='0;
+			assign bootaddr_i[31:0]=0;
+
 			xlnx_microblaze_riscv microblaze_riscv (
   				.Clk					( clk_i),                   // input wire Clk                        				  
   				.Reset 					(dbg_sys_rst),				// input wire Reset
   				.Interrupt				( irq_i[0]),                // input wire Interrupt
- 				.Interrupt_Address		('0),  			// input wire [0 : 31] Interrupt_Address
+ 				.Interrupt_Address		('0),  						// input wire [0 : 31] Interrupt_Address
   				.Interrupt_Ack			( ),          				// output wire [0 : 1] Interrupt_Ack
 
 				.Dbg_Clk(Dbg_Clk),									// input wire Dbg_Clk
