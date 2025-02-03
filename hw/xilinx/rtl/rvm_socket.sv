@@ -226,7 +226,7 @@ module rvm_socket # (
   				.Clk					( clk_i),                   // input wire Clk                        				  
   				.Reset 					(dbg_sys_rst),				// input wire Reset
   				.Interrupt				( irq_i[0]),                // input wire Interrupt
- 				.Interrupt_Address		( bootaddr_i),  			// input wire [0 : 31] Interrupt_Address
+ 				.Interrupt_Address		('0),  			// input wire [0 : 31] Interrupt_Address
   				.Interrupt_Ack			( ),          				// output wire [0 : 1] Interrupt_Ack
 
 				.Dbg_Clk(Dbg_Clk),									// input wire Dbg_Clk
