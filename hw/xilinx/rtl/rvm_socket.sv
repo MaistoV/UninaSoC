@@ -194,11 +194,11 @@ module rvm_socket # (
 
 
 		end
-        else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin: xlnx_microblaze_riscv
+		else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin: xlnx_microblaze_riscv
 
-            //////////////////////////
-            //      MICROBLAZE      //
-            //////////////////////////
+			//////////////////////////
+			//      MICROBLAZE      //
+			//////////////////////////
 
 			
 			////////////////////////////
@@ -206,14 +206,7 @@ module rvm_socket # (
 			////////////////////////////
 			
 			// ID's are set to zero since they are not present in microblaze, while the crossbar have ID's of size 2.
-			assign converter_instr_axi_awid[0]='0;
-			assign converter_instr_axi_awid[1]='0;
-			assign converter_instr_axi_bid[0]='0;
-			assign converter_instr_axi_bid[1]='0;
-			assign converter_instr_axi_arid[0]='0;
-			assign converter_instr_axi_arid[1]='0;
-			assign converter_instr_axi_rid[0]='0;
-			assign converter_instr_axi_rid[1]='0;
+
 			assign microblaze_data_axi_awid[0]='0;
 			assign microblaze_data_axi_awid[1]='0;
 			assign microblaze_data_axi_bid[0]='0;
@@ -335,6 +328,15 @@ module rvm_socket # (
 
     	`ASSIGN_AXI_BUS( rvm_socket_data , microblaze_data );
 		`ASSIGN_AXI_BUS( rvm_socket_instr , converter_instr);
+
+		assign converter_instr_axi_awid[0]='0;
+		assign converter_instr_axi_awid[1]='0;
+		assign converter_instr_axi_bid[0]='0;
+		assign converter_instr_axi_bid[1]='0;
+		assign converter_instr_axi_arid[0]='0;
+		assign converter_instr_axi_arid[1]='0;
+		assign converter_instr_axi_rid[0]='0;
+		assign converter_instr_axi_rid[1]='0;
 
 		xlnx_microblaze_debug_module_v mdm (
 
