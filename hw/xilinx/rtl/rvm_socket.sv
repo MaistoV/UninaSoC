@@ -227,11 +227,12 @@ module rvm_socket # (
 			assign microblaze_data_axi_awregion='0;
 			assign microblaze_data_axi_arregion='0;
 			
-			// Users are not implemented in bus but are present in microblaze, so they are not set.
-			// Microblaze takes Reset as 1 so rst_ni has to be negated.
+			
 			assign irq_i[1]='0;
 			assign irq_i[2]='0;
 			assign bootaddr_i[31:0]=0;
+
+			// Microblaze takes Reset as 1 so rst_ni has to be negated.
 
 			xlnx_microblaze_riscv microblaze_riscv (
   				.Clk					( clk_i),                   // input wire Clk                        				  
