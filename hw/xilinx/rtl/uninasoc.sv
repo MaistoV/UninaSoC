@@ -28,6 +28,7 @@
 //                                                    |__________|
 //
 
+
 // Import packages
 import uninasoc_pkg::*;
 
@@ -37,6 +38,7 @@ import uninasoc_pkg::*;
 
 `ifdef HPC
     `include "uninasoc_pcie.svh"
+    `include "uninasoc_ddr4.svh"
 `endif
 
 // Module definition
@@ -48,13 +50,22 @@ module uninasoc (
         input logic sys_reset_i,
 
         // // UART interface
-        // input  logic                        uart_rx_i,
-        // output logic                        uart_tx_o
+        input  logic                        uart_rx_i,
+        output logic                        uart_tx_o,
 
         // GPIOs
         // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `elsif HPC
+        // DDR4 CH0 clock and reset
+        input logic clk_300mhz_0_p_i,
+        input logic clk_300mhz_0_n_i,
+
+        // DDR4 CH0 interface 
+        `DEFINE_DDR4_PORTS(0), 
+        
+        
+        // PCIe clock and reset
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
         input logic pcie_resetn_i,
@@ -103,20 +114,27 @@ module uninasoc (
     // xbar -> UART
     `DECLARE_AXI_BUS(xbar_to_uart, AXI_DATA_WIDTH);
 
+    `ifdef HPC
+        // xbar -> DDR4
+        `DECLARE_AXI_BUS(xbar_to_ddr4, AXI_DATA_WIDTH);
+    `endif
+
     // Concatenate AXI master buses
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
-    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar)
+    //                      array_name,            bus N,           bus N-1,    ...     bus 0
+    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
 
     // Concatenate AXI slave buses
     `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
-    // NOTE: The order in this macro expansion is must match with xbar master ports!
-    `ifdef EMBEDDED
-        `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio_out, xbar_to_main_mem);
-    `elsif HPC
-         `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_uart, xbar_to_main_mem);
-    `endif
 
+    // NOTE: The order in this macro expansion must match with xbar master ports!
+    //                      array_name,            bus N,           bus N-1,    ...     bus 0
+    `ifdef EMBEDDED
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_gpio_out, xbar_to_uart, xbar_to_main_mem);
+    `elsif HPC
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_ddr4, xbar_to_uart, xbar_to_main_mem);
+    `endif
 
     ///////////////////////
     // Local assignments //
@@ -426,8 +444,16 @@ module uninasoc (
 
     // AXI4 FULL UART
     axi4_full_uart axi4_full_uart_u (
-        .clock_i         ( soc_clk                   ), // input wire s_axi_aclk
-        .reset_ni        ( sys_resetn                ), // input wire s_axi_aresetn
+        .clock_i        ( soc_clk                   ), // input wire s_axi_aclk
+        .reset_ni       ( sys_resetn                ), // input wire s_axi_aresetn
+        .int_core_o     (                           ), // TBD
+        .int_xdma_o     (                           ), // TBD
+        .int_ack_i      ( '0                        ), // TBD
+        `ifdef EMBEDDED
+        .tx_o           ( uart_tx_o                 ), // Transmission signal (SoC output signal)
+        .rx_i           ( uart_rx_i                 ), // Receive signal (SoC input signal)
+        `endif
+
         // AXI4 slave port (from xbar)
         .s_axi_awid     ( xbar_to_uart_axi_awid     ), // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr   ( xbar_to_uart_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
@@ -664,6 +690,96 @@ module uninasoc (
             );
         end
     endgenerate
+
+`elsif HPC
+
+    // DDR4 Channel 0
+    ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
+        .clock_i              ( soc_clk           ),
+        .reset_ni             ( sys_resetn        ),
+
+        // DDR4 differential clock
+        .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
+        .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
+
+        // Connect DDR4 channel 0
+        .cx_ddr4_adr          ( c0_ddr4_adr       ),
+        .cx_ddr4_ba           ( c0_ddr4_ba        ),
+        .cx_ddr4_cke          ( c0_ddr4_cke       ),
+        .cx_ddr4_cs_n         ( c0_ddr4_cs_n      ),
+        .cx_ddr4_dq           ( c0_ddr4_dq        ),
+        .cx_ddr4_dqs_t        ( c0_ddr4_dqs_t     ),
+        .cx_ddr4_dqs_c        ( c0_ddr4_dqs_c     ),
+        .cx_ddr4_odt          ( c0_ddr4_odt       ),
+        .cx_ddr4_par          ( c0_ddr4_par       ),
+        .cx_ddr4_bg           ( c0_ddr4_bg        ),
+        .cx_ddr4_act_n        ( c0_ddr4_act_n     ),
+        .cx_ddr4_reset_n      ( c0_ddr4_reset_n   ),
+        .cx_ddr4_ck_t         ( c0_ddr4_ck_t      ),
+        .cx_ddr4_ck_c         ( c0_ddr4_ck_c      ),
+
+        // AXILITE interface - for ECC status and control - not connected
+        .s_ctrl_axilite_awvalid  ( 1'b0  ),
+        .s_ctrl_axilite_awready  (       ),
+        .s_ctrl_axilite_awaddr   ( 32'd0 ),
+        .s_ctrl_axilite_wvalid   ( 1'b0  ),
+        .s_ctrl_axilite_wready   (       ),
+        .s_ctrl_axilite_wdata    ( 32'd0 ),
+        .s_ctrl_axilite_bvalid   (       ),
+        .s_ctrl_axilite_bready   ( 1'b1  ),
+        .s_ctrl_axilite_bresp    (       ),
+        .s_ctrl_axilite_arvalid  ( 1'b0  ),
+        .s_ctrl_axilite_arready  (       ),
+        .s_ctrl_axilite_araddr   ( 31'd0 ),
+        .s_ctrl_axilite_rvalid   (       ),
+        .s_ctrl_axilite_rready   ( 1'b1  ),
+        .s_ctrl_axilite_rdata    (       ),
+        .s_ctrl_axilite_rresp    (       ),
+
+        // Slave interface
+        .s_axi_awid           ( xbar_to_ddr4_axi_awid     ), 
+        .s_axi_awaddr         ( xbar_to_ddr4_axi_awaddr   ), 
+        .s_axi_awlen          ( xbar_to_ddr4_axi_awlen    ), 
+        .s_axi_awsize         ( xbar_to_ddr4_axi_awsize   ), 
+        .s_axi_awburst        ( xbar_to_ddr4_axi_awburst  ), 
+        .s_axi_awlock         ( xbar_to_ddr4_axi_awlock   ), 
+        .s_axi_awcache        ( xbar_to_ddr4_axi_awcache  ), 
+        .s_axi_awprot         ( xbar_to_ddr4_axi_awprot   ), 
+        .s_axi_awregion       ( xbar_to_ddr4_axi_awregion ), 
+        .s_axi_awqos          ( xbar_to_ddr4_axi_awqos    ), 
+        .s_axi_awvalid        ( xbar_to_ddr4_axi_awvalid  ), 
+        .s_axi_awready        ( xbar_to_ddr4_axi_awready  ), 
+        .s_axi_wdata          ( xbar_to_ddr4_axi_wdata    ), 
+        .s_axi_wstrb          ( xbar_to_ddr4_axi_wstrb    ), 
+        .s_axi_wlast          ( xbar_to_ddr4_axi_wlast    ), 
+        .s_axi_wvalid         ( xbar_to_ddr4_axi_wvalid   ), 
+        .s_axi_wready         ( xbar_to_ddr4_axi_wready   ), 
+        .s_axi_bid            ( xbar_to_ddr4_axi_bid      ), 
+        .s_axi_bresp          ( xbar_to_ddr4_axi_bresp    ), 
+        .s_axi_bvalid         ( xbar_to_ddr4_axi_bvalid   ),
+        .s_axi_bready         ( xbar_to_ddr4_axi_bready   ), 
+        .s_axi_arid           ( xbar_to_ddr4_axi_arid     ), 
+        .s_axi_araddr         ( xbar_to_ddr4_axi_araddr   ), 
+        .s_axi_arlen          ( xbar_to_ddr4_axi_arlen    ), 
+        .s_axi_arsize         ( xbar_to_ddr4_axi_arsize   ), 
+        .s_axi_arburst        ( xbar_to_ddr4_axi_arburst  ), 
+        .s_axi_arlock         ( xbar_to_ddr4_axi_arlock   ), 
+        .s_axi_arcache        ( xbar_to_ddr4_axi_arcache  ), 
+        .s_axi_arprot         ( xbar_to_ddr4_axi_arprot   ), 
+        .s_axi_arregion       ( xbar_to_ddr4_axi_arregion ), 
+        .s_axi_arqos          ( xbar_to_ddr4_axi_arqos    ), 
+        .s_axi_arvalid        ( xbar_to_ddr4_axi_arvalid  ), 
+        .s_axi_arready        ( xbar_to_ddr4_axi_arready  ), 
+        .s_axi_rid            ( xbar_to_ddr4_axi_rid      ), 
+        .s_axi_rdata          ( xbar_to_ddr4_axi_rdata    ), 
+        .s_axi_rresp          ( xbar_to_ddr4_axi_rresp    ), 
+        .s_axi_rlast          ( xbar_to_ddr4_axi_rlast    ), 
+        .s_axi_rvalid         ( xbar_to_ddr4_axi_rvalid   ), 
+        .s_axi_rready         ( xbar_to_ddr4_axi_rready   ) 
+
+    );
+
+
 `endif
 
 

@@ -16,7 +16,8 @@ module virtual_uart (
     // Interrupts 
     // 0 - to the Core 
     // 1 - to the XDMA
-    output logic [1:0] int_o,
+    output logic int_core_o,
+    output logic int_xdma_o,
     input  logic [1:0] int_ack_i,
 
     // AXILITE Slave interface
@@ -46,10 +47,6 @@ module virtual_uart (
     localparam STS_TX_FULL_BIT  = 3;     // Status  - TX register full 
 
     logic [AXI_DATA_WIDTH-1:0] uart_csr [0:4]; 
-
-    // Interrupts parameter
-    localparam CORE_INT = 0;
-    localparam XDMA_INT = 1;
 
 
     /* AXILITE Write logic */
@@ -190,19 +187,20 @@ module virtual_uart (
     // THIS IS A STUB - TO DO
     always_ff @( posedge clock_i or negedge reset_ni ) begin
         if ( !reset_ni ) begin
-            int_o <= 2'b00;
+            int_core_o <= '0;
+            int_xdma_o <= '0;
         end 
         else begin
             if ( s_axilite_wvalid && s_axilite_wready && s_axilite_awvalid && s_axilite_awready ) begin
 
                 // There is a write on TX reg, need to interrupt the XDMA
                 if ( s_axilite_awaddr[4:2] == TX_REG /*&& s_axilite_wstrb[0]*/ ) begin
-                    int_o [XDMA_INT] <= 1'b1;
+                    int_xdma_o <= 1'b1;
                 end
 
                 // There is a write on HOST ACK register reset the interrupt to the XDMA
                 else if ( s_axilite_awaddr[4:2] == HOST_INT_ACK_REG /*&& s_axilite_wstrb[0]*/ ) begin
-                    int_o [XDMA_INT] <= 1'b0;
+                    int_xdma_o <= 1'b0;
                 end
 
                 

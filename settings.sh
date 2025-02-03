@@ -65,6 +65,9 @@ if [[ ${SOC_CONFIG} == "hpc" ]]; then
     
     export SOC_CONFIG=hpc
 
+    # Use wildcard instead device specific part number
+    export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Xilinx/*
+
     if [[ ${BOARD_CONFIG} == "au280" ]]; then
         # TBD
         echo "[Error] Board Configuration ${BOARD_CONFIG} unsupported!" >&2 ; 
@@ -75,13 +78,16 @@ if [[ ${SOC_CONFIG} == "hpc" ]]; then
         # Alveo  250
         export XILINX_PART_NUMBER=xcu250-figd2104-2L-e
         export XILINX_BOARD_PART=xilinx.com:au250:part0:1.3
-        export XILINX_HW_DEVICE=xcu250
+        export XILINX_HW_DEVICE=xcu250_0
         export BOARD=au250
     fi
 
 else
 
     export SOC_CONFIG=embedded
+
+    # Use wildcard instead device specific part number
+    export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Digilent/*
 
     if [[ ${BOARD_CONFIG} == "nexys_a7_50t" ]]; then
         # Nexys A7-50t
@@ -112,10 +118,6 @@ export XILINX_SYNTH_XDC_ROOT=${XILINX_SYNTH_ROOT}/constraints
 # Hardware Server Host
 export XILINX_HW_SERVER_HOST=127.0.0.1
 export XILINX_HW_SERVER_PORT=3121
-# NOTE: this is device-specific
-# export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Digilent/210292B17F3DA
-# Use wildcard instead
-export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Digilent/*
 
 # Simulation
 export XILINX_SIM_ROOT=${XILINX_ROOT}/sim
