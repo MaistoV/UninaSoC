@@ -179,8 +179,11 @@ ${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
 ${XILINX_SIM_IP_ROOT}/ips:
 	mkdir -p $@
 
-bin_path ?= ${SW_ROOT}/SoC/examples/blinky/bin/filename.bin
-base_address ?= 0x00000000                        # BRAM base address
+###############
+# Load binary #
+###############
+BIN_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.bin
+BASE_ADDRESS ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
 
 # Load the binary into SoC memory (BRAM for now)
@@ -188,15 +191,19 @@ LOAD_BINARY_READBACK ?= false                     # Whether to readback and chec
 load_binary: load_binary_${SOC_CONFIG}
 
 # Write the binary to BRAM through jtag2axi
-load_binary_embedded: ${bin_path}
+load_binary_embedded: ${BIN_PATH}
 	${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_load_binary.tcl \
-		-tclargs ${bin_path} ${base_address} ${LOAD_BINARY_READBACK}
+		-tclargs ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}
 
 # Write the binary to BRAM/DDR through XDMA
-load_binary_hpc: ${bin_path}
-	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${bin_path} ${base_address} ${LOAD_BINARY_READBACK}"
+load_binary_hpc: ${BIN_PATH}
+	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}"
 
+# Load and run elf from XSBD
+ELF_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.elf
+xsdb_run_elf:
+	xsdb ${XILINX_SYNTH_TCL_ROOT}/xsdb_run_elf.tcl ${ELF_PATH} ${XILINX_BITSTREAM}
 
 # Clean up project
 clean:
