@@ -18,7 +18,7 @@ package uninasoc_pkg;
     // - JTAG2AXI
     localparam int unsigned NUM_AXI_MASTERS = 3; // {socket_instr, socket_data, jtag2axi}
 
-    // Crosbar slaves if EMBEDDED 
+    // Crosbar slaves if EMBEDDED
     // - GPIOs in input
     // - GPIOs in outputs
     // - UART (physical)
@@ -26,7 +26,7 @@ package uninasoc_pkg;
     `ifdef EMBEDDED
         // NB: we should find a better and automatic way of count AXI and MASTERs
         localparam int unsigned NUM_AXI_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 2;
-    
+
     // Crosbar slaves if HPC
     // - Main memory (BRAM)
     // - UART (virtual)
@@ -39,7 +39,11 @@ package uninasoc_pkg;
     // Supported Processors //
     //////////////////////////
 
-    localparam int unsigned CORE_PICORV32 = 0;
-    localparam int unsigned CORE_CV32E40P = 1;
+    typedef enum int unsigned {
+        CORE_PICORV32,
+        CORE_CV32E40P,
+        CORE_MICROBLAZEV
+    } core_selector_t;
+
 
 endpackage : uninasoc_pkg
