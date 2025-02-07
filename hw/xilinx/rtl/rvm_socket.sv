@@ -12,9 +12,10 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rvm_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_MICROBLAZEV,
+    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, // Change default only for development, while waiting for the core selection flow
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
+    parameter int unsigned    DEBUG_MODULE  = 1,
     parameter int unsigned    NUM_IRQ       = 3
 ) (
     input  logic                            clk_i,
@@ -22,8 +23,8 @@ module rvm_socket # (
     input  logic [AXI_ADDR_WIDTH -1 : 0 ]   bootaddr_i,
     input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
 
-    // DEBUG
-    input  logic                            jtag_trst_ni,
+    // // DEBUG
+    // input  logic                            jtag_trst_ni,
 
     // Core
     `DEFINE_AXI_MASTER_PORTS(rvm_socket_instr),
@@ -86,7 +87,8 @@ module rvm_socket # (
                 .instr_mem_gnt      ( core_instr_mem_gnt        ),
                 .instr_mem_valid    ( core_instr_mem_valid      ),
                 .instr_mem_addr     ( core_instr_mem_addr       ),
-                .instr_mem_rdata    ( core_instr_mem_rdata  ),
+                .instr_mem_rdata    ( core_instr_mem_rdata      ),
+                .instr_mem_error    ( core_instr_mem_error      ), // Although unused
 
                 .data_mem_req       ( core_data_mem_req         ),
                 .data_mem_valid     ( core_data_mem_valid       ),
@@ -95,7 +97,8 @@ module rvm_socket # (
                 .data_mem_be        ( core_data_mem_be          ),
                 .data_mem_addr      ( core_data_mem_addr        ),
                 .data_mem_wdata     ( core_data_mem_wdata       ),
-                .data_mem_rdata     ( core_data_mem_rdata   ),
+                .data_mem_rdata     ( core_data_mem_rdata       ),
+                .data_mem_error     ( core_data_mem_error       ), // Although unused
 
                 .irq_i              ( irq_i                     ),
 
@@ -153,6 +156,7 @@ module rvm_socket # (
                 .instr_mem_valid        ( core_instr_mem_valid      ),
                 .instr_mem_addr         ( core_instr_mem_addr       ),
                 .instr_mem_rdata        ( core_instr_mem_rdata      ),
+                .instr_mem_error        ( core_instr_mem_error      ), // Although unused
 
                 // Data memory interface
                 .data_mem_req           ( core_data_mem_req         ),
@@ -163,6 +167,7 @@ module rvm_socket # (
                 .data_mem_addr          ( core_data_mem_addr        ),
                 .data_mem_wdata         ( core_data_mem_wdata       ),
                 .data_mem_rdata         ( core_data_mem_rdata       ),
+                .data_mem_error         ( core_data_mem_error       ), // Although unused
 
                 // Interrupt inputs
                 .irq_i                  ( irq_i                     ),  // CLINT interrupts + CLINT extension interrupts
@@ -170,7 +175,7 @@ module rvm_socket # (
                 .irq_id_o               (                           ),  // TBD
 
                 // Debug Interface
-                .debug_req_i            (     '0                    ),
+                .debug_req_i            ( debug_req_core            ),  // From Debug Module
                 .debug_havereset_o      (                           ),  // TBD
                 .debug_running_o        (                           ),  // TBD
                 .debug_halted_o         (                           ),  // TBD
@@ -403,13 +408,13 @@ module rvm_socket # (
     // Here we are allocating commong module and signals.                   //
     //////////////////////////////////////////////////////////////////////////
 
-    /////////////////////////////////////////////////////////////////////
-    //  Cores to socket (AXI-Full) converters (Instruction and Data)   //
-    /////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //  Cores (mem) to socket (AXI-Full) converters (Instruction and Data)   //
+    ///////////////////////////////////////////////////////////////////////////
 
     // Few exceptions:
     // - Microblaze V has its own interfaces and debug module
-    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : not_microblaze
+    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : mem_convert
 
         // Connect memory interfaces to socket output memory ports
         `ASSIGN_AXI_BUS( rvm_socket_instr, core_instr_to_socket_instr );
@@ -538,8 +543,10 @@ module rvm_socket # (
     //                               //
     ///////////////////////////////////
     // Debug sub-modules
+    //
+    //  This would be the most basic RISC-V DMI-compliant design. Unfortunately, the interfaces of PULP DM are not precisely DMI-compliant
     //  ______________                 ________________               ______________
-    // |              |               | (JtagExtBscan) |             |              |
+    // |              |               | (JtagExtBscan) |             |    (PULP)    |
     // | Debug bridge | --- BSCAN --> |    bscan2dmi   | --- DMI --> |    dm_top    | -- debug_req_core -->
     // |______________|               |________________|             |______________|
     //                                                                 |           ^
@@ -562,7 +569,7 @@ module rvm_socket # (
     //                                                                                                                  \--------------------->| MEM2AXI | --- AXI master -->
     //                                                                                                                                         |_________|
     generate
-    if ( DEBUG_MODULE == 1) begin : dm_gen
+    if ( DEBUG_MODULE == 1 ) begin : dm_gen
         // BSCAN interface
         logic S_BSCAN_bscanid_en , m0_bscan_bscanid_en;
         logic S_BSCAN_capture    , m0_bscan_capture;
@@ -581,11 +588,10 @@ module rvm_socket # (
         logic jtag_tdi;
         logic jtag_tms;
         logic jtag_tck;
-        logic jtag_trst_n; // TODO: drive me!
+        logic jtag_trst_n;
         // Tie-off unused signals
         assign dbg_master_mem_end_wdata = '0;
         assign dbg_master_mem_end_be    = '0;
-        assign jtag_trst_n              = jtag_trst_ni;
         //////////////////
         // Debug bridge //
         //////////////////
@@ -648,9 +654,11 @@ module rvm_socket # (
             .m0_bscan_tms        ( m0_bscan_tms        ), // output wire m0_bscan_tms
             .m0_bscan_update     ( m0_bscan_update     )  // output wire m0_bscan_update
         );
+
         ///////////////////
         // BSCAN to JTAG //
         ///////////////////
+
         xlnx_bscan_to_jtag bscan_to_jtag_u (
             .S_BSCAN_bscanid_en ( m0_bscan_bscanid_en ), // input wire S_BSCAN_bscanid_en
             .S_BSCAN_capture    ( m0_bscan_capture    ), // input wire S_BSCAN_capture
@@ -664,14 +672,16 @@ module rvm_socket # (
             .S_BSCAN_tms        ( m0_bscan_tms        ), // input wire S_BSCAN_tms
             .S_BSCAN_update     ( m0_bscan_update     ), // input wire S_BSCAN_update
             .S_BSCAN_tdo        ( m0_bscan_tdo        ), // output wire S_BSCAN_tdo
-            .JTAG_TDO           ( jtag_tdo         ), // input wire JTAG_TDO
-            .JTAG_TDI           ( jtag_tdi         ), // output wire JTAG_TDI
-            .JTAG_TMS           ( jtag_tms         ), // output wire JTAG_TMS
-            .JTAG_TCK           ( jtag_tck         )  // output wire JTAG_TCK
+            .JTAG_TDO           ( jtag_tdo            ), // input wire JTAG_TDO
+            .JTAG_TDI           ( jtag_tdi            ), // output wire JTAG_TDI
+            .JTAG_TMS           ( jtag_tms            ), // output wire JTAG_TMS
+            .JTAG_TCK           ( jtag_tck            )  // output wire JTAG_TCK
         );
+
         ///////////////
         // Hart Info //
         ///////////////
+
         // From ariane_pkg::DebugHartInfo
         // TODO: compare with riscy in demo system
         // TODO: export in uninasoc_pkg
@@ -689,8 +699,14 @@ module rvm_socket # (
         assign hartinfo_dataaccess  = 1'b1;  // data registers are memory mapped in the debugger
         assign hartinfo_datasize    = DataCount;
         assign hartinfo_dataaddr    = DataAddr;
-        // DMI top module
+
+        ////////////////////
+        // DMI top module //
+        ////////////////////
+
         // (* keep = 1 *) logic jtag_tdo_oe; // Unconnected
+        // Drive floating JTAG signals
+        assign jtag_trst_n = rst_ni;
         // custom_riscv_dbg_bscane riscv_dgb_u (   // BSCANE2 tap
         custom_riscv_dbg riscv_dgb_u (       // JTAG tap
             .clk_i                  ( clk_i                  ),
@@ -736,6 +752,7 @@ module rvm_socket # (
             // To core
             .debug_req_o            ( debug_req_core        )
         );
+
         // MEM to AXI converter
         // dbg_master_mem -> axi_from_mem ->dbg_master_axi
         custom_axi_from_mem axi_from_mem_dbg_master_u (
@@ -792,6 +809,7 @@ module rvm_socket # (
             .s_mem_rdata        ( dbg_master_mem_rdata       ),
             .s_mem_error        ( dbg_master_mem_error       )
         );
+
         // AXI to MEM converter
         // dbg_slave_mem -> axi_to_mem -> dbg_slave_axi
         // (* keep = 1 *) logic busy_axi_from_mem;
@@ -850,14 +868,10 @@ module rvm_socket # (
             .m_mem_rdata        ( dbg_slave_mem_rdata       ),
             .m_mem_error        ( dbg_slave_mem_error       )
         );
-        // Flip endianess
-        // TODO: figure-out if necessary
-        // logic [AXI_DATA_WIDTH-1 : 0] dbg_slave_mem_rdata_endianess;
-        // logic [AXI_DATA_WIDTH-1 : 0] dbg_slave_mem_wdata_endianess;
-        // assign dbg_slave_mem_rdata_endianess = {dbg_slave_mem_rdata[7:0], dbg_slave_mem_rdata[15:8], dbg_slave_mem_rdata[23:16], dbg_slave_mem_rdata[31:24]};
-        // assign dbg_slave_mem_wdata_endianess = {dbg_slave_mem_wdata[7:0], dbg_slave_mem_wdata[15:8], dbg_slave_mem_wdata[23:16], dbg_slave_mem_wdata[31:24]};
+
     end : dm_gen
     else begin : dm_not_gen
+
         // Tie-off debug request signal to cores
         assign debug_req_core = '0;
         // Tie-off debug mem master outputs
@@ -871,6 +885,7 @@ module rvm_socket # (
         assign dbg_slave_mem_valid = '0;
         assign dbg_slave_mem_rdata = '0;
         assign dbg_slave_mem_error = '0;
+
     end : dm_not_gen
     endgenerate
 

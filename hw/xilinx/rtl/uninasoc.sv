@@ -92,7 +92,7 @@ module uninasoc (
 
     // VIO Signals
     logic vio_resetn;
-    logic vio_jtag_trst_n;
+    // logic vio_jtag_trst_n;
 
     //////////////////////////
     // AXI interconnections //
@@ -309,14 +309,14 @@ module uninasoc (
     // RVM Socket
     rvm_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH )
-        //.DEBUG_MODULE  ( DEBUG_MODULE   )
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
+        .DEBUG_MODULE  ( `DEBUG_MODULE  )
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( sys_resetn & vio_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( '0         ),
-        .jtag_trst_ni   ( sys_resetn ),
+        // .jtag_trst_ni   ( sys_resetn ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,
