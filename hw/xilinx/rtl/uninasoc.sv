@@ -61,10 +61,10 @@ module uninasoc (
         input logic clk_300mhz_0_p_i,
         input logic clk_300mhz_0_n_i,
 
-        // DDR4 CH0 interface 
-        `DEFINE_DDR4_PORTS(0), 
-        
-        
+        // DDR4 CH0 interface
+        `DEFINE_DDR4_PORTS(0),
+
+
         // PCIe clock and reset
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
@@ -92,6 +92,7 @@ module uninasoc (
 
     // VIO Signals
     logic vio_resetn;
+    logic vio_jtag_trst_n;
 
     //////////////////////////
     // AXI interconnections //
@@ -101,8 +102,11 @@ module uninasoc (
     // sys_master -> crossbar
     `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
-    `DECLARE_AXI_BUS(rvm_socket_instr, AXI_DATA_WIDTH);
-    `DECLARE_AXI_BUS(rvm_socket_data, AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_instr , AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_data  , AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(dbg_master       , AXI_DATA_WIDTH);
+    // crossbar -> rvm_socket
+    `DECLARE_AXI_BUS(dbg_slave        , AXI_DATA_WIDTH);
 
     // AXI slaves
     // xbar -> main memory
@@ -123,17 +127,16 @@ module uninasoc (
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
-    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
+    `CONCAT_AXI_MASTERS_ARRAY4(xbar_masters, dbg_master, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
 
     // Concatenate AXI slave buses
     `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
-
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `ifdef EMBEDDED
-        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_gpio_out, xbar_to_uart, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY4(xbar_slaves, dbg_slave, xbar_to_gpio_out, xbar_to_uart, xbar_to_main_mem);
     `elsif HPC
-        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_ddr4, xbar_to_uart, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY4(xbar_slaves, dbg_slave, xbar_to_ddr4    , xbar_to_uart, xbar_to_main_mem);
     `endif
 
     ///////////////////////
@@ -313,6 +316,7 @@ module uninasoc (
         .rst_ni         ( sys_resetn & vio_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( '0         ),
+        .jtag_trst_ni   ( sys_resetn ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,
@@ -394,7 +398,89 @@ module uninasoc (
         .rvm_socket_data_axi_rresp,
         .rvm_socket_data_axi_rlast,
         .rvm_socket_data_axi_rvalid,
-        .rvm_socket_data_axi_rready
+        .rvm_socket_data_axi_rready,
+
+        // Debug AXI master
+        .dbg_master_axi_awid,
+        .dbg_master_axi_awaddr,
+        .dbg_master_axi_awlen,
+        .dbg_master_axi_awsize,
+        .dbg_master_axi_awburst,
+        .dbg_master_axi_awlock,
+        .dbg_master_axi_awcache,
+        .dbg_master_axi_awprot,
+        .dbg_master_axi_awqos,
+        .dbg_master_axi_awvalid,
+        .dbg_master_axi_awready,
+        .dbg_master_axi_awregion,
+        .dbg_master_axi_wdata,
+        .dbg_master_axi_wstrb,
+        .dbg_master_axi_wlast,
+        .dbg_master_axi_wvalid,
+        .dbg_master_axi_wready,
+        .dbg_master_axi_bid ,
+        .dbg_master_axi_bresp,
+        .dbg_master_axi_bvalid,
+        .dbg_master_axi_bready,
+        .dbg_master_axi_arid,
+        .dbg_master_axi_araddr,
+        .dbg_master_axi_arlen,
+        .dbg_master_axi_arsize,
+        .dbg_master_axi_arburst,
+        .dbg_master_axi_arlock,
+        .dbg_master_axi_arcache,
+        .dbg_master_axi_arprot,
+        .dbg_master_axi_arqos,
+        .dbg_master_axi_arvalid,
+        .dbg_master_axi_arready,
+        .dbg_master_axi_arregion,
+        .dbg_master_axi_rid,
+        .dbg_master_axi_rdata,
+        .dbg_master_axi_rresp,
+        .dbg_master_axi_rlast,
+        .dbg_master_axi_rvalid,
+        .dbg_master_axi_rready,
+
+        // Debug AXI slave
+        .dbg_slave_axi_awid,
+        .dbg_slave_axi_awaddr,
+        .dbg_slave_axi_awlen,
+        .dbg_slave_axi_awsize,
+        .dbg_slave_axi_awburst,
+        .dbg_slave_axi_awlock,
+        .dbg_slave_axi_awcache,
+        .dbg_slave_axi_awprot,
+        .dbg_slave_axi_awqos,
+        .dbg_slave_axi_awvalid,
+        .dbg_slave_axi_awready,
+        .dbg_slave_axi_awregion,
+        .dbg_slave_axi_wdata,
+        .dbg_slave_axi_wstrb,
+        .dbg_slave_axi_wlast,
+        .dbg_slave_axi_wvalid,
+        .dbg_slave_axi_wready,
+        .dbg_slave_axi_bid ,
+        .dbg_slave_axi_bresp,
+        .dbg_slave_axi_bvalid,
+        .dbg_slave_axi_bready,
+        .dbg_slave_axi_arid,
+        .dbg_slave_axi_araddr,
+        .dbg_slave_axi_arlen,
+        .dbg_slave_axi_arsize,
+        .dbg_slave_axi_arburst,
+        .dbg_slave_axi_arlock,
+        .dbg_slave_axi_arcache,
+        .dbg_slave_axi_arprot,
+        .dbg_slave_axi_arqos,
+        .dbg_slave_axi_arvalid,
+        .dbg_slave_axi_arready,
+        .dbg_slave_axi_arregion,
+        .dbg_slave_axi_rid,
+        .dbg_slave_axi_rdata,
+        .dbg_slave_axi_rresp,
+        .dbg_slave_axi_rlast,
+        .dbg_slave_axi_rvalid,
+        .dbg_slave_axi_rready
     );
 
     ////////////////
@@ -737,45 +823,45 @@ module uninasoc (
         .s_ctrl_axilite_rresp    (       ),
 
         // Slave interface
-        .s_axi_awid           ( xbar_to_ddr4_axi_awid     ), 
-        .s_axi_awaddr         ( xbar_to_ddr4_axi_awaddr   ), 
-        .s_axi_awlen          ( xbar_to_ddr4_axi_awlen    ), 
-        .s_axi_awsize         ( xbar_to_ddr4_axi_awsize   ), 
-        .s_axi_awburst        ( xbar_to_ddr4_axi_awburst  ), 
-        .s_axi_awlock         ( xbar_to_ddr4_axi_awlock   ), 
-        .s_axi_awcache        ( xbar_to_ddr4_axi_awcache  ), 
-        .s_axi_awprot         ( xbar_to_ddr4_axi_awprot   ), 
-        .s_axi_awregion       ( xbar_to_ddr4_axi_awregion ), 
-        .s_axi_awqos          ( xbar_to_ddr4_axi_awqos    ), 
-        .s_axi_awvalid        ( xbar_to_ddr4_axi_awvalid  ), 
-        .s_axi_awready        ( xbar_to_ddr4_axi_awready  ), 
-        .s_axi_wdata          ( xbar_to_ddr4_axi_wdata    ), 
-        .s_axi_wstrb          ( xbar_to_ddr4_axi_wstrb    ), 
-        .s_axi_wlast          ( xbar_to_ddr4_axi_wlast    ), 
-        .s_axi_wvalid         ( xbar_to_ddr4_axi_wvalid   ), 
-        .s_axi_wready         ( xbar_to_ddr4_axi_wready   ), 
-        .s_axi_bid            ( xbar_to_ddr4_axi_bid      ), 
-        .s_axi_bresp          ( xbar_to_ddr4_axi_bresp    ), 
+        .s_axi_awid           ( xbar_to_ddr4_axi_awid     ),
+        .s_axi_awaddr         ( xbar_to_ddr4_axi_awaddr   ),
+        .s_axi_awlen          ( xbar_to_ddr4_axi_awlen    ),
+        .s_axi_awsize         ( xbar_to_ddr4_axi_awsize   ),
+        .s_axi_awburst        ( xbar_to_ddr4_axi_awburst  ),
+        .s_axi_awlock         ( xbar_to_ddr4_axi_awlock   ),
+        .s_axi_awcache        ( xbar_to_ddr4_axi_awcache  ),
+        .s_axi_awprot         ( xbar_to_ddr4_axi_awprot   ),
+        .s_axi_awregion       ( xbar_to_ddr4_axi_awregion ),
+        .s_axi_awqos          ( xbar_to_ddr4_axi_awqos    ),
+        .s_axi_awvalid        ( xbar_to_ddr4_axi_awvalid  ),
+        .s_axi_awready        ( xbar_to_ddr4_axi_awready  ),
+        .s_axi_wdata          ( xbar_to_ddr4_axi_wdata    ),
+        .s_axi_wstrb          ( xbar_to_ddr4_axi_wstrb    ),
+        .s_axi_wlast          ( xbar_to_ddr4_axi_wlast    ),
+        .s_axi_wvalid         ( xbar_to_ddr4_axi_wvalid   ),
+        .s_axi_wready         ( xbar_to_ddr4_axi_wready   ),
+        .s_axi_bid            ( xbar_to_ddr4_axi_bid      ),
+        .s_axi_bresp          ( xbar_to_ddr4_axi_bresp    ),
         .s_axi_bvalid         ( xbar_to_ddr4_axi_bvalid   ),
-        .s_axi_bready         ( xbar_to_ddr4_axi_bready   ), 
-        .s_axi_arid           ( xbar_to_ddr4_axi_arid     ), 
-        .s_axi_araddr         ( xbar_to_ddr4_axi_araddr   ), 
-        .s_axi_arlen          ( xbar_to_ddr4_axi_arlen    ), 
-        .s_axi_arsize         ( xbar_to_ddr4_axi_arsize   ), 
-        .s_axi_arburst        ( xbar_to_ddr4_axi_arburst  ), 
-        .s_axi_arlock         ( xbar_to_ddr4_axi_arlock   ), 
-        .s_axi_arcache        ( xbar_to_ddr4_axi_arcache  ), 
-        .s_axi_arprot         ( xbar_to_ddr4_axi_arprot   ), 
-        .s_axi_arregion       ( xbar_to_ddr4_axi_arregion ), 
-        .s_axi_arqos          ( xbar_to_ddr4_axi_arqos    ), 
-        .s_axi_arvalid        ( xbar_to_ddr4_axi_arvalid  ), 
-        .s_axi_arready        ( xbar_to_ddr4_axi_arready  ), 
-        .s_axi_rid            ( xbar_to_ddr4_axi_rid      ), 
-        .s_axi_rdata          ( xbar_to_ddr4_axi_rdata    ), 
-        .s_axi_rresp          ( xbar_to_ddr4_axi_rresp    ), 
-        .s_axi_rlast          ( xbar_to_ddr4_axi_rlast    ), 
-        .s_axi_rvalid         ( xbar_to_ddr4_axi_rvalid   ), 
-        .s_axi_rready         ( xbar_to_ddr4_axi_rready   ) 
+        .s_axi_bready         ( xbar_to_ddr4_axi_bready   ),
+        .s_axi_arid           ( xbar_to_ddr4_axi_arid     ),
+        .s_axi_araddr         ( xbar_to_ddr4_axi_araddr   ),
+        .s_axi_arlen          ( xbar_to_ddr4_axi_arlen    ),
+        .s_axi_arsize         ( xbar_to_ddr4_axi_arsize   ),
+        .s_axi_arburst        ( xbar_to_ddr4_axi_arburst  ),
+        .s_axi_arlock         ( xbar_to_ddr4_axi_arlock   ),
+        .s_axi_arcache        ( xbar_to_ddr4_axi_arcache  ),
+        .s_axi_arprot         ( xbar_to_ddr4_axi_arprot   ),
+        .s_axi_arregion       ( xbar_to_ddr4_axi_arregion ),
+        .s_axi_arqos          ( xbar_to_ddr4_axi_arqos    ),
+        .s_axi_arvalid        ( xbar_to_ddr4_axi_arvalid  ),
+        .s_axi_arready        ( xbar_to_ddr4_axi_arready  ),
+        .s_axi_rid            ( xbar_to_ddr4_axi_rid      ),
+        .s_axi_rdata          ( xbar_to_ddr4_axi_rdata    ),
+        .s_axi_rresp          ( xbar_to_ddr4_axi_rresp    ),
+        .s_axi_rlast          ( xbar_to_ddr4_axi_rlast    ),
+        .s_axi_rvalid         ( xbar_to_ddr4_axi_rvalid   ),
+        .s_axi_rready         ( xbar_to_ddr4_axi_rready   )
 
     );
 
