@@ -8,7 +8,8 @@ set_property -dict [list \
   CONFIG.SYS_RST_N_BOARD_INTERFACE {Custom} \
   CONFIG.functional_mode {AXI_Bridge} \
   CONFIG.en_axi_slave_if {false} \
-  CONFIG.pf0_bar0_size {512} \
+  CONFIG.pf0_bar0_scale {Megabytes} \
+  CONFIG.pf0_bar0_size {32} \
   CONFIG.axisten_freq {250} \
   CONFIG.axi_data_width {64_bit} \
   CONFIG.en_gt_selection {true} \
