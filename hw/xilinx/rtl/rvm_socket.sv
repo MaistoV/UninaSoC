@@ -1,5 +1,6 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+// Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
 // Description: Wrapper module for a RVM core
 
 
