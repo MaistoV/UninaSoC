@@ -28,3 +28,12 @@ config_xilinx:
 	sed -E -i "s/AXI_DATA_WIDTH.?\?=.+/AXI_DATA_WIDTH \?= $${AXI_DATA_WIDTH}/g" ${OUTPUT_MK_FILE}; \
 	sed -E -i "s/AXI_ID_WIDTH.?\?=.+/AXI_ID_WIDTH \?= $${AXI_ID_WIDTH}/g" 		${OUTPUT_MK_FILE}
 	@echo "[CONFIG] Output file is at ${OUTPUT_MK_FILE}"
+
+# Peripheral bus configuration
+OUTPUT_TCL_FILE_PBUS ?= ${XILINX_ROOT}/ips/common/xlnx_axilite_crossbar/config.tcl
+CONFIG_CSV_PBUS ?= ${CONFIG_ROOT}/configs/config_pbus.csv
+config_pbus:
+	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/create_crossbar_config.py \
+		${CONFIG_CSV_PBUS} \
+		${OUTPUT_TCL_FILE_PBUS}
+	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE_PBUS}"
