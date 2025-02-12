@@ -167,7 +167,7 @@ module peripheral_bus (
         .m_axi_rdata    ( xbar_slaves_axilite_rdata              ),
         .m_axi_rresp    ( xbar_slaves_axilite_rresp              ),
         .m_axi_rvalid   ( xbar_slaves_axilite_rvalid             ),
-        .m_axi_rready   ( xbar_slaves_axilite_rready             ), 
+        .m_axi_rready   ( xbar_slaves_axilite_rready             )
 
     ); 
 
@@ -244,6 +244,6 @@ module peripheral_bus (
         end
     endgenerate
 
-
+`endif
 
 endmodule : peripheral_bus

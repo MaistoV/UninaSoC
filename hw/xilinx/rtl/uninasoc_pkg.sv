@@ -35,6 +35,10 @@ package uninasoc_pkg;
         localparam int unsigned NUM_AXI_SLAVES = 3;
     `endif
 
+
+    // AXI Lite peripheral bus
+    localparam int unsigned NUM_AXILITE_SLAVES = 1; 
+
     //////////////////////////
     // Supported Processors //
     //////////////////////////

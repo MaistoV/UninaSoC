@@ -489,12 +489,11 @@ module uninasoc (
         .s_axi_rresp    ( xbar_to_peripheral_bus_axi_rresp    ),
         .s_axi_rlast    ( xbar_to_peripheral_bus_axi_rlast    ),
         .s_axi_rvalid   ( xbar_to_peripheral_bus_axi_rvalid   ),
-        .s_axi_rready   ( xbar_to_peripheral_bus_axi_rready   ),
-
+        .s_axi_rready   ( xbar_to_peripheral_bus_axi_rready   )
     );
 
 
-`elsif HPC
+`ifdef HPC
 
     // DDR4 Channel 0
     ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
