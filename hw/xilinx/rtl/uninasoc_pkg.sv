@@ -18,18 +18,16 @@ package uninasoc_pkg;
     // - JTAG2AXI
     localparam int unsigned NUM_AXI_MASTERS = 3; // {socket_instr, socket_data, jtag2axi}
 
-    // Crosbar slaves if EMBEDDED
-    // - GPIOs in input
-    // - GPIOs in outputs
-    // - UART (physical)
-    // - Main memory
+    // Main Crosbar slaves if EMBEDDED
+    // - Peripheral bus
+    // - Main memory (BRAM)
     `ifdef EMBEDDED
         // NB: we should find a better and automatic way of count AXI and MASTERs
-        localparam int unsigned NUM_AXI_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 2;
+        localparam int unsigned NUM_AXI_SLAVES = 2;
 
     // Crosbar slaves if HPC
     // - Main memory (BRAM)
-    // - UART (virtual)
+    // - Peripheral bus
     // - DDR4
     `elsif HPC
         localparam int unsigned NUM_AXI_SLAVES = 3;
@@ -37,7 +35,19 @@ package uninasoc_pkg;
 
 
     // AXI Lite peripheral bus
-    localparam int unsigned NUM_AXILITE_SLAVES = 1; 
+    // Slaves if EMBEDDED
+    // - GPIOs in input
+    // - GPIOs in outputs
+    // - UART (physical)
+    `ifdef EMBEDDED 
+        localparam int unsigned NUM_AXILITE_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 1;
+    // Slaves if HPC
+    // - SYNC - The xbar must have 2 slaves minimum
+    // - UART (Virtual)
+    `elsif HPC
+        localparam int unsigned NUM_AXILITE_SLAVES = 2;
+    `endif
+
 
     //////////////////////////
     // Supported Processors //

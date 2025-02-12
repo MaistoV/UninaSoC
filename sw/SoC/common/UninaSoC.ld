@@ -4,6 +4,7 @@
 MEMORY
 {
 	BRAM (xrw) : ORIGIN = 0x0000000000000000,  LENGTH = 0x20000
+	DDR (xrw) : ORIGIN = 0x0000000000020000,  LENGTH = 0x20000
 }
 
 /* Peripherals symbols */

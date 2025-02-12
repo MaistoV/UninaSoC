@@ -3,15 +3,15 @@
 //              it adds a AXI protocol converter before the axilite crossbar
 //
 //                                             
-//             _______________                  ____________             _______
-//   AXI4     |   AXI Prot    |   AXI Lite     |            |           |       |
-// ---------> |   Converter   |--------------->|            |---------->| UART  |
-//            |_______________|                |  AXI Lite  |           |_______|
-//                                             |    XBAR    |                    
-//                                             |            |            _______       
-//                                             |            |           |       |
-//                                             |            |---------->| GPIO  |
-//                                             |____________|           |_______| 
+//            _______________                  ____________             _______
+//   AXI4    |   AXI Prot    |   AXI Lite     |            |           |       |
+// --------->|   Converter   |--------------->|            |---------->| UART  |
+//           |_______________|                |  AXI Lite  |           |_______|
+//                                            |    XBAR    |                    
+//                                            |            |            _______       
+//                                            |            |           |       |
+//                                            |            |---------->| GPIO  |
+//                                            |____________|           |_______| 
 //
 //
 //
@@ -36,12 +36,8 @@ module peripheral_bus (
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `endif 
     
-    
     // AXI4 Slave interface from the main xbar
     `DEFINE_AXI_SLAVE_PORTS(s)
-
-
-
 );
 
     // AXI Lite bus from the protocol converter to the axilite crossbar
@@ -54,9 +50,10 @@ module peripheral_bus (
     `DECLARE_AXILITE_BUS(xbar_to_uart);
 
     `ifdef HPC
-        `CONCAT_AXILITE_MASTERS_ARRAY1(xbar_slaves, xbar_to_uart);
+        `DECLARE_AXILITE_BUS(xbar_to_sync); 
+        `CONCAT_AXILITE_SLAVES_ARRAY2(xbar_slaves, xbar_to_sync, xbar_to_uart);
     `elsif EMBEDDED
-        `CONCAT_AXILITE_MASTERS_ARRAY2(xbar_slaves, xbar_to_uart, xbar_to_gpio); // This will not work
+        `CONCAT_AXILITE_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio, xbar_to_uart);
     `endif
 
     // AXI4 to AXI4-Lite protocol converter
@@ -125,6 +122,7 @@ module peripheral_bus (
         .m_axi_rready   ( prot_conv_to_xbar_axilite_rready       )  // output wire m_axi_rready
     );
 
+    // AXI Lite crossbar
     xlnx_axilite_crossbar axilite_xbar_u (
         .aclk           ( clock_i  ), 
         .aresetn        ( reset_ni ), 
@@ -171,10 +169,6 @@ module peripheral_bus (
 
     ); 
 
-    //////////
-    // UART //
-    //////////
-
     // AXI4 Lite UART
     axilite_uart axilite_uart_u (
         .clock_i        ( clock_i                   ), // input wire s_axi_aclk
@@ -209,8 +203,18 @@ module peripheral_bus (
         .s_axilite_rready   ( xbar_to_uart_axilite_rready       )
     );
 
+`ifdef HPC
+    // Sync the second AXI slave of the crossbar. 
+    assign xbar_to_sync_axilite_awready = 1; 
+    assign xbar_to_sync_axilite_wready  = 1; 
+    assign xbar_to_sync_axilite_bvalid  = 1;
+    assign xbar_to_sync_axilite_bresp   = 2'b00;
+    assign xbar_to_sync_axilite_arready = 1; 
+    assign xbar_to_sync_axilite_rdata   = '0; 
+    assign xbar_to_sync_axilite_rvalid  = 1;
+    assign xbar_to_sync_axilite_rresp   = 2'b00;
 
-`ifdef EMBEDDED
+`elsif EMBEDDED
     // GPIOs
     generate
         // GPIO out
