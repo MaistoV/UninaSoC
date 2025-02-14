@@ -73,7 +73,7 @@ set_property CONFIG.C_USE_COMPRESSION       {1} [get_ips $::env(IP_NAME)]
 # A-ext
 set_property CONFIG.C_USE_ATOMIC            {0} [get_ips $::env(IP_NAME)]
 # M-ext (1: STANDARD; 2: OPTIMIZED)
-set_property CONFIG.C_USE_MULDIV            {0} [get_ips $::env(IP_NAME)]
+set_property CONFIG.C_USE_MULDIV            {1} [get_ips $::env(IP_NAME)]
 # F/D-ext (0: none; 1: F; 2: D)
 # - F only if RV32 (C_DATA_SIZE = 32)
 # - D only if RV64 (C_DATA_SIZE = 64)
