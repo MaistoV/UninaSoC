@@ -26,4 +26,4 @@ proc pause {{message "\[INFO\] Press any key to stop"}} {
     gets stdin
 }
 
-pause;                      # Sample usage 2, use default message
+pause;                      

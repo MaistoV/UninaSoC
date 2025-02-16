@@ -211,7 +211,7 @@ load_binary_hpc: ${BIN_PATH}
 ELF_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.elf
 XSDB_DEBUG_PORT ?= 3004
 
-# Load program with xsdb
+# Load program directly with XSDB
 xsdb_run_elf:
 	xsdb ${XILINX_SYNTH_TCL_ROOT}/xsdb_run_elf.tcl ${ELF_PATH} ${XILINX_BITSTREAM}
 
