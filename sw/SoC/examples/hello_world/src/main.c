@@ -10,7 +10,7 @@ int main()
 
   tinyIO_init(uart_base_address);
 
-  printf("Hello World!\n");
+  printf("Hello World!\n\r");
 
   while(1);
 

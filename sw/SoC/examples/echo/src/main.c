@@ -7,13 +7,18 @@ int main()
 { 
 
   uint32_t uart_base_address = (uint32_t) &_peripheral_UART_start;
-  char c;
+  char str[128];
 
   tinyIO_init(uart_base_address);
 
+
   while(1){
-    scanf("%c",&c);
-    printf("%c", c);
+    printf("Please enter a string\n\r");
+
+    scanf("%s",str);
+
+    printf("Your string is\n\r%s", str);
+    printf("\n\r");
   }
 
   return 0;
