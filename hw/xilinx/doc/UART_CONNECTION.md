@@ -6,7 +6,7 @@ By default, the UART `rx` and `tx` signals are mapped to PMOD port C, as defined
 
 Nexys to FTDI front        |  Nexys to FTDI back
 :-------------------------:|:-------------------------:
-!![Nexys to FTDI Front](nexys_ftdi_front.jpeg)  |  ![Nexys to FTDI Back](nexys_ftdi_back.jpeg)
+![Nexys to FTDI Front](nexys_ftdi_front.jpeg)  |  ![Nexys to FTDI Back](nexys_ftdi_back.jpeg)
 
 Any compatible device can be used, provided the pins are correctly connected.
 You can use any serial terminal application; however, we recommend [Minicom](https://github.com/Distrotech/minicom/tree/master).
