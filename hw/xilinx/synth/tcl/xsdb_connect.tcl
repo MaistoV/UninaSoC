@@ -14,16 +14,9 @@ after 500
 # Filter and set target
 puts "\[INFO\] Selecting target Hart #0"
 targets -set -filter {name  =~ "*Hart #0*"}
+
 # Reset target core
 puts "\[INFO\] Resetting target"
 rst -processor
 
 puts "\[INFO\] XSDB backend running, open GDB"
-
-proc pause {{message "\[INFO\] Press any key to stop"}} {
-    puts -nonewline $message
-    flush stdout
-    gets stdin
-}
-
-pause;                      

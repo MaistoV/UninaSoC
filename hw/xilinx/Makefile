@@ -209,6 +209,7 @@ load_binary_hpc: ${BIN_PATH}
 # Use XSDB as backend and GDB as a loader/debugger
 
 ELF_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.elf
+# 32-bit RISC-V port exposed by Vivado HW Server is 3004
 XSDB_DEBUG_PORT ?= 3004
 
 # Load program directly with XSDB
@@ -217,17 +218,11 @@ xsdb_run_elf:
 
 # Use XSDB as a backend
 debug_backend:
-	xsdb ${XILINX_SYNTH_TCL_ROOT}/xsdb_connect.tcl
+	xsdb -interactive ${XILINX_SYNTH_TCL_ROOT}/xsdb_connect.tcl
 
-# Use GDB to load the ELF and run (open the backend in a shell before)
+# Use GDB to load the ELF and run (open the backend in a shell before) (TO TEST)
 debug_run:
-	riscv32-unknown-elf-gdb ${ELF_PATH} \
-	-ex 'target extended-remote:${XSDB_DEBUG_PORT}' \
-	-ex 'b main' \
-	-ex 'set confirm off' \
-	-ex 'load $(ELF_PATH)' \
-	-ex 'j _reset_handler' \
-	-ex 'set confirm on'
+	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/run_gdb.sh ${ELF_PATH} ${XSDB_DEBUG_PORT}"
 
 
 ############
