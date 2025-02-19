@@ -11,7 +11,8 @@ set target_path $::env(XILINX_HW_SERVER_HOST):$::env(XILINX_HW_SERVER_PORT)/$::e
 set hw_target [lindex [get_hw_target $target_path] 0]
 # Device at index zero
 open_hw_target $hw_target
-set_property PARAM.FREQUENCY 15000000 [get_hw_targets $hw_target]
+# Let's keep JTAG frequency to 5000000 so that it works with all supported SoC frequencies
+set_property PARAM.FREQUENCY 5000000 [get_hw_targets $hw_target]
 
 # Set hw_device
 set hw_device [get_hw_devices $::env(XILINX_HW_DEVICE)]

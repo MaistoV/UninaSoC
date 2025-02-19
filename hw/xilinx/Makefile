@@ -182,6 +182,8 @@ ${XILINX_SIM_IP_ROOT}/ips:
 ###############
 # Load binary #
 ###############
+# For CPUs that does not support debuggers yet
+
 BIN_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.bin
 BASE_ADDRESS ?= 0x00000000                        # BRAM base address
 LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
@@ -200,11 +202,32 @@ load_binary_embedded: ${BIN_PATH}
 load_binary_hpc: ${BIN_PATH}
 	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}"
 
-# Load and run elf from XSBD
+############
+# Load ELF #
+############
+# In case a debug module is available
+# Use XSDB as backend and GDB as a loader/debugger
+
 ELF_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.elf
+# 32-bit RISC-V port exposed by Vivado HW Server is 3004
+XSDB_DEBUG_PORT ?= 3004
+
+# Load program directly with XSDB
 xsdb_run_elf:
 	xsdb ${XILINX_SYNTH_TCL_ROOT}/xsdb_run_elf.tcl ${ELF_PATH} ${XILINX_BITSTREAM}
 
+# Use XSDB as a backend
+debug_backend:
+	xsdb -interactive ${XILINX_SYNTH_TCL_ROOT}/xsdb_connect.tcl
+
+# Use GDB to load the ELF and run (open the backend in a shell before) (TO TEST)
+debug_run:
+	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/run_gdb.sh ${ELF_PATH} ${XSDB_DEBUG_PORT}"
+
+
+############
+# Cleaning #
+############
 # Clean up project
 clean:
 	rm -rf ${XILINX_PROJECT_BUILD_DIR}
