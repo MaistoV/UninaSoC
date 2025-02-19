@@ -204,7 +204,7 @@ module peripheral_bus (
     );
 
 `ifdef HPC
-    // Sync the second AXI slave of the crossbar. 
+    // TODO - for now sync the second AXI slave of the crossbar. 
     assign xbar_to_sync_axilite_awready = 1; 
     assign xbar_to_sync_axilite_wready  = 1; 
     assign xbar_to_sync_axilite_bvalid  = 1;

@@ -99,7 +99,6 @@ for i in range(len(RANGE_NAMES)):
 			# peripherals
 			case _:
 				if device[1:] != "BUS":  
-					print(RANGE_BASE_ADDR, RANGE_ADDR_WIDTH) 
 					device_dict['peripheral'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[i][counter]})
 
 		# Increment counter

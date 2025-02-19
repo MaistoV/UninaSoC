@@ -11,7 +11,7 @@ PYTHON ?= python3.10 # Requires >= 3.10
 
 all: config_main_bus config_peripheral_bus config_ld config_xilinx
 
-config_%_bus: CONFIG_CSV = ${CONFIG_ROOT}/configs/config_$*_bus_${SOC_CONFIG}.csv
+config_%_bus: CONFIG_CSV = ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_$*_bus.csv
 config_%_bus: OUTPUT_TCL_FILE = ${XILINX_ROOT}/ips/common/xlnx_$*_crossbar/config.tcl
 config_%_bus:
 	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/create_crossbar_config.py \
@@ -20,8 +20,8 @@ config_%_bus:
 	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE}"
 
 # csv array for the create linker script
-CONFIG_CSVS ?= ${CONFIG_ROOT}/configs/config_main_bus_${SOC_CONFIG}.csv \
-               ${CONFIG_ROOT}/configs/config_peripheral_bus_${SOC_CONFIG}.csv
+CONFIG_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
+               ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
 
 OUTPUT_LD_FILE ?= ${SW_ROOT}/SoC/common/UninaSoC.ld
 config_ld:
@@ -31,7 +31,7 @@ config_ld:
 	@echo "[CONFIG] Output file is at ${OUTPUT_LD_FILE}"
 
 # Update config in Makefile
-CONFIG_CSV ?= ${CONFIG_ROOT}/configs/config_main_bus_${SOC_CONFIG}.csv
+CONFIG_CSV ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv
 OUTPUT_MK_FILE ?= ${XILINX_ROOT}/axi_config.mk
 config_xilinx:
 	export AXI_ADDR_WIDTH=$(shell grep "\bADDR_WIDTH\b" ${CONFIG_CSV} | awk -F "," '{print $$2}'); \
