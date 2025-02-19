@@ -27,26 +27,30 @@ import pandas as pd
 # CSV configuration file path
 config_file_names = ['config/axi_memory_map/configs/config_main_bus_embedded.csv'] 
 if len(sys.argv) >= 2:
-	config_file_names = sys.argv[1:-1]
+	# Get the array of bus names from the second arg to the last but one
+	config_file_names = sys.argv[1:-1]   
 
 # Target linker script file
 ld_file_name = 'sw/SoC/common/UninaSoC.ld'
 if len(sys.argv) >= 4:
+	# Get the linker script name, the last arg
 	ld_file_name = sys.argv[-1]
 
 
 ###############
 # Read config #
 ###############
-# Read CSV files
+# Read CSV files for each bus
 config_dfs = []
 for name in config_file_names:
 	config_dfs.append(pd.read_csv(name, sep=",", index_col=0))
 
+# Each bus has an element in these vectors
 NUM_MI = []
 RANGE_NAMES = []
 RANGE_BASE_ADDR = []
 RANGE_ADDR_WIDTH = []
+# For each bus
 for config_df in config_dfs: 
 	# Read number of masters interfaces
 	NUM_MI.append(int(config_df.loc["NUM_MI"]["Value"]))
@@ -73,6 +77,7 @@ BOOT_MEMORY_BLOCK = 0x0
 # ################
 # # Sanity check #
 # ################
+# For each bus
 for i in range(len(NUM_MI)): 
 	assert (NUM_MI[i] == len(RANGE_NAMES[i])) & (NUM_MI[i] == len(RANGE_BASE_ADDR[i]) ) & (NUM_MI[i]  == len(RANGE_ADDR_WIDTH[i])), \
 		"Mismatch in lenght of configurations: NUM_MI(" + str(NUM_MI[i]) + "), RANGE_NAMES (" + str(len(RANGE_NAMES[i])) + \
@@ -89,6 +94,7 @@ device_dict = {
 }
 
 counter = 0
+# For each bus
 for i in range(len(RANGE_NAMES)):
 	for device in RANGE_NAMES[i]:
 		match device:
@@ -98,11 +104,13 @@ for i in range(len(RANGE_NAMES)):
 
 			# peripherals
 			case _:
-				if device[1:] != "BUS":  
+				# Check if the device is not a bus (the last three chars are not BUS) 
+				if device[-3:] != "BUS":  
 					device_dict['peripheral'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[i][counter]})
 
 		# Increment counter
 		counter += 1
+		# If we reach the last element of a bus we need to reset the counter to start with a new bus
 		if counter == len(RANGE_NAMES[i]):
 			counter = 0
 			

@@ -9,9 +9,9 @@ MEMORY
 
 /* Peripherals symbols */
 _peripheral_UART_start = 0x0000000000010000;
-_peripheral_UART_end = 0x0000000000030000;
-_peripheral_SYNC_start = 0x0000000000020000;
-_peripheral_SYNC_end = 0x0000000000040000;
+_peripheral_UART_end = 0x0000000000010020;
+_peripheral_SYNC_start = 0x0000000000010010;
+_peripheral_SYNC_end = 0x0000000000010014;
 
 /* Global symbols */
 _vector_table_start = 0x0000000000000000;
