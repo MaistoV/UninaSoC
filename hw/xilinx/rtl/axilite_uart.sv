@@ -20,14 +20,14 @@ module axilite_uart (
     output logic        int_xdma_o,
     input  logic [1:0]  int_ack_i,
 
-    `ifdef EMBEDDED 
-    // RX and TX signas (for embedded only)
-    output logic        tx_o,
-    input  logic        rx_i,
-    `endif
-
     // AXI4 Slave interface
-    `DEFINE_AXILITE_SLAVE_PORTS(s)
+    `DEFINE_AXILITE_SLAVE_PORTS(s),
+
+    // EMBEDDED ONLY
+    // RX and TX signas 
+    output logic        tx_o,
+    input  logic        rx_i
+    
 );
 
     `ifdef HPC

@@ -144,7 +144,7 @@ module uninasoc (
     );
 
     // Axi Crossbar
-    xlnx_axi_crossbar axi_xbar_u (
+    xlnx_main_crossbar main_xbar_u (
         .aclk           ( soc_clk                   ), // input
         .aresetn        ( sys_resetn                ), // input
         .s_axi_awid     ( xbar_masters_axi_awid     ), // input
@@ -231,21 +231,19 @@ module uninasoc (
 
     sys_master sys_master_u (
 
-        `ifdef EMBEDDED
-            .sys_clock_i(sys_clock_i),
-            .sys_reset_i(sys_reset_i),
-        `elsif HPC
-            .pcie_refclk_p_i(pcie_refclk_p_i),
-            .pcie_refclk_n_i(pcie_refclk_n_i),
-            .pcie_resetn_i(pcie_resetn_i),
-
-            // PCI interface
-            .pci_exp_rxn_i(pci_exp_rxn_i),
-            .pci_exp_rxp_i(pci_exp_rxp_i),
-            .pci_exp_txn_o(pci_exp_txn_o),
-            .pci_exp_txp_o(pci_exp_txp_o),
-        `endif
-
+        // EMBEDDED ONLY
+        .sys_clock_i(sys_clock_i),
+        .sys_reset_i(sys_reset_i),
+        
+        // HPC ONLY
+        .pcie_refclk_p_i(pcie_refclk_p_i),
+        .pcie_refclk_n_i(pcie_refclk_n_i),
+        .pcie_resetn_i(pcie_resetn_i),
+        // PCI interface
+        .pci_exp_rxn_i(pci_exp_rxn_i),
+        .pci_exp_rxp_i(pci_exp_rxp_i),
+        .pci_exp_txn_o(pci_exp_txn_o),
+        .pci_exp_txp_o(pci_exp_txp_o),
 
         // Output clock
         .soc_clk_o(soc_clk),
@@ -438,11 +436,10 @@ module uninasoc (
         .clock_i        ( soc_clk     ),
         .reset_ni       ( sys_resetn  ),
 
-        `ifdef EMBEDDED
-            .uart_rx_i  ( uart_rx_i      ),
-            .uart_tx_o  ( uart_tx_o      ),
-            .gpio_out_o ( gpio_out_o     ), 
-        `endif 
+        // EMBEDDED ONLY
+        .uart_rx_i  ( uart_rx_i      ),
+        .uart_tx_o  ( uart_tx_o      ),
+        .gpio_out_o ( gpio_out_o     ), 
 
         .s_axi_awid     ( xbar_to_peripheral_bus_axi_awid     ),
         .s_axi_awaddr   ( xbar_to_peripheral_bus_axi_awaddr   ),

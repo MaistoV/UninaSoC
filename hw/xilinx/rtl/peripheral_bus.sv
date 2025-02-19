@@ -1,17 +1,17 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: This module is a wrapper for the xlnx_axilite_crossbar
-//              it adds a AXI protocol converter before the axilite crossbar
+// Description: This module is the module wrapping the entire peripheral bus
+//              it adds a AXI protocol converter before the axilite crossbar and all the peripherals connected to the axilite crossbar
 //
 //                                             
-//            _______________                  ____________             _______
-//   AXI4    |   AXI Prot    |   AXI Lite     |            |           |       |
-// --------->|   Converter   |--------------->|            |---------->| UART  |
-//           |_______________|                |  AXI Lite  |           |_______|
-//                                            |    XBAR    |                    
-//                                            |            |            _______       
-//                                            |            |           |       |
-//                                            |            |---------->| GPIO  |
-//                                            |____________|           |_______| 
+//            _______________                  _____________             _______
+//   AXI4    |   AXI Prot    |   AXI Lite     |             |           |       |
+// --------->|   Converter   |--------------->|             |---------->| UART  |
+//           |_______________|                | Pheripheral |           |_______|
+//                                            |    XBAR     |                    
+//                                            |  (axilite)  |            _______       
+//                                            |             |           |       |
+//                                            |             |---------->| GPIO  |
+//                                            |_____________|           |_______| 
 //
 //
 //
@@ -26,18 +26,18 @@ module peripheral_bus (
     input logic clock_i,
     input logic reset_ni,
 
-    `ifdef EMBEDDED
-        // UART interface
-        input  logic                        uart_rx_i,
-        output logic                        uart_tx_o,
-
-        // GPIOs
-        // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
-        output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
-    `endif 
-    
     // AXI4 Slave interface from the main xbar
-    `DEFINE_AXI_SLAVE_PORTS(s)
+    `DEFINE_AXI_SLAVE_PORTS(s),
+
+    // EMBEDDED ONLY
+    // UART interface
+    input  logic                        uart_rx_i,
+    output logic                        uart_tx_o,
+
+    // GPIOs
+    // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
+    output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
+    
 );
 
     // AXI Lite bus from the protocol converter to the axilite crossbar
@@ -123,7 +123,7 @@ module peripheral_bus (
     );
 
     // AXI Lite crossbar
-    xlnx_axilite_crossbar axilite_xbar_u (
+    xlnx_peripheral_crossbar peripheral_xbar_u (
         .aclk           ( clock_i  ), 
         .aresetn        ( reset_ni ), 
 
@@ -176,10 +176,11 @@ module peripheral_bus (
         .int_core_o     (                           ), // TBD
         .int_xdma_o     (                           ), // TBD
         .int_ack_i      ( '0                        ), // TBD
-    `ifdef EMBEDDED
+
+        // EMBEDDED ONLY
         .tx_o           ( uart_tx_o                 ), // Transmission signal (SoC output signal)
         .rx_i           ( uart_rx_i                 ), // Receive signal (SoC input signal)
-    `endif
+
 
         // AXI4 lite slave port (from xbar lite)
         .s_axilite_awaddr   ( xbar_to_uart_axilite_awaddr       ), 

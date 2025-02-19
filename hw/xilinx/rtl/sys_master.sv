@@ -17,20 +17,19 @@ import uninasoc_pkg::*;
 module sys_master
 (
 
-    `ifdef EMBEDDED
-        // Input clock and reset
-        input logic sys_clock_i,
-        input logic sys_reset_i,
-    `elsif HPC
-        // Input clock and reset
-        input logic pcie_refclk_p_i,
-        input logic pcie_refclk_n_i,
-        input logic pcie_resetn_i,
-
-        // PCIe interface
-        `DEFINE_PCIE_PORTS,
-    `endif
-
+    // EMBEDDED ONLY
+    // Input clock and reset
+    input logic sys_clock_i,
+    input logic sys_reset_i,
+    
+    // HPC ONLY
+    // Input clock and reset
+    input logic pcie_refclk_p_i,
+    input logic pcie_refclk_n_i,
+    input logic pcie_resetn_i,
+    // PCIe interface
+    `DEFINE_PCIE_PORTS,
+    
     // Output clk and reset
     output logic soc_clk_o,
     output logic sys_resetn_o,
