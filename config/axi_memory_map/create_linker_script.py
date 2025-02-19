@@ -25,7 +25,7 @@ import pandas as pd
 ##############
 
 # CSV configuration file path
-config_file_names = ['config/axi_memory_map/configs/config_main_bus_embedded.csv'] 
+config_file_names = ['config/axi_memory_map/configs/embedded/config_main_bus.csv', 'config/axi_memory_map/configs/embedded/config_peripheral_bus.csv'] 
 if len(sys.argv) >= 2:
 	# Get the array of bus names from the second arg to the last but one
 	config_file_names = sys.argv[1:-1]   
