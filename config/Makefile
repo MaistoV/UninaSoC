@@ -1,16 +1,10 @@
 # Variables
 PYTHON ?= python3.10 # Requires >= 3.10
 
-# # Config csv and output tcl for main bus
-# CONFIG_CSV_MBUS ?= ${CONFIG_ROOT}/configs/config.csv
-# OUTPUT_TCL_FILE_MBUS ?= ${XILINX_ROOT}/ips/common/xlnx_axi_crossbar/config.tcl
-
-# # Config csv and output tcl for peripheral bus
-# CONFIG_CSV_PBUS ?= ${CONFIG_ROOT}/configs/config_pbus.csv
-# OUTPUT_TCL_FILE_PBUS ?= ${XILINX_ROOT}/ips/common/xlnx_axilite_crossbar/config.tcl
-
 all: config_main_bus config_peripheral_bus config_ld config_xilinx
 
+config_main_bus:
+config_peripheral_bus:
 config_%_bus: CONFIG_CSV = ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_$*_bus.csv
 config_%_bus: OUTPUT_TCL_FILE = ${XILINX_ROOT}/ips/common/xlnx_$*_crossbar/config.tcl
 config_%_bus:
