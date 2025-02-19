@@ -92,7 +92,7 @@ else
     if [[ ${BOARD_CONFIG} == "nexys_a7_50t" ]]; then
         # Nexys A7-50t
         export XILINX_PART_NUMBER=xc7a50ticsg324-1L
-        export XILINX_BOARD_PART=digilentinc.com:nexys-a7-50t:part0:1.2
+        export XILINX_BOARD_PART=digilentinc.com:nexys-a7-50t:part0:1.3
         export XILINX_HW_DEVICE=xc7a50t_0
         export BOARD=Nexys-A7-50T-Master 
     else 
