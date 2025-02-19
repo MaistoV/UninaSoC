@@ -27,4 +27,7 @@ ELF_NAME=$1;
 BACKEND_PORT=$2;
 
 echo "Running GDB";
-$(riscv32-unknown-elf-gdb $ELF_NAME -ex 'target extended-remote:'$BACKEND_PORT -ex 'load $(ELF_PATH)'); 
+echo "Loading ELF $ELF_NAME";
+echo "Connecting to port $BACKEND_PORT";
+
+riscv32-unknown-elf-gdb $ELF_NAME -ex 'target extended-remote:'$BACKEND_PORT -ex 'load '$ELF_NAME;
