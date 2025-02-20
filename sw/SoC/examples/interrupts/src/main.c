@@ -32,6 +32,8 @@ int main(){
     }
 
 
+    printf("Hello World\n\r");
+
     // Configure the PLIC
     /*plic_configure();
     plic_enable();

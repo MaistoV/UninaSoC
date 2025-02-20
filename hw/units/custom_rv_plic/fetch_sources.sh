@@ -73,7 +73,7 @@ done
 
 # Patch files for flat includes and specific substitutions
 echo -e "${YELLOW}[PATCH_SOURCES] Patching include paths for flat includes and specific substitutions${NC}"
-for rtl_file in ${RTL_DIR}/*; do
+for rtl_file in ${RTL_DIR}/*; do    
     if [[ -f $rtl_file ]]; then
         echo -e "${YELLOW}[PATCH_SOURCES] Patching file: $rtl_file${NC}"
         # Flatten includes for common_cells
