@@ -10,6 +10,9 @@
 # Get program name from directory name
 PROGRAM_NAME = $(shell basename $$PWD)
 
+#############
+# Toolchain #
+#############
 
 #####################
 # Paths and Folders #

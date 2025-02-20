@@ -21,7 +21,8 @@ OBJ_DIR		= obj
 INC_DIR 	= inc
 STARTUP_DIR = $(SOC_SW_ROOT_DIR)/common
 
-LD_SCRIPT 	= ld/user.ld
+###############################################################################
+# Toolchain
 
 #############
 # Libraries #
