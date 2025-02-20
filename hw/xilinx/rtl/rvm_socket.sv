@@ -14,7 +14,7 @@ module rvm_socket # (
     parameter core_selector_t CORE_SELECTOR = CORE_MICROBLAZEV,
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
-    parameter int unsigned    NUM_IRQ       = 3
+    parameter int unsigned    NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,
@@ -203,7 +203,8 @@ module rvm_socket # (
                 .Reset              ( dbg_sys_rst ), // input wire Reset
 
                 // Interrupts
-                .Interrupt          ( irq_i[0]    ), // input wire Interrupt
+                // Ublaze can only take one external interrupt, which we tie to EXT interrupt (from the PLIC)
+                .Interrupt          ( irq_i[11]   ), // input wire Interrupt 
                 .Interrupt_Address  ('0           ), // input wire [0 : 31] Interrupt_Address
                 .Interrupt_Ack      (             ), // output wire [0 : 1] Interrupt_Ack
 
