@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Register slice conforming STWG verilog guide.
+// Register slice conforming to Comportibility guide.
 
 module prim_subreg_ext #(
-  parameter DW       = 32
+  parameter int unsigned DW = 32
 ) (
   input          re,
   input          we,
@@ -26,4 +26,3 @@ module prim_subreg_ext #(
   assign qre = re;
 
 endmodule
-

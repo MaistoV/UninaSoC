@@ -11,8 +11,6 @@
 // Authors:
 // - Andreas Kurth <akurth@iis.ee.ethz.ch>
 
-`include "assertions.svh"
-
 /// Dynamic stream fork: Connects the input stream (ready-valid) handshake to a combination of output
 /// stream handshake.  The combination is determined dynamically through another stream, which
 /// provides a bitmask for the fork.  For each input stream handshake, every output stream handshakes
@@ -87,7 +85,11 @@ module stream_fork_dynamic #(
     .ready_i ( int_oup_ready )
   );
 
+`ifndef SYNTHESIS
 `ifndef COMMON_CELLS_ASSERTS_OFF
-  `ASSERT_INIT(n_oup_0, N_OUP >= 1, "N_OUP must be at least 1!")
+  initial begin: p_assertions
+    assert (N_OUP >= 1) else $fatal(1, "N_OUP must be at least 1!");
+  end
+`endif
 `endif
 endmodule

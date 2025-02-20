@@ -10,8 +10,6 @@
 
 // Author: Florian Zaruba <zarubaf@iis.ee.ethz.ch>
 
-`include "assertions.svh"
-
 module fifo_v3 #(
     parameter bit          FALL_THROUGH = 1'b0, // fifo is in fall-through mode
     parameter int unsigned DATA_WIDTH   = 32,   // default data width if the fifo is of type logic
@@ -133,20 +131,26 @@ module fifo_v3 #(
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if(~rst_ni) begin
-            mem_q <= {FifoDepth{dtype'('0)}};
+            mem_q <= '0;
         end else if (!gate_clock) begin
             mem_q <= mem_n;
         end
     end
 
+`ifndef SYNTHESIS
 `ifndef COMMON_CELLS_ASSERTS_OFF
-    `ASSERT_INIT(depth_0, DEPTH > 0, "DEPTH must be greater than 0.")
+    initial begin
+        assert (DEPTH > 0)             else $error("DEPTH must be greater than 0.");
+    end
 
-    `ASSERT(full_write, full_o |-> ~push_i, clk_i, !rst_ni,
-            "Trying to push new data although the FIFO is full.")
+    full_write : assert property(
+        @(posedge clk_i) disable iff (~rst_ni) (full_o |-> ~push_i))
+        else $fatal (1, "Trying to push new data although the FIFO is full.");
 
-    `ASSERT(empty_read, empty_o |-> ~pop_i, clk_i, !rst_ni,
-            "Trying to pop data although the FIFO is empty.")
+    empty_read : assert property(
+        @(posedge clk_i) disable iff (~rst_ni) (empty_o |-> ~pop_i))
+        else $fatal (1, "Trying to pop data although the FIFO is empty.");
+`endif
 `endif
 
 endmodule // fifo_v3

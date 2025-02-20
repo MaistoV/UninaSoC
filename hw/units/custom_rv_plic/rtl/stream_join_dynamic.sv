@@ -11,8 +11,6 @@
 // Authors:
 // - Luca Colagrande <colluca@iis.ee.ethz.ch>
 
-`include "assertions.svh"
-
 // Stream join dynamic: Joins a parametrizable number of input streams (i.e. valid-ready
 // handshaking with dependency rules as in AXI4) to a single output stream. The subset of streams
 // to join can be configured dynamically via `sel_i`. The output handshake happens only after
@@ -36,10 +34,14 @@ module stream_join_dynamic #(
   // Corner case when `sel_i` is all 0s should not generate valid
   assign oup_valid_o = &(inp_valid_i | ~sel_i) && |sel_i;
   for (genvar i = 0; i < N_INP; i++) begin : gen_inp_ready
-    assign inp_ready_o[i] = oup_valid_o & oup_ready_i & sel_i[i];
+    assign inp_ready_o[i] = oup_valid_o & oup_ready_i;
   end
 
+`ifndef SYNTHESIS
 `ifndef COMMON_CELLS_ASSERTS_OFF
-  `ASSERT_INIT(n_inp_0, N_INP >= 1, "N_INP must be at least 1!")
+  initial begin: p_assertions
+    assert (N_INP >= 1) else $fatal(1, "N_INP must be at least 1!");
+  end
+`endif
 `endif
 endmodule

@@ -148,28 +148,23 @@ module custom_top_wrapper # (
     	
     );
 
-    axi_to_reg_v2 #(
-        .AxiAddrWidth       ( AXI_ADDR_WIDTH        ),
-        .AxiDataWidth       ( AXI_DATA_WIDTH        ),
-        .AxiIdWidth         ( AXI_ID_WIDTH          ),
-        .AxiUserWidth       ( AXI_USER_WIDTH        ),
-        .RegDataWidth       ( REG_DATA_WIDTH        ),
-        .CutMemReqs         ( CUT_MEM_REQS          ),
-        .CutMemRsps         ( CUT_MEM_RSPS          ), 
+    axi_to_reg #(
+        .ADDR_WIDTH       ( AXI_ADDR_WIDTH        ),
+        .DATA_WIDTH       ( AXI_DATA_WIDTH        ),
+        .ID_WIDTH         ( AXI_ID_WIDTH          ),
+        .USER_WIDTH       ( AXI_USER_WIDTH        ),
         .axi_req_t          ( axi_req_t             ), 
         .axi_rsp_t          ( axi_resp_t            ),
         .reg_req_t          ( reg_req_t             ),
-        .reg_rsp_t          ( reg_rsp_t             ),
-        .id_t               ( logic[AXI_ID_WIDTH-1:0] )
-    ) axi_to_reg_v2_u (  
+        .reg_rsp_t          ( reg_rsp_t             )
+    ) axi_to_reg_u (  
         .clk_i              ( clk_i                 ),
         .rst_ni             ( rst_ni                ),
+        .testmode_i         ( '0 ),
         .axi_req_i          ( axi_req               ),
         .axi_rsp_o          ( axi_rsp               ),
         .reg_req_o          ( reg_req               ),
-        .reg_rsp_i          ( reg_rsp               ),
-        .reg_id_o           ( ),
-        .busy_o             ( )
+        .reg_rsp_i          ( reg_rsp               )
     );
 
 

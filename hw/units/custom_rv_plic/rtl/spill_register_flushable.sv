@@ -11,7 +11,6 @@
 //
 // Fabian Schuiki <fschuiki@iis.ee.ethz.ch>
 
-`include "assertions.svh"
 
 /// A register with handshakes that completely cuts any combinational paths
 /// between the input and output. This spill register can be flushed.
@@ -42,7 +41,7 @@ module spill_register_flushable #(
 
     always_ff @(posedge clk_i or negedge rst_ni) begin : ps_a_data
       if (!rst_ni)
-        a_data_q <= T'('0);
+        a_data_q <= '0;
       else if (a_fill)
         a_data_q <= data_i;
     end
@@ -61,7 +60,7 @@ module spill_register_flushable #(
 
     always_ff @(posedge clk_i or negedge rst_ni) begin : ps_b_data
       if (!rst_ni)
-        b_data_q <= T'('0);
+        b_data_q <= '0;
       else if (b_fill)
         b_data_q <= a_data_q;
     end
@@ -95,9 +94,12 @@ module spill_register_flushable #(
     // We empty the spill register before the slice register.
     assign data_o = b_full_q ? b_data_q : a_data_q;
 
+    `ifndef SYNTHESIS
     `ifndef COMMON_CELLS_ASSERTS_OFF
-    `ASSERT(flush_valid, flush_i |-> ~valid_i, clk_i, !rst_ni,
-           "Trying to flush and feed the spill register simultaneously. You will lose data!")
+    flush_valid : assert property (
+      @(posedge clk_i) disable iff (~rst_ni) (flush_i |-> ~valid_i)) else
+      $warning("Trying to flush and feed the spill register simultaneously. You will lose data!");
    `endif
+     `endif
   end
 endmodule
