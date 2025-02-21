@@ -10,4 +10,4 @@ extern const volatile uint32_t _peripheral_PLIC_start;
 void plic_configure();
 void plic_enable();
 
-#endif 
+#endif

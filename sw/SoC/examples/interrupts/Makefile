@@ -37,6 +37,16 @@ LIB_INC_TINYIO	= -I$(LIB_DIR)/tinyio/inc
 LIB_OBJ_LIST 	= $(LIB_OBJ_TINYIO)
 LIB_INC_LIST 	= $(LIB_INC_TINYIO)
 
+##########
+# MACROS #
+##########
+
+MACRO_LIST =
+ifeq ($(SOC_CONFIG), embedded) 
+MACRO_LIST += -DIS_EMBEDDED
+endif
+
+
 #############
 # Toolchain #
 #############
@@ -48,7 +58,7 @@ OBJDUMP 	= $(RV_PREFIX)objdump
 OBJCOPY 	= $(RV_PREFIX)objcopy
 
 DFLAG		= -g
-CFLAGS 		= -march=rv32ima_zicsr_zifencei -mabi=ilp32 -O0 $(DFLAG) -c
+CFLAGS 		= -march=rv32ima_zicsr_zifencei -mabi=ilp32 -O0 $(MACRO_LIST) $(DFLAG) -c
 LDFLAGS 	= $(LIB_OBJ_LIST) -nostdlib -T$(LD_SCRIPT)
 
 include $(SW_ROOT)/SoC/common/Makefile

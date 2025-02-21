@@ -18,5 +18,9 @@ extern const volatile uint32_t _peripheral_GPIO_out_start;
 void gpio_in_configure();
 void gpio_in_enable_int();
 
+// This function is called by the external handler
+// It implements the logic to turn on a led depending on the switch used.
+void gpio_handler();
 
-#endif 
+
+#endif

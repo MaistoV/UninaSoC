@@ -87,7 +87,8 @@ module uninasoc (
     /////////////////////
     // Local variables //
     /////////////////////
-    // TBD (if any)
+    
+    localparam PeripheralsInterruptsNum = 4;
 
     ///////////////////
     // Local Signals //
@@ -103,6 +104,9 @@ module uninasoc (
 
     // Socket interrupts
     logic [31:0] socket_int_line;
+
+    // Peripheral bus interrupts
+    logic [PeripheralsInterruptsNum-1:0] pbus_int_line;
 
     /////////////////
     // AXI Masters //
@@ -457,6 +461,7 @@ module uninasoc (
     logic [31:0] plic_int_line;
     logic plic_int_irq_o;
 
+    // Line 11 corresponds to EXT interrupt in RISC-V specification
     assign socket_int_line [11] = plic_int_irq_o;
 
     // Currently, this is the interrupt line mapping
@@ -467,7 +472,7 @@ module uninasoc (
     // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support interrupts yet)
     // others - reserved
 
-    assign plic_int_line[31:5] = '0; 
+    assign plic_int_line = {'0, pbus_int_line, 1'b0}; 
 
     custom_rv_plic custom_rv_plic_u (
         .clk_i          ( soc_clk                   ), // input wire s_axi_aclk
@@ -515,7 +520,15 @@ module uninasoc (
         .s_axi_rresp    ( xbar_to_plic_axi_rresp    ), // output wire [1 : 0] s_axi_rresp
         .s_axi_rlast    ( xbar_to_plic_axi_rlast    ), // output wire s_axi_rlast
         .s_axi_rvalid   ( xbar_to_plic_axi_rvalid   ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_plic_axi_rready   )
+        .s_axi_rready   ( xbar_to_plic_axi_rready   ),
+        .req_addr_o     (                           ),
+        .req_write_o    (                           ),
+        .req_wdata_o    (                           ),
+        .req_wstrb_o    (                           ),
+        .req_valid_o    (                           ),
+        .rsp_rdata_o    (                           ),
+        .rsp_error_o    (                           ),
+        .rsp_ready_o    (                           )
     );
     
     ////////////////////
@@ -528,9 +541,12 @@ module uninasoc (
         .reset_ni       ( sys_resetn  ),
 
         // EMBEDDED ONLY
-        .uart_rx_i  ( uart_rx_i      ),
-        .uart_tx_o  ( uart_tx_o      ),
-        .gpio_out_o ( gpio_out_o     ), 
+        .uart_rx_i      ( uart_rx_i      ),
+        .uart_tx_o      ( uart_tx_o      ),
+        .gpio_out_o     ( gpio_out_o     ), 
+        .gpio_in_i      ( gpio_in_i      ),
+
+        .int_o          ( pbus_int_line  ),
 
         .s_axi_awid     ( xbar_to_peripheral_bus_axi_awid     ),
         .s_axi_awaddr   ( xbar_to_peripheral_bus_axi_awaddr   ),

@@ -96,11 +96,6 @@ _start:
   mv a0, zero
   mv a1, zero
 
-
-  la x5, 0x20000
-  li x6, 0xff
-  sw x6, 0(x5)
-
   jal ra, main
 
 

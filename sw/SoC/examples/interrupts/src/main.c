@@ -1,53 +1,55 @@
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Description:
+//      This code demonstrates the usage of PLIC and interrupts. 
+//      Physically, three interrupt lines are connected (in addition to line 0, which is reserved). 
+//      Logically, two interrupt sources are utilized: a timer and gpio_in. 
+//      The timer sends a message on the serial device every second, while gpio_in enables 
+//      the LED corresponding to a specific switch (only applicable in embedded configurations).
+//
+//      Note 1: The PLIC is connected to the core via the EXT line. Both the timer and gpio_in are expected 
+//      to be connected to the PLIC. The timer must NOT be connected directly to the core's TIM line in this example.
+//
+//      Note 2: The IS_EMBEDDED macro is automatically defined in this example's Makefile depending on
+//      vesuvius configuration (according to the SOC_CONFIG envvar set in settings.sh)
+//
+
 #include <stdint.h>
 
 #include "tim.h"
-#include "gpio.h"
 #include "plic.h"
 #include "interrupts.h"
+#include "serial.h"
 
-#include "tinyIO.h"
-
-#define IS_EMBEDDED 1
+#ifdef IS_EMBEDDED
+    #include "gpio.h"
+#endif 
 
 int main(){
 
-    // This code is an example of PLIC and interrupts.
-    // Phyisically, 3 interrupt lines are connected (plus line 0, which is reserved)
-    // Logically, two sources of interrupts are used: timer and gpio_in
-    // The former sends on the uart a message, while the latter 
-    // Enable the led corresponding to the specific switch (only on embedded configuration)
-
-    // Note: the PLIC is connected to the core via EXT line. both timer and gpio_in are expected
-    // to be connected to the PLIC; the timer should NOT be connected to the core TIM line for this example.
-
-    // Define vector table entries for handlers (only EXT is actually used)
+    // Define vector table entries for handlers (only the EXT line is actually used).
     install_exception_handler(SW_ENTRY, _sw_handler);
-    install_exception_handler(TIM_ENTRY, _tim_handler);
+    install_exception_handler(TIM_ENTRY, _timer_handler);
     install_exception_handler(EXT_ENTRY, _ext_handler);
 
-    uint32_t * vt = (uint32_t *) _vector_table_start;
-
-    for(int i = 0; i < 16; i++){
-        printf("%lu", vt[i]);
-    }
-
-
-    printf("Hello World\n\r");
+    // Initialize the serial device (using tinyIO)
+    serial_init();
 
     // Configure the PLIC
-    /*plic_configure();
+    plic_configure();
     plic_enable();
 
-    // Configure the GPIO
-    if (IS_EMBEDDED) {
+    #ifdef IS_EMBEDDED
+    // Configure the GPIO (embedded only)
+    
         gpio_in_configure();
         gpio_in_enable_int();
-    }
+    #endif
 
     // Configure the timer
     tim_configure();
     tim_enable_int();
-    tim_enable();*/
+    tim_enable();
 
     while(1);
 

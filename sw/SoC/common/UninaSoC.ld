@@ -7,10 +7,18 @@ MEMORY
 }
 
 /* Peripherals symbols */
+_peripheral_PLIC_start = 0x0000000004000000;
+_peripheral_PLIC_end = 0x000000000c000000;
 _peripheral_UART_start = 0x0000000000010000;
 _peripheral_UART_end = 0x0000000000010020;
-_peripheral_GPIO_out_start = 0x0000000000010010;
-_peripheral_GPIO_out_end = 0x0000000000010030;
+_peripheral_GPIO_out_start = 0x0000000000010200;
+_peripheral_GPIO_out_end = 0x0000000000010600;
+_peripheral_GPIO_in_start = 0x0000000000010400;
+_peripheral_GPIO_in_end = 0x0000000000010800;
+_peripheral_TIM0_start = 0x0000000000010600;
+_peripheral_TIM0_end = 0x0000000000010640;
+_peripheral_TIM1_start = 0x0000000000010620;
+_peripheral_TIM1_end = 0x0000000000010660;
 
 /* Global symbols */
 _vector_table_start = 0x0000000000000000;

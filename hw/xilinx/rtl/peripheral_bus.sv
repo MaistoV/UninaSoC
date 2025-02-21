@@ -22,7 +22,9 @@ import uninasoc_pkg::*;
 // Import headers
 `include "uninasoc_axi.svh"
 
-module peripheral_bus (
+module peripheral_bus #(
+    parameter int unsigned    NUM_IRQ       = 4
+    )(
     input logic clock_i,
     input logic reset_ni,
 
@@ -35,10 +37,17 @@ module peripheral_bus (
     output logic                        uart_tx_o,
 
     // GPIOs
-    // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
-    output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
+    input  logic [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
+    output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o,
+    
+    // Interrupts
+    output logic [NUM_IRQ - 1 : 0]      int_o 
     
 );
+
+    /////////////////////
+    // Bus Definitions //
+    /////////////////////
 
     // AXI Lite bus from the protocol converter to the axilite crossbar
     `DECLARE_AXILITE_BUS(prot_conv_to_xbar);
@@ -49,12 +58,38 @@ module peripheral_bus (
     // AXI Lite bus from the axilite crossbar to the UART
     `DECLARE_AXILITE_BUS(xbar_to_uart);
 
+    // AXI Lite bus from the axilite crossbar to the TIM0
+    `DECLARE_AXILITE_BUS(xbar_to_tim0);
+
+    // AXI Lite bus from the axilite crossbar to the TIM1
+    `DECLARE_AXILITE_BUS(xbar_to_tim1);
+
+    // EMBEDDED ONLY
+    // AXI Lite bus from the axilite crossbar to the GPIO_out
+    `DECLARE_AXILITE_BUS(xbar_to_gpio_in);
+    `DECLARE_AXILITE_BUS(xbar_to_gpio_out);
+
     `ifdef HPC
-        `DECLARE_AXILITE_BUS(xbar_to_sync); 
-        `CONCAT_AXILITE_SLAVES_ARRAY2(xbar_slaves, xbar_to_sync, xbar_to_uart);
+        `CONCAT_AXILITE_SLAVES_ARRAY3(xbar_slaves, xbar_to_tim1, xbar_to_tim0, xbar_to_uart);
     `elsif EMBEDDED
-        `CONCAT_AXILITE_SLAVES_ARRAY2(xbar_slaves, xbar_to_gpio, xbar_to_uart);
+        `CONCAT_AXILITE_SLAVES_ARRAY5(xbar_slaves, xbar_to_tim1, xbar_to_tim0, xbar_to_gpio_in, xbar_to_gpio_out, xbar_to_uart);
     `endif
+
+    ///////////////////////
+    // Interrupt Signals //
+    ///////////////////////
+
+    logic uart_int;
+    logic tim0_int;
+    logic tim1_int;
+    // EMBEDDED ONLY
+    logic gpio_in_int;
+
+    assign int_o = {uart_int, tim1_int, tim0_int, gpio_in_int};
+
+    /////////////////////
+    // AXI-lite Master //
+    /////////////////////
 
     // AXI4 to AXI4-Lite protocol converter
     xlnx_axi4_to_axilite_converter axi4_to_axilite_u (
@@ -169,11 +204,15 @@ module peripheral_bus (
 
     ); 
 
+    /////////////////////
+    // AXI-lite Slaves //
+    /////////////////////
+
     // AXI4 Lite UART
     axilite_uart axilite_uart_u (
         .clock_i        ( clock_i                   ), // input wire s_axi_aclk
         .reset_ni       ( reset_ni                  ), // input wire s_axi_aresetn
-        .int_core_o     (                           ), // TBD
+        .int_core_o     ( uart_int                  ), // Output interrupt
         .int_xdma_o     (                           ), // TBD
         .int_ack_i      ( '0                        ), // TBD
 
@@ -204,50 +243,118 @@ module peripheral_bus (
         .s_axilite_rready   ( xbar_to_uart_axilite_rready       )
     );
 
-`ifdef HPC
-    // TODO - for now sync the second AXI slave of the crossbar. 
-    assign xbar_to_sync_axilite_awready = 1; 
-    assign xbar_to_sync_axilite_wready  = 1; 
-    assign xbar_to_sync_axilite_bvalid  = 1;
-    assign xbar_to_sync_axilite_bresp   = 2'b00;
-    assign xbar_to_sync_axilite_arready = 1; 
-    assign xbar_to_sync_axilite_rdata   = '0; 
-    assign xbar_to_sync_axilite_rvalid  = 1;
-    assign xbar_to_sync_axilite_rresp   = 2'b00;
+    // AXI4 Lite Timers
 
-`elsif EMBEDDED
-    // GPIOs
-    generate
-        // GPIO out
-        for ( genvar i = 0; i < NUM_GPIO_OUT; i++ ) begin
-            // axi4_to_axilite -> gpio_out
-            `DECLARE_AXILITE_BUS(xbar_to_gpio);
+    xlnx_axi_timer tim0_u (
+        .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
+        .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
+        .s_axi_awaddr   ( xbar_to_tim0_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( xbar_to_tim0_axilite_awvalid       ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_tim0_axilite_awready       ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_tim0_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_tim0_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( xbar_to_tim0_axilite_wvalid        ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_tim0_axilite_wready        ), // output wire s_axi_wready
+        .s_axi_bresp    ( xbar_to_tim0_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_tim0_axilite_bvalid        ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_tim0_axilite_bready        ), // input wire s_axi_bready
+        .s_axi_araddr   ( xbar_to_tim0_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( xbar_to_tim0_axilite_arvalid       ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_tim0_axilite_arready       ), // output wire s_axi_arready
+        .s_axi_rdata    ( xbar_to_tim0_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_tim0_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( xbar_to_tim0_axilite_rvalid        ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_tim0_axilite_rready        ), // input wire s_axi_rready
 
-            // GPIO instance
-            xlnx_axi_gpio_out gpio_out_u (
-                .s_axi_aclk     ( clock_i                           ), // input wire s_axi_aclk
-                .s_axi_aresetn  ( reset_ni                          ), // input wire s_axi_aresetn
-                .s_axi_awaddr   ( xbar_to_gpio_axilite_awaddr [8:0] ), // input wire [8 : 0] s_axi_awaddr
-                .s_axi_awvalid  ( xbar_to_gpio_axilite_awvalid      ), // input wire s_axi_awvalid
-                .s_axi_awready  ( xbar_to_gpio_axilite_awready      ), // output wire s_axi_awready
-                .s_axi_wdata    ( xbar_to_gpio_axilite_wdata        ), // input wire [31 : 0] s_axi_wdata
-                .s_axi_wstrb    ( xbar_to_gpio_axilite_wstrb        ), // input wire [3 : 0] s_axi_wstrb
-                .s_axi_wvalid   ( xbar_to_gpio_axilite_wvalid       ), // input wire s_axi_wvalid
-                .s_axi_wready   ( xbar_to_gpio_axilite_wready       ), // output wire s_axi_wready
-                .s_axi_bresp    ( xbar_to_gpio_axilite_bresp        ), // output wire [1 : 0] s_axi_bresp
-                .s_axi_bvalid   ( xbar_to_gpio_axilite_bvalid       ), // output wire s_axi_bvalid
-                .s_axi_bready   ( xbar_to_gpio_axilite_bready       ), // input wire s_axi_bready
-                .s_axi_araddr   ( xbar_to_gpio_axilite_araddr [8:0] ), // input wire [8 : 0] s_axi_araddr
-                .s_axi_arvalid  ( xbar_to_gpio_axilite_arvalid      ), // input wire s_axi_arvalid
-                .s_axi_arready  ( xbar_to_gpio_axilite_arready      ), // output wire s_axi_arready
-                .s_axi_rdata    ( xbar_to_gpio_axilite_rdata        ), // output wire [31 : 0] s_axi_rdata
-                .s_axi_rresp    ( xbar_to_gpio_axilite_rresp        ), // output wire [1 : 0] s_axi_rresp
-                .s_axi_rvalid   ( xbar_to_gpio_axilite_rvalid       ), // output wire s_axi_rvalid
-                .s_axi_rready   ( xbar_to_gpio_axilite_rready       ), // input wire s_axi_rready
-                .gpio_io_o      ( gpio_out_o [i]                    )  // input wire [0 : 0] gpio_io_o
-            );
-        end
-    endgenerate
+        .capturetrig0   ( '0                        ), // input [0:0]
+        .capturetrig1   ( '0                        ), // input [0:0]
+        .freeze         ( '0                        ), // input [0:0]
+        .generateout0   (                           ), // output [0:0]
+        .generateout1   (                           ), // output [0:0]
+        .interrupt      ( tim0_int                  ), // output [0:0]
+        .pwm0           (                           ) // output [0:0]
+    );
+
+    xlnx_axi_timer tim1_u (
+        .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
+        .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
+        .s_axi_awaddr   ( xbar_to_tim1_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( xbar_to_tim1_axilite_awvalid       ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_tim1_axilite_awready       ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_tim1_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_tim1_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( xbar_to_tim1_axilite_wvalid        ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_tim1_axilite_wready        ), // output wire s_axi_wready
+        .s_axi_bresp    ( xbar_to_tim1_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_tim1_axilite_bvalid        ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_tim1_axilite_bready        ), // input wire s_axi_bready
+        .s_axi_araddr   ( xbar_to_tim1_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( xbar_to_tim1_axilite_arvalid       ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_tim1_axilite_arready       ), // output wire s_axi_arready
+        .s_axi_rdata    ( xbar_to_tim1_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_tim1_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( xbar_to_tim1_axilite_rvalid        ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_tim1_axilite_rready        ), // input wire s_axi_rready
+
+        .capturetrig0   ( '0                        ), // input [0:0]
+        .capturetrig1   ( '0                        ), // input [0:0]
+        .freeze         ( '0                        ), // input [0:0]
+        .generateout0   (                           ), // output [0:0]
+        .generateout1   (                           ), // output [0:0]
+        .interrupt      ( tim1_int                  ), // output [0:0]
+        .pwm0           (                           ) // output [0:0]
+    );
+
+`ifdef EMBEDDED
+
+    // GPIO OUT instance
+    xlnx_axi_gpio_out gpio_out_u (
+        .s_axi_aclk     ( clock_i                               ), // input wire s_axi_aclk
+        .s_axi_aresetn  ( reset_ni                              ), // input wire s_axi_aresetn
+        .s_axi_awaddr   ( xbar_to_gpio_out_axilite_awaddr [8:0] ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( xbar_to_gpio_out_axilite_awvalid      ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_gpio_out_axilite_awready      ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_gpio_out_axilite_wdata        ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_gpio_out_axilite_wstrb        ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( xbar_to_gpio_out_axilite_wvalid       ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_gpio_out_axilite_wready       ), // output wire s_axi_wready
+        .s_axi_bresp    ( xbar_to_gpio_out_axilite_bresp        ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_gpio_out_axilite_bvalid       ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_gpio_out_axilite_bready       ), // input wire s_axi_bready
+        .s_axi_araddr   ( xbar_to_gpio_out_axilite_araddr [8:0] ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( xbar_to_gpio_out_axilite_arvalid      ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_gpio_out_axilite_arready      ), // output wire s_axi_arready
+        .s_axi_rdata    ( xbar_to_gpio_out_axilite_rdata        ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_gpio_out_axilite_rresp        ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( xbar_to_gpio_out_axilite_rvalid       ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_gpio_out_axilite_rready       ), // input wire s_axi_rready
+        .gpio_io_o      ( gpio_out_o                            )  // input wire [0 : 0] gpio_io_o
+    );
+
+    // GPIO IN instance
+    xlnx_axi_gpio_in gpio_in_u (
+        .s_axi_aclk     ( clock_i                       ), // input wire s_axi_aclk
+        .s_axi_aresetn  ( reset_ni                      ), // input wire s_axi_aresetn
+        .s_axi_awaddr   ( xbar_to_gpio_in_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( xbar_to_gpio_in_axilite_awvalid       ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_gpio_in_axilite_awready       ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_gpio_in_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_gpio_in_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( xbar_to_gpio_in_axilite_wvalid        ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_gpio_in_axilite_wready        ), // output wire s_axi_wready
+        .s_axi_bresp    ( xbar_to_gpio_in_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_gpio_in_axilite_bvalid        ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_gpio_in_axilite_bready        ), // input wire s_axi_bready
+        .s_axi_araddr   ( xbar_to_gpio_in_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( xbar_to_gpio_in_axilite_arvalid       ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_gpio_in_axilite_arready       ), // output wire s_axi_arready
+        .s_axi_rdata    ( xbar_to_gpio_in_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_gpio_in_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( xbar_to_gpio_in_axilite_rvalid        ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_gpio_in_axilite_rready        ), // input wire s_axi_rready
+        .gpio_io_i      ( gpio_in_i                     ),
+        .ip2intc_irpt   ( gpio_in_int                   )  // output wire [0:0] (interrupt)
+    );
 
 `endif
 

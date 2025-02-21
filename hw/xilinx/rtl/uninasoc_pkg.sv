@@ -7,7 +7,7 @@ package uninasoc_pkg;
     ///////////////////////
     // SoC-level defines //
     ///////////////////////
-    localparam int unsigned NUM_IRQ = 3;
+
     localparam int unsigned NUM_GPIO_IN  = 16; 
     localparam int unsigned NUM_GPIO_OUT = 16;
 
@@ -22,31 +22,36 @@ package uninasoc_pkg;
     // Main Crosbar slaves if EMBEDDED
     // - Peripheral bus
     // - Main memory (BRAM)
+    // - PLIC
     `ifdef EMBEDDED
         // NB: we should find a better and automatic way of count AXI and MASTERs
-        localparam int unsigned NUM_AXI_SLAVES = 2;
+        localparam int unsigned NUM_AXI_SLAVES = 3;
 
     // Crosbar slaves if HPC
     // - Main memory (BRAM)
     // - Peripheral bus
     // - DDR4
+    // - PLIC
     `elsif HPC
-        localparam int unsigned NUM_AXI_SLAVES = 5;
+        localparam int unsigned NUM_AXI_SLAVES = 4;
     `endif
 
 
     // AXI Lite peripheral bus
     // Slaves if EMBEDDED
-    // - GPIOs in input
-    // - GPIOs in outputs
     // - UART (physical)
+    // - GPIOs in outputs
+    // - GPIOs in input
+    // - Timer 0
+    // - Timer 1
     `ifdef EMBEDDED 
-        localparam int unsigned NUM_AXILITE_SLAVES = NUM_GPIO_IN + NUM_GPIO_OUT + 1;
+        localparam int unsigned NUM_AXILITE_SLAVES = 5;
     // Slaves if HPC
-    // - SYNC - The xbar must have 2 slaves minimum
-    // - UART (Virtual)
+    // - UART (physical)
+    // - Timer 0
+    // - Timer 1
     `elsif HPC
-        localparam int unsigned NUM_AXILITE_SLAVES = 2;
+        localparam int unsigned NUM_AXILITE_SLAVES = 3;
     `endif
 
 
