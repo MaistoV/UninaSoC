@@ -483,7 +483,7 @@ module uninasoc (
         .irq_id_o       (                               ), // Unused (non standard signal)
         .msip_o         (                               ), // Unused (non standard signal)
         .s_axi_awid     ( xbar_to_plic_axi_awid         ), // input wire [1 : 0] s_axi_awid
-        .s_axi_awaddr   ( xbar_to_plic_axi_awaddr[25:0] ), // input wire [25 : 0] s_axi_awaddr
+        .s_axi_awaddr   ( xbar_to_plic_axi_awaddr       ), // input wire [25 : 0] s_axi_awaddr
         .s_axi_awlen    ( xbar_to_plic_axi_awlen        ), // input wire [7 : 0] s_axi_awlen
         .s_axi_awsize   ( xbar_to_plic_axi_awsize       ), // input wire [2 : 0] s_axi_awsize
         .s_axi_awburst  ( xbar_to_plic_axi_awburst      ), // input wire [1 : 0] s_axi_awburst
@@ -504,7 +504,7 @@ module uninasoc (
         .s_axi_bvalid   ( xbar_to_plic_axi_bvalid       ), // output wire s_axi_bvalid
         .s_axi_bready   ( xbar_to_plic_axi_bready       ), // input wire s_axi_bready
         .s_axi_arid     ( xbar_to_plic_axi_arid         ), // input wire [1 : 0] s_axi_arid
-        .s_axi_araddr   ( xbar_to_plic_axi_araddr[25:0] ), // input wire [25 : 0] s_axi_araddr
+        .s_axi_araddr   ( xbar_to_plic_axi_araddr       ), // input wire [25 : 0] s_axi_araddr
         .s_axi_arlen    ( xbar_to_plic_axi_arlen        ), // input wire [7 : 0] s_axi_arlen
         .s_axi_arsize   ( xbar_to_plic_axi_arsize       ), // input wire [2 : 0] s_axi_arsize
         .s_axi_arburst  ( xbar_to_plic_axi_arburst      ), // input wire [1 : 0] s_axi_arburst

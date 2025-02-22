@@ -156,9 +156,9 @@ module custom_top_wrapper # (
     );
 
 
-    // Map output AXI port 
+    // Map input/output AXI port 
     assign   axi_req.aw.id        = s_axi_awid;
-    assign   axi_req.aw.addr      = s_axi_awaddr;
+    assign   axi_req.aw.addr      = {'0, s_axi_awaddr[25:0]};
     assign   axi_req.aw.len       = s_axi_awlen;
     assign   axi_req.aw.size      = s_axi_awsize;
     assign   axi_req.aw.burst     = s_axi_awburst;
@@ -173,7 +173,7 @@ module custom_top_wrapper # (
     assign   axi_req.w.last       = s_axi_wlast;
     assign   axi_req.w_valid      = s_axi_wvalid;
     assign   axi_req.b_ready      = s_axi_bready;
-    assign   axi_req.ar.addr      = s_axi_araddr;
+    assign   axi_req.ar.addr      = {'0, s_axi_araddr[25:0]};
     assign   axi_req.ar.len       = s_axi_arlen;
     assign   axi_req.ar.size      = s_axi_arsize;
     assign   axi_req.ar.burst     = s_axi_arburst;
