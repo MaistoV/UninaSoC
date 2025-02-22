@@ -49,10 +49,7 @@ module custom_top_wrapper # (
     // REG-related parameters
     parameter int unsigned              REG_DATA_WIDTH      = 32,
     parameter bit                       CUT_MEM_REQS        = 1'b0,     
-    parameter bit                       CUT_MEM_RSPS        = 1'b0,  
-
-    // AXI-crossbar PLIC base address
-    parameter [AXI_DATA_WIDTH-1:0]      PLIC_BASE_ADDR      = 32'h4000000   
+    parameter bit                       CUT_MEM_RSPS        = 1'b0
 
 
 ) (
@@ -71,15 +68,6 @@ module custom_top_wrapper # (
     output [TARGET_NUM-1:0]             irq_o,
     output [SRCW-1:0]                   irq_id_o[TARGET_NUM],
     output logic [TARGET_NUM-1:0]       msip_o,
-
-    output logic [AXI_ADDR_WIDTH-1:0] req_addr_o ,
-    output logic [AXI_ADDR_WIDTH-1:0] req_write_o,
-    output logic [AXI_ADDR_WIDTH-1:0] req_wdata_o,
-    output logic [AXI_ADDR_WIDTH-1:0] req_wstrb_o,
-    output logic [AXI_ADDR_WIDTH-1:0] req_valid_o,
-    output logic [AXI_ADDR_WIDTH-1:0] rsp_rdata_o,
-    output logic [AXI_ADDR_WIDTH-1:0] rsp_error_o,
-    output logic [AXI_ADDR_WIDTH-1:0] rsp_ready_o,
             
     ////////////////////////////
     //  Bus Array Interfaces  //
@@ -117,20 +105,6 @@ module custom_top_wrapper # (
     reg_req_t reg_req;
     reg_rsp_t reg_rsp;
 
-    //////////////////////////
-    // Address Manipulation //
-    //////////////////////////
-
-    // Create the correct_addr signal (shifted and subtracted)
-    reg_req_t reg_req_correct;
-
-    // Compute correct_addr: shift left by 2 and subtract PLIC_BASE_ADDR, then assign it to the PLIC input addr
-    assign reg_req_correct.addr   = (reg_req.addr - {PLIC_BASE_ADDR});
-    assign reg_req_correct.write  = reg_req.write;
-    assign reg_req_correct.wdata  = reg_req.wdata;
-    assign reg_req_correct.wstrb  = reg_req.wstrb;
-    assign reg_req_correct.valid  = reg_req.valid;
-
     ///////////////////////
     // Instantiate Units //
     ///////////////////////
@@ -144,7 +118,7 @@ module custom_top_wrapper # (
     	// Clock and Reset
     	.clk_i				( clk_i                 ),
     	.rst_ni				( rst_ni                ),
-    	.reg_req_i          ( reg_req_correct       ),
+    	.reg_req_i          ( reg_req               ),
     	.reg_rsp_o			( reg_rsp               ),
     	 
     	// Interrupt Sources 
@@ -156,25 +130,6 @@ module custom_top_wrapper # (
     	.msip_o				( msip_o                )
     	
     );
-
-    /*axi_to_reg #(
-        .ADDR_WIDTH       ( AXI_ADDR_WIDTH        ),
-        .DATA_WIDTH       ( AXI_DATA_WIDTH        ),
-        .ID_WIDTH         ( AXI_ID_WIDTH          ),
-        .USER_WIDTH       ( AXI_USER_WIDTH        ),
-        .axi_req_t          ( axi_req_t             ), 
-        .axi_rsp_t          ( axi_resp_t            ),
-        .reg_req_t          ( reg_req_t             ),
-        .reg_rsp_t          ( reg_rsp_t             )
-    ) axi_to_reg_u (  
-        .clk_i              ( clk_i                 ),
-        .rst_ni             ( rst_ni                ),
-        .testmode_i         ( '0 ),
-        .axi_req_i          ( axi_req               ),
-        .axi_rsp_o          ( axi_rsp               ),
-        .reg_req_o          ( reg_req               ),
-        .reg_rsp_i          ( reg_rsp               )
-    );*/
 
     axi_to_reg_v2 #(
         .AxiAddrWidth       ( AXI_ADDR_WIDTH ),
@@ -242,14 +197,5 @@ module custom_top_wrapper # (
     assign   s_axi_rresp          = axi_rsp.r.resp;      
     assign   s_axi_rlast          = axi_rsp.r.last;      
     assign   s_axi_rvalid         = axi_rsp.r_valid;
-
-    assign  req_addr_o  = reg_req_correct.addr   ; 
-    assign  req_write_o = reg_req_correct.write  ; 
-    assign  req_wdata_o = reg_req_correct.wdata  ;  
-    assign  req_wstrb_o = reg_req_correct.wstrb  ;  
-    assign  req_valid_o = reg_req_correct.valid  ;  
-    assign  rsp_rdata_o = reg_rsp.rdata  ; 
-    assign  rsp_error_o = reg_rsp.error  ;
-    assign  rsp_ready_o = reg_rsp.ready  ;
 
 endmodule : custom_top_wrapper

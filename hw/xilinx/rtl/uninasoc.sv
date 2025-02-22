@@ -464,71 +464,63 @@ module uninasoc (
     // Line 11 corresponds to EXT interrupt in RISC-V specification
     assign socket_int_line [11] = plic_int_irq_o;
 
-    // Currently, this is the interrupt line mapping
+    // Currently, this is the interrupt line mapping (from PLIC perspective/registers)
     // 0 - RESERVED
-    // 1 - GPIO_IN Interrupt (From PBUS)
+    // 1 - GPIO_IN Interrupt (From PBUS) (Embedded Only)
     // 2 - Timer 0 Interrupt (From PBUS)
     // 3 - Timer 1 Interrupt (From PBUS)
-    // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support interrupts yet)
+    // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support this yet)
     // others - reserved
 
     assign plic_int_line = {'0, pbus_int_line, 1'b0}; 
 
     custom_rv_plic custom_rv_plic_u (
-        .clk_i          ( soc_clk                   ), // input wire s_axi_aclk
-        .rst_ni         ( sys_resetn                ), // input wire s_axi_aresetn
+        .clk_i          ( soc_clk                       ), // input wire s_axi_aclk
+        .rst_ni         ( sys_resetn                    ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
-        .intr_src_i     ( plic_int_line             ), // Input interrupt lines (Sources)
-        .irq_o          ( plic_int_irq_o            ), // Output Interrupts (Targets -> Socket)
-        .irq_id_o       (                           ), // Unused 
-        .msip_o         (                           ),
-        .s_axi_awid     ( xbar_to_plic_axi_awid     ), // input wire [1 : 0] s_axi_awid
-        .s_axi_awaddr   ( xbar_to_plic_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
-        .s_axi_awlen    ( xbar_to_plic_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
-        .s_axi_awsize   ( xbar_to_plic_axi_awsize   ), // input wire [2 : 0] s_axi_awsize
-        .s_axi_awburst  ( xbar_to_plic_axi_awburst  ), // input wire [1 : 0] s_axi_awburst
-        .s_axi_awlock   ( xbar_to_plic_axi_awlock   ), // input wire [0 : 0] s_axi_awlock
-        .s_axi_awcache  ( xbar_to_plic_axi_awcache  ), // input wire [3 : 0] s_axi_awcache
-        .s_axi_awprot   ( xbar_to_plic_axi_awprot   ), // input wire [2 : 0] s_axi_awprot
-        .s_axi_awregion ( xbar_to_plic_axi_awregion ), // input wire [3 : 0] s_axi_awregion
-        .s_axi_awqos    ( xbar_to_plic_axi_awqos    ), // input wire [3 : 0] s_axi_awqos
-        .s_axi_awvalid  ( xbar_to_plic_axi_awvalid  ), // input wire s_axi_awvalid
-        .s_axi_awready  ( xbar_to_plic_axi_awready  ), // output wire s_axi_awready
-        .s_axi_wdata    ( xbar_to_plic_axi_wdata    ), // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb    ( xbar_to_plic_axi_wstrb    ), // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wlast    ( xbar_to_plic_axi_wlast    ), // input wire s_axi_wlast
-        .s_axi_wvalid   ( xbar_to_plic_axi_wvalid   ), // input wire s_axi_wvalid
-        .s_axi_wready   ( xbar_to_plic_axi_wready   ), // output wire s_axi_wready
-        .s_axi_bid      ( xbar_to_plic_axi_bid      ), // output wire [1 : 0] s_axi_bid
-        .s_axi_bresp    ( xbar_to_plic_axi_bresp    ), // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid   ( xbar_to_plic_axi_bvalid   ), // output wire s_axi_bvalid
-        .s_axi_bready   ( xbar_to_plic_axi_bready   ), // input wire s_axi_bready
-        .s_axi_arid     ( xbar_to_plic_axi_arid     ), // input wire [1 : 0] s_axi_arid
-        .s_axi_araddr   ( xbar_to_plic_axi_araddr   ), // input wire [31 : 0] s_axi_araddr
-        .s_axi_arlen    ( xbar_to_plic_axi_arlen    ), // input wire [7 : 0] s_axi_arlen
-        .s_axi_arsize   ( xbar_to_plic_axi_arsize   ), // input wire [2 : 0] s_axi_arsize
-        .s_axi_arburst  ( xbar_to_plic_axi_arburst  ), // input wire [1 : 0] s_axi_arburst
-        .s_axi_arlock   ( xbar_to_plic_axi_arlock   ), // input wire [0 : 0] s_axi_arlock
-        .s_axi_arcache  ( xbar_to_plic_axi_arcache  ), // input wire [3 : 0] s_axi_arcache
-        .s_axi_arprot   ( xbar_to_plic_axi_arprot   ), // input wire [2 : 0] s_axi_arprot
-        .s_axi_arregion ( xbar_to_plic_axi_arregion ), // input wire [3 : 0] s_axi_arregion
-        .s_axi_arqos    ( xbar_to_plic_axi_arqos    ), // input wire [3 : 0] s_axi_arqos
-        .s_axi_arvalid  ( xbar_to_plic_axi_arvalid  ), // input wire s_axi_arvalid
-        .s_axi_arready  ( xbar_to_plic_axi_arready  ), // output wire s_axi_arready
-        .s_axi_rid      ( xbar_to_plic_axi_rid      ), // output wire [1 : 0] s_axi_rid
-        .s_axi_rdata    ( xbar_to_plic_axi_rdata    ), // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp    ( xbar_to_plic_axi_rresp    ), // output wire [1 : 0] s_axi_rresp
-        .s_axi_rlast    ( xbar_to_plic_axi_rlast    ), // output wire s_axi_rlast
-        .s_axi_rvalid   ( xbar_to_plic_axi_rvalid   ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_plic_axi_rready   ),
-        .req_addr_o     (                           ),
-        .req_write_o    (                           ),
-        .req_wdata_o    (                           ),
-        .req_wstrb_o    (                           ),
-        .req_valid_o    (                           ),
-        .rsp_rdata_o    (                           ),
-        .rsp_error_o    (                           ),
-        .rsp_ready_o    (                           )
+        .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
+        .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)
+        .irq_id_o       (                               ), // Unused (non standard signal)
+        .msip_o         (                               ), // Unused (non standard signal)
+        .s_axi_awid     ( xbar_to_plic_axi_awid         ), // input wire [1 : 0] s_axi_awid
+        .s_axi_awaddr   ( xbar_to_plic_axi_awaddr[25:0] ), // input wire [25 : 0] s_axi_awaddr
+        .s_axi_awlen    ( xbar_to_plic_axi_awlen        ), // input wire [7 : 0] s_axi_awlen
+        .s_axi_awsize   ( xbar_to_plic_axi_awsize       ), // input wire [2 : 0] s_axi_awsize
+        .s_axi_awburst  ( xbar_to_plic_axi_awburst      ), // input wire [1 : 0] s_axi_awburst
+        .s_axi_awlock   ( xbar_to_plic_axi_awlock       ), // input wire [0 : 0] s_axi_awlock
+        .s_axi_awcache  ( xbar_to_plic_axi_awcache      ), // input wire [3 : 0] s_axi_awcache
+        .s_axi_awprot   ( xbar_to_plic_axi_awprot       ), // input wire [2 : 0] s_axi_awprot
+        .s_axi_awregion ( xbar_to_plic_axi_awregion     ), // input wire [3 : 0] s_axi_awregion
+        .s_axi_awqos    ( xbar_to_plic_axi_awqos        ), // input wire [3 : 0] s_axi_awqos
+        .s_axi_awvalid  ( xbar_to_plic_axi_awvalid      ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_plic_axi_awready      ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_plic_axi_wdata        ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_plic_axi_wstrb        ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wlast    ( xbar_to_plic_axi_wlast        ), // input wire s_axi_wlast
+        .s_axi_wvalid   ( xbar_to_plic_axi_wvalid       ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_plic_axi_wready       ), // output wire s_axi_wready
+        .s_axi_bid      ( xbar_to_plic_axi_bid          ), // output wire [1 : 0] s_axi_bid
+        .s_axi_bresp    ( xbar_to_plic_axi_bresp        ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_plic_axi_bvalid       ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_plic_axi_bready       ), // input wire s_axi_bready
+        .s_axi_arid     ( xbar_to_plic_axi_arid         ), // input wire [1 : 0] s_axi_arid
+        .s_axi_araddr   ( xbar_to_plic_axi_araddr[25:0] ), // input wire [25 : 0] s_axi_araddr
+        .s_axi_arlen    ( xbar_to_plic_axi_arlen        ), // input wire [7 : 0] s_axi_arlen
+        .s_axi_arsize   ( xbar_to_plic_axi_arsize       ), // input wire [2 : 0] s_axi_arsize
+        .s_axi_arburst  ( xbar_to_plic_axi_arburst      ), // input wire [1 : 0] s_axi_arburst
+        .s_axi_arlock   ( xbar_to_plic_axi_arlock       ), // input wire [0 : 0] s_axi_arlock
+        .s_axi_arcache  ( xbar_to_plic_axi_arcache      ), // input wire [3 : 0] s_axi_arcache
+        .s_axi_arprot   ( xbar_to_plic_axi_arprot       ), // input wire [2 : 0] s_axi_arprot
+        .s_axi_arregion ( xbar_to_plic_axi_arregion     ), // input wire [3 : 0] s_axi_arregion
+        .s_axi_arqos    ( xbar_to_plic_axi_arqos        ), // input wire [3 : 0] s_axi_arqos
+        .s_axi_arvalid  ( xbar_to_plic_axi_arvalid      ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_plic_axi_arready      ), // output wire s_axi_arready
+        .s_axi_rid      ( xbar_to_plic_axi_rid          ), // output wire [1 : 0] s_axi_rid
+        .s_axi_rdata    ( xbar_to_plic_axi_rdata        ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_plic_axi_rresp        ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rlast    ( xbar_to_plic_axi_rlast        ), // output wire s_axi_rlast
+        .s_axi_rvalid   ( xbar_to_plic_axi_rvalid       ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_plic_axi_rready       )
     );
     
     ////////////////////

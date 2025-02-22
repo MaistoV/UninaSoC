@@ -35,6 +35,8 @@ int main(){
     // Initialize the serial device (using tinyIO)
     serial_init();
 
+    printf("Interrupts Example\n\r");
+
     // Configure the PLIC
     plic_configure();
     plic_enable();

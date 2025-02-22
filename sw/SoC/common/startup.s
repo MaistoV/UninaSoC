@@ -60,7 +60,6 @@ _reset_handler:
   #####################
 
   # Set mtvec to vectored mode
-
   la x5, _vector_table_start  # Load vector table base address
   li x6, 1                    # Set vectored mode bit
   or x5, x5, x6               

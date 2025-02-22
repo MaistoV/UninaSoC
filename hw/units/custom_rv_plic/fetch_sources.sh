@@ -9,6 +9,10 @@ GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+#######################################
+# Fetch PLIC sources and depencencies #
+#######################################
+
 # Check Python dependencies
 echo -e "${YELLOW}[FETCH_SOURCES] Checking for Python Module hjson ... ${NC}"
 python3 -c "import hjson" &>/dev/null || { echo "${RED}hjson module not found, please install it${NC}"; exit 1; }
@@ -27,6 +31,10 @@ GIT_TAG=v0.4.0
 CLONE_DIR=otp
 git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}
 cd ${CLONE_DIR};
+
+# Patch bender file to download latest register_interface version
+# This is required as axi_to_reg_v1 is broken, and we need version 2 
+sed -i 's/version: 0.3.9/version: 0.4.5/' Bender.yml
 
 # Open-Titan peripherals (by PULP) requires a preliminar configuration and patching
 # Apply hjson configurations and patches
@@ -55,6 +63,10 @@ for file in ${DEP_REGISTER_INTERFACE}/include/register_interface/*.svh; do [ -f 
 for file in ${DEP_AXI}/include/axi/*.svh; do [ -f "$file" ] && cp "$file" "${RTL_DIR}/axi_$(basename "$file")"; done
 
 sudo rm -rf ${CLONE_DIR};
+
+#################
+# Patch sources #
+#################
 
 # We need a second step of local patching
 # 1 - Remove absolute path in source files in order to allow a flatten source code organization
