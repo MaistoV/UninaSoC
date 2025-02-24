@@ -41,7 +41,7 @@ read_ip $::env(IP_LIST_XCI)
 ######################
 # Project properties #
 ######################
-# TODO: Which memory IP was this for?
+# TODO: Which memory IP was this for? (CVA6 caches require this)
 set_property XPM_LIBRARIES XPM_MEMORY [current_project]
 
 # Set top level module

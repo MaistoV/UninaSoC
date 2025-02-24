@@ -31,7 +31,7 @@ module custom_top_wrapper # (
     parameter LOCAL_AXI_READY_WIDTH   = 1,
     parameter LOCAL_AXI_LAST_WIDTH    = 1,
     parameter LOCAL_AXI_RESP_WIDTH    = 2,
-    parameter LOCAL_AXI_USER_WIDTH    = 64
+    parameter LOCAL_AXI_USER_WIDTH    = 32
 
 ) (
 
@@ -44,9 +44,9 @@ module custom_top_wrapper # (
     // Asynchronous reset active low - SUBSYSTEM
     input logic rst_ni,
     // Reset boot address - SUBSYSTEM
-    input logic [64-1:0] boot_addr_i,
+    input logic [LOCAL_AXI_ADDR_WIDTH-1:0] boot_addr_i,
     // Hard ID reflected as CSR - SUBSYSTEM
-    input logic [64-1:0] hart_id_i,
+    input logic [LOCAL_AXI_DATA_WIDTH-1:0] hart_id_i,
     // Level sensitive (async) interrupts - SUBSYSTEM
     input logic [1:0] irq_i,
     // Inter-processor (async) interrupt - SUBSYSTEM
@@ -67,7 +67,6 @@ module custom_top_wrapper # (
     ////////////////////////////
 
     // AXI Master Interface Array 
-    // This interface is still a 32-bit one, need a change to 64
     `DEFINE_AXI_MASTER_PORTS(m)
 );
 
@@ -104,8 +103,8 @@ module custom_top_wrapper # (
   );
 
   // Map master port signals
-  assign m_axi_awid      = axi_req.aw.id;
-  assign m_axi_awaddr    = axi_req.aw.addr;
+  assign m_axi_awid      = axi_req.aw.id[1:0];
+  assign m_axi_awaddr    = axi_req.aw.addr[31:0];
   assign m_axi_awlen     = axi_req.aw.len;
   assign m_axi_awsize    = axi_req.aw.size;
   assign m_axi_awburst   = axi_req.aw.burst;
@@ -120,7 +119,7 @@ module custom_top_wrapper # (
   assign m_axi_wlast     = axi_req.w.last;
   assign m_axi_wvalid    = axi_req.w_valid;
   assign m_axi_bready    = axi_req.b_ready;
-  assign m_axi_araddr    = axi_req.ar.addr;
+  assign m_axi_araddr    = axi_req.ar.addr[31:0];
   assign m_axi_arlen     = axi_req.ar.len;
   assign m_axi_arsize    = axi_req.ar.size;
   assign m_axi_arburst   = axi_req.ar.burst;
@@ -131,19 +130,19 @@ module custom_top_wrapper # (
   assign m_axi_arregion  = axi_req.ar.region;
   assign m_axi_arvalid   = axi_req.ar_valid;
   assign m_axi_rready    = axi_req.r_ready;
-  assign m_axi_arid      = axi_req.ar.id;
+  assign m_axi_arid      = axi_req.ar.id[1:0];
 
-  assign axi_rsp.aw_ready = m_axi_awready;
-  assign axi_rsp.w_ready  = m_axi_wready;
-  assign axi_rsp.b.id     = m_axi_bid;
-  assign axi_rsp.b.resp   = m_axi_bresp;
-  assign axi_rsp.b_valid  = m_axi_bvalid;
-  assign axi_rsp.ar_ready = m_axi_arready;
-  assign axi_rsp.r.id     = m_axi_rid;
-  assign axi_rsp.r.data   = m_axi_rdata;
-  assign axi_rsp.r.resp   = m_axi_rresp;
-  assign axi_rsp.r.last   = m_axi_rlast;
-  assign axi_rsp.r_valid  = m_axi_rvalid;
+  assign axi_rsp.aw_ready   = m_axi_awready;
+  assign axi_rsp.w_ready    = m_axi_wready;
+  assign axi_rsp.b.id[1:0]  = m_axi_bid;
+  assign axi_rsp.b.resp     = m_axi_bresp;
+  assign axi_rsp.b_valid    = m_axi_bvalid;
+  assign axi_rsp.ar_ready   = m_axi_arready;
+  assign axi_rsp.r.id[1:0]  = m_axi_rid;
+  assign axi_rsp.r.data     = m_axi_rdata;
+  assign axi_rsp.r.resp     = m_axi_rresp;
+  assign axi_rsp.r.last     = m_axi_rlast;
+  assign axi_rsp.r_valid    = m_axi_rvalid;
 
 endmodule : custom_top_wrapper
 

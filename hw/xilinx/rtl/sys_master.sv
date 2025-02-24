@@ -9,10 +9,7 @@ import uninasoc_pkg::*;
 
 // Import headers
 `include "uninasoc_axi.svh"
-
-`ifdef HPC
-    `include "uninasoc_pcie.svh"
-`endif
+`include "uninasoc_pcie.svh"
 
 module sys_master
 (

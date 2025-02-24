@@ -20,7 +20,7 @@ mkdir ${RTL_DIR}
 GIT_URL=https://github.com/openhwgroup/cva6.git
 GIT_TAG=v5.1.0
 CLONE_DIR=cva6
-BENDER_TARGET=cv64a6_imafdch_sv39
+BENDER_TARGET=cv32a6_imac_sv32
 printf "${YELLOW}[FETCH_SOURCES] Cloning source repository${NC}\n"
 git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}
 cd ${CLONE_DIR};
