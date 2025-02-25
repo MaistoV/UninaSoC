@@ -26,7 +26,7 @@ config_ld:
 
 # Update config in Makefile
 CONFIG_CSV ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv
-OUTPUT_MK_FILE ?= ${XILINX_ROOT}/axi_config.mk
+OUTPUT_MK_FILE ?= ${XILINX_ROOT}/mk_config.mk
 config_xilinx:
 	export AXI_ADDR_WIDTH=$(shell grep "\bADDR_WIDTH\b" ${CONFIG_CSV} | awk -F "," '{print $$2}'); \
 	export AXI_DATA_WIDTH=$(shell grep "\bDATA_WIDTH\b" ${CONFIG_CSV} | awk -F "," '{print $$2}'); \

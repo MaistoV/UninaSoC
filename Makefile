@@ -3,20 +3,25 @@ ifndef ROOT_DIR
 $(error Setup script settings.sh has not been sourced, aborting)
 endif
 
-all: config
+all: hw sw
 
-hw:
+config:
+	${MAKE} -C ${CONFIG_ROOT}
 
-xilinx: units
+hw: xilinx units
+
+xilinx: units config
 	${MAKE} -C ${XILINX_ROOT}
 
 units:
 	${MAKE} -C ${HW_UNITS_ROOT}
 
-config:
-	${MAKE} -C ${CONFIG_ROOT} ${CONFIG_CSV}
-
-sw:
+sw: config
 	${MAKE} -C ${SW_ROOT}
 
-.PHONY: sim xilinx sw config
+clean:
+	${MAKE} -C ${XILINX_ROOT} clean clean_ips
+	${MAKE} -C ${HW_UNITS_ROOT} clean
+	${MAKE} -C ${SW_ROOT} clean
+
+.PHONY: config hw sw xilinx units

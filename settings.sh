@@ -45,7 +45,7 @@ export VLTSTD_INC=/usr/share/verilator/include/vltstd/
 export XILINX_PROJECT_NAME=uninasoc
 
 #############################
-# SoC & Board Configuration # 
+# SoC & Board Configuration #
 #############################
 # Select the Device category (hpc or embedded). This instantiate the specific
 # System-on-chip layout. In addition you can specify the board configuration
@@ -54,7 +54,7 @@ export XILINX_PROJECT_NAME=uninasoc
 # the default board configuration.
 
 # hpc      -> { au250           , au280 (TBD)   , au50 (TBD)  }
-# embedded -> { nexys_a7_100t   , nexys_a7_50t                }    
+# embedded -> { nexys_a7_100t   , nexys_a7_50t                }
 
 # PS: Environmental variable BOARD should match the .xdc constraint file name.
 
@@ -62,7 +62,7 @@ SOC_CONFIG=$1
 BOARD_CONFIG=$2
 
 if [[ ${SOC_CONFIG} == "hpc" ]]; then
-    
+
     export SOC_CONFIG=hpc
 
     # Use wildcard instead device specific part number
@@ -70,10 +70,10 @@ if [[ ${SOC_CONFIG} == "hpc" ]]; then
 
     if [[ ${BOARD_CONFIG} == "au280" ]]; then
         # TBD
-        echo "[Error] Board Configuration ${BOARD_CONFIG} unsupported!" >&2 ; 
+        echo "[Error] Board Configuration ${BOARD_CONFIG} unsupported!" >&2 ;
     elif [[ ${BOARD_CONFIG} == "au50" ]]; then
         # TBD
-        echo "[Error] Board Configuration ${BOARD_CONFIG} unsupported!" >&2 ; 
+        echo "[Error] Board Configuration ${BOARD_CONFIG} unsupported!" >&2 ;
     else
         # Alveo  250
         export XILINX_PART_NUMBER=xcu250-figd2104-2L-e
@@ -94,8 +94,8 @@ else
         export XILINX_PART_NUMBER=xc7a50ticsg324-1L
         export XILINX_BOARD_PART=digilentinc.com:nexys-a7-50t:part0:1.3
         export XILINX_HW_DEVICE=xc7a50t_0
-        export BOARD=Nexys-A7-50T-Master 
-    else 
+        export BOARD=Nexys-A7-50T-Master
+    else
         # Nexsys A7-100T
         export XILINX_PART_NUMBER=xc7a100tcsg324-1
         export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.0
@@ -134,6 +134,8 @@ export QUESTA_PATH=$(dirname $(which vsim))
 ############
 # Add GCC and Spike to path
 export SW_ROOT=${ROOT_DIR}/sw
+export SW_HOST_ROOT=${ROOT_DIR}/sw/host
+export SW_SOC_ROOT=${ROOT_DIR}/sw/SoC
 export BOOTROM_COE=${SW_ROOT}/bootrom.coe
 
 
