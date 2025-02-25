@@ -49,6 +49,10 @@ module peripheral_bus (
     // AXI Lite bus from the axilite crossbar to the UART
     `DECLARE_AXILITE_BUS(xbar_to_uart);
 
+    // EMBEDDED ONLY
+    // AXI Lite bus from the axilite crossbar to the GPIO_out
+    `DECLARE_AXILITE_BUS(xbar_to_gpio);
+
     `ifdef HPC
         `DECLARE_AXILITE_BUS(xbar_to_sync); 
         `CONCAT_AXILITE_SLAVES_ARRAY2(xbar_slaves, xbar_to_sync, xbar_to_uart);
@@ -220,9 +224,6 @@ module peripheral_bus (
     generate
         // GPIO out
         for ( genvar i = 0; i < NUM_GPIO_OUT; i++ ) begin
-            // axi4_to_axilite -> gpio_out
-            `DECLARE_AXILITE_BUS(xbar_to_gpio);
-
             // GPIO instance
             xlnx_axi_gpio_out gpio_out_u (
                 .s_axi_aclk     ( clock_i                           ), // input wire s_axi_aclk
