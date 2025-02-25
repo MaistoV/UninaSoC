@@ -38,7 +38,7 @@ def parse_property (
 		# Slave Priorities, Slave Thread IDs Width, Slave Single Thread Modes, Slave Base IDs,
 		# Master SECURE Modes, Ranges' Base Address, Ranges' Width Acquisition
 		case "STRATEGY" | "R_REGISTER" | "PROTOCOL" | "ADDR_WIDTH" | "DATA_WIDTH" | "CONNECTIVITY_MODE" | \
-			"Slave_Priority" | "THREAD_ID_WIDTH" | "SINGLE_THREAD" | "BASE_ID" | "SECURE" | "RANGE_BASE_ADDR" | "RANGE_ADDR_WIDTH":
+			"Slave_Priority" | "THREAD_ID_WIDTH" | "SINGLE_THREAD" | "BASE_ID" | "SECURE" | "RANGE_BASE_ADDR" | "RANGE_ADDR_WIDTH" | "RANGE_NAMES":
 			func_name = base_func_name + property_name
 		# ID Width Acquisition
 		case "ID_WIDTH":
@@ -62,9 +62,9 @@ def parse_property (
 		case "READ_CONNECTIVITY" | "WRITE_CONNECTIVITY":
 			func_name = base_func_name + "Connectivity"
 		# Ignored args
-		case "RANGE_NAMES":
-			logging.info("Ignoring property " + property_name)
-			skip_call = True
+		# case "RANGE_NAMES":
+		# 	logging.info("Ignoring property " + property_name)
+		# 	skip_call = True
 		# Unsupported Parameters
 		case _:
 			skip_call = True
