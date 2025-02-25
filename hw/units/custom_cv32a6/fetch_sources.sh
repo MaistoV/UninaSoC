@@ -84,6 +84,12 @@ done
 sed -i '/<=/ s/rs1_forwarding_i/rs1_forwarding_i[0]/g' ${RTL_DIR}/ex_stage.sv
 sed -i '/<=/ s/rs2_forwarding_i/rs2_forwarding_i[0]/g' ${RTL_DIR}/ex_stage.sv
 
+# Enable synthesis for xilinx sram (from tech cells)
+sed -i 's/translate_off/translate_on/g' ${RTL_DIR}/tc_sram_wrapper.sv
+
+
+
+
 ####################
 # Remove Artifacts #
 ####################

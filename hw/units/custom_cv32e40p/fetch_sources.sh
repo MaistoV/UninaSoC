@@ -26,7 +26,7 @@ curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf
 # Download dependencies (specify Target RTL and FPGA)
 printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"
 ./bender checkout
-./bender script flist > ../remote.flist
+./bender script flist -t fpga > ../remote.flist
 cp cv32e40p_fpu_manifest.flist ../local.flist
 
 # Process remote.flist (just save the .bender files)
