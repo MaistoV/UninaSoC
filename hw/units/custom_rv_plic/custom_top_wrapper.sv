@@ -24,6 +24,7 @@ module custom_top_wrapper # (
     // Targets are the number of harts receiving interrupts
     parameter int unsigned              SOURCE_NUM          = 32,
     parameter int unsigned              TARGET_NUM          = 1, 
+    // 0 means level interrupts. 1 should be Edge Trigger, but it is not supported
     parameter logic [SOURCE_NUM-1:0]    LEVEL_EDGE_TRIGGER  = '0, 
     parameter int                       SRCW                = $clog2(SOURCE_NUM),
     
@@ -73,7 +74,7 @@ module custom_top_wrapper # (
     //  Bus Array Interfaces  //
     ////////////////////////////
 
-    // AXI Master Interface Array (Add here as many master as required)
+    // AXI Slave Interface 
     `DEFINE_AXI_SLAVE_PORTS(s) 
 );
 
