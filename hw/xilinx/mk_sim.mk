@@ -1,4 +1,5 @@
 # Description: Make target for simulation
+# TODO: The simulation flow is not yet supported, this file is just a placeholder
 
 sim_compile_simlib:
 	${XILINX_VIVADO_BATCH} -source ${XILINX_SIM_TCL_ROOT}/compile_simlib.tcl
