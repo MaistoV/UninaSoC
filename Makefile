@@ -8,7 +8,7 @@ all: hw sw
 config:
 	${MAKE} -C ${CONFIG_ROOT}
 
-hw: xilinx units
+hw: xilinx
 
 xilinx: units config
 	${MAKE} -C ${XILINX_ROOT}
