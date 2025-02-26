@@ -1,3 +1,4 @@
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: Hold all the Xilinx-related utility targets
 
 # Open project in TCL mode
