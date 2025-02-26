@@ -28,6 +28,7 @@ open_ila:
 		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SYNTH_TCL_ROOT}/set_ila_trigger.tcl
 
+# Trigger a reset pulse on VIO reset probe 
 vio_reset:
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
