@@ -61,10 +61,6 @@ def parse_property (
 		# Read and Write Connectivity Acquisition
 		case "READ_CONNECTIVITY" | "WRITE_CONNECTIVITY":
 			func_name = base_func_name + "Connectivity"
-		# Ignored args
-		# case "RANGE_NAMES":
-		# 	logging.info("Ignoring property " + property_name)
-		# 	skip_call = True
 		# Unsupported Parameters
 		case _:
 			skip_call = True
