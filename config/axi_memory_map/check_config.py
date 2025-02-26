@@ -89,15 +89,22 @@ def check_single_config(config : configuration.Configuration, config_file_name: 
         if i > 0:
             # Check if the current address does not fall into the addr range one of the previous slaves
             for j in range(len(base_addresses)):
-                if base_address < end_addresses[j] and base_address > base_addresses[j]:
+                if (base_address < end_addresses[j]) and (base_address > base_addresses[j]):
                     __print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
                     return False
-                elif end_address > base_addresses[j] and base_address < base_addresses[j]:
+                elif (end_address > base_addresses[j]) and (base_address < base_addresses[j]):
                     __print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
                     return False
-                elif end_address == base_addresses[j] or end_address == end_addresses[j] or base_address == base_addresses[j] or base_address == end_addresses[j]:
+                elif (base_address < base_addresses[j]) and (end_address > end_addresses[j]):
+                    __print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
+                    return False 
+                elif (base_address > base_addresses[j]) and (end_address < end_addresses[j]):
+                    __print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
+                    return False 
+                elif (end_address == base_addresses[j]) or (end_address == end_addresses[j]) or (base_address == base_addresses[j]) or (base_address == end_addresses[j]):
                     __print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
                     return False
+                
 
         base_addresses.append(base_address)
         end_addresses.append(end_address)
