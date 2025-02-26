@@ -257,7 +257,7 @@ module peripheral_bus #(
 
     // AXI4 Lite Timers
 
-    xlnx_axi_timer tim0_u (
+    xlnx_axilite_timer tim0_u (
         .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( xbar_to_tim0_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
@@ -287,7 +287,7 @@ module peripheral_bus #(
         .pwm0           (                           ) // output [0:0]
     );
 
-    xlnx_axi_timer tim1_u (
+    xlnx_axilite_timer tim1_u (
         .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( xbar_to_tim1_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
