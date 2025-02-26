@@ -5,30 +5,30 @@
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
 
-// System architecture: (To Be Updated with GPIO, PLIC, UART and TIMER)
+// System architecture:
 //                                                                                    ________
-//   _________              ____________               __________                    |        |
-//  |         |            |            |             |          |                   |  Main  |
-//  |   vio   |----------->| rvm_socket |------------>|          |------------------>| Memory |
-//  |_________|            |____________|             |          |                   |________|
-//   ____________                                     |          |                    ______________
+//                                                     __________                    |        |
+//                                                    |          |                   |  Main  |
+//                                                    |          |------------------>| Memory |
+//                                                    |   Main   |                   |________|
+//   ____________                                     |   Bus    |                    ______________
 //  |            |                                    |          |                   |   (slave)    |
 //  | sys_master |----------------------------------->|          |------------------>| Debug Module |
 //  |____________|                                    |          |                   |______________|
 //   ______________                                   |          |                    ________________ 
 //  |   (master)   |                                  |          |                   |                |
-//  | Debug Module |--------------------------------->|          |------------------>| Peripheral bus |
-//  |______________|                                  |          |                   |     (PBUS)     |
-//                                                    |          |                   |________________|
-//                                                    |          |                    ________________ 
-//                                                    |          |                   |                |
-//                                                    |          |------------------>|      PLIC      |
-//                                                    |          |                   |________________|
-//                                                    |          |                   
-//                                                    |__________|
-//
-//
-//
+//  | Debug Module |--------------------------------->|          |------------------>| Peripheral bus |---------|
+//  |______________|                                  |          |                   |     (PBUS)     |         |
+//                                                    |          |                   |________________|         | peripheral
+//   _________              ____________              |          |                    ________________          | interrupts
+//  |         |            |            |             |          |                   |                |         |
+//  |   vio   |----------->| rvm_socket |------------>|          |------------------>|      PLIC      |<--------|
+//  |_________|            |____________|             |          |                   |________________| 
+//                                |                   |          |                            |
+//                                |                   |__________|                            |  
+//                                |                                                           |
+//                                |___________________________________________________________| 
+//                                                 platform interrupt
 
 /////////////////////
 // Import packages //
@@ -63,7 +63,7 @@ module uninasoc (
         output logic                        uart_tx_o,
 
         // GPIOs
-        input  wire [NUM_GPIO_IN  -1 : 0]   gpio_in_i,
+        input  logic [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `elsif HPC
         // DDR4 Channel 0 clock and reset
@@ -88,7 +88,7 @@ module uninasoc (
     // Local variables //
     /////////////////////
     
-    localparam PeripheralsInterruptsNum = 4;
+    localparam peripherals_interrupts_num = 4;
 
     ///////////////////
     // Local Signals //
@@ -103,10 +103,10 @@ module uninasoc (
     logic vio_resetn;
 
     // Socket interrupts
-    logic [31:0] socket_int_line;
+    logic [31:0] rvm_socket_interrupt_line;
 
     // Peripheral bus interrupts
-    logic [PeripheralsInterruptsNum-1:0] pbus_int_line;
+    logic [peripherals_interrupts_num-1:0] pbus_int_line;
 
     /////////////////
     // AXI Masters //
@@ -330,7 +330,7 @@ module uninasoc (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( sys_resetn & vio_resetn ),
         .bootaddr_i     ( '0         ),
-        .irq_i          ( socket_int_line ),
+        .irq_i          ( rvm_socket_interrupt_line ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,
@@ -462,7 +462,7 @@ module uninasoc (
     logic plic_int_irq_o;
 
     // Line 11 corresponds to EXT interrupt in RISC-V specification
-    assign socket_int_line [11] = plic_int_irq_o;
+    assign rvm_socket_interrupt_line [11] = plic_int_irq_o;
 
     // Currently, this is the interrupt line mapping (from PLIC perspective/registers)
     // 0 - RESERVED

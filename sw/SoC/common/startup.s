@@ -60,18 +60,18 @@ _reset_handler:
   #####################
 
   # Set mtvec to vectored mode
-  la x5, _vector_table_start  # Load vector table base address
-  li x6, 1                    # Set vectored mode bit
-  or x5, x5, x6               
-  csrw mtvec, x5              # Commit on mtvec register
+  la a0, _vector_table_start  # Load vector table base address
+  li a1, 1                    # Set vectored mode bit
+  or a1, a1, a0               
+  csrw mtvec, a1              # Commit on mtvec register
 
   # Enable global interrupts
   csrs mstatus, 0x8           # Enable MIE in mstatus
 
   # Enable local interrupt lines
   # MEI (External Interrupt), MSI (Software Interrupt) e MTI (Timer Interrupt) in mie register
-  li x6, 0x0888
-  csrs mie, x6
+  li a1, 0x0888
+  csrs mie, a1
 
   ########
   # Tail #

@@ -47,7 +47,7 @@ package uninasoc_pkg;
     `ifdef EMBEDDED 
         localparam int unsigned NUM_AXILITE_SLAVES = 5;
     // Slaves if HPC
-    // - UART (physical)
+    // - UART (Virtual)
     // - Timer 0
     // - Timer 1
     `elsif HPC
