@@ -132,7 +132,6 @@ export QUESTA_PATH=$(dirname $(which vsim))
 ############
 # Software #
 ############
-# Add GCC and Spike to path
 export SW_ROOT=${ROOT_DIR}/sw
 export SW_HOST_ROOT=${ROOT_DIR}/sw/host
 export SW_SOC_ROOT=${ROOT_DIR}/sw/SoC
