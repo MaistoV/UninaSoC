@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 # Fetch PLIC sources and depencencies #
 #######################################
 
-# Check Python dependencies
+# Check Python dependencies (hjson requires Python 3.3+). If you need more info, heck OpenTitan doc: https://opentitan.org/book/doc/contributing/style_guides/hjson_usage_style.html
 echo -e "${YELLOW}[FETCH_SOURCES] Checking for Python Module hjson ... ${NC}"
 python3 -c "import hjson" &>/dev/null || { echo "${RED}hjson module not found, please install it${NC}"; exit 1; }
 
@@ -57,7 +57,7 @@ cp ${DEP_REGISTER_INTERFACE}/vendor/lowrisc_opentitan/src/*.sv ${RTL_DIR};
 cp ${DEP_AXI}/src/*.sv ${RTL_DIR};
 cp ${DEP_COMMON_CELLS}/src/*.sv ${RTL_DIR};
 
-# Move Header Files
+# Move Header Files into flatten representation in rtl
 cp ${DEP_COMMON_CELLS}/include/common_cells/*.svh ${RTL_DIR};
 for file in ${DEP_REGISTER_INTERFACE}/include/register_interface/*.svh; do [ -f "$file" ] && cp "$file" "${RTL_DIR}/reg_$(basename "$file")"; done
 for file in ${DEP_AXI}/include/axi/*.svh; do [ -f "$file" ] && cp "$file" "${RTL_DIR}/axi_$(basename "$file")"; done
