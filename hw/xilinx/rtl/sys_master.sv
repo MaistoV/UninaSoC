@@ -9,28 +9,25 @@ import uninasoc_pkg::*;
 
 // Import headers
 `include "uninasoc_axi.svh"
+`include "uninasoc_pcie.svh"
 
-`ifdef HPC
-    `include "uninasoc_pcie.svh"
-`endif
 
 module sys_master
 (
 
-    `ifdef EMBEDDED
-        // Input clock and reset
-        input logic sys_clock_i,
-        input logic sys_reset_i,
-    `elsif HPC
-        // Input clock and reset
-        input logic pcie_refclk_p_i,
-        input logic pcie_refclk_n_i,
-        input logic pcie_resetn_i,
-
-        // PCIe interface
-        `DEFINE_PCIE_PORTS,
-    `endif
-
+    // EMBEDDED ONLY
+    // Input clock and reset
+    input logic sys_clock_i,
+    input logic sys_reset_i,
+    
+    // HPC ONLY
+    // Input clock and reset
+    input logic pcie_refclk_p_i,
+    input logic pcie_refclk_n_i,
+    input logic pcie_resetn_i,
+    // PCIe interface
+    `DEFINE_PCIE_PORTS,
+    
     // Output clk and reset
     output logic soc_clk_o,
     output logic sys_resetn_o,
@@ -243,8 +240,8 @@ module sys_master
         .resetn   ( sys_resetn_o ),
         .locked   ( ),
         .clk_100  ( ),
-        .clk_50   ( soc_clk_o   ),
-        .clk_20   ( ),
+        .clk_50   ( ),
+        .clk_20   ( soc_clk_o ),
         .clk_10   ( )
     );
 

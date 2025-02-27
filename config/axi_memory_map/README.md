@@ -3,16 +3,31 @@ This tree allows for the automatic generation of the AXI crossbar IP and linker 
 
 ## Prerequisites and Tools versions
 This tree has been verified with the following tools and versions
-* Vivado 2022.2
+* Vivado 2022.2 2024.2
 * AXI Interconnect v2.1
 * Pyhton >= 3.10
 * Pandas >= 2.2.3
 
 ##  Configuration file format
-The input configuration file is a CSV file. Each row of this file holds a property name and value pair.
+The input configuration files are CSV files. These files are under the configs directory structured as follows:
+```
+configs
+├── embedded                         # Config files for embedded
+│   ├── config_main_bus.csv          # Main bus config file
+│   └── config_peripheral_bus.csv    # Peripheral bus config file
+├── hpc                              # Config files for hpc
+│   ├── config_main_bus.csv          # Main bus config file
+│   └── config_peripheral_bus.csv    # Peripheral bus config file
+└── PoC_config.csv                   # Proof-of-Concept config file
+``` 
+
+Each file is the configuration for a specific bus. For now only main bus and peripheral bus are supported.
+In each file, each row of the file holds a property name and value pair.
 Some properties are array, with elements separated by a space " " character. The following table details the supported properties.
 
 > **IMPORTANT NOTE**: For now, addresses are not sanitized! Hence, in case of overlaps or width-related misconfiguration, the interconnect might not be fully funcional.
+
+> **IMPORTANT NOTE**: The base address of a bus that is the slave of another bus must be the same address associated to it in the parent. E.g. if the peripheral bus (pbus) has the address 0x10000 in the main bus (mbus) then the first peripheral in the pbus (uart) must have the base address 0x10000.
 
 | Name  | Description | Values | Default
 |-|-|-|-|
@@ -47,9 +62,10 @@ Some properties are array, with elements separated by a space " " character. The
 | BUSER_WIDTH           | AXI  B User width                                         | (0..1024)                                                 | 0
 
 ## Genenerate Configurations
-To generate configurations, set the `CONFIG_CSV` envvar to a config file and run:
+To generate configurations change the CSV files according to your needs and:
 ``` bash
-$ make config_axi # generates AXI crossbar config
+$ make config_main_bus # generates main bus config
+$ make config_peripheral_bus # generates peripheral bus config
 $ make config_ld # generates linker script
 ```
 
@@ -63,8 +79,8 @@ The configuration scripting architecture is structured as in the following figur
 
 ### How to add a new property
 To add a new property:
-1. In the target CSV file, e.g. `config.csv`, add the new key-value pair.
-2. In file `configuration.py`, add the new property to the config class. Name must match the key in `config.csv`.
+1. In the target CSV file, e.g. `config_main_bus.csv`, add the new key-value pair.
+2. In file `configuration.py`, add the new property to the config class. Name must match the key in `config_main_bus.csv`.
 3. In file `parse_properties_wrapper.py`, file add a case that composes the new function call.
 4. In file `parse_properties_impl.py`, add a function that handles the new property:
     - how it is parsed.
