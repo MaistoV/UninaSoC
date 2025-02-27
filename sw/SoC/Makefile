@@ -11,10 +11,10 @@ endif
 EXAMPLES_NAMES	:= $(shell basename --multiple $(SW_ROOT)/SoC/examples/*)
 EXAMPLES_LIST	:= $(foreach ip,${EXAMPLES_NAMES},$(SW_ROOT)/SoC/examples/${ip})
 
-all: build_examples
+all: examples
 
 # Compile all examples in the example dir
-build_examples: 
+examples:
 	@echo "[Make] Compile all the example projects"
 	@for example in ${EXAMPLES_LIST}; do \
 		echo "[Make] Compiling project $$example" ; \
@@ -22,4 +22,13 @@ build_examples:
 		echo "\n[Make] Done\n" ; \
 	done
 
-.PHONY: build_examples
+clean:
+	@echo "[Make] Clean all the example projects"
+	@for example in ${EXAMPLES_LIST}; do \
+		echo "[Make] Compiling project $$example" ; \
+		${MAKE} -C $$example clean; \
+		echo "\n[Make] Done\n" ; \
+	done
+
+
+.PHONY: examples
