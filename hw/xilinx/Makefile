@@ -6,7 +6,7 @@ endif
 #########################
 # Include configuration #
 #########################
-include mk_config.mk
+include make/config.mk
 
 
 ######################
@@ -145,19 +145,19 @@ ips: ${IP_NAMES}
 # Utilities #
 #############
 
-include mk_utils.mk
+include make/utils.mk
 
 ##############
 # Simulation #
 ##############
 
-include mk_sim.mk
+include make/sim.mk
 
 ###############
 # Load binary #
 ###############
 
-include mk_load_binary.mk
+include make/load_binary.mk
 
 ############
 # Cleaning #
