@@ -585,3 +585,12 @@ def parse_Connectivity (
 						config.WRITE_CONNECTIVITY.append(1)
 		logging.warning("Not enough correct " + property_name  + " values have been given. Using default values.")
 	return config
+
+def parse_RANGE_NAMES(
+	config,
+	property_name : str,
+	property_value: str,
+):
+	values = property_value.split()
+	config.RANGE_NAMES = values.copy()
+	return config
