@@ -462,7 +462,7 @@ module uninasoc (
     logic plic_int_irq_o;
 
     // Line 11 corresponds to EXT interrupt in RISC-V specification
-    assign rvm_socket_interrupt_line [11] = plic_int_irq_o;
+    assign rvm_socket_interrupt_line = {21'h0, plic_int_irq_o, 10'h0};
 
     // Currently, this is the interrupt line mapping (from PLIC perspective/registers)
     // 0 - RESERVED

@@ -67,7 +67,7 @@ module custom_top_wrapper # (
 
     // Interrupt notification to targets
     output [TARGET_NUM-1:0]             irq_o,
-    output [SRCW-1:0]                   irq_id_o[TARGET_NUM],
+    output [TARGET_NUM-1:0][SRCW-1:0]   irq_id_o,
     output logic [TARGET_NUM-1:0]       msip_o,
             
     ////////////////////////////
@@ -110,6 +110,8 @@ module custom_top_wrapper # (
     // Instantiate Units //
     ///////////////////////
 
+    logic [SRCW-1:0]   irq_id_int[TARGET_NUM];
+
     rv_plic #(
     	.reg_req_t			( reg_req_t             ),
     	.reg_rsp_t			( reg_rsp_t             ),
@@ -127,7 +129,7 @@ module custom_top_wrapper # (
     	 
     	// Interrupt notification to targets
     	.irq_o				( irq_o                 ),
-    	.irq_id_o			( irq_id_o              ),
+    	.irq_id_o			( irq_id_int            ),
     	.msip_o				( msip_o                )
     	
     );
@@ -156,6 +158,10 @@ module custom_top_wrapper # (
         .busy_o             ( )
     );
 
+
+    // Map interrupt ports
+    for(genvar i = 0; i < TARGET_NUM; i++)
+        assign irq_id_o[i][SRCW-1:0] = irq_id_int[i];
 
     // Map input/output AXI port 
     assign   axi_req.aw.id        = s_axi_awid;

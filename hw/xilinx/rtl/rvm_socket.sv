@@ -25,6 +25,18 @@ module rvm_socket # (
     `DEFINE_AXI_MASTER_PORTS(rvm_socket_data)
 );
 
+    //////////////////////////////////////////////////////
+    //    ___                         _                 //
+    //   | _ \__ _ _ _ __ _ _ __  ___| |_ ___ _ _ ___   //
+    //   |  _/ _` | '_/ _` | '  \/ -_)  _/ -_) '_(_-<   //
+    //   |_| \__,_|_| \__,_|_|_|_\___|\__\___|_| /__/   //
+    //                                                  //
+    //////////////////////////////////////////////////////
+
+    localparam SW_INT_PIN = 3;
+    localparam TIM_INT_PIN = 7;
+    localparam EXT_INT_PIN = 11;
+
     //////////////////////////////////////
     //    ___ _                _        //
     //   / __(_)__ _ _ _  __ _| |___    //
@@ -204,9 +216,9 @@ module rvm_socket # (
 
                 // Interrupts
                 // Ublaze can only take one external interrupt, which we tie to EXT interrupt (from the PLIC)
-                .Interrupt          ( irq_i[11]   ), // input wire Interrupt 
-                .Interrupt_Address  ('0           ), // input wire [0 : 31] Interrupt_Address
-                .Interrupt_Ack      (             ), // output wire [0 : 1] Interrupt_Ack
+                .Interrupt          ( irq_i[EXT_INT_PIN]    ), // input wire Interrupt 
+                .Interrupt_Address  ('0                     ), // input wire [0 : 31] Interrupt_Address
+                .Interrupt_Ack      (                       ), // output wire [0 : 1] Interrupt_Ack
 
                 // Debug port to MDMV
                 .Dbg_Clk            ( Dbg_Clk     ), // input wire Dbg_Clk
