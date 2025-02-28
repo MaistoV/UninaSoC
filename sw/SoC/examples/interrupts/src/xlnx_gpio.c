@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "xlnx_gpio.h"
 
 void gpio_in_configure(){
 

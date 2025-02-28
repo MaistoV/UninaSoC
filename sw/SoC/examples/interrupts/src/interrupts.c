@@ -1,9 +1,9 @@
 #include "interrupts.h"
 #include "plic.h"
-#include "tim.h"
+#include "xlnx_tim.h"
 
 #ifdef IS_EMBEDDED
-    #include "gpio.h"
+    #include "xlnx_gpio.h"
 #endif 
 
 

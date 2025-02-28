@@ -1,4 +1,4 @@
-#include "tim.h"
+#include "xlnx_tim.h"
 #include "serial.h"
 
 void tim_configure(){

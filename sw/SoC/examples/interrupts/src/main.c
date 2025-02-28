@@ -16,13 +16,13 @@
 
 #include <stdint.h>
 
-#include "tim.h"
+#include "xlnx_tim.h"
 #include "plic.h"
 #include "interrupts.h"
 #include "serial.h"
 
 #ifdef IS_EMBEDDED
-    #include "gpio.h"
+    #include "xlnx_gpio.h"
 #endif 
 
 int main(){
