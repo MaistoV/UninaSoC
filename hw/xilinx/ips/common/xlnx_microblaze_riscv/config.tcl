@@ -36,6 +36,7 @@ set_property -dict [list \
         CONFIG.C_USE_BARREL                 {1} \
         CONFIG.C_USE_COUNTERS               {1} \
         CONFIG.C_ILL_INSTR_EXCEPTION        {2} \
+        CONFIG.C_USE_INTERRUPT              {1} \
     ] [get_ips $::env(IP_NAME)]
 
 # More unset properties for future reference

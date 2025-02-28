@@ -20,7 +20,6 @@ set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_
 set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_awvalid -of_objects [get_hw_ilas]]
 set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_wvalid  -of_objects [get_hw_ilas]]
 
-
 ###########
 # Arm ILA #
 ###########

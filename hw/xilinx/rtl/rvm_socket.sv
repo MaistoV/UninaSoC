@@ -3,7 +3,6 @@
 // Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
 // Description: Wrapper module for a RVM core
 
-
 // Import packages
 import uninasoc_pkg::*;
 
@@ -15,7 +14,7 @@ module rvm_socket # (
     parameter core_selector_t CORE_SELECTOR = CORE_MICROBLAZEV,
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
-    parameter int unsigned    NUM_IRQ       = 3
+    parameter int unsigned    NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,
@@ -25,6 +24,18 @@ module rvm_socket # (
     `DEFINE_AXI_MASTER_PORTS(rvm_socket_instr),
     `DEFINE_AXI_MASTER_PORTS(rvm_socket_data)
 );
+
+    //////////////////////////////////////////////////////
+    //    ___                         _                 //
+    //   | _ \__ _ _ _ __ _ _ __  ___| |_ ___ _ _ ___   //
+    //   |  _/ _` | '_/ _` | '  \/ -_)  _/ -_) '_(_-<   //
+    //   |_| \__,_|_| \__,_|_|_|_\___|\__\___|_| /__/   //
+    //                                                  //
+    //////////////////////////////////////////////////////
+
+    localparam SW_INT_PIN = 3;
+    localparam TIM_INT_PIN = 7;
+    localparam EXT_INT_PIN = 11;
 
     //////////////////////////////////////
     //    ___ _                _        //
@@ -204,9 +215,10 @@ module rvm_socket # (
                 .Reset              ( dbg_sys_rst ), // input wire Reset
 
                 // Interrupts
-                .Interrupt          ( irq_i[0]    ), // input wire Interrupt
-                .Interrupt_Address  ('0           ), // input wire [0 : 31] Interrupt_Address
-                .Interrupt_Ack      (             ), // output wire [0 : 1] Interrupt_Ack
+                // Ublaze can only take one external interrupt, which we tie to EXT interrupt (from the PLIC)
+                .Interrupt          ( irq_i[EXT_INT_PIN]    ), // input wire Interrupt 
+                .Interrupt_Address  ('0                     ), // input wire [0 : 31] Interrupt_Address
+                .Interrupt_Ack      (                       ), // output wire [0 : 1] Interrupt_Ack
 
                 // Debug port to MDMV
                 .Dbg_Clk            ( Dbg_Clk     ), // input wire Dbg_Clk

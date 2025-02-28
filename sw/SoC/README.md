@@ -23,6 +23,7 @@ make build_examples
 The existing examples include:
 - `blinky` - Supported only on the embedded configuration.
 - `echo` and `hello_world` - Supported on both embedded and HPC configurations.
+- `interrupts` - Supported on both embedded and HPC configurations.
 
 `echo` and `hello_world` examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library to support `printf()` and `scanf()` on UART. 
 

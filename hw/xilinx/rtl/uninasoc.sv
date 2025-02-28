@@ -2,31 +2,44 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
 
 // System architecture:
 //                                                                                    ________
-//   _________              ____________               __________                    |        |
-//  |         |            |            |             |          |                   |  Main  |
-//  |   vio   |----------->| rvm_socket |------------>|          |------------------>| Memory |
-//  |_________|            |____________|             |   AXI    |                   |________|
-//   ____________                                     | crossbar |                    ______________
+//                                                     __________                    |        |
+//                                                    |          |                   |  Main  |
+//                                                    |          |------------------>| Memory |
+//                                                    |   Main   |                   |________|
+//   ____________                                     |   Bus    |                    ______________
 //  |            |                                    |          |                   |   (slave)    |
 //  | sys_master |----------------------------------->|          |------------------>| Debug Module |
 //  |____________|                                    |          |                   |______________|
 //   ______________                                   |          |                    ________________ 
 //  |   (master)   |                                  |          |                   |                |
-//  | Debug Module |--------------------------------->|          |------------------>| Peripheral bus |
-//  |______________|                                  |          |                   |     (PBUS)     |
-//                                                    |          |                   |________________|
-//                                                    |__________|
-//
+//  | Debug Module |--------------------------------->|          |------------------>| Peripheral bus |---------|
+//  |______________|                                  |          |                   |     (PBUS)     |         |
+//                                                    |          |                   |________________|         | peripheral
+//   _________              ____________              |          |                    ________________          | interrupts
+//  |         |            |            |             |          |                   |                |         |
+//  |   vio   |----------->| rvm_socket |------------>|          |------------------>|      PLIC      |<--------|
+//  |_________|            |____________|             |          |                   |________________| 
+//                                ^                   |          |                            |
+//                                |                   |__________|                            |  
+//                                |                                                           |
+//                                |___________________________________________________________| 
+//                                                 platform interrupt
 
-// Import packages
+/////////////////////
+// Import packages //
+/////////////////////
+
 import uninasoc_pkg::*;
 
+////////////////////
+// Import headers //
+////////////////////
 
-// Import headers
 `include "uninasoc_axi.svh"
 
 `ifdef HPC
@@ -34,7 +47,10 @@ import uninasoc_pkg::*;
     `include "uninasoc_ddr4.svh"
 `endif
 
-// Module definition
+///////////////////////
+// Module definition //
+///////////////////////
+
 module uninasoc (
 
     `ifdef EMBEDDED
@@ -47,16 +63,15 @@ module uninasoc (
         output logic                        uart_tx_o,
 
         // GPIOs
-        // input  wire [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
+        input  logic [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
         output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o
     `elsif HPC
-        // DDR4 CH0 clock and reset
+        // DDR4 Channel 0 clock and reset
         input logic clk_300mhz_0_p_i,
         input logic clk_300mhz_0_n_i,
 
-        // DDR4 CH0 interface 
+        // DDR4 Channel 0 interface 
         `DEFINE_DDR4_PORTS(0), 
-        
         
         // PCIe clock and reset
         input logic pcie_refclk_p_i,
@@ -72,7 +87,8 @@ module uninasoc (
     /////////////////////
     // Local variables //
     /////////////////////
-    // TBD (if any)
+    
+    localparam peripherals_interrupts_num = 4;
 
     ///////////////////
     // Local Signals //
@@ -86,20 +102,31 @@ module uninasoc (
     // VIO Signals
     logic vio_resetn;
 
-    //////////////////////////
-    // AXI interconnections //
-    //////////////////////////
+    // Socket interrupts
+    logic [31:0] rvm_socket_interrupt_line;
 
-    // AXI masters
+    // Peripheral bus interrupts
+    logic [peripherals_interrupts_num-1:0] pbus_int_line;
+
+    /////////////////
+    // AXI Masters //
+    /////////////////
+
     // sys_master -> crossbar
     `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
     `DECLARE_AXI_BUS(rvm_socket_instr, AXI_DATA_WIDTH);
     `DECLARE_AXI_BUS(rvm_socket_data, AXI_DATA_WIDTH);
 
-    // AXI slaves
+    /////////////////
+    // AXI Slaves  //
+    /////////////////
+
     // xbar -> main memory
     `DECLARE_AXI_BUS(xbar_to_main_mem, AXI_DATA_WIDTH);
+
+     // xbar -> PLIC
+    `DECLARE_AXI_BUS(xbar_to_plic, AXI_DATA_WIDTH);
     
     // XBAR to peripheral bus
     `DECLARE_AXI_BUS(xbar_to_peripheral_bus, AXI_DATA_WIDTH);
@@ -109,7 +136,10 @@ module uninasoc (
         `DECLARE_AXI_BUS(xbar_to_ddr4, AXI_DATA_WIDTH);
     `endif
 
-    // Concatenate AXI master buses
+    ///////////////////////////
+    // Concatenate AXI buses //
+    ///////////////////////////
+
     `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
@@ -121,9 +151,9 @@ module uninasoc (
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `ifdef EMBEDDED
-        `CONCAT_AXI_SLAVES_ARRAY2(xbar_slaves, xbar_to_peripheral_bus, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_plic, xbar_to_peripheral_bus, xbar_to_main_mem);
     `elsif HPC
-        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_ddr4, xbar_to_peripheral_bus, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY4(xbar_slaves, xbar_to_plic, xbar_to_ddr4, xbar_to_peripheral_bus, xbar_to_main_mem);
     `endif
 
     ///////////////////////
@@ -300,7 +330,7 @@ module uninasoc (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( sys_resetn & vio_resetn ),
         .bootaddr_i     ( '0         ),
-        .irq_i          ( '0         ),
+        .irq_i          ( rvm_socket_interrupt_line ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,
@@ -426,6 +456,72 @@ module uninasoc (
         .s_axi_rready   ( xbar_to_main_mem_axi_rready  )  // input wire s_axi_rready
     );
 
+
+    // Platform-Level Interrupt Controller (PLIC)
+    logic [31:0] plic_int_line;
+    logic plic_int_irq_o;
+
+    // Line 11 corresponds to EXT interrupt in RISC-V specification
+    assign rvm_socket_interrupt_line = {21'h0, plic_int_irq_o, 10'h0};
+
+    // Currently, this is the interrupt line mapping (from PLIC perspective/registers)
+    // 0 - RESERVED
+    // 1 - GPIO_IN Interrupt (From PBUS) (Embedded Only)
+    // 2 - Timer 0 Interrupt (From PBUS)
+    // 3 - Timer 1 Interrupt (From PBUS)
+    // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support this yet)
+    // others - reserved
+
+    assign plic_int_line = {'0, pbus_int_line, 1'b0}; 
+
+    custom_rv_plic custom_rv_plic_u (
+        .clk_i          ( soc_clk                       ), // input wire s_axi_aclk
+        .rst_ni         ( sys_resetn                    ), // input wire s_axi_aresetn
+        // AXI4 slave port (from xbar)
+        .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
+        .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)
+        .irq_id_o       (                               ), // Unused (non standard signal)
+        .msip_o         (                               ), // Unused (non standard signal)
+        .s_axi_awid     ( xbar_to_plic_axi_awid         ), // input wire [1 : 0] s_axi_awid
+        .s_axi_awaddr   ( xbar_to_plic_axi_awaddr       ), // input wire [25 : 0] s_axi_awaddr
+        .s_axi_awlen    ( xbar_to_plic_axi_awlen        ), // input wire [7 : 0] s_axi_awlen
+        .s_axi_awsize   ( xbar_to_plic_axi_awsize       ), // input wire [2 : 0] s_axi_awsize
+        .s_axi_awburst  ( xbar_to_plic_axi_awburst      ), // input wire [1 : 0] s_axi_awburst
+        .s_axi_awlock   ( xbar_to_plic_axi_awlock       ), // input wire [0 : 0] s_axi_awlock
+        .s_axi_awcache  ( xbar_to_plic_axi_awcache      ), // input wire [3 : 0] s_axi_awcache
+        .s_axi_awprot   ( xbar_to_plic_axi_awprot       ), // input wire [2 : 0] s_axi_awprot
+        .s_axi_awregion ( xbar_to_plic_axi_awregion     ), // input wire [3 : 0] s_axi_awregion
+        .s_axi_awqos    ( xbar_to_plic_axi_awqos        ), // input wire [3 : 0] s_axi_awqos
+        .s_axi_awvalid  ( xbar_to_plic_axi_awvalid      ), // input wire s_axi_awvalid
+        .s_axi_awready  ( xbar_to_plic_axi_awready      ), // output wire s_axi_awready
+        .s_axi_wdata    ( xbar_to_plic_axi_wdata        ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( xbar_to_plic_axi_wstrb        ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wlast    ( xbar_to_plic_axi_wlast        ), // input wire s_axi_wlast
+        .s_axi_wvalid   ( xbar_to_plic_axi_wvalid       ), // input wire s_axi_wvalid
+        .s_axi_wready   ( xbar_to_plic_axi_wready       ), // output wire s_axi_wready
+        .s_axi_bid      ( xbar_to_plic_axi_bid          ), // output wire [1 : 0] s_axi_bid
+        .s_axi_bresp    ( xbar_to_plic_axi_bresp        ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( xbar_to_plic_axi_bvalid       ), // output wire s_axi_bvalid
+        .s_axi_bready   ( xbar_to_plic_axi_bready       ), // input wire s_axi_bready
+        .s_axi_arid     ( xbar_to_plic_axi_arid         ), // input wire [1 : 0] s_axi_arid
+        .s_axi_araddr   ( xbar_to_plic_axi_araddr       ), // input wire [25 : 0] s_axi_araddr
+        .s_axi_arlen    ( xbar_to_plic_axi_arlen        ), // input wire [7 : 0] s_axi_arlen
+        .s_axi_arsize   ( xbar_to_plic_axi_arsize       ), // input wire [2 : 0] s_axi_arsize
+        .s_axi_arburst  ( xbar_to_plic_axi_arburst      ), // input wire [1 : 0] s_axi_arburst
+        .s_axi_arlock   ( xbar_to_plic_axi_arlock       ), // input wire [0 : 0] s_axi_arlock
+        .s_axi_arcache  ( xbar_to_plic_axi_arcache      ), // input wire [3 : 0] s_axi_arcache
+        .s_axi_arprot   ( xbar_to_plic_axi_arprot       ), // input wire [2 : 0] s_axi_arprot
+        .s_axi_arregion ( xbar_to_plic_axi_arregion     ), // input wire [3 : 0] s_axi_arregion
+        .s_axi_arqos    ( xbar_to_plic_axi_arqos        ), // input wire [3 : 0] s_axi_arqos
+        .s_axi_arvalid  ( xbar_to_plic_axi_arvalid      ), // input wire s_axi_arvalid
+        .s_axi_arready  ( xbar_to_plic_axi_arready      ), // output wire s_axi_arready
+        .s_axi_rid      ( xbar_to_plic_axi_rid          ), // output wire [1 : 0] s_axi_rid
+        .s_axi_rdata    ( xbar_to_plic_axi_rdata        ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( xbar_to_plic_axi_rresp        ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rlast    ( xbar_to_plic_axi_rlast        ), // output wire s_axi_rlast
+        .s_axi_rvalid   ( xbar_to_plic_axi_rvalid       ), // output wire s_axi_rvalid
+        .s_axi_rready   ( xbar_to_plic_axi_rready       )
+    );
     
     ////////////////////
     // PERIPHERAL BUS //
@@ -437,9 +533,12 @@ module uninasoc (
         .reset_ni       ( sys_resetn  ),
 
         // EMBEDDED ONLY
-        .uart_rx_i  ( uart_rx_i      ),
-        .uart_tx_o  ( uart_tx_o      ),
-        .gpio_out_o ( gpio_out_o     ), 
+        .uart_rx_i      ( uart_rx_i      ),
+        .uart_tx_o      ( uart_tx_o      ),
+        .gpio_out_o     ( gpio_out_o     ), 
+        .gpio_in_i      ( gpio_in_i      ),
+
+        .int_o          ( pbus_int_line  ),
 
         .s_axi_awid     ( xbar_to_peripheral_bus_axi_awid     ),
         .s_axi_awaddr   ( xbar_to_peripheral_bus_axi_awaddr   ),
