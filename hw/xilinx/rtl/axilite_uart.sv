@@ -65,7 +65,7 @@ module axilite_uart (
             .s_axi_aclk         ( clock_i                           ),      // input wire s_axi_aclk
             .s_axi_aresetn      ( reset_ni                          ),      // input wire s_axi_aresetn
             .interrupt          ( int_core_o                        ),      // output wire interrupt
-            .s_axi_awaddr       ( s_axilite_awaddr                  ),      // input wire [3 : 0] s_axi_awaddr
+            .s_axi_awaddr       ( s_axilite_awaddr [3:0]            ),      // input wire [3 : 0] s_axi_awaddr
             .s_axi_awvalid      ( s_axilite_awvalid                 ),      // input wire s_axi_awvalid
             .s_axi_awready      ( s_axilite_awready                 ),      // output wire s_axi_awready
             .s_axi_wdata        ( s_axilite_wdata                   ),      // input wire [31 : 0] s_axi_wdata
@@ -75,7 +75,7 @@ module axilite_uart (
             .s_axi_bresp        ( s_axilite_bresp                   ),      // output wire [1 : 0] s_axi_bresp
             .s_axi_bvalid       ( s_axilite_bvalid                  ),      // output wire s_axi_bvalid
             .s_axi_bready       ( s_axilite_bready                  ),      // input wire s_axi_bready
-            .s_axi_araddr       ( s_axilite_araddr                  ),      // input wire [3 : 0] s_axi_araddr
+            .s_axi_araddr       ( s_axilite_araddr [3:0]            ),      // input wire [3 : 0] s_axi_araddr
             .s_axi_arvalid      ( s_axilite_arvalid                 ),      // input wire s_axi_arvalid
             .s_axi_arready      ( s_axilite_arready                 ),      // output wire s_axi_arready
             .s_axi_rdata        ( s_axilite_rdata                   ),      // output wire [31 : 0] s_axi_rdata

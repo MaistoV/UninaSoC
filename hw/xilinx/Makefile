@@ -73,9 +73,10 @@ IP_LIST_XCI = ${XILINX_IP_LIST_XCI} ${CUSTOM_IP_LIST_XCI}
 # Runtime optimized run strategies
 # SYNTH_STRATEGY 	?= Flow_RuntimeOptimized
 # IMPL_STRATEGY 	?= Flow_RuntimeOptimized
-
-SYNTH_STRATEGY 	?= "Vivado Synthesis Defaults"
-IMPL_STRATEGY 	?= "Vivado Implementation Defaults"
+SYNTH_STRATEGY 	?= "Flow_PerfOptimized_high"
+IMPL_STRATEGY 	?= "Performance_ExtraTimingOpt"
+# SYNTH_STRATEGY 	?= "Vivado Synthesis Defaults"
+# IMPL_STRATEGY 	?= "Vivado Implementation Defaults"
 
 # Implementation artifacts
 XILINX_BITSTREAM   ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.bit

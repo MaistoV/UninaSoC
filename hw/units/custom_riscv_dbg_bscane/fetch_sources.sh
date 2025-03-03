@@ -41,6 +41,7 @@ done;
 # Add header files, not listed by bender
 bender_path=${CLONE_DIR}/.bender/
 cp $(find $bender_path -name registers.svh) ${RTL_DIR}/
+cp $(find $bender_path -name assertions.svh) ${RTL_DIR}/
 
 # Patch files for flat includes
 for rtl_file in ${RTL_DIR}/* ; do
@@ -49,6 +50,6 @@ done
 
 # Delete the cloned repo and temporary flist
 printf "${YELLOW}[FETCH_SOURCES] Clean all artifacts${NC}\n"
-sudo rm -r ${CLONE_DIR}
-rm *.flist
+# sudo rm -r ${CLONE_DIR}
+# rm *.flist
 printf "${GREEN}[FETCH_SOURCES] Completed${NC}\n"

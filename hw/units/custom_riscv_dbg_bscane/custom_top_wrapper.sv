@@ -14,10 +14,10 @@ module custom_top_wrapper # (
     //////////////////////////////////////
     //  Add here IP-related parameters  //
     //////////////////////////////////////
-    parameter logic [31:0]        IdcodeValue      = 32'h00000DB3,
     parameter int unsigned        NrHarts          = 1,
     parameter int unsigned        BusWidth         = 32,
-    parameter int unsigned        DmBaseAddress    = 'h1000, // default to non-zero page
+    parameter logic [31:0]        DmBaseAddress    = 32'h10000, // From config
+    // parameter int unsigned        DmBaseAddress    = 'h1000, // default to non-zero page
     // Bitmask to select physically available harts for systems
     // that don't use hart numbers in a contiguous fashion.
     parameter logic [NrHarts-1:0] SelectableHarts  = {NrHarts{1'b1}},
@@ -38,22 +38,6 @@ module custom_top_wrapper # (
     output logic [NrHarts-1:0]    debug_req_o,      // async debug request
     input  logic [NrHarts-1:0]    unavailable_i,    // communicate whether the hart is unavailable (e.g.: power down)
 
-    // Flattened hartinfo_t struct
-    input  logic [31:24] hartinfo_i_zero1,
-    input  logic [23:20] hartinfo_i_nscratch,
-    input  logic [19:17] hartinfo_i_zero0,
-    input  logic         hartinfo_i_dataaccess,
-    input  logic [15:12] hartinfo_i_datasize,
-    input  logic [11:0]  hartinfo_i_dataaddr,
-
-    // JTAG interface
-    // input  logic         jtag_tck_i,    // JTAG test clock pad
-    // input  logic         jtag_tms_i,    // JTAG test mode select pad
-    // input  logic         jtag_trst_ni,  // JTAG test reset pad
-    // input  logic         jtag_tdi_i,    // JTAG test data input pad
-    // output logic         jtag_tdo_o,    // JTAG test data output pad
-    // output logic         jtag_tdo_oe_o, // Data out output enable
-
     //////////////////////
     //  Bus Interfaces  //
     //////////////////////
@@ -62,17 +46,14 @@ module custom_top_wrapper # (
 );
 
     // Architecture:
-    //                __________              ______________
-    //               | (bscane) |            |              |
-    //  --- JTAG --> | dmi_jtag |--- DMI --> |    dm_top    | -- debug_req_o -->
-    //               |__________|            |______________|
-    //                                         |           ^
-    //                                         v           |
-    //                                    MEM master   MEM slave
-    //                                         |           |
-    //                                       MEM2AXI    AXI2MEM
-    //                                         |           ^
-    //                                         v           |
+    //   __________              ______________
+    //  | (bscane) |            |              |
+    //  | dmi_jtag |--- DMI --> |    dm_top    | -- debug_req_o -->
+    //  |__________|            |______________|
+    //                            |           ^
+    //                            v           |
+    //                       MEM master   MEM slave
+    //
 
     ///////////////////
     // Local signals //
@@ -80,17 +61,19 @@ module custom_top_wrapper # (
 
     // Pack hartinfo_t struct
     dm::hartinfo_t hartinfo_struct;
-    assign hartinfo_struct.zero1        = hartinfo_i_zero1;
-    assign hartinfo_struct.nscratch     = hartinfo_i_nscratch;
-    assign hartinfo_struct.zero0        = hartinfo_i_zero0;
-    assign hartinfo_struct.dataaccess   = hartinfo_i_dataaccess;
-    assign hartinfo_struct.datasize     = hartinfo_i_datasize;
-    assign hartinfo_struct.dataaddr     = hartinfo_i_dataaddr;
+    // From ariane_pkg::DebugHartInfo
+    // Same as https://github.com/lowRISC/ibex-demo-system/blob/main/rtl/system/dm_top.sv
+    assign hartinfo_struct.zero1        = '0;
+    assign hartinfo_struct.nscratch     = 2;  // Debug module needs at least two scratch regs
+    assign hartinfo_struct.zero0        = '0;
+    assign hartinfo_struct.dataaccess   = 1'b1;  // data registers are memory mapped in the debugger
+    assign hartinfo_struct.datasize     = dm::DataCount;
+    assign hartinfo_struct.dataaddr     = dm::DataAddr;
 
     // DMI interface
     // DM package-specific structs
-    dm::dmi_req_t       dmi_req_struct;
-    dm::dmi_resp_t      dmi_resp_struct;
+    dm::dmi_req_t   dmi_req;
+    dm::dmi_resp_t  dmi_resp;
     // Valid/ready
     logic           dmi_req_ready  ;
     logic           dmi_req_valid  ;
@@ -103,82 +86,78 @@ module custom_top_wrapper # (
     // Sub-modules //
     /////////////////
 
-    // JTAG to DMI
-    dmi_jtag #(
-        .IdcodeValue  ( IdcodeValue )
-    ) dmi_jtag_u (
-        .clk_i,
-        .rst_ni,
-        .dmi_rst_no       ( dmi_rst_n       ),
-        .dmi_req_o        ( dmi_req_struct  ),
-        .dmi_req_ready_i  ( dmi_req_ready   ),
-        .dmi_req_valid_o  ( dmi_req_valid   ),
-        .dmi_resp_i       ( dmi_resp_struct ),
-        .dmi_resp_ready_o ( dmi_resp_ready  ),
-        .dmi_resp_valid_i ( dmi_resp_valid  ),
-        // While using BSCANE tap, these pins are not used
-        .testmode_i       ( '0 ), // testmode_i      ),
-        .tck_i            ( '0 ), // jtag_tck_i      ),
-        .tms_i            ( '0 ), // jtag_tms_i      ),
-        .trst_ni          ( '0 ), // jtag_trst_ni    ),
-        .td_i             ( '0 ), // jtag_tdi_i      ),
-        .td_o             (    ), // jtag_tdo_o      ),
-        .tdo_oe_o         (    ) // jtag_tdo_oe_o   )
-    );
+    // Read response is valid one cycle after request
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if ( !rst_ni ) begin
+            dbg_slave_mem_valid <= '0;
+        end else begin
+            dbg_slave_mem_valid <= dbg_slave_mem_req;
+        end
+    end
 
-    // Debug Module
     // Tie-off unconnected signals
     assign dbg_slave_mem_gnt   = '0;
-    assign dbg_slave_mem_valid = '0;
     assign dbg_slave_mem_error = '0;
-    assign dbg_master_mem_err  = '0;
+
+    // Debug Module
     dm_top #(
-        .NrHarts            ( NrHarts         ),
-        .BusWidth           ( BusWidth        ),
-        .DmBaseAddress      ( DmBaseAddress   ), // default to non-zero page
-        .SelectableHarts    ( SelectableHarts ), // Bitmask to select physically available harts for systems
-        .ReadByteEnable     ( ReadByteEnable  )  // toggle new behavior to drive master_be_o during a read
+        .NrHarts        ( NrHarts       ),
+        .BusWidth       ( BusWidth      ),
+        .DmBaseAddress  ( DmBaseAddress )
     ) dm_top_u (
-        .clk_i                  ( clk_i             ),
-        .rst_ni                 ( rst_ni            ),
-        .testmode_i             ( testmode_i        ),
-        .ndmreset_o             ( ndmreset_o        ), // non-debug module reset
-        .dmactive_o             ( dmactive_o        ), // debug module is active
-        .debug_req_o            ( debug_req_o       ), // async debug request
-        .unavailable_i          ( unavailable_i     ), // communicate whether the hart is unavailable (e.g.: power down)
-        .hartinfo_i             ( hartinfo_struct   ), // dm::hartinfo_t [NrHarts-1:0]
-
-        // Slave memory interface
-        .slave_req_i            ( dbg_slave_mem_req   ),
-        .slave_we_i             ( dbg_slave_mem_we    ),
-        .slave_addr_i           ( dbg_slave_mem_addr  ),
-        .slave_be_i             ( dbg_slave_mem_be    ),
-        .slave_wdata_i          ( dbg_slave_mem_wdata ),
-        .slave_rdata_o          ( dbg_slave_mem_rdata ),
-
-        // Master memory interface
-        .master_req_o           ( dbg_master_mem_req    ),
-        .master_add_o           ( dbg_master_mem_addr   ),
-        .master_we_o            ( dbg_master_mem_we     ),
-        .master_wdata_o         ( dbg_master_mem_wdata  ),
-        .master_be_o            ( dbg_master_mem_be     ),
-        .master_gnt_i           ( dbg_master_mem_gnt    ),
-        .master_r_valid_i       ( dbg_master_mem_valid  ),
-        .master_r_err_i         ( dbg_master_mem_err    ),
-        .master_r_rdata_i       ( dbg_master_mem_rdata  ),
-        .master_r_other_err_i   ( '0                    ), // *other_err_i has priority over *err_i
-
-        // Connection to DTM - compatible to RocketChip Debug Module
-        .dmi_rst_ni             ( dmi_rst_n        ), // Synchronous clear request from
-                                                    // the DTM to clear the DMI response
-                                                    // FIFO.
-        .dmi_req_valid_i        ( dmi_req_valid   ),
-        .dmi_req_ready_o        ( dmi_req_ready   ),
-        .dmi_req_i              ( dmi_req_struct  ), // dm::dmi_req_t
-        .dmi_resp_valid_o       ( dmi_resp_valid  ),
-        .dmi_resp_ready_i       ( dmi_resp_ready  ),
-        .dmi_resp_o             ( dmi_resp_struct ) // dm::dmi_resp_t
+        .clk_i,
+        .rst_ni,
+        .testmode_i           ( '0                    ),
+        .ndmreset_o           ( ndmreset_o            ),
+        .dmactive_o           ( dmactive_o            ),
+        .debug_req_o          ( debug_req_o           ),
+        .unavailable_i        ( unavailable_i         ),
+        .hartinfo_i           ( hartinfo_struct       ),
+        .slave_req_i          ( dbg_slave_mem_req     ),
+        .slave_we_i           ( dbg_slave_mem_we      ),
+        .slave_addr_i         ( dbg_slave_mem_addr    ),
+        .slave_be_i           ( dbg_slave_mem_be      ),
+        .slave_wdata_i        ( dbg_slave_mem_wdata   ),
+        .slave_rdata_o        ( dbg_slave_mem_rdata   ),
+        .master_req_o         ( dbg_master_mem_req    ),
+        .master_add_o         ( dbg_master_mem_addr   ),
+        .master_we_o          ( dbg_master_mem_we     ),
+        .master_wdata_o       ( dbg_master_mem_wdata  ),
+        .master_be_o          ( dbg_master_mem_be     ),
+        .master_gnt_i         ( dbg_master_mem_gnt    ),
+        .master_r_valid_i     ( dbg_master_mem_valid  ),
+        .master_r_rdata_i     ( dbg_master_mem_rdata  ),
+        .master_r_err_i       ( dbg_master_mem_error  ),
+        .master_r_other_err_i ( 1'b0                  ),
+        .dmi_rst_ni           ( dmi_rst_n             ),
+        .dmi_req_valid_i      ( dmi_req_valid         ),
+        .dmi_req_ready_o      ( dmi_req_ready         ),
+        .dmi_req_i            ( dmi_req               ),
+        .dmi_resp_valid_o     ( dmi_resp_valid        ),
+        .dmi_resp_ready_i     ( dmi_resp_ready        ),
+        .dmi_resp_o           ( dmi_resp              )
     );
+
+    // Debug Transfer Module and JTAG interface
+    dmi_jtag dtm_u (
+        .clk_i,
+        .rst_ni,
+        .dmi_rst_no       ( dmi_rst_n      ),
+        .dmi_req_o        ( dmi_req        ),
+        .dmi_req_ready_i  ( dmi_req_ready  ),
+        .dmi_req_valid_o  ( dmi_req_valid  ),
+        .dmi_resp_i       ( dmi_resp       ),
+        .dmi_resp_ready_o ( dmi_resp_ready ),
+        .dmi_resp_valid_i ( dmi_resp_valid ),
+        .testmode_i       ( '0             ), // Unused
+        .tck_i            ( clk_i          ), // Necessary for internal CDC
+        .tms_i            ( '0             ), // Unused, Floating
+        .trst_ni          ( rst_ni         ), // Necessary for reset and CDC
+        .td_i             ( '0             ), // Unused, Floating
+        .td_o             (                ), // Open
+        .tdo_oe_o         (                )  // Open
+    );
+
 
 endmodule : custom_top_wrapper
 

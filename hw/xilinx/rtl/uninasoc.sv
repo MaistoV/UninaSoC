@@ -85,7 +85,6 @@ module uninasoc (
 
     // VIO Signals
     logic vio_resetn;
-    // logic vio_jtag_trst_n;
 
     //////////////////////////
     // AXI interconnections //
@@ -142,7 +141,7 @@ module uninasoc (
     xlnx_vio vio_inst (
       .clk        ( soc_clk         ),
       .probe_out0 ( vio_resetn      ),
-      .probe_out1 ( vio_jtag_trst_n ),
+      .probe_out1 ( ),
       .probe_in0  ( sys_resetn      )
     );
 

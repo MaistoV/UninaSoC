@@ -12,11 +12,11 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rvm_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, // Change default only for development, while waiting for the core selection flow
+    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, // TODO: Change default only for development, while waiting for the core selection flow
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
     parameter int unsigned    DEBUG_MODULE  = 1,
-    parameter int unsigned    NUM_IRQ       = 3
+    parameter int unsigned    NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,
@@ -31,6 +31,20 @@ module rvm_socket # (
     `DEFINE_AXI_MASTER_PORTS(dbg_master),
     `DEFINE_AXI_SLAVE_PORTS(dbg_slave)
 );
+
+    ///////////////////////////
+    //    Constants          //
+    ///////////////////////////
+    // TODO: replace with Stefano's art
+
+    // Let's assume single core
+    localparam logic [31:0] hart_id = 32'h0;
+    // localparam logic [31:0] DEBUG_START   = 32'h1a110000; // From ibex-demo-system
+    localparam logic [31:0] DEBUG_START   = 32'h10000; // From config
+
+    // From dm_pkg
+    localparam logic [31:0] dm_HaltAddress = 64'h800;
+    localparam logic [31:0] dm_ExceptionAddress = dm_HaltAddress + 16;
 
     //////////////////////////////////////
     //    ___ _                _        //
@@ -50,8 +64,13 @@ module rvm_socket # (
     `DECLARE_MEM_BUS(dbg_master, DATA_WIDTH);
     `DECLARE_MEM_BUS(dbg_slave, DATA_WIDTH);
 
-    // Debug request
+    // Debug request DM -> RV core
     logic debug_req_core;
+
+    ///////////////////////////
+    //    Assignments        //
+    ///////////////////////////
+    // TODO: update this with Stefano's art
 
     //////////////////////////////////////////////////////
     //     ___               ___          _             //
@@ -131,6 +150,9 @@ module rvm_socket # (
             //////////////////////////
             //      CV32E40P        //
             //////////////////////////
+            // (* mark_debug = 1 *) logic debug_havereset_o;
+            // (* mark_debug = 1 *) logic debug_running_o;
+            // (* mark_debug = 1 *) logic debug_halted_o;
 
             custom_cv32e40p cv32e40p_core (
                 // Clock and Reset
@@ -142,16 +164,19 @@ module rvm_socket # (
 
                 // Core ID, Cluster ID, debug mode halt address and boot address are considered more or less static
                 .boot_addr_i            ( bootaddr_i                ),
+                .hart_id_i              ( hart_id                   ),
                 .mtvec_addr_i           ( '0                        ),  // TBD
-                .dm_halt_addr_i         ( '0                        ),  // TBD
-                .hart_id_i              ( '0                        ),  // TBD
-                .dm_exception_addr_i    ( '0                        ),  // TBD
+                .dm_halt_addr_i         ( DEBUG_START + dm_HaltAddress[31:0]      ),  // TBD
+                .dm_exception_addr_i    ( DEBUG_START + dm_ExceptionAddress[31:0] ),  // TBD
 
                 // Instruction memory interface
                 .instr_mem_req          ( core_instr_mem_req        ),
                 .instr_mem_gnt          ( core_instr_mem_gnt        ),
                 .instr_mem_valid        ( core_instr_mem_valid      ),
                 .instr_mem_addr         ( core_instr_mem_addr       ),
+                .instr_mem_be           ( core_instr_mem_be         ), // Open
+                .instr_mem_we           ( core_instr_mem_we         ), // Open
+                .instr_mem_wdata        ( core_instr_mem_wdata      ), // Open
                 .instr_mem_rdata        ( core_instr_mem_rdata      ),
                 .instr_mem_error        ( core_instr_mem_error      ), // Although unused
 
@@ -173,9 +198,9 @@ module rvm_socket # (
 
                 // Debug Interface
                 .debug_req_i            ( debug_req_core            ),  // From Debug Module
-                .debug_havereset_o      (                           ),  // TBD
-                .debug_running_o        (                           ),  // TBD
-                .debug_halted_o         (                           ),  // TBD
+                .debug_havereset_o      ( debug_havereset_o         ),  // TBD
+                .debug_running_o        ( debug_running_o           ),  // TBD
+                .debug_halted_o         ( debug_halted_o            ),  // TBD
 
                 // CPU Control Signals
                 .fetch_enable_i         ( 1'b1                      ),
@@ -184,6 +209,11 @@ module rvm_socket # (
 
         end
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
+
+            // Tie-off unused signals
+            assign core_instr_mem_wdata = '0;
+            assign core_instr_mem_we    = '0;
+            assign core_instr_mem_be    = '0;
 
             //////////////////////////
             //      MICROBLAZE      //
@@ -466,9 +496,12 @@ module rvm_socket # (
             .rst_ni             ( rst_ni                ),
             .s_mem_req          ( core_instr_mem_req    ),
             .s_mem_addr         ( core_instr_mem_addr   ),
-            .s_mem_we           ( '0                    ),  // RO Interface
-            .s_mem_wdata        ( '0                    ),  // RO Interface
-            .s_mem_be           ( '0                    ),  // RO Interface
+            // .s_mem_we           ( '0                    ),  // RO Interface
+            // .s_mem_wdata        ( '0                    ),  // RO Interface
+            // .s_mem_be           ( '0                    ),  // RO Interface
+            .s_mem_we           ( core_instr_mem_we     ),  // RO Interface
+            .s_mem_wdata        ( core_instr_mem_wdata  ),  // RO Interface
+            .s_mem_be           ( core_instr_mem_be     ),  // RO Interface
             .s_mem_gnt          ( core_instr_mem_gnt    ),
             .s_mem_valid        ( core_instr_mem_valid  ),
             .s_mem_rdata        ( core_instr_mem_rdata  ),
@@ -567,241 +600,48 @@ module rvm_socket # (
     //                                                                                                                  \--------------------->| MEM2AXI | --- AXI master -->
     //                                                                                                                                         |_________|
     generate
-    if ( DEBUG_MODULE == 1 ) begin : dm_gen
+    // if ( DEBUG_MODULE == 1 ) begin : dm_gen
+
         ///////////////
         // Hart Info //
         ///////////////
 
-        // From ariane_pkg::DebugHartInfo
-        // TODO: compare with riscy in demo system
-        // TODO: export in uninasoc_pkg
-        logic [31:24] hartinfo_zero1;
-        logic [23:20] hartinfo_nscratch;
-        logic [19:17] hartinfo_zero0;
-        logic         hartinfo_dataaccess;
-        logic [15:12] hartinfo_datasize;
-        logic [11:0]  hartinfo_dataaddr;
-        localparam logic [3:0] DataCount = 4'h2;
-        localparam logic [11:0] DataAddr = 12'h380;  // we are aligned with Rocket here
-        assign hartinfo_zero1       = '0;
-        assign hartinfo_nscratch    = 2;  // Debug module needs at least two scratch regs
-        assign hartinfo_zero0       = '0;
-        assign hartinfo_dataaccess  = 1'b1;  // data registers are memory mapped in the debugger
-        assign hartinfo_datasize    = DataCount;
-        assign hartinfo_dataaddr    = DataAddr;
+        // logic ndmreset_o;
+        // logic dmactive_o;
 
-        // JTAG Interface
-        logic jtag_tdo;
-        logic jtag_tdi;
-        logic jtag_tms;
-        logic jtag_tck;
-        logic jtag_trst_n;
-
-        // Instantiate custom BSCANE connection, or use PULP BSCANE tap
-        localparam CUSTOM_BSCANE = 0;
-        if ( CUSTOM_BSCANE ) begin : custom_bscane
-            // BSCAN interface
-            logic S_BSCAN_bscanid_en , m0_bscan_bscanid_en;
-            logic S_BSCAN_capture    , m0_bscan_capture;
-            logic S_BSCAN_drck       , m0_bscan_drck;
-            logic S_BSCAN_reset      , m0_bscan_reset;
-            logic S_BSCAN_runtest    , m0_bscan_runtest;
-            logic S_BSCAN_sel        , m0_bscan_sel;
-            logic S_BSCAN_shift      , m0_bscan_shift;
-            logic S_BSCAN_tck        , m0_bscan_tck;
-            logic S_BSCAN_tdi        , m0_bscan_tdi;
-            logic S_BSCAN_tdo        , m0_bscan_tdo;
-            logic S_BSCAN_tms        , m0_bscan_tms;
-            logic S_BSCAN_update     , m0_bscan_update;
-
-            //////////////////
-            // Debug bridge //
-            //////////////////
-            // In BSCAN primitive mode
-            xlnx_debug_bridge_bscan debug_bridge_bscan_u (
-                .m0_bscan_bscanid_en    ( S_BSCAN_bscanid_en ), // output wire m0_bscan_bscanid_en
-                .m0_bscan_capture       ( S_BSCAN_capture    ), // output wire m0_bscan_capture
-                .m0_bscan_drck          ( S_BSCAN_drck       ), // output wire m0_bscan_drck
-                .m0_bscan_reset         ( S_BSCAN_reset      ), // output wire m0_bscan_reset
-                .m0_bscan_runtest       ( S_BSCAN_runtest    ), // output wire m0_bscan_runtest
-                .m0_bscan_sel           ( S_BSCAN_sel        ), // output wire m0_bscan_sel
-                .m0_bscan_shift         ( S_BSCAN_shift      ), // output wire m0_bscan_shift
-                .m0_bscan_tck           ( S_BSCAN_tck        ), // output wire m0_bscan_tck
-                .m0_bscan_tdi           ( S_BSCAN_tdi        ), // output wire m0_bscan_tdi
-                .m0_bscan_tdo           ( S_BSCAN_tdo        ), // input wire m0_bscan_tdo
-                .m0_bscan_tms           ( S_BSCAN_tms        ), // output wire m0_bscan_tms
-                .m0_bscan_update        ( S_BSCAN_update     )  // output wire m0_bscan_update
-            );
-            // // BSCANE2 primitive
-            // BSCANE2 #(
-            //     .JTAG_CHAIN(1)  // Value for USER command. (Must match debug_bridge_u IP config)
-            // ) BSCANE2_u (
-            //     .CAPTURE ( S_BSCAN_capture ), // 1-bit output: CAPTURE output from TAP controller.
-            //     .DRCK    ( S_BSCAN_drck    ), // 1-bit output: Gated TCK output. When SEL is asserted, DRCK toggles when CAPTURE or SHIFT are asserted.
-            //     .RESET   ( S_BSCAN_reset   ), // 1-bit output: Reset output for TAP controller.
-            //     .RUNTEST ( S_BSCAN_runtest ), // 1-bit output: Output asserted when TAP controller is in Run Test/Idle state.
-            //     .SEL     ( S_BSCAN_sel     ), // 1-bit output: USER instruction active output.
-            //     .SHIFT   ( S_BSCAN_shift   ), // 1-bit output: SHIFT output from TAP controller.
-            //     .TCK     ( S_BSCAN_tck     ), // 1-bit output: Test Clock output. Fabric connection to TAP Clock pin.
-            //     .TDI     ( S_BSCAN_tdi     ), // 1-bit output: Test Data Input (TDI) output from TAP controller.
-            //     .TMS     ( S_BSCAN_tms     ), // 1-bit output: Test Mode Select output. Fabric connection to TAP.
-            //     .UPDATE  ( S_BSCAN_update  ), // 1-bit output: UPDATE output from TAP controller
-            //     .TDO     ( S_BSCAN_tdo     )  // 1-bit input: Test Data Output (TDO) input for USER function.
-            // );
-            // In BSCAN-to-Debug Hub mode
-            xlnx_debug_bridge debug_bridge_u (
-                .clk                 ( clk_i               ), // input wire clk
-                .S_BSCAN_bscanid_en  ( S_BSCAN_bscanid_en  ), // input wire S_BSCAN_bscanid_en
-                .S_BSCAN_capture     ( S_BSCAN_capture     ), // input wire S_BSCAN_capture
-                .S_BSCAN_drck        ( S_BSCAN_drck        ), // input wire S_BSCAN_drck
-                .S_BSCAN_reset       ( S_BSCAN_reset       ), // input wire S_BSCAN_reset
-                .S_BSCAN_runtest     ( S_BSCAN_runtest     ), // input wire S_BSCAN_runtest
-                .S_BSCAN_sel         ( S_BSCAN_sel         ), // input wire S_BSCAN_sel
-                .S_BSCAN_shift       ( S_BSCAN_shift       ), // input wire S_BSCAN_shift
-                .S_BSCAN_tck         ( S_BSCAN_tck         ), // input wire S_BSCAN_tck
-                .S_BSCAN_tdi         ( S_BSCAN_tdi         ), // input wire S_BSCAN_tdi
-                .S_BSCAN_tdo         ( S_BSCAN_tdo         ), // output wire S_BSCAN_tdo
-                .S_BSCAN_tms         ( S_BSCAN_tms         ), // input wire S_BSCAN_tms
-                .S_BSCAN_update      ( S_BSCAN_update      ), // input wire S_BSCAN_update
-                .m0_bscan_bscanid_en ( m0_bscan_bscanid_en ), // output wire m0_bscan_bscanid_en
-                .m0_bscan_capture    ( m0_bscan_capture    ), // output wire m0_bscan_capture
-                .m0_bscan_drck       ( m0_bscan_drck       ), // output wire m0_bscan_drck
-                .m0_bscan_reset      ( m0_bscan_reset      ), // output wire m0_bscan_reset
-                .m0_bscan_runtest    ( m0_bscan_runtest    ), // output wire m0_bscan_runtest
-                .m0_bscan_sel        ( m0_bscan_sel        ), // output wire m0_bscan_sel
-                .m0_bscan_shift      ( m0_bscan_shift      ), // output wire m0_bscan_shift
-                .m0_bscan_tck        ( m0_bscan_tck        ), // output wire m0_bscan_tck
-                .m0_bscan_tdi        ( m0_bscan_tdi        ), // output wire m0_bscan_tdi
-                .m0_bscan_tdo        ( m0_bscan_tdo        ), // input wire m0_bscan_tdo
-                .m0_bscan_tms        ( m0_bscan_tms        ), // output wire m0_bscan_tms
-                .m0_bscan_update     ( m0_bscan_update     )  // output wire m0_bscan_update
-            );
-
-            ///////////////////
-            // BSCAN to JTAG //
-            ///////////////////
-
-            xlnx_bscan_to_jtag bscan_to_jtag_u (
-                .S_BSCAN_bscanid_en ( m0_bscan_bscanid_en ), // input wire S_BSCAN_bscanid_en
-                .S_BSCAN_capture    ( m0_bscan_capture    ), // input wire S_BSCAN_capture
-                .S_BSCAN_drck       ( m0_bscan_drck       ), // input wire S_BSCAN_drck
-                .S_BSCAN_reset      ( m0_bscan_reset      ), // input wire S_BSCAN_reset
-                .S_BSCAN_runtest    ( m0_bscan_runtest    ), // input wire S_BSCAN_runtest
-                .S_BSCAN_sel        ( m0_bscan_sel        ), // input wire S_BSCAN_sel
-                .S_BSCAN_shift      ( m0_bscan_shift      ), // input wire S_BSCAN_shift
-                .S_BSCAN_tck        ( m0_bscan_tck        ), // input wire S_BSCAN_tck
-                .S_BSCAN_tdi        ( m0_bscan_tdi        ), // input wire S_BSCAN_tdi
-                .S_BSCAN_tms        ( m0_bscan_tms        ), // input wire S_BSCAN_tms
-                .S_BSCAN_update     ( m0_bscan_update     ), // input wire S_BSCAN_update
-                .S_BSCAN_tdo        ( m0_bscan_tdo        ), // output wire S_BSCAN_tdo
-                .JTAG_TDO           ( jtag_tdo            ), // input wire JTAG_TDO
-                .JTAG_TDI           ( jtag_tdi            ), // output wire JTAG_TDI
-                .JTAG_TMS           ( jtag_tms            ), // output wire JTAG_TMS
-                .JTAG_TCK           ( jtag_tck            )  // output wire JTAG_TCK
-            );
-
-            ////////////////////
-            // DMI top module //
-            ////////////////////
-
-            // (* keep = 1 *) logic jtag_tdo_oe; // Unconnected
-            // Drive floating JTAG signals
-            assign jtag_trst_n = rst_ni;
-            // custom_riscv_dbg_bscane riscv_dgb_u (   // BSCANE2 tap
-            custom_riscv_dbg riscv_dgb_u (       // JTAG tap
-                .clk_i                  ( clk_i                  ),
-                .rst_ni                 ( rst_ni                 ),
-                .testmode_i             ( '0                     ),
-                .unavailable_i          ( '0                     ),
-                .ndmreset_o             (                        ),
-                .dmactive_o             (                        ),
-                // Hartinfo
-                .hartinfo_i_zero1       ( hartinfo_zero1         ),
-                .hartinfo_i_nscratch    ( hartinfo_nscratch      ),
-                .hartinfo_i_zero0       ( hartinfo_zero0         ),
-                .hartinfo_i_dataaccess  ( hartinfo_dataaccess    ),
-                .hartinfo_i_datasize    ( hartinfo_datasize      ),
-                .hartinfo_i_dataaddr    ( hartinfo_dataaddr      ),
-                // Mem Master
-                .dbg_master_mem_req     ( dbg_master_mem_req    ),
-                .dbg_master_mem_gnt     ( dbg_master_mem_gnt    ),
-                .dbg_master_mem_valid   ( dbg_master_mem_valid  ),
-                .dbg_master_mem_addr    ( dbg_master_mem_addr   ),
-                .dbg_master_mem_rdata   ( dbg_master_mem_rdata  ),
-                .dbg_master_mem_wdata   ( dbg_master_mem_wdata  ),
-                .dbg_master_mem_we      ( dbg_master_mem_we     ),
-                .dbg_master_mem_be      ( dbg_master_mem_be     ),
-                .dbg_master_mem_error   ( dbg_master_mem_error  ),
-                // Mem Slave
-                .dbg_slave_mem_req      ( dbg_slave_mem_req     ),
-                .dbg_slave_mem_gnt      ( dbg_slave_mem_gnt     ),
-                .dbg_slave_mem_valid    ( dbg_slave_mem_valid   ),
-                .dbg_slave_mem_addr     ( dbg_slave_mem_addr    ),
-                .dbg_slave_mem_rdata    ( dbg_slave_mem_rdata   ),
-                .dbg_slave_mem_wdata    ( dbg_slave_mem_wdata   ),
-                .dbg_slave_mem_we       ( dbg_slave_mem_we      ),
-                .dbg_slave_mem_be       ( dbg_slave_mem_be      ),
-                .dbg_slave_mem_error    ( dbg_slave_mem_error   ),
-                // JTAG interface
-                .jtag_trst_ni           ( jtag_trst_n           ),
-                .jtag_tck_i             ( jtag_tck              ),
-                .jtag_tms_i             ( jtag_tms              ),
-                .jtag_tdi_i             ( jtag_tdi              ),
-                .jtag_tdo_o             ( jtag_tdo              ),
-                .jtag_tdo_oe_o          ( jtag_tdo_oe           ),
-                // To core
-                .debug_req_o            ( debug_req_core        )
-            );
-        end : custom_bscane
-        else begin : pulp_bscane_tap
-            custom_riscv_dbg_bscane riscv_dgb_u (   // BSCANE2 tap
-                .clk_i                  ( clk_i                  ),
-                .rst_ni                 ( rst_ni                 ),
-                // .testmode_i             ( '0                     ),
-                .unavailable_i          ( '0                     ),
-                .ndmreset_o             (                        ),
-                .dmactive_o             (                        ),
-                // Hartinfo
-                .hartinfo_i_zero1       ( hartinfo_zero1         ),
-                .hartinfo_i_nscratch    ( hartinfo_nscratch      ),
-                .hartinfo_i_zero0       ( hartinfo_zero0         ),
-                .hartinfo_i_dataaccess  ( hartinfo_dataaccess    ),
-                .hartinfo_i_datasize    ( hartinfo_datasize      ),
-                .hartinfo_i_dataaddr    ( hartinfo_dataaddr      ),
-                // Mem Master
-                .dbg_master_mem_req     ( dbg_master_mem_req    ),
-                .dbg_master_mem_gnt     ( dbg_master_mem_gnt    ),
-                .dbg_master_mem_valid   ( dbg_master_mem_valid  ),
-                .dbg_master_mem_addr    ( dbg_master_mem_addr   ),
-                .dbg_master_mem_rdata   ( dbg_master_mem_rdata  ),
-                .dbg_master_mem_wdata   ( dbg_master_mem_wdata  ),
-                .dbg_master_mem_we      ( dbg_master_mem_we     ),
-                .dbg_master_mem_be      ( dbg_master_mem_be     ),
-                .dbg_master_mem_error   ( dbg_master_mem_error  ),
-                // Mem Slave
-                .dbg_slave_mem_req      ( dbg_slave_mem_req     ),
-                .dbg_slave_mem_gnt      ( dbg_slave_mem_gnt     ),
-                .dbg_slave_mem_valid    ( dbg_slave_mem_valid   ),
-                .dbg_slave_mem_addr     ( dbg_slave_mem_addr    ),
-                .dbg_slave_mem_rdata    ( dbg_slave_mem_rdata   ),
-                .dbg_slave_mem_wdata    ( dbg_slave_mem_wdata   ),
-                .dbg_slave_mem_we       ( dbg_slave_mem_we      ),
-                .dbg_slave_mem_be       ( dbg_slave_mem_be      ),
-                .dbg_slave_mem_error    ( dbg_slave_mem_error   ),
-                // JTAG interface
-                // .jtag_trst_ni           ( jtag_trst_n           ),
-                // .jtag_tck_i             ( jtag_tck              ),
-                // .jtag_tms_i             ( jtag_tms              ),
-                // .jtag_tdi_i             ( jtag_tdi              ),
-                // .jtag_tdo_o             ( jtag_tdo              ),
-                // .jtag_tdo_oe_o          ( jtag_tdo_oe           ),
-                // To core
-                .debug_req_o            ( debug_req_core        )
-            );
-        end : pulp_bscane_tap
+        //  BSCANE2 tap
+        custom_riscv_dbg_bscane riscv_dbg_u (
+            .clk_i                  ( clk_i                 ),
+            .rst_ni                 ( rst_ni                ),
+            .unavailable_i          ( '0                    ),
+            .ndmreset_o             ( ndmreset_o            ),
+            .dmactive_o             ( dmactive_o            ),
+            // Mem Master
+            .dbg_master_mem_req     ( dbg_master_mem_req    ),
+            .dbg_master_mem_gnt     ( dbg_master_mem_gnt    ),
+            .dbg_master_mem_valid   ( dbg_master_mem_valid  ),
+            .dbg_master_mem_addr    ( dbg_master_mem_addr   ),
+            .dbg_master_mem_rdata   ( dbg_master_mem_rdata  ),
+            .dbg_master_mem_wdata   ( dbg_master_mem_wdata  ),
+            .dbg_master_mem_we      ( dbg_master_mem_we     ),
+            .dbg_master_mem_be      ( dbg_master_mem_be     ),
+            .dbg_master_mem_error   ( dbg_master_mem_error  ),
+            // Mem Slave
+            .dbg_slave_mem_req      ( dbg_slave_mem_req     ),
+            .dbg_slave_mem_gnt      ( dbg_slave_mem_gnt     ),
+            .dbg_slave_mem_valid    ( dbg_slave_mem_valid   ),
+            .dbg_slave_mem_addr     ( dbg_slave_mem_addr    ),
+            .dbg_slave_mem_rdata    ( dbg_slave_mem_rdata   ),
+            .dbg_slave_mem_wdata    ( dbg_slave_mem_wdata   ),
+            .dbg_slave_mem_we       ( dbg_slave_mem_we      ),
+            .dbg_slave_mem_be       ( dbg_slave_mem_be      ),
+            .dbg_slave_mem_error    ( dbg_slave_mem_error   ),
+            // To core
+            .debug_req_o            ( debug_req_core        )
+        );
 
         // MEM to AXI converter
-        // dbg_master_mem -> axi_from_mem ->dbg_master_axi
+        // dbg_master_mem -> axi_from_mem -> dbg_master_axi
         custom_axi_from_mem axi_from_mem_dbg_master_u (
             // AXI side
             .m_axi_awid         ( dbg_master_axi_awid       ),
@@ -916,24 +756,24 @@ module rvm_socket # (
             .m_mem_error        ( dbg_slave_mem_error       )
         );
 
-    end : dm_gen
-    else begin : dm_not_gen
+    // end : dm_gen
+    // else begin : dm_not_gen
 
-        // Tie-off debug request signal to cores
-        assign debug_req_core = '0;
-        // Tie-off debug mem master outputs
-        assign dbg_master_mem_req = '0;
-        assign dbg_master_mem_addr = '0;
-        assign dbg_master_mem_wdata = '0;
-        assign dbg_master_mem_we = '0;
-        assign dbg_master_mem_be = '0;
-        // Tie-off debug mem slave outputs
-        assign dbg_slave_mem_gnt = '0;
-        assign dbg_slave_mem_valid = '0;
-        assign dbg_slave_mem_rdata = '0;
-        assign dbg_slave_mem_error = '0;
+    //     // Tie-off debug request signal to cores
+    //     assign debug_req_core = '0;
+    //     // Tie-off debug mem master outputs
+    //     assign dbg_master_mem_req = '0;
+    //     assign dbg_master_mem_addr = '0;
+    //     assign dbg_master_mem_wdata = '0;
+    //     assign dbg_master_mem_we = '0;
+    //     assign dbg_master_mem_be = '0;
+    //     // Tie-off debug mem slave outputs
+    //     assign dbg_slave_mem_gnt = '0;
+    //     assign dbg_slave_mem_valid = '0;
+    //     assign dbg_slave_mem_rdata = '0;
+    //     assign dbg_slave_mem_error = '0;
 
-    end : dm_not_gen
+    // end : dm_not_gen
     endgenerate
 
 endmodule : rvm_socket
