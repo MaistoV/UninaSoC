@@ -3,16 +3,25 @@ ifndef XILINX_ROOT
 $(error Setup script settings.sh has not been sourced, aborting)
 endif
 
-# Include AXI configuration
-include axi_config.mk
+#########################
+# Include configuration #
+#########################
+include make/config.mk
 
-# Basic variables for Vivado
+
+######################
+# Vivado environment #
+######################
+
+# Basic variables for Vivado #
 XILINX_VIVADO_CMD ?= vivado
 XILINX_VIVADO_MODE ?= batch
 # Build directory
 XILINX_PROJECT_BUILD_DIR ?= ${XILINX_ROOT}/build
 # Vivado's compilation reports directory
 XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_PROJECT_BUILD_DIR}/reports
+# Hardware server
+XILINX_HW_SERVER ?= hw_server
 
 # List of the Xilinx IPs to build and import in the design
 # Parsing from directory ips/
@@ -80,7 +89,7 @@ XILINX_VIVADO_ENV ?=								\
 	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
 	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
 	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
-	DEBUG_MODULE=${DEBUG_MODULE}\
+	DEBUG_MODULE=${DEBUG_MODULE}					\
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
@@ -104,18 +113,6 @@ XILINX_VIVADO := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode ${XILINX_VIVADO
 XILINX_VIVADO_BATCH := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode batch
 
 all: bitstream
-
-# Open project in TCL mode
-open_prj:
-	cd ${XILINX_PROJECT_BUILD_DIR};			\
-	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} \
-	-mode tcl ${XILINX_PROJECT_NAME}.xpr
-
-# Open project and GUI
-open_gui:
-	cd ${XILINX_PROJECT_BUILD_DIR};			\
-	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} \
-	-mode gui ${XILINX_PROJECT_NAME}.xpr
 
 # Build bitstream from scratch
 bitstream: ips
@@ -144,89 +141,23 @@ ips: ${IP_NAMES}
 		-source ${XILINX_IPS_ROOT}/common/tcl/post_config.tcl
 	touch $@
 
-# Start hardware server
-start_hw_server:
-	hw_server -d -L- -stcp::${XILINX_HW_SERVER_PORT}
+#############
+# Utilities #
+#############
 
-# Open Vivado hardware manager in tcl mode
-open_hw_manager:
-	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode tcl \
-		-source ${XILINX_SYNTH_TCL_ROOT}/$@.tcl
+include make/utils.mk
 
-# Open ILA dashboard GUI
-open_ila:
-		${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode gui \
-		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
-		-source ${XILINX_SYNTH_TCL_ROOT}/set_ila_trigger.tcl
+##############
+# Simulation #
+##############
 
-vio_reset:
-	${XILINX_VIVADO_ENV} ${XILINX_VIVADO} \
-		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
-		-source ${XILINX_SYNTH_TCL_ROOT}/vio_reset_core.tcl
-
-program_bitstream:
-	${XILINX_VIVADO} \
-		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
-		-source ${XILINX_SYNTH_TCL_ROOT}/$@.tcl
-
-# Simulation
-sim_compile_simlib:
-	${XILINX_VIVADO_BATCH} -source ${XILINX_SIM_TCL_ROOT}/compile_simlib.tcl
-
-sim_export_%: ${XILINX_IPS_ROOT}/%/questa/compile.do
-${XILINX_IPS_ROOT}/%/questa/compile.do: ${XILINX_SIM_IP_ROOT}
-	cd ${XILINX_SIMLIB_PATH}; \
-	VIVADO_PROJECT=${XILINX_IPS_ROOT}/$*/build/$*.xpr \
-	${XILINX_VIVADO_BATCH} -source ${XILINX_SIM_TCL_ROOT}/export_simulation.tcl
-
-${XILINX_SIM_IP_ROOT}/ips:
-	mkdir -p $@
+include make/sim.mk
 
 ###############
 # Load binary #
 ###############
-# For CPUs that does not support debuggers yet
 
-BIN_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.bin
-BASE_ADDRESS ?= 0x00000000                        # BRAM base address
-LOAD_BINARY_READBACK ?= false                     # Whether to readback and check the loaded binary or not
-
-# Load the binary into SoC memory (BRAM for now)
-# Call the specific load script based on the SOC_CONFIG (HPC or EMBEDDED)
-load_binary: load_binary_${SOC_CONFIG}
-
-# Write the binary to BRAM through jtag2axi
-load_binary_embedded: ${BIN_PATH}
-	${XILINX_VIVADO} \
-		-source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_load_binary.tcl \
-		-tclargs ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}
-
-# Write the binary to BRAM/DDR through XDMA
-load_binary_hpc: ${BIN_PATH}
-	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/xdma_load_binary.sh ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}"
-
-############
-# Load ELF #
-############
-# In case a debug module is available
-# Use XSDB as backend and GDB as a loader/debugger
-
-ELF_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.elf
-# 32-bit RISC-V port exposed by Vivado HW Server is 3004
-XSDB_DEBUG_PORT ?= 3004
-
-# Load program directly with XSDB
-xsdb_run_elf:
-	xsdb ${XILINX_SYNTH_TCL_ROOT}/xsdb_run_elf.tcl ${ELF_PATH} ${XILINX_BITSTREAM}
-
-# Use XSDB as a backend
-debug_backend:
-	xsdb -interactive ${XILINX_SYNTH_TCL_ROOT}/xsdb_connect.tcl
-
-# Use GDB to load the ELF and run (open the backend in a shell before) (TO TEST)
-debug_run:
-	@bash -c "source ${XILINX_SYNTH_TCL_ROOT}/run_gdb.sh ${ELF_PATH} ${XSDB_DEBUG_PORT}"
-
+include make/load_binary.mk
 
 ############
 # Cleaning #
@@ -243,5 +174,5 @@ clean_ips:
 ###########
 # PHONIES #
 ###########
-.PHONY: open_gui open_prj bitstream ips open_hw_manager sim_compile_simlib clean clean_ips load_binary load_binary_embedded load_binary_hpc
+.PHONY:  bitstream ips clean clean_ips
 
