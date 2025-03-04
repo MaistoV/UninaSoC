@@ -89,12 +89,10 @@ def check_single_config(config : configuration.Configuration, config_file_name: 
         if i > 0:
             # Check if the current address does not fall into the addr range one of the previous slaves
             for j in range(len(base_addresses)):
-                if  ((base_address < end_addresses[j])   and (base_address > base_addresses[j])) or \
-                    ((end_address > base_addresses[j])   and (base_address < base_addresses[j])) or \
-                    ((base_address < base_addresses[j])  and (end_address > end_addresses[j])  ) or \
-                    ((base_address > base_addresses[j])  and (end_address < end_addresses[j])  ) or \
-                    ((end_address == base_addresses[j])  or  (end_address == end_addresses[j]) ) or \
-                    ((base_address == base_addresses[j]) or  (base_address == end_addresses[j])):
+                if  ((base_address <= end_addresses[j])   and (base_address >= base_addresses[j])) or \
+                    ((end_address >= base_addresses[j])   and (base_address <= base_addresses[j])) or \
+                    ((base_address <= base_addresses[j])  and (end_address >= end_addresses[j])  ) or \
+                    ((base_address >= base_addresses[j])  and (end_address <= end_addresses[j])  ):
                     
                     __print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
                     return False
@@ -114,17 +112,6 @@ def check_configs (configs : list, config_file_names : list) -> bool:
 
     if status == False:
         return False
-
-    # Inter-config check
-    # Check if the first element of a secondary bus (pbus) has the same address of the main bus TODO - add other checks (?)
-    for i in range(len(configs)):
-        for j in range(configs[i].NUM_MI):
-            if configs[i].RANGE_NAMES[j] in BUS_NAMES:
-                for k in range(len(config_file_names)):
-                    config_fname = config_file_names[k].split('/')[-1]
-                    if BUS_NAMES[configs[i].RANGE_NAMES[j]] == config_fname:
-                        if configs[k].BASE_ADDR[0] != configs[i].BASE_ADDR[j]:
-                            __print_warning(f"The first slave of {configs[i].RANGE_NAMES[j]} does not have the same base address in its parent bus")
 
     __print("Checking configuration done!")
 
