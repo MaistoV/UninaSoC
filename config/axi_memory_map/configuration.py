@@ -33,4 +33,5 @@ class Configuration:
 		self.WUSER_WIDTH		 : int = 0		# AXI  W User width
 		self.RUSER_WIDTH		 : int = 0		# AXI  R User width
 		self.BUSER_WIDTH		 : int = 0		# AXI  B User width
+		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
 

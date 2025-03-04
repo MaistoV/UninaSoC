@@ -18,8 +18,8 @@ import configuration
 # Constants
 VALID_PROTOCOLS = ["AXI4", "AXI4LITE"]
 BUS_NAMES = {
-    "MBUS" : "config_main_bus.csv",
-    "PBUS" : "config_peripheral_bus.csv"
+    "config_main_bus.csv" : "MBUS",
+    "config_peripheral_bus.csv" : "PBUS" 
 }
 MIN_AXI4_ADDR_WIDTH = 12
 MIN_AXI4LITE_ADDR_WIDTH = 1
@@ -41,10 +41,10 @@ def __print_error(txt : str) -> None:
     print(f"{PRINT_PREFIX}{PRINT_ERROR_PREFIX} {txt}")
 
 
-##############################
-# Check single configuration #
-##############################
-def check_single_config(config : configuration.Configuration, config_file_name: str) -> bool: 
+#############################
+# Check intra configuration #
+#############################
+def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool: 
     # Check if the protocol is valid
     if config.PROTOCOL not in VALID_PROTOCOLS: 
         __print_error(f"Invalid protocol in {config_file_name}")
@@ -100,21 +100,57 @@ def check_single_config(config : configuration.Configuration, config_file_name: 
         end_addresses.append(end_address)
             
 
+#############################
+# Check inter configuration #
+#############################
+# Check configuration validity between parent and son buses
+def check_inter_config(configs : list) -> bool: 
+    # For each Configuration
+    for config in configs:
+        # For each master of the current Configuration
+        for i in range(config.NUM_MI):
+            # If a master is a bus (is in the BUS_NAMES dict)
+            if config.RANGE_NAMES[i] in BUS_NAMES.values():
+                # Find the son bus configuration
+                for son_config in configs: 
+                    if son_config.BUS_NAME == config.RANGE_NAMES[i]:
+                        # Compute the base and the end address of the parent bus
+                        parent_base_address = int(config.BASE_ADDR[i], 16)
+                        parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[i]-1)) 
+
+                        # Compute the base and the end address of the son bus
+                        son_base_address = int(son_config.BASE_ADDR[0], 16)
+                        son_base_address_tmp = int(son_config.BASE_ADDR[-1], 16)
+                        son_end_address = son_base_address_tmp + ~(~1 << (son_config.RANGE_ADDR_WIDTH[i]-1)) 
+
+                        # Do the checks 
+                        # Check if the address space of the son is containted in the address space of the parent
+                        if son_base_address < parent_base_address or son_end_address > parent_end_address: 
+                            __print_error(f"Address of {son_config.BUS_NAME} is not properly contained in {config.BUS_NAME}")
+                            return False
+    return True
+
+
 ########################
 # Check configurations #
 ########################
 def check_configs (configs : list, config_file_names : list) -> bool: 
     status = True
     __print(f"Starting checking {len(configs)} config...")
+    __print("Checking intra config validity")
     for i in range(len(configs)):
         # Intra-config check
-        status = check_single_config(configs[i], config_file_names[i])
+        status = check_intra_config(configs[i], config_file_names[i])
 
     if status == False:
         return False
 
+    __print("Checking intra config validity done!")
+    __print("Checking inter config validity")
+    # Inter-config check 
+    status = check_inter_config(configs)
     __print("Checking configuration done!")
-
+    return status
 
 ###############
 # Read config #
@@ -131,6 +167,10 @@ def read_config(config_file_names : list) -> list:
         for index, row in pd.read_csv(name, sep=",").iterrows():
             # Update the config
 	        config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
+        
+        # Naming the actual bus
+        end_name = name.split("/")[-1]
+        config.BUS_NAME = BUS_NAMES[end_name]
         # Append the config to the list
         configs.append(config)
 
