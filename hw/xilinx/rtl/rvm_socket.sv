@@ -62,8 +62,6 @@ module rvm_socket # (
     // Declare MEM ports
     `DECLARE_MEM_BUS(core_instr, DATA_WIDTH);
     `DECLARE_MEM_BUS(core_data, DATA_WIDTH);
-    `DECLARE_MEM_BUS(dbg_master, DATA_WIDTH);
-    `DECLARE_MEM_BUS(dbg_slave, DATA_WIDTH);
 
     // Debug request DM -> RV core
     logic debug_req_core;
@@ -263,60 +261,60 @@ module rvm_socket # (
                 .Dbg_Disable        ( Dbg_Disable ), // input wire Dbg_Disable
 
                 // Data port (AXI)
-                .M_AXI_DP_AWADDR    ( microblaze_data_axi_awaddr    ), // output wire [31 : 0] M_AXI_DP_AWADDR
-                .M_AXI_DP_AWLEN     ( microblaze_data_axi_awlen     ), // output wire [7 : 0] M_AXI_DP_AWLEN
-                .M_AXI_DP_AWSIZE    ( microblaze_data_axi_awsize    ), // output wire [2 : 0] M_AXI_DP_AWSIZE
-                .M_AXI_DP_AWBURST   ( microblaze_data_axi_awburst   ), // output wire [1 : 0] M_AXI_DP_AWBURST
-                .M_AXI_DP_AWLOCK    ( microblaze_data_axi_awlock    ), // output wire M_AXI_DP_AWLOCK
-                .M_AXI_DP_AWCACHE   ( microblaze_data_axi_awcache   ), // output wire [3 : 0] M_AXI_DP_AWCACHE
-                .M_AXI_DP_AWPROT    ( microblaze_data_axi_awprot    ), // output wire [2 : 0] M_AXI_DP_AWPROT
-                .M_AXI_DP_AWQOS     ( microblaze_data_axi_awqos     ), // output wire [3 : 0] M_AXI_DP_AWQOS
-                .M_AXI_DP_AWVALID   ( microblaze_data_axi_awvalid   ), // output wire M_AXI_DP_AWVALID
-                .M_AXI_DP_AWREADY   ( microblaze_data_axi_awready   ), // input wire M_AXI_DP_AWREADY
-                .M_AXI_DP_WDATA     ( microblaze_data_axi_wdata     ), // output wire [31 : 0] M_AXI_DP_WDATA
-                .M_AXI_DP_WSTRB     ( microblaze_data_axi_wstrb     ), // output wire [3 : 0] M_AXI_DP_WSTRB
-                .M_AXI_DP_WLAST     ( microblaze_data_axi_wlast     ), // output wire M_AXI_DP_WLAST
-                .M_AXI_DP_WVALID    ( microblaze_data_axi_wvalid    ), // output wire M_AXI_DP_WVALID
-                .M_AXI_DP_WREADY    ( microblaze_data_axi_wready    ), // input wire M_AXI_DP_WREADY
-                .M_AXI_DP_BRESP     ( microblaze_data_axi_bresp     ), // input wire [1 : 0] M_AXI_DP_BRESP
-                .M_AXI_DP_BVALID    ( microblaze_data_axi_bvalid    ), // input wire M_AXI_DP_BVALID
-                .M_AXI_DP_BREADY    ( microblaze_data_axi_bready    ), // output wire M_AXI_DP_BREADY
-                .M_AXI_DP_ARADDR    ( microblaze_data_axi_araddr    ), // output wire [31 : 0] M_AXI_DP_ARADDR
-                .M_AXI_DP_ARLEN     ( microblaze_data_axi_arlen     ), // output wire [7 : 0] M_AXI_DP_ARLEN
-                .M_AXI_DP_ARSIZE    ( microblaze_data_axi_arsize    ), // output wire [2 : 0] M_AXI_DP_ARSIZE
-                .M_AXI_DP_ARBURST   ( microblaze_data_axi_arburst   ), // output wire [1 : 0] M_AXI_DP_ARBURST
-                .M_AXI_DP_ARLOCK    ( microblaze_data_axi_arlock    ), // output wire M_AXI_DP_ARLOCK
-                .M_AXI_DP_ARCACHE   ( microblaze_data_axi_arcache   ), // output wire [3 : 0] M_AXI_DP_ARCACHE
-                .M_AXI_DP_ARPROT    ( microblaze_data_axi_arprot    ), // output wire [2 : 0] M_AXI_DP_ARPROT
-                .M_AXI_DP_ARQOS     ( microblaze_data_axi_arqos     ), // output wire [3 : 0] M_AXI_DP_ARQOS
-                .M_AXI_DP_ARVALID   ( microblaze_data_axi_arvalid   ), // output wire M_AXI_DP_ARVALID
-                .M_AXI_DP_ARREADY   ( microblaze_data_axi_arready   ), // input wire M_AXI_DP_ARREADY
-                .M_AXI_DP_RDATA     ( microblaze_data_axi_rdata     ), // input wire [31 : 0] M_AXI_DP_RDATA
-                .M_AXI_DP_RRESP     ( microblaze_data_axi_rresp     ), // input wire [1 : 0] M_AXI_DP_RRESP
-                .M_AXI_DP_RLAST     ( microblaze_data_axi_rlast     ), // input wire M_AXI_DP_RLAST
-                .M_AXI_DP_RVALID    ( microblaze_data_axi_rvalid    ), // input wire M_AXI_DP_RVALID
-                .M_AXI_DP_RREADY    ( microblaze_data_axi_rready    ), // output wire M_AXI_DP_RREADY
+                .dbg_master_DP_AWADDR    ( microblaze_data_axi_awaddr    ), // output wire [31 : 0] M_AXI_DP_AWADDR
+                .dbg_master_DP_AWLEN     ( microblaze_data_axi_awlen     ), // output wire [7 : 0] M_AXI_DP_AWLEN
+                .dbg_master_DP_AWSIZE    ( microblaze_data_axi_awsize    ), // output wire [2 : 0] M_AXI_DP_AWSIZE
+                .dbg_master_DP_AWBURST   ( microblaze_data_axi_awburst   ), // output wire [1 : 0] M_AXI_DP_AWBURST
+                .dbg_master_DP_AWLOCK    ( microblaze_data_axi_awlock    ), // output wire M_AXI_DP_AWLOCK
+                .dbg_master_DP_AWCACHE   ( microblaze_data_axi_awcache   ), // output wire [3 : 0] M_AXI_DP_AWCACHE
+                .dbg_master_DP_AWPROT    ( microblaze_data_axi_awprot    ), // output wire [2 : 0] M_AXI_DP_AWPROT
+                .dbg_master_DP_AWQOS     ( microblaze_data_axi_awqos     ), // output wire [3 : 0] M_AXI_DP_AWQOS
+                .dbg_master_DP_AWVALID   ( microblaze_data_axi_awvalid   ), // output wire M_AXI_DP_AWVALID
+                .dbg_master_DP_AWREADY   ( microblaze_data_axi_awready   ), // input wire M_AXI_DP_AWREADY
+                .dbg_master_DP_WDATA     ( microblaze_data_axi_wdata     ), // output wire [31 : 0] M_AXI_DP_WDATA
+                .dbg_master_DP_WSTRB     ( microblaze_data_axi_wstrb     ), // output wire [3 : 0] M_AXI_DP_WSTRB
+                .dbg_master_DP_WLAST     ( microblaze_data_axi_wlast     ), // output wire M_AXI_DP_WLAST
+                .dbg_master_DP_WVALID    ( microblaze_data_axi_wvalid    ), // output wire M_AXI_DP_WVALID
+                .dbg_master_DP_WREADY    ( microblaze_data_axi_wready    ), // input wire M_AXI_DP_WREADY
+                .dbg_master_DP_BRESP     ( microblaze_data_axi_bresp     ), // input wire [1 : 0] M_AXI_DP_BRESP
+                .dbg_master_DP_BVALID    ( microblaze_data_axi_bvalid    ), // input wire M_AXI_DP_BVALID
+                .dbg_master_DP_BREADY    ( microblaze_data_axi_bready    ), // output wire M_AXI_DP_BREADY
+                .dbg_master_DP_ARADDR    ( microblaze_data_axi_araddr    ), // output wire [31 : 0] M_AXI_DP_ARADDR
+                .dbg_master_DP_ARLEN     ( microblaze_data_axi_arlen     ), // output wire [7 : 0] M_AXI_DP_ARLEN
+                .dbg_master_DP_ARSIZE    ( microblaze_data_axi_arsize    ), // output wire [2 : 0] M_AXI_DP_ARSIZE
+                .dbg_master_DP_ARBURST   ( microblaze_data_axi_arburst   ), // output wire [1 : 0] M_AXI_DP_ARBURST
+                .dbg_master_DP_ARLOCK    ( microblaze_data_axi_arlock    ), // output wire M_AXI_DP_ARLOCK
+                .dbg_master_DP_ARCACHE   ( microblaze_data_axi_arcache   ), // output wire [3 : 0] M_AXI_DP_ARCACHE
+                .dbg_master_DP_ARPROT    ( microblaze_data_axi_arprot    ), // output wire [2 : 0] M_AXI_DP_ARPROT
+                .dbg_master_DP_ARQOS     ( microblaze_data_axi_arqos     ), // output wire [3 : 0] M_AXI_DP_ARQOS
+                .dbg_master_DP_ARVALID   ( microblaze_data_axi_arvalid   ), // output wire M_AXI_DP_ARVALID
+                .dbg_master_DP_ARREADY   ( microblaze_data_axi_arready   ), // input wire M_AXI_DP_ARREADY
+                .dbg_master_DP_RDATA     ( microblaze_data_axi_rdata     ), // input wire [31 : 0] M_AXI_DP_RDATA
+                .dbg_master_DP_RRESP     ( microblaze_data_axi_rresp     ), // input wire [1 : 0] M_AXI_DP_RRESP
+                .dbg_master_DP_RLAST     ( microblaze_data_axi_rlast     ), // input wire M_AXI_DP_RLAST
+                .dbg_master_DP_RVALID    ( microblaze_data_axi_rvalid    ), // input wire M_AXI_DP_RVALID
+                .dbg_master_DP_RREADY    ( microblaze_data_axi_rready    ), // output wire M_AXI_DP_RREADY
 
                 // Instruction port (AXI-lite)
-                .M_AXI_IP_AWADDR    ( microblaze_instr_axilite_awaddr   ), // output wire [31 : 0] M_AXI_IP_AWADDR
-                .M_AXI_IP_AWPROT    ( microblaze_instr_axilite_awprot   ), // output wire [2 : 0] M_AXI_IP_AWPROT
-                .M_AXI_IP_AWVALID   ( microblaze_instr_axilite_awvalid  ), // output wire M_AXI_IP_AWVALID
-                .M_AXI_IP_AWREADY   ( microblaze_instr_axilite_awready  ), // input wire M_AXI_IP_AWREADY
-                .M_AXI_IP_WDATA     ( microblaze_instr_axilite_wdata    ), // output wire [31 : 0] M_AXI_IP_WDATA
-                .M_AXI_IP_WSTRB     ( microblaze_instr_axilite_wstrb    ), // output wire [3 : 0] M_AXI_IP_WSTRB
-                .M_AXI_IP_WVALID    ( microblaze_instr_axilite_wvalid   ), // output wire M_AXI_IP_WVALID
-                .M_AXI_IP_WREADY    ( microblaze_instr_axilite_wready   ), // input wire M_AXI_IP_WREADY
-                .M_AXI_IP_BRESP     ( microblaze_instr_axilite_bresp    ), // input wire [1 : 0] M_AXI_IP_BRESP
-                .M_AXI_IP_BVALID    ( microblaze_instr_axilite_bvalid   ), // input wire M_AXI_IP_BVALID
-                .M_AXI_IP_BREADY    ( microblaze_instr_axilite_bready   ), // output wire M_AXI_IP_BREADY
-                .M_AXI_IP_ARADDR    ( microblaze_instr_axilite_araddr   ), // output wire [31 : 0] M_AXI_IP_ARADDR
-                .M_AXI_IP_ARPROT    ( microblaze_instr_axilite_arprot   ), // output wire [2 : 0] M_AXI_IP_ARPROT
-                .M_AXI_IP_ARVALID   ( microblaze_instr_axilite_arvalid  ), // output wire M_AXI_IP_ARVALID
-                .M_AXI_IP_ARREADY   ( microblaze_instr_axilite_arready  ), // input wire M_AXI_IP_ARREADY
-                .M_AXI_IP_RDATA     ( microblaze_instr_axilite_rdata    ), // input wire [31 : 0] M_AXI_IP_RDATA
-                .M_AXI_IP_RRESP     ( microblaze_instr_axilite_rresp    ), // input wire [1 : 0] M_AXI_IP_RRESP
-                .M_AXI_IP_RVALID    ( microblaze_instr_axilite_rvalid   ), // input wire M_AXI_IP_RVALID
-                .M_AXI_IP_RREADY    ( microblaze_instr_axilite_rready   )  // output wire M_AXI_IP_RREADY
+                .dbg_master_IP_AWADDR    ( microblaze_instr_axilite_awaddr   ), // output wire [31 : 0] M_AXI_IP_AWADDR
+                .dbg_master_IP_AWPROT    ( microblaze_instr_axilite_awprot   ), // output wire [2 : 0] M_AXI_IP_AWPROT
+                .dbg_master_IP_AWVALID   ( microblaze_instr_axilite_awvalid  ), // output wire M_AXI_IP_AWVALID
+                .dbg_master_IP_AWREADY   ( microblaze_instr_axilite_awready  ), // input wire M_AXI_IP_AWREADY
+                .dbg_master_IP_WDATA     ( microblaze_instr_axilite_wdata    ), // output wire [31 : 0] M_AXI_IP_WDATA
+                .dbg_master_IP_WSTRB     ( microblaze_instr_axilite_wstrb    ), // output wire [3 : 0] M_AXI_IP_WSTRB
+                .dbg_master_IP_WVALID    ( microblaze_instr_axilite_wvalid   ), // output wire M_AXI_IP_WVALID
+                .dbg_master_IP_WREADY    ( microblaze_instr_axilite_wready   ), // input wire M_AXI_IP_WREADY
+                .dbg_master_IP_BRESP     ( microblaze_instr_axilite_bresp    ), // input wire [1 : 0] M_AXI_IP_BRESP
+                .dbg_master_IP_BVALID    ( microblaze_instr_axilite_bvalid   ), // input wire M_AXI_IP_BVALID
+                .dbg_master_IP_BREADY    ( microblaze_instr_axilite_bready   ), // output wire M_AXI_IP_BREADY
+                .dbg_master_IP_ARADDR    ( microblaze_instr_axilite_araddr   ), // output wire [31 : 0] M_AXI_IP_ARADDR
+                .dbg_master_IP_ARPROT    ( microblaze_instr_axilite_arprot   ), // output wire [2 : 0] M_AXI_IP_ARPROT
+                .dbg_master_IP_ARVALID   ( microblaze_instr_axilite_arvalid  ), // output wire M_AXI_IP_ARVALID
+                .dbg_master_IP_ARREADY   ( microblaze_instr_axilite_arready  ), // input wire M_AXI_IP_ARREADY
+                .dbg_master_IP_RDATA     ( microblaze_instr_axilite_rdata    ), // input wire [31 : 0] M_AXI_IP_RDATA
+                .dbg_master_IP_RRESP     ( microblaze_instr_axilite_rresp    ), // input wire [1 : 0] M_AXI_IP_RRESP
+                .dbg_master_IP_RVALID    ( microblaze_instr_axilite_rvalid   ), // input wire M_AXI_IP_RVALID
+                .dbg_master_IP_RREADY    ( microblaze_instr_axilite_rready   )  // output wire M_AXI_IP_RREADY
             );
 
             // Microblaze Debug Module V
@@ -361,61 +359,61 @@ module rvm_socket # (
                 .aclk           ( clk_i                             ), // input wire aclk
                 .aresetn        ( rst_ni                            ), // input wire aresetn
                 // From Microblaze (AXI-lite)
-                .s_axi_awaddr   ( microblaze_instr_axilite_awaddr   ), // input wire [31 : 0] s_axi_awaddr
-                .s_axi_awprot   ( microblaze_instr_axilite_awprot   ), // input wire [2 : 0] s_axi_awprot
-                .s_axi_awvalid  ( microblaze_instr_axilite_awvalid  ), // input wire s_axi_awvalid
-                .s_axi_awready  ( microblaze_instr_axilite_awready  ), // output wire s_axi_awready
-                .s_axi_wdata    ( microblaze_instr_axilite_wdata    ), // input wire [31 : 0] s_axi_wdata
-                .s_axi_wstrb    ( microblaze_instr_axilite_wstrb    ), // input wire [3 : 0] s_axi_wstrb
-                .s_axi_wvalid   ( microblaze_instr_axilite_wvalid   ), // input wire s_axi_wvalid
-                .s_axi_wready   ( microblaze_instr_axilite_wready   ), // output wire s_axi_wready
-                .s_axi_bresp    ( microblaze_instr_axilite_bresp    ), // output wire [1 : 0] s_axi_bresp
-                .s_axi_bvalid   ( microblaze_instr_axilite_bvalid   ), // output wire s_axi_bvalid
-                .s_axi_bready   ( microblaze_instr_axilite_bready   ), // input wire s_axi_bready
-                .s_axi_araddr   ( microblaze_instr_axilite_araddr   ), // input wire [31 : 0] s_axi_araddr
-                .s_axi_arprot   ( microblaze_instr_axilite_arprot   ), // input wire [2 : 0] s_axi_arprot
-                .s_axi_arvalid  ( microblaze_instr_axilite_arvalid  ), // input wire s_axi_arvalid
-                .s_axi_arready  ( microblaze_instr_axilite_arready  ), // output wire s_axi_arready
-                .s_axi_rdata    ( microblaze_instr_axilite_rdata    ), // output wire [31 : 0] s_axi_rdata
-                .s_axi_rresp    ( microblaze_instr_axilite_rresp    ), // output wire [1 : 0] s_axi_rresp
-                .s_axi_rvalid   ( microblaze_instr_axilite_rvalid   ), // output wire s_axi_rvalid
-                .s_axi_rready   ( microblaze_instr_axilite_rready   ), // input wire s_axi_rready
+                .dbg_slave_axi_awaddr   ( microblaze_instr_axilite_awaddr   ), // input wire [31 : 0] s_axi_awaddr
+                .dbg_slave_axi_awprot   ( microblaze_instr_axilite_awprot   ), // input wire [2 : 0] s_axi_awprot
+                .dbg_slave_axi_awvalid  ( microblaze_instr_axilite_awvalid  ), // input wire s_axi_awvalid
+                .dbg_slave_axi_awready  ( microblaze_instr_axilite_awready  ), // output wire s_axi_awready
+                .dbg_slave_axi_wdata    ( microblaze_instr_axilite_wdata    ), // input wire [31 : 0] s_axi_wdata
+                .dbg_slave_axi_wstrb    ( microblaze_instr_axilite_wstrb    ), // input wire [3 : 0] s_axi_wstrb
+                .dbg_slave_axi_wvalid   ( microblaze_instr_axilite_wvalid   ), // input wire s_axi_wvalid
+                .dbg_slave_axi_wready   ( microblaze_instr_axilite_wready   ), // output wire s_axi_wready
+                .dbg_slave_axi_bresp    ( microblaze_instr_axilite_bresp    ), // output wire [1 : 0] s_axi_bresp
+                .dbg_slave_axi_bvalid   ( microblaze_instr_axilite_bvalid   ), // output wire s_axi_bvalid
+                .dbg_slave_axi_bready   ( microblaze_instr_axilite_bready   ), // input wire s_axi_bready
+                .dbg_slave_axi_araddr   ( microblaze_instr_axilite_araddr   ), // input wire [31 : 0] s_axi_araddr
+                .dbg_slave_axi_arprot   ( microblaze_instr_axilite_arprot   ), // input wire [2 : 0] s_axi_arprot
+                .dbg_slave_axi_arvalid  ( microblaze_instr_axilite_arvalid  ), // input wire s_axi_arvalid
+                .dbg_slave_axi_arready  ( microblaze_instr_axilite_arready  ), // output wire s_axi_arready
+                .dbg_slave_axi_rdata    ( microblaze_instr_axilite_rdata    ), // output wire [31 : 0] s_axi_rdata
+                .dbg_slave_axi_rresp    ( microblaze_instr_axilite_rresp    ), // output wire [1 : 0] s_axi_rresp
+                .dbg_slave_axi_rvalid   ( microblaze_instr_axilite_rvalid   ), // output wire s_axi_rvalid
+                .dbg_slave_axi_rready   ( microblaze_instr_axilite_rready   ), // input wire s_axi_rready
                 // To socket (AXI)
-                .m_axi_awaddr   ( converter_instr_axi_awaddr        ), // output wire [31 : 0] m_axi_awaddr
-                .m_axi_awlen    ( converter_instr_axi_awlen         ), // output wire [7 : 0] m_axi_awlen
-                .m_axi_awsize   ( converter_instr_axi_awsize        ), // output wire [2 : 0] m_axi_awsize
-                .m_axi_awburst  ( converter_instr_axi_awburst       ), // output wire [1 : 0] m_axi_awburst
-                .m_axi_awlock   ( converter_instr_axi_awlock        ), // output wire [0 : 0] m_axi_awlock
-                .m_axi_awcache  ( converter_instr_axi_awcache       ), // output wire [3 : 0] m_axi_awcache
-                .m_axi_awprot   ( converter_instr_axi_awprot        ), // output wire [2 : 0] m_axi_awprot
-                .m_axi_awregion ( converter_instr_axi_awregion      ), // output wire [3 : 0] m_axi_awregion
-                .m_axi_awqos    ( converter_instr_axi_awqos         ), // output wire [3 : 0] m_axi_awqos
-                .m_axi_awvalid  ( converter_instr_axi_awvalid       ), // output wire m_axi_awvalid
-                .m_axi_awready  ( converter_instr_axi_awready       ), // input wire m_axi_awready
-                .m_axi_wdata    ( converter_instr_axi_wdata         ), // output wire [31 : 0] m_axi_wdata
-                .m_axi_wstrb    ( converter_instr_axi_wstrb         ), // output wire [3 : 0] m_axi_wstrb
-                .m_axi_wlast    ( converter_instr_axi_wlast         ), // output wire m_axi_wlast
-                .m_axi_wvalid   ( converter_instr_axi_wvalid        ), // output wire m_axi_wvalid
-                .m_axi_wready   ( converter_instr_axi_wready        ), // input wire m_axi_wready
-                .m_axi_bresp    ( converter_instr_axi_bresp         ), // input wire [1 : 0] m_axi_bresp
-                .m_axi_bvalid   ( converter_instr_axi_bvalid        ), // input wire m_axi_bvalid
-                .m_axi_bready   ( converter_instr_axi_bready        ), // output wire m_axi_bready
-                .m_axi_araddr   ( converter_instr_axi_araddr        ), // output wire [31 : 0] m_axi_araddr
-                .m_axi_arlen    ( converter_instr_axi_arlen         ), // output wire [7 : 0] m_axi_arlen
-                .m_axi_arsize   ( converter_instr_axi_arsize        ), // output wire [2 : 0] m_axi_arsize
-                .m_axi_arburst  ( converter_instr_axi_arburst       ), // output wire [1 : 0] m_axi_arburst
-                .m_axi_arlock   ( converter_instr_axi_arlock        ), // output wire [0 : 0] m_axi_arlock
-                .m_axi_arcache  ( converter_instr_axi_arcache       ), // output wire [3 : 0] m_axi_arcache
-                .m_axi_arprot   ( converter_instr_axi_arprot        ), // output wire [2 : 0] m_axi_arprot
-                .m_axi_arregion ( converter_instr_axi_arregion      ), // output wire [3 : 0] m_axi_arregion
-                .m_axi_arqos    ( converter_instr_axi_arqos         ), // output wire [3 : 0] m_axi_arqos
-                .m_axi_arvalid  ( converter_instr_axi_arvalid       ), // output wire m_axi_arvalid
-                .m_axi_arready  ( converter_instr_axi_arready       ), // input wire m_axi_arready
-                .m_axi_rdata    ( converter_instr_axi_rdata         ), // input wire [31 : 0] m_axi_rdata
-                .m_axi_rresp    ( converter_instr_axi_rresp         ), // input wire [1 : 0] m_axi_rresp
-                .m_axi_rlast    ( converter_instr_axi_rlast         ), // input wire m_axi_rlast
-                .m_axi_rvalid   ( converter_instr_axi_rvalid        ), // input wire m_axi_rvalid
-                .m_axi_rready   ( converter_instr_axi_rready        )  // output wire m_axi_rready
+                .dbg_master_axi_awaddr   ( converter_instr_axi_awaddr        ), // output wire [31 : 0] m_axi_awaddr
+                .dbg_master_axi_awlen    ( converter_instr_axi_awlen         ), // output wire [7 : 0] m_axi_awlen
+                .dbg_master_axi_awsize   ( converter_instr_axi_awsize        ), // output wire [2 : 0] m_axi_awsize
+                .dbg_master_axi_awburst  ( converter_instr_axi_awburst       ), // output wire [1 : 0] m_axi_awburst
+                .dbg_master_axi_awlock   ( converter_instr_axi_awlock        ), // output wire [0 : 0] m_axi_awlock
+                .dbg_master_axi_awcache  ( converter_instr_axi_awcache       ), // output wire [3 : 0] m_axi_awcache
+                .dbg_master_axi_awprot   ( converter_instr_axi_awprot        ), // output wire [2 : 0] m_axi_awprot
+                .dbg_master_axi_awregion ( converter_instr_axi_awregion      ), // output wire [3 : 0] m_axi_awregion
+                .dbg_master_axi_awqos    ( converter_instr_axi_awqos         ), // output wire [3 : 0] m_axi_awqos
+                .dbg_master_axi_awvalid  ( converter_instr_axi_awvalid       ), // output wire m_axi_awvalid
+                .dbg_master_axi_awready  ( converter_instr_axi_awready       ), // input wire m_axi_awready
+                .dbg_master_axi_wdata    ( converter_instr_axi_wdata         ), // output wire [31 : 0] m_axi_wdata
+                .dbg_master_axi_wstrb    ( converter_instr_axi_wstrb         ), // output wire [3 : 0] m_axi_wstrb
+                .dbg_master_axi_wlast    ( converter_instr_axi_wlast         ), // output wire m_axi_wlast
+                .dbg_master_axi_wvalid   ( converter_instr_axi_wvalid        ), // output wire m_axi_wvalid
+                .dbg_master_axi_wready   ( converter_instr_axi_wready        ), // input wire m_axi_wready
+                .dbg_master_axi_bresp    ( converter_instr_axi_bresp         ), // input wire [1 : 0] m_axi_bresp
+                .dbg_master_axi_bvalid   ( converter_instr_axi_bvalid        ), // input wire m_axi_bvalid
+                .dbg_master_axi_bready   ( converter_instr_axi_bready        ), // output wire m_axi_bready
+                .dbg_master_axi_araddr   ( converter_instr_axi_araddr        ), // output wire [31 : 0] m_axi_araddr
+                .dbg_master_axi_arlen    ( converter_instr_axi_arlen         ), // output wire [7 : 0] m_axi_arlen
+                .dbg_master_axi_arsize   ( converter_instr_axi_arsize        ), // output wire [2 : 0] m_axi_arsize
+                .dbg_master_axi_arburst  ( converter_instr_axi_arburst       ), // output wire [1 : 0] m_axi_arburst
+                .dbg_master_axi_arlock   ( converter_instr_axi_arlock        ), // output wire [0 : 0] m_axi_arlock
+                .dbg_master_axi_arcache  ( converter_instr_axi_arcache       ), // output wire [3 : 0] m_axi_arcache
+                .dbg_master_axi_arprot   ( converter_instr_axi_arprot        ), // output wire [2 : 0] m_axi_arprot
+                .dbg_master_axi_arregion ( converter_instr_axi_arregion      ), // output wire [3 : 0] m_axi_arregion
+                .dbg_master_axi_arqos    ( converter_instr_axi_arqos         ), // output wire [3 : 0] m_axi_arqos
+                .dbg_master_axi_arvalid  ( converter_instr_axi_arvalid       ), // output wire m_axi_arvalid
+                .dbg_master_axi_arready  ( converter_instr_axi_arready       ), // input wire m_axi_arready
+                .dbg_master_axi_rdata    ( converter_instr_axi_rdata         ), // input wire [31 : 0] m_axi_rdata
+                .dbg_master_axi_rresp    ( converter_instr_axi_rresp         ), // input wire [1 : 0] m_axi_rresp
+                .dbg_master_axi_rlast    ( converter_instr_axi_rlast         ), // input wire m_axi_rlast
+                .dbg_master_axi_rvalid   ( converter_instr_axi_rvalid        ), // input wire m_axi_rvalid
+                .dbg_master_axi_rready   ( converter_instr_axi_rready        )  // output wire m_axi_rready
             );
 
         end
@@ -574,247 +572,110 @@ module rvm_socket # (
     //   |___/|___|___/\___/ \___|   //
     //                               //
     ///////////////////////////////////
-    if ( DEBUG_MODULE == 1 ) begin : dm_gen
 
-        // logic ndmreset_o;
-        // logic dmactive_o;
+    // This is only for PULP cores, that share a common debug module
+    // Other cores are required to instatiate their own DM
+    if ( CORE_SELECTOR inside {CORE_CV32E40P} ) begin : dm_gen
 
         //  BSCANE2 tap
         (* keep_hierarchy = "yes" *)  // DEBUG
         custom_riscv_dbg_bscane riscv_dbg_u (
-            .clk_i                  ( clk_i                 ),
-            .rst_ni                 ( rst_ni                ),
-            // .debug_reset_ni         ( debug_reset_ni        ),
-            .unavailable_i          ( '0                    ),
-            .ndmreset_o             ( ndmreset_o            ),
-            .dmactive_o             ( dmactive_o            ),
-            // Mem Master
-            .dbg_master_mem_req     ( dbg_master_mem_req    ),
-            .dbg_master_mem_gnt     ( dbg_master_mem_gnt    ),
-            .dbg_master_mem_valid   ( dbg_master_mem_valid  ),
-            .dbg_master_mem_addr    ( dbg_master_mem_addr   ),
-            .dbg_master_mem_rdata   ( dbg_master_mem_rdata  ),
-            .dbg_master_mem_wdata   ( dbg_master_mem_wdata  ),
-            .dbg_master_mem_we      ( dbg_master_mem_we     ),
-            .dbg_master_mem_be      ( dbg_master_mem_be     ),
-            .dbg_master_mem_error   ( dbg_master_mem_error  ),
-            // Mem Slave
-            .dbg_slave_mem_req      ( dbg_slave_mem_req     ),
-            .dbg_slave_mem_gnt      ( dbg_slave_mem_gnt     ), // Unused
-            .dbg_slave_mem_valid    ( dbg_slave_mem_valid   ),
-            .dbg_slave_mem_addr     ( dbg_slave_mem_addr    ),
-            .dbg_slave_mem_rdata    ( dbg_slave_mem_rdata   ),
-            .dbg_slave_mem_wdata    ( dbg_slave_mem_wdata   ),
-            .dbg_slave_mem_we       ( dbg_slave_mem_we      ),
-            .dbg_slave_mem_be       ( dbg_slave_mem_be      ),
-            .dbg_slave_mem_error    ( dbg_slave_mem_error   ), // Unused
-            // To core
-            .debug_req_o            ( debug_req_core        )
+            .clk_i                  ( clk_i                   ),
+            .rst_ni                 ( rst_ni                  ),
+            .unavailable_i          ( '0                      ),
+            .ndmreset_o             ( ndmreset_o              ), // Open
+            .dmactive_o             ( dmactive_o              ), // Open
+            // AXI Slave
+            .dbg_slave_axi_awid         ( dbg_slave_axi_awid      ),
+            .dbg_slave_axi_awaddr       ( dbg_slave_axi_awaddr    ),
+            .dbg_slave_axi_awlen        ( dbg_slave_axi_awlen     ),
+            .dbg_slave_axi_awsize       ( dbg_slave_axi_awsize    ),
+            .dbg_slave_axi_awburst      ( dbg_slave_axi_awburst   ),
+            .dbg_slave_axi_awlock       ( dbg_slave_axi_awlock    ),
+            .dbg_slave_axi_awcache      ( dbg_slave_axi_awcache   ),
+            .dbg_slave_axi_awprot       ( dbg_slave_axi_awprot    ),
+            .dbg_slave_axi_awqos        ( dbg_slave_axi_awqos     ),
+            .dbg_slave_axi_awvalid      ( dbg_slave_axi_awvalid   ),
+            .dbg_slave_axi_awready      ( dbg_slave_axi_awready   ),
+            .dbg_slave_axi_wdata        ( dbg_slave_axi_wdata     ),
+            .dbg_slave_axi_wstrb        ( dbg_slave_axi_wstrb     ),
+            .dbg_slave_axi_wlast        ( dbg_slave_axi_wlast     ),
+            .dbg_slave_axi_wvalid       ( dbg_slave_axi_wvalid    ),
+            .dbg_slave_axi_wready       ( dbg_slave_axi_wready    ),
+            .dbg_slave_axi_bid          ( dbg_slave_axi_bid       ),
+            .dbg_slave_axi_bresp        ( dbg_slave_axi_bresp     ),
+            .dbg_slave_axi_bvalid       ( dbg_slave_axi_bvalid    ),
+            .dbg_slave_axi_bready       ( dbg_slave_axi_bready    ),
+            .dbg_slave_axi_arid         ( dbg_slave_axi_arid      ),
+            .dbg_slave_axi_araddr       ( dbg_slave_axi_araddr    ),
+            .dbg_slave_axi_arlen        ( dbg_slave_axi_arlen     ),
+            .dbg_slave_axi_arsize       ( dbg_slave_axi_arsize    ),
+            .dbg_slave_axi_arburst      ( dbg_slave_axi_arburst   ),
+            .dbg_slave_axi_arlock       ( dbg_slave_axi_arlock    ),
+            .dbg_slave_axi_arcache      ( dbg_slave_axi_arcache   ),
+            .dbg_slave_axi_arprot       ( dbg_slave_axi_arprot    ),
+            .dbg_slave_axi_arqos        ( dbg_slave_axi_arqos     ),
+            .dbg_slave_axi_arvalid      ( dbg_slave_axi_arvalid   ),
+            .dbg_slave_axi_arready      ( dbg_slave_axi_arready   ),
+            .dbg_slave_axi_rid          ( dbg_slave_axi_rid       ),
+            .dbg_slave_axi_rdata        ( dbg_slave_axi_rdata     ),
+            .dbg_slave_axi_rresp        ( dbg_slave_axi_rresp     ),
+            .dbg_slave_axi_rlast        ( dbg_slave_axi_rlast     ),
+            .dbg_slave_axi_rvalid       ( dbg_slave_axi_rvalid    ),
+            .dbg_slave_axi_rready       ( dbg_slave_axi_rready    ),
+            // AXI Master
+            .dbg_master_axi_awid        ( dbg_master_axi_awid     ),
+            .dbg_master_axi_awaddr      ( dbg_master_axi_awaddr   ),
+            .dbg_master_axi_awlen       ( dbg_master_axi_awlen    ),
+            .dbg_master_axi_awsize      ( dbg_master_axi_awsize   ),
+            .dbg_master_axi_awburst     ( dbg_master_axi_awburst  ),
+            .dbg_master_axi_awlock      ( dbg_master_axi_awlock   ),
+            .dbg_master_axi_awcache     ( dbg_master_axi_awcache  ),
+            .dbg_master_axi_awprot      ( dbg_master_axi_awprot   ),
+            .dbg_master_axi_awregion    ( dbg_master_axi_awregion ),
+            .dbg_master_axi_awqos       ( dbg_master_axi_awqos    ),
+            .dbg_master_axi_awvalid     ( dbg_master_axi_awvalid  ),
+            .dbg_master_axi_awready     ( dbg_master_axi_awready  ),
+            .dbg_master_axi_wdata       ( dbg_master_axi_wdata    ),
+            .dbg_master_axi_wstrb       ( dbg_master_axi_wstrb    ),
+            .dbg_master_axi_wlast       ( dbg_master_axi_wlast    ),
+            .dbg_master_axi_wvalid      ( dbg_master_axi_wvalid   ),
+            .dbg_master_axi_wready      ( dbg_master_axi_wready   ),
+            .dbg_master_axi_bid         ( dbg_master_axi_bid      ),
+            .dbg_master_axi_bresp       ( dbg_master_axi_bresp    ),
+            .dbg_master_axi_bvalid      ( dbg_master_axi_bvalid   ),
+            .dbg_master_axi_bready      ( dbg_master_axi_bready   ),
+            .dbg_master_axi_arid        ( dbg_master_axi_arid     ),
+            .dbg_master_axi_araddr      ( dbg_master_axi_araddr   ),
+            .dbg_master_axi_arlen       ( dbg_master_axi_arlen    ),
+            .dbg_master_axi_arsize      ( dbg_master_axi_arsize   ),
+            .dbg_master_axi_arburst     ( dbg_master_axi_arburst  ),
+            .dbg_master_axi_arlock      ( dbg_master_axi_arlock   ),
+            .dbg_master_axi_arcache     ( dbg_master_axi_arcache  ),
+            .dbg_master_axi_arprot      ( dbg_master_axi_arprot   ),
+            .dbg_master_axi_arregion    ( dbg_master_axi_arregion ),
+            .dbg_master_axi_arqos       ( dbg_master_axi_arqos    ),
+            .dbg_master_axi_arvalid     ( dbg_master_axi_arvalid  ),
+            .dbg_master_axi_arready     ( dbg_master_axi_arready  ),
+            .dbg_master_axi_rid         ( dbg_master_axi_rid      ),
+            .dbg_master_axi_rdata       ( dbg_master_axi_rdata    ),
+            .dbg_master_axi_rresp       ( dbg_master_axi_rresp    ),
+            .dbg_master_axi_rlast       ( dbg_master_axi_rlast    ),
+            .dbg_master_axi_rvalid      ( dbg_master_axi_rvalid   ),
+            .dbg_master_axi_rready      ( dbg_master_axi_rready   ),
+            // To PULP core
+            .debug_req_o            ( debug_req_core           )
         );
-
-        // MEM to AXI converter
-        // dbg_master_mem -> axi_from_mem -> dbg_master_axi
-        (* keep_hierarchy = "yes" *)  // DEBUG
-        custom_axi_from_mem axi_from_mem_dbg_master_u (
-            // AXI side
-            .m_axi_awid         ( dbg_master_axi_awid       ),
-            .m_axi_awaddr       ( dbg_master_axi_awaddr     ),
-            .m_axi_awlen        ( dbg_master_axi_awlen      ),
-            .m_axi_awsize       ( dbg_master_axi_awsize     ),
-            .m_axi_awburst      ( dbg_master_axi_awburst    ),
-            .m_axi_awlock       ( dbg_master_axi_awlock     ),
-            .m_axi_awcache      ( dbg_master_axi_awcache    ),
-            .m_axi_awprot       ( dbg_master_axi_awprot     ),
-            .m_axi_awqos        ( dbg_master_axi_awqos      ),
-            .m_axi_awregion     ( dbg_master_axi_awregion   ),
-            .m_axi_awvalid      ( dbg_master_axi_awvalid    ),
-            .m_axi_awready      ( dbg_master_axi_awready    ),
-            .m_axi_wdata        ( dbg_master_axi_wdata      ),
-            .m_axi_wstrb        ( dbg_master_axi_wstrb      ),
-            .m_axi_wlast        ( dbg_master_axi_wlast      ),
-            .m_axi_wvalid       ( dbg_master_axi_wvalid     ),
-            .m_axi_wready       ( dbg_master_axi_wready     ),
-            .m_axi_bid          ( dbg_master_axi_bid        ),
-            .m_axi_bresp        ( dbg_master_axi_bresp      ),
-            .m_axi_bvalid       ( dbg_master_axi_bvalid     ),
-            .m_axi_bready       ( dbg_master_axi_bready     ),
-            .m_axi_araddr       ( dbg_master_axi_araddr     ),
-            .m_axi_arlen        ( dbg_master_axi_arlen      ),
-            .m_axi_arsize       ( dbg_master_axi_arsize     ),
-            .m_axi_arburst      ( dbg_master_axi_arburst    ),
-            .m_axi_arlock       ( dbg_master_axi_arlock     ),
-            .m_axi_arcache      ( dbg_master_axi_arcache    ),
-            .m_axi_arprot       ( dbg_master_axi_arprot     ),
-            .m_axi_arqos        ( dbg_master_axi_arqos      ),
-            .m_axi_arregion     ( dbg_master_axi_arregion   ),
-            .m_axi_arvalid      ( dbg_master_axi_arvalid    ),
-            .m_axi_arready      ( dbg_master_axi_arready    ),
-            .m_axi_arid         ( dbg_master_axi_arid       ),
-            .m_axi_rid          ( dbg_master_axi_rid        ),
-            .m_axi_rdata        ( dbg_master_axi_rdata      ),
-            .m_axi_rresp        ( dbg_master_axi_rresp      ),
-            .m_axi_rlast        ( dbg_master_axi_rlast      ),
-            .m_axi_rvalid       ( dbg_master_axi_rvalid     ),
-            .m_axi_rready       ( dbg_master_axi_rready     ),
-            // MEM side
-            .clk_i              ( clk_i                      ),
-            .rst_ni             ( rst_ni                     ),
-            .s_mem_req          ( dbg_master_mem_req         ),
-            .s_mem_addr         ( dbg_master_mem_addr        ),
-            .s_mem_we           ( dbg_master_mem_we          ),
-            .s_mem_wdata        ( dbg_master_mem_wdata       ),
-            .s_mem_be           ( dbg_master_mem_be          ),
-            .s_mem_gnt          ( dbg_master_mem_gnt         ),
-            .s_mem_valid        ( dbg_master_mem_valid       ),
-            .s_mem_rdata        ( dbg_master_mem_rdata       ),
-            .s_mem_error        ( dbg_master_mem_error       )
-        );
-
-        // AXI to MEM converter
-        // dbg_slave_mem -> axi_to_mem -> dbg_slave_axi
-        localparam AXI_TO_MEM = 1;
-        if ( AXI_TO_MEM ) begin : axi_to_mem_gen
-
-            logic busy_axi_from_mem;
-            (* keep_hierarchy = "yes" *)  // DEBUG
-            custom_axi_to_mem axi_to_mem_dbg_slave_u (
-                .clk_i              ( clk_i                    ),
-                .rst_ni             ( rst_ni                   ),
-                .busy_o             ( busy_axi_from_mem        ), // Unused
-                // AXI side
-                .s_axi_awid         ( dbg_slave_axi_awid       ),
-                .s_axi_awaddr       ( dbg_slave_axi_awaddr     ),
-                .s_axi_awlen        ( dbg_slave_axi_awlen      ),
-                .s_axi_awsize       ( dbg_slave_axi_awsize     ),
-                .s_axi_awburst      ( dbg_slave_axi_awburst    ),
-                .s_axi_awlock       ( dbg_slave_axi_awlock     ),
-                .s_axi_awcache      ( dbg_slave_axi_awcache    ),
-                .s_axi_awprot       ( dbg_slave_axi_awprot     ),
-                .s_axi_awqos        ( dbg_slave_axi_awqos      ),
-                .s_axi_awregion     ( dbg_slave_axi_awregion   ),
-                .s_axi_awvalid      ( dbg_slave_axi_awvalid    ),
-                .s_axi_awready      ( dbg_slave_axi_awready    ),
-                .s_axi_wdata        ( dbg_slave_axi_wdata      ),
-                .s_axi_wstrb        ( dbg_slave_axi_wstrb      ),
-                .s_axi_wlast        ( dbg_slave_axi_wlast      ),
-                .s_axi_wvalid       ( dbg_slave_axi_wvalid     ),
-                .s_axi_wready       ( dbg_slave_axi_wready     ),
-                .s_axi_bid          ( dbg_slave_axi_bid        ),
-                .s_axi_bresp        ( dbg_slave_axi_bresp      ),
-                .s_axi_bvalid       ( dbg_slave_axi_bvalid     ),
-                .s_axi_bready       ( dbg_slave_axi_bready     ),
-                .s_axi_araddr       ( dbg_slave_axi_araddr     ),
-                .s_axi_arlen        ( dbg_slave_axi_arlen      ),
-                .s_axi_arsize       ( dbg_slave_axi_arsize     ),
-                .s_axi_arburst      ( dbg_slave_axi_arburst    ),
-                .s_axi_arlock       ( dbg_slave_axi_arlock     ),
-                .s_axi_arcache      ( dbg_slave_axi_arcache    ),
-                .s_axi_arprot       ( dbg_slave_axi_arprot     ),
-                .s_axi_arqos        ( dbg_slave_axi_arqos      ),
-                .s_axi_arregion     ( dbg_slave_axi_arregion   ),
-                .s_axi_arvalid      ( dbg_slave_axi_arvalid    ),
-                .s_axi_arready      ( dbg_slave_axi_arready    ),
-                .s_axi_arid         ( dbg_slave_axi_arid       ),
-                .s_axi_rid          ( dbg_slave_axi_rid        ),
-                .s_axi_rdata        ( dbg_slave_axi_rdata      ),
-                .s_axi_rresp        ( dbg_slave_axi_rresp      ),
-                .s_axi_rlast        ( dbg_slave_axi_rlast      ),
-                .s_axi_rvalid       ( dbg_slave_axi_rvalid     ),
-                .s_axi_rready       ( dbg_slave_axi_rready     ),
-                // MEM side
-                .m_mem_req          ( dbg_slave_mem_req         ),
-                .m_mem_addr         ( dbg_slave_mem_addr        ),
-                .m_mem_we           ( dbg_slave_mem_we          ),
-                .m_mem_wdata        ( dbg_slave_mem_wdata       ),
-                .m_mem_be           ( dbg_slave_mem_be          ),
-                .m_mem_gnt          ( dbg_slave_mem_gnt         ),
-                .m_mem_valid        ( dbg_slave_mem_valid       ),
-                .m_mem_rdata        ( dbg_slave_mem_rdata       ),
-                .m_mem_error        ( dbg_slave_mem_error       )
-            );
-
-        end : axi_to_mem_gen
-        else begin : axi2mem_gen
-
-            logic axi2mem_user_o;
-
-            axi2mem #(
-                .AXI_ID_WIDTH      ( AXI_ID_WIDTH   ),
-                .AXI_ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
-                .AXI_DATA_WIDTH    ( AXI_DATA_WIDTH ),
-                .AXI_USER_WIDTH    ( 1              ) // Cannot not be zero
-            ) axi2mem_u (
-                .clk_i  ( clk_i               ),
-                .rst_ni ( rst_ni              ),
-                // From AXI
-                .slave_axi_awid         ( dbg_slave_axi_awid       ),
-                .slave_axi_awaddr       ( dbg_slave_axi_awaddr     ),
-                .slave_axi_awlen        ( dbg_slave_axi_awlen      ),
-                .slave_axi_awsize       ( dbg_slave_axi_awsize     ),
-                .slave_axi_awburst      ( dbg_slave_axi_awburst    ),
-                .slave_axi_awlock       ( dbg_slave_axi_awlock     ),
-                .slave_axi_awcache      ( dbg_slave_axi_awcache    ),
-                .slave_axi_awprot       ( dbg_slave_axi_awprot     ),
-                .slave_axi_awqos        ( dbg_slave_axi_awqos      ),
-                .slave_axi_awregion     ( dbg_slave_axi_awregion   ),
-                .slave_axi_awvalid      ( dbg_slave_axi_awvalid    ),
-                .slave_axi_awready      ( dbg_slave_axi_awready    ),
-                .slave_axi_wdata        ( dbg_slave_axi_wdata      ),
-                .slave_axi_wstrb        ( dbg_slave_axi_wstrb      ),
-                .slave_axi_wlast        ( dbg_slave_axi_wlast      ),
-                .slave_axi_wvalid       ( dbg_slave_axi_wvalid     ),
-                .slave_axi_wready       ( dbg_slave_axi_wready     ),
-                .slave_axi_bid          ( dbg_slave_axi_bid        ),
-                .slave_axi_bresp        ( dbg_slave_axi_bresp      ),
-                .slave_axi_bvalid       ( dbg_slave_axi_bvalid     ),
-                .slave_axi_bready       ( dbg_slave_axi_bready     ),
-                .slave_axi_araddr       ( dbg_slave_axi_araddr     ),
-                .slave_axi_arlen        ( dbg_slave_axi_arlen      ),
-                .slave_axi_arsize       ( dbg_slave_axi_arsize     ),
-                .slave_axi_arburst      ( dbg_slave_axi_arburst    ),
-                .slave_axi_arlock       ( dbg_slave_axi_arlock     ),
-                .slave_axi_arcache      ( dbg_slave_axi_arcache    ),
-                .slave_axi_arprot       ( dbg_slave_axi_arprot     ),
-                .slave_axi_arqos        ( dbg_slave_axi_arqos      ),
-                .slave_axi_arregion     ( dbg_slave_axi_arregion   ),
-                .slave_axi_arvalid      ( dbg_slave_axi_arvalid    ),
-                .slave_axi_arready      ( dbg_slave_axi_arready    ),
-                .slave_axi_arid         ( dbg_slave_axi_arid       ),
-                .slave_axi_rid          ( dbg_slave_axi_rid        ),
-                .slave_axi_rdata        ( dbg_slave_axi_rdata      ),
-                .slave_axi_rresp        ( dbg_slave_axi_rresp      ),
-                .slave_axi_rlast        ( dbg_slave_axi_rlast      ),
-                .slave_axi_rvalid       ( dbg_slave_axi_rvalid     ),
-                .slave_axi_rready       ( dbg_slave_axi_rready     ),
-                // To MEM
-                .req_o                  ( dbg_slave_mem_req        ),
-                .we_o                   ( dbg_slave_mem_we         ),
-                .addr_o                 ( dbg_slave_mem_addr       ),
-                .be_o                   ( dbg_slave_mem_be         ),
-                .data_o                 ( dbg_slave_mem_wdata      ),
-                .data_i                 ( dbg_slave_mem_rdata      ),
-                // Mem user fields
-                .user_i                 ( '0                       ),
-                .user_o                 ( axi2mem_user_o           ) // Unused
-            );
-        end : axi2mem_gen
 
     end : dm_gen
     else begin : dm_not_gen
 
         // Tie-off debug request signal to cores
         assign debug_req_core = '0;
-        // Tie-off debug mem master outputs
-        assign dbg_master_mem_req = '0;
-        assign dbg_master_mem_addr = '0;
-        assign dbg_master_mem_wdata = '0;
-        assign dbg_master_mem_we = '0;
-        assign dbg_master_mem_be = '0;
-        // Tie-off debug mem slave outputs
-        assign dbg_slave_mem_gnt = '0;
-        assign dbg_slave_mem_valid = '0;
-        assign dbg_slave_mem_rdata = '0;
-        assign dbg_slave_mem_error = '0;
+
+        // TODO: UNTESTED
+        `SINK_AXI_MASTER_INTERFACE(dbg_master);
+        `SINK_AXI_SLAVE_INTERFACE(dbg_slave);
 
     end : dm_not_gen
 

@@ -1,8 +1,7 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description:
-# This script downloads riscv-dbg v0.8.1 sources and flattens them into the rtl directory
+# This script uses bender to download riscv-dbg and axi sources, and flattens them into the rtl/ directory
 
 RED='\033[1;31m'
 GREEN='\033[1;32m'
@@ -13,15 +12,10 @@ NC='\033[0m' # No Color
 RTL_DIR=rtl
 mkdir ${RTL_DIR}
 
-# clone repo (Release v1.8.3 Jul 15 2024)
-GIT_URL=https://github.com/pulp-platform/riscv-dbg.git
-GIT_TAG=v0.8.1
-CLONE_DIR=riscv-dbg
-printf "${YELLOW}[FETCH_SOURCES] Cloning source repository${NC}\n"
-git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}
-cd ${CLONE_DIR};
-
-# Clone Bender
+##############
+# Bender.yml #
+##############
+# Download Bender
 printf "${YELLOW}[FETCH_SOURCES] Download Bender${NC}\n"
 curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf | sh
 
@@ -29,8 +23,7 @@ curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf
 printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"
 ./bender checkout
 BENDER_TARGETS="-t xilinx -t bscane"
-./bender script flist ${BENDER_TARGETS} > ../rtl.flist
-cd ..
+./bender script flist ${BENDER_TARGETS} > rtl.flist
 
 # Copy all RTL files into rtl dir
 printf "${YELLOW}[FETCH_SOURCES] Copy all sources into ${RTL_DIR}/${NC}\n" s
@@ -39,17 +32,23 @@ for rtl_file in $(cat rtl.flist) ; do
 done;
 
 # Add header files, not listed by bender
-bender_path=${CLONE_DIR}/.bender/
-cp $(find $bender_path -name registers.svh) ${RTL_DIR}/
-cp $(find $bender_path -name assertions.svh) ${RTL_DIR}/
+CLONE_DIR=.bender
+cp $(find ${CLONE_DIR} -name typedef.svh) ${RTL_DIR}/
+cp $(find ${CLONE_DIR} -name assertions.svh) ${RTL_DIR}/
+cp $(find ${CLONE_DIR} -name registers.svh) ${RTL_DIR}/
+cp $(find ${CLONE_DIR} -name assign.svh) ${RTL_DIR}/
+
+# Remove interface-based files, since Vivado does not like them
+rm $(find ${RTL_DIR}/ -name axi_intf.sv)
 
 # Patch files for flat includes
 for rtl_file in ${RTL_DIR}/* ; do
     sed -i "s|\`include \"common_cells\/|\`include \"|g" $rtl_file
+    sed -i "s|\`include \"axi\/|\`include \"|g" $rtl_file
 done
 
 # Delete the cloned repo and temporary flist
 printf "${YELLOW}[FETCH_SOURCES] Clean all artifacts${NC}\n"
-# sudo rm -r ${CLONE_DIR}
-# rm *.flist
+sudo rm -rf ${CLONE_DIR}
+rm *.flist
 printf "${GREEN}[FETCH_SOURCES] Completed${NC}\n"
