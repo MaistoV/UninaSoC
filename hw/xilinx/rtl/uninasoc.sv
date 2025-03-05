@@ -80,6 +80,7 @@ module uninasoc (
 
     // Reset negative
     logic sys_resetn;
+    logic vio_debug_resetn;
     // clkwiz -> all
     logic soc_clk;
 
@@ -123,9 +124,9 @@ module uninasoc (
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `ifdef EMBEDDED
-        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, dbg_slave, xbar_to_peripheral_bus, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_peripheral_bus, dbg_slave, xbar_to_main_mem);
     `elsif HPC
-        `CONCAT_AXI_SLAVES_ARRAY4(xbar_slaves, dbg_slave, xbar_to_ddr4, xbar_to_peripheral_bus, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY4(xbar_slaves, xbar_to_ddr4, xbar_to_peripheral_bus, dbg_slave, xbar_to_main_mem);
     `endif
 
     ///////////////////////
@@ -141,8 +142,9 @@ module uninasoc (
     xlnx_vio vio_inst (
       .clk        ( soc_clk         ),
       .probe_out0 ( vio_resetn      ),
-      .probe_out1 ( ),
-      .probe_in0  ( sys_resetn      )
+      .probe_out1 ( vio_debug_resetn ),
+    //   .probe_in0  ( sys_resetn      )
+      .probe_in0  ( '0 )
     );
 
     // Axi Crossbar
@@ -296,14 +298,15 @@ module uninasoc (
     // RVM Socket
     rvm_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
-        .DEBUG_MODULE  ( `DEBUG_MODULE  )
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH )
+//        ,
+//        .DEBUG_MODULE  ( `DEBUG_MODULE  )
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
-        .rst_ni         ( sys_resetn & vio_resetn ),
+        // .rst_ni         ( sys_resetn & vio_resetn ),
+        .rst_ni         ( sys_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( '0         ),
-        // .jtag_trst_ni   ( sys_resetn ),
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,

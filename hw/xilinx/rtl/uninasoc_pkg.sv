@@ -21,7 +21,7 @@ package uninasoc_pkg;
 
     // Main Crosbar slaves if EMBEDDED
     // - Peripheral bus
-    // - DM slave: TODO: figure out if to put this under PBUS
+    // - DM slave
     // - Main memory (BRAM)
     `ifdef EMBEDDED
         // NB: we should find a better and automatic way of count AXI and MASTERs

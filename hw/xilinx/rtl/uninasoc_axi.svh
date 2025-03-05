@@ -779,6 +779,32 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
   output axi_valid_t  ``slave_name``_axi_rvalid,   \
   input  axi_ready_t  ``slave_name``_axi_rready
 
+// AXI4 LITE MASTER PORTS
+`define DEFINE_AXILITE_MASTER_PORTS(master_name)          \
+    // AW channel                                        \
+    output axi_addr_t   ``master_name``_axilite_awaddr,   \
+    output axi_prot_t   ``master_name``_axilite_awprot,   \
+    output axi_valid_t  ``master_name``_axilite_awvalid,  \
+    input  axi_ready_t  ``master_name``_axilite_awready,  \
+    // W channel                                         \
+    output axi_data_t   ``master_name``_axilite_wdata,    \
+    output axi_strb_t   ``master_name``_axilite_wstrb,    \
+    output axi_valid_t  ``master_name``_axilite_wvalid,   \
+    input  axi_ready_t  ``master_name``_axilite_wready,   \
+    // B channel                                         \
+    input  axi_resp_t   ``master_name``_axilite_bresp,    \
+    input  axi_valid_t  ``master_name``_axilite_bvalid,   \
+    output axi_ready_t  ``master_name``_axilite_bready,   \
+    // AR channel                                        \
+    output axi_addr_t   ``master_name``_axilite_araddr,   \
+    output axi_prot_t   ``master_name``_axilite_arprot,   \
+    output axi_valid_t  ``master_name``_axilite_arvalid,  \
+    input  axi_ready_t  ``master_name``_axilite_arready,  \
+    // R channel                                         \
+    input  axi_data_t   ``master_name``_axilite_rdata,    \
+    input  axi_resp_t   ``master_name``_axilite_rresp,    \
+    input  axi_valid_t  ``master_name``_axilite_rvalid,   \
+    output axi_ready_t  ``master_name``_axilite_rready
 
 // AXI4 LITE SLAVE PORTS
 `define DEFINE_AXILITE_SLAVE_PORTS(slave_name)           \
@@ -863,5 +889,89 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     input  axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_rvalid,   \
     output axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_rready
 
+/////////////////////
+// Sink interfaces //
+/////////////////////
+
+// Sink AXI master interface
+`define SINK_AXI_MASTER_INTERFACE(bus_name)     \
+    assign ``bus_name``_axi_awready     = '0;   \
+    assign ``bus_name``_axi_wready      = '0;   \
+    assign ``bus_name``_axi_bid         = '0;   \
+    assign ``bus_name``_axi_bresp       = '0;   \
+    assign ``bus_name``_axi_bvalid      = '0;   \
+    assign ``bus_name``_axi_arready     = '0;   \
+    assign ``bus_name``_axi_rid         = '0;   \
+    assign ``bus_name``_axi_rdata       = '0;   \
+    assign ``bus_name``_axi_rresp       = '0;   \
+    assign ``bus_name``_axi_rlast       = '0;   \
+    assign ``bus_name``_axi_rvalid      = '0;
+
+// Sink AXI slave interface
+`define SINK_AXI_SLAVE_INTERFACE(bus_name)     \
+    assign ``bus_name``_axi_awid       = '0;   \
+    assign ``bus_name``_axi_awaddr     = '0;   \
+    assign ``bus_name``_axi_awlen      = '0;   \
+    assign ``bus_name``_axi_awsize     = '0;   \
+    assign ``bus_name``_axi_awburst    = '0;   \
+    assign ``bus_name``_axi_awlock     = '0;   \
+    assign ``bus_name``_axi_awcache    = '0;   \
+    assign ``bus_name``_axi_awprot     = '0;   \
+    assign ``bus_name``_axi_awqos      = '0;   \
+    assign ``bus_name``_axi_awvalid    = '0;   \
+    assign ``bus_name``_axi_awregion   = '0;   \
+    assign ``bus_name``_axi_wdata      = '0;   \
+    assign ``bus_name``_axi_wstrb      = '0;   \
+    assign ``bus_name``_axi_wlast      = '0;   \
+    assign ``bus_name``_axi_wvalid     = '0;   \
+    assign ``bus_name``_axi_bready     = '0;   \
+    assign ``bus_name``_axi_araddr     = '0;   \
+    assign ``bus_name``_axi_arlen      = '0;   \
+    assign ``bus_name``_axi_arsize     = '0;   \
+    assign ``bus_name``_axi_arburst    = '0;   \
+    assign ``bus_name``_axi_arlock     = '0;   \
+    assign ``bus_name``_axi_arcache    = '0;   \
+    assign ``bus_name``_axi_arprot     = '0;   \
+    assign ``bus_name``_axi_arqos      = '0;   \
+    assign ``bus_name``_axi_arvalid    = '0;   \
+    assign ``bus_name``_axi_arid       = '0;   \
+    assign ``bus_name``_axi_arregion   = '0;   \
+    assign ``bus_name``_axi_rready     = '0;
+
+// Sink AXI-lite master interface
+`define SINK_AXILITE_MASTER_INTERFACE(bus_name) \
+    assign ``bus_name`_axilite_awready = '0;    \
+    assign ``bus_name`_axilite_wready  = '0;    \
+    assign ``bus_name`_axilite_bvalid  = '0;    \
+    assign ``bus_name`_axilite_bresp   = '0;    \
+    assign ``bus_name`_axilite_arready = '0;    \
+    assign ``bus_name`_axilite_rdata   = '0;    \
+    assign ``bus_name`_axilite_rvalid  = '0;    \
+    assign ``bus_name`_axilite_rresp   = '0;
+
+// Sink AXI-lite master interface
+`define SINK_AXILITE_MASTER_INTERFACE(bus_name) \
+    assign ``bus_name``_axilite_awaddr  = '0;   \
+    assign ``bus_name``_axilite_awprot  = '0;   \
+    assign ``bus_name``_axilite_awvalid = '0;   \
+    assign ``bus_name``_axilite_wdata   = '0;   \
+    assign ``bus_name``_axilite_wstrb   = '0;   \
+    assign ``bus_name``_axilite_wvalid  = '0;   \
+    assign ``bus_name``_axilite_bready  = '0;   \
+    assign ``bus_name``_axilite_araddr  = '0;   \
+    assign ``bus_name``_axilite_arprot  = '0;   \
+    assign ``bus_name``_axilite_arvalid = '0;   \
+    assign ``bus_name``_axilite_rready  = '0;
+
+// Sink AXI-lite slave interface
+`define SINK_AXILITE_SLAVE_INTERFACE(bus_name)  \
+    assign ``bus_name`_axilite_awready = '0;    \
+    assign ``bus_name`_axilite_wready  = '0;    \
+    assign ``bus_name`_axilite_bvalid  = '0;    \
+    assign ``bus_name`_axilite_bresp   = '0;    \
+    assign ``bus_name`_axilite_arready = '0;    \
+    assign ``bus_name`_axilite_rdata   = '0;    \
+    assign ``bus_name`_axilite_rvalid  = '0;    \
+    assign ``bus_name`_axilite_rresp   = '0;
 
 `endif // UNINASOC_AXI_SVH__
