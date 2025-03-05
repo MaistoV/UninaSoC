@@ -14,24 +14,24 @@ module custom_top_wrapper # (
     //  Add here IP-related parameters  //
     //////////////////////////////////////
 
-    parameter LOCAL_MEM_ADDR_WIDTH    = 32,
-    parameter LOCAL_MEM_DATA_WIDTH    = 32,
-    parameter LOCAL_AXI_DATA_WIDTH    = 32,
-    parameter LOCAL_AXI_ADDR_WIDTH    = 32,
-    parameter LOCAL_AXI_STRB_WIDTH    = LOCAL_AXI_DATA_WIDTH / 8,
-    parameter LOCAL_AXI_ID_WIDTH      = 2,
-    parameter LOCAL_AXI_REGION_WIDTH  = 4,
-    parameter LOCAL_AXI_LEN_WIDTH     = 8,
-    parameter LOCAL_AXI_SIZE_WIDTH    = 3,
-    parameter LOCAL_AXI_BURST_WIDTH   = 2,
-    parameter LOCAL_AXI_LOCK_WIDTH    = 1,
-    parameter LOCAL_AXI_CACHE_WIDTH   = 4,
-    parameter LOCAL_AXI_PROT_WIDTH    = 3,
-    parameter LOCAL_AXI_QOS_WIDTH     = 4,
-    parameter LOCAL_AXI_VALID_WIDTH   = 1,
-    parameter LOCAL_AXI_READY_WIDTH   = 1,
-    parameter LOCAL_AXI_LAST_WIDTH    = 1,
-    parameter LOCAL_AXI_RESP_WIDTH    = 2
+    // parameter LOCAL_MEM_ADDR_WIDTH    = 32,
+    // parameter LOCAL_MEM_DATA_WIDTH    = 32,
+    // parameter LOCAL_AXI_DATA_WIDTH    = 32,
+    // parameter LOCAL_AXI_ADDR_WIDTH    = 32,
+    // parameter LOCAL_AXI_STRB_WIDTH    = 4,
+    // parameter LOCAL_AXI_ID_WIDTH      = 2,
+    // parameter LOCAL_AXI_REGION_WIDTH  = 4,
+    // parameter LOCAL_AXI_LEN_WIDTH     = 8,
+    // parameter LOCAL_AXI_SIZE_WIDTH    = 3,
+    // parameter LOCAL_AXI_BURST_WIDTH   = 2,
+    // parameter LOCAL_AXI_LOCK_WIDTH    = 1,
+    // parameter LOCAL_AXI_CACHE_WIDTH   = 4,
+    // parameter LOCAL_AXI_PROT_WIDTH    = 3,
+    // parameter LOCAL_AXI_QOS_WIDTH     = 4,
+    // parameter LOCAL_AXI_VALID_WIDTH   = 1,
+    // parameter LOCAL_AXI_READY_WIDTH   = 1,
+    // parameter LOCAL_AXI_LAST_WIDTH    = 1,
+    // parameter LOCAL_AXI_RESP_WIDTH    = 2
 
 ) (
 
@@ -47,19 +47,19 @@ module custom_top_wrapper # (
     //  Bus Array Interfaces  //
     ////////////////////////////
 
-    // AXI4 Full Master interface from SRAM protocol (mem)
+    // AXI4 Full slave interface
     `DEFINE_AXI_SLAVE_PORTS (s),
-    // Mem interface
+    // Mem master interface
     `DEFINE_MEM_MASTER_PORTS (m)
 );
 
-    // Define the req_t and resp_t type using typedef.svh macro
+    // Define the axi_req_t and axi_resp_t type using typedef.svh macro
     `AXI_TYPEDEF_ALL(
         axi,
-        logic [LOCAL_AXI_ADDR_WIDTH-1:0],
-        logic [LOCAL_AXI_ID_WIDTH  -1:0],
-        logic [LOCAL_AXI_DATA_WIDTH-1:0],
-        logic [LOCAL_AXI_STRB_WIDTH-1:0],
+        logic [32-1:0],
+        logic [2  -1:0],
+        logic [32-1:0],
+        logic [4-1:0],
         logic [0:0]  // This is for the user field, which is missing from our interface (or unused)
     )
 
@@ -67,18 +67,20 @@ module custom_top_wrapper # (
     axi_req_t  axi_req;
     axi_resp_t axi_rsp;
 
-    // Instantiation of axi_from_mem module
+    // Modules parameters
     localparam int unsigned BufDepth   = 1;
     localparam bit          HideStrb   = 1'b0;
     localparam int unsigned OutFifoDepth = 1;
     // Unused ports
     logic m_mem_atop;
+
+    // Instantiation of axi_to_mem module
     axi_to_mem #(
         .axi_req_t    ( axi_req_t      ),
         .axi_resp_t   ( axi_resp_t     ),
-        .AddrWidth    ( LOCAL_AXI_ADDR_WIDTH ),
-        .DataWidth    ( LOCAL_AXI_DATA_WIDTH ),
-        .IdWidth      ( LOCAL_AXI_ID_WIDTH   ),
+        .AddrWidth    ( 32 ),
+        .DataWidth    ( 32 ),
+        .IdWidth      ( 2   ),
         .NumBanks     ( 1              ),
         .BufDepth     ( BufDepth       ),
         .HideStrb     ( HideStrb       ),
@@ -95,9 +97,9 @@ module custom_top_wrapper # (
         .mem_addr_o     ( m_mem_addr   ),
         .mem_wdata_o    ( m_mem_wdata  ),
         .mem_strb_o     ( m_mem_be     ),
-        .mem_atop_o     ( m_mem_atop   ),
+        .mem_atop_o     ( m_mem_atop   ), // Unused
         .mem_we_o       ( m_mem_we     ),
-        .mem_rvalid_i   ( m_mem_rvalid ),
+        .mem_rvalid_i   ( m_mem_valid  ),
         .mem_rdata_i    ( m_mem_rdata  )
     );
 
