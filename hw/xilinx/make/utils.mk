@@ -28,11 +28,20 @@ open_ila:
 		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SYNTH_TCL_ROOT}/set_ila_trigger.tcl
 
-# Trigger a reset pulse on VIO reset probe 
-vio_reset:
+# OFFSET    ?= 0x40000
+# NUM_BYTES ?= 16
+jtag2axi_read:
+	${XILINX_VIVADO_ENV} ${XILINX_VIVADO} \
+	-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
+	-source ${XILINX_SYNTH_TCL_ROOT}/$@.tcl -tclargs ${OFFSET} ${NUM_BYTES}
+
+# Trigger a reset pulse on VIO probes
+vio_debug_resetn:
+vio_resetn:
+vio_%:
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/open_hw_manager.tcl \
-		-source ${XILINX_SYNTH_TCL_ROOT}/vio_reset_core.tcl
+		-source ${XILINX_SYNTH_TCL_ROOT}/vio_reset.tcl -tclargs $@
 
 program_bitstream:
 	${XILINX_VIVADO} \
@@ -40,4 +49,4 @@ program_bitstream:
 		-source ${XILINX_SYNTH_TCL_ROOT}/$@.tcl
 
 # PHONIES
-.PHONY: open_prj open_gui start_hw_server open_hw_manager open_ila vio_reset program_bitstream
+.PHONY: open_prj open_gui start_hw_server open_hw_manager open_ila program_bitstream

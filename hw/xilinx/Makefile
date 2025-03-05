@@ -128,6 +128,7 @@ IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
 ips: ${IP_NAMES}
 
 # Build single IP
+#${XILINX_ROOT}/../units/%/custom_top_wrapper.tcl
 %.xci: IP_NAME=$*
 %.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
 %.xci: IP_BUILD_DIR=${IP_DIR}/build
