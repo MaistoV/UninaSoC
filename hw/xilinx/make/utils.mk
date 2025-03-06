@@ -36,7 +36,6 @@ jtag2axi_read:
 	-source ${XILINX_SYNTH_TCL_ROOT}/$@.tcl -tclargs ${OFFSET} ${NUM_BYTES}
 
 # Trigger a reset pulse on VIO probes
-vio_debug_resetn:
 vio_resetn:
 vio_%:
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO} \

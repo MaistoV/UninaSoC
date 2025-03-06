@@ -172,9 +172,8 @@ module uninasoc (
     xlnx_vio vio_inst (
       .clk        ( soc_clk         ),
       .probe_out0 ( vio_resetn      ),
-      .probe_out1 ( vio_debug_resetn ),
-    //   .probe_in0  ( sys_resetn      )
-      .probe_in0  ( '0 )
+      .probe_out1 (  ),
+      .probe_in0  ( sys_resetn )
     );
 
     // Axi Crossbar
@@ -328,11 +327,12 @@ module uninasoc (
     // RVM Socket
     rvm_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH )
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
+        .CORE_SELECTOR ( CORE_CV32E40P  ) // TODO31: core selector?
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
-        // .rst_ni         ( sys_resetn & vio_resetn ),
         .rst_ni         ( sys_resetn ),
+        .core_reset_i   ( vio_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( rvm_socket_interrupt_line ),
 

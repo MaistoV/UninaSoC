@@ -12,9 +12,8 @@ NC='\033[0m' # No Color
 #######################################
 # Fetch PLIC sources and depencencies #
 #######################################
-# TODO: this PYTHON flow requires: hjson and tabulate
-
-# TODO: Install them from here, as harmless if already installed
+# TODO31: this PYTHON flow requires: hjson and tabulate
+# TODO31: Install them from here, as harmless if already installed
 # python3 -m pip install hjson tabulate
 
 # Check Python dependencies (hjson requires Python 3.3+). If you need more info, heck OpenTitan doc: https://opentitan.org/book/doc/contributing/style_guides/hjson_usage_style.html
