@@ -84,15 +84,12 @@ XILINX_PROBE_LTX ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl
 
 # Whether to use ILA probes (0|1)
 XILINX_ILA ?= 0
-DEBUG_MODULE ?= 1
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=								\
-	DEBUG_MODULE=${DEBUG_MODULE}					\
 	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
 	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
 	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
-	DEBUG_MODULE=${DEBUG_MODULE}					\
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
@@ -128,7 +125,7 @@ IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
 ips: ${IP_NAMES}
 
 # Build single IP
-#${XILINX_ROOT}/../units/%/custom_top_wrapper.tcl
+# TODO31: make this dependent on ${HW_UNITS_ROOT}/%/custom_top_wrapper.tcl
 %.xci: IP_NAME=$*
 %.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
 %.xci: IP_BUILD_DIR=${IP_DIR}/build

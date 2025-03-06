@@ -79,8 +79,7 @@ module custom_top_wrapper # (
     //  |__________|            |______________|
     //                            |           ^
     //                            v           |
-    //                       MEM master   MEM slave
-    // TODO: add axi adapters here
+    //                       AXI master   AXI slave
     //
 
     ///////////////////

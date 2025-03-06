@@ -20,7 +20,6 @@ if { "$::env(SOC_CONFIG)" == "hpc" } {
 lappend verilog_defines AXI_DATA_WIDTH=$::env(AXI_DATA_WIDTH)
 lappend verilog_defines AXI_ADDR_WIDTH=$::env(AXI_ADDR_WIDTH)
 lappend verilog_defines AXI_ID_WIDTH=$::env(AXI_ID_WIDTH)
-lappend verilog_defines DEBUG_MODULE=$::env(DEBUG_MODULE)
 
 # Set property to list
 set_property verilog_define $verilog_defines [current_fileset]
