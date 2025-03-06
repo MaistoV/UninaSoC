@@ -3,7 +3,6 @@
 // Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
 // Description: Wrapper module for a RVM core
 
-
 // Import packages
 import uninasoc_pkg::*;
 
@@ -12,15 +11,13 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rvm_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, // TODO: Change default only for development, while waiting for the core selection flow
+    parameter core_selector_t CORE_SELECTOR = CORE_MICROBLAZEV,
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
-    parameter int unsigned    DEBUG_MODULE  = 1,
     parameter int unsigned    NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,
-    // input  logic                            debug_reset_ni,
     input  logic [AXI_ADDR_WIDTH -1 : 0 ]   bootaddr_i,
     input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
 
@@ -33,19 +30,24 @@ module rvm_socket # (
     `DEFINE_AXI_SLAVE_PORTS(dbg_slave)
 );
 
-    ///////////////////////////
-    //    Constants          //
-    ///////////////////////////
-    // TODO: replace with Stefano's art
-
+    //////////////////////////////////////////////////////
+    //    ___                         _                 //
+    //   | _ \__ _ _ _ __ _ _ __  ___| |_ ___ _ _ ___   //
+    //   |  _/ _` | '_/ _` | '  \/ -_)  _/ -_) '_(_-<   //
+    //   |_| \__,_|_| \__,_|_|_|_\___|\__\___|_| /__/   //
+    //                                                  //
+    //////////////////////////////////////////////////////
     // Let's assume single core
     localparam logic [31:0] hart_id = 32'h0;
-    // localparam logic [31:0] DEBUG_START   = 32'h1a110000; // From ibex-demo-system
     localparam logic [31:0] DEBUG_START   = 32'h10000; // From config
 
     // From dm_pkg
     localparam logic [31:0] dm_HaltAddress = 64'h800;
     localparam logic [31:0] dm_ExceptionAddress = dm_HaltAddress + 16;
+
+    localparam SW_INT_PIN = 3;
+    localparam TIM_INT_PIN = 7;
+    localparam EXT_INT_PIN = 11;
 
     //////////////////////////////////////
     //    ___ _                _        //
@@ -65,11 +67,6 @@ module rvm_socket # (
 
     // Debug request DM -> RV core
     logic debug_req_core;
-
-    ///////////////////////////
-    //    Assignments        //
-    ///////////////////////////
-    // TODO: update this with Stefano's art
 
     //////////////////////////////////////////////////////
     //     ___               ___          _             //
@@ -245,9 +242,10 @@ module rvm_socket # (
                 .Reset              ( dbg_sys_rst ), // input wire Reset
 
                 // Interrupts
-                .Interrupt          ( irq_i[0]    ), // input wire Interrupt
-                .Interrupt_Address  ('0           ), // input wire [0 : 31] Interrupt_Address
-                .Interrupt_Ack      (             ), // output wire [0 : 1] Interrupt_Ack
+                // Ublaze can only take one external interrupt, which we tie to EXT interrupt (from the PLIC)
+                .Interrupt          ( irq_i[EXT_INT_PIN]    ), // input wire Interrupt
+                .Interrupt_Address  ('0                     ), // input wire [0 : 31] Interrupt_Address
+                .Interrupt_Ack      (                       ), // output wire [0 : 1] Interrupt_Ack
 
                 // Debug port to MDMV
                 .Dbg_Clk            ( Dbg_Clk     ), // input wire Dbg_Clk

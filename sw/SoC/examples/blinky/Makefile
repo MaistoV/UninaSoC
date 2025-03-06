@@ -10,6 +10,10 @@
 # Get program name from directory name
 PROGRAM_NAME = $(shell basename $$PWD)
 
+#############
+# Toolchain #
+#############
+
 #####################
 # Paths and Folders #
 #####################
@@ -27,8 +31,8 @@ LD_SCRIPT 	= ld/user.ld
 # Libraries #
 #############
 
-LIB_OBJ_LIST =
-LIB_INC_LIST =
+LIB_OBJ_LIST 	= 
+LIB_INC_LIST 	= 
 
 #############
 # Toolchain #
@@ -45,4 +49,3 @@ CFLAGS 		= -march=rv32ima_zicsr_zifencei -mabi=ilp32 -O0 $(DFLAG) -c
 LDFLAGS 	= $(LIB_OBJ_LIST) -nostdlib -T$(LD_SCRIPT)
 
 include $(SW_ROOT)/SoC/common/Makefile
-

@@ -1,5 +1,5 @@
 # Ignore rtl folders for downloaded sources
 */rtl/*
 # Exceptions for flat RTL files, not downloaded from third parties
+# TODO: this flat tree should be removed
 !custom_axi_to_mem/rtl/*
-!custom_axi_from_mem/rtl/*

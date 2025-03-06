@@ -27,7 +27,7 @@ import configuration
 ##############
 
 # CSV configuration file path
-config_file_name = 'config/axi_memory_map/configs/config.csv'
+config_file_name = 'config/configs/embedded/config_main_bus.csv'
 # config_file_name = 'config/axi_memory_map/configs/PoC_config.csv'
 if len(sys.argv) >= 2:
 	config_file_name = sys.argv[1]

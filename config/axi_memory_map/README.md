@@ -25,9 +25,7 @@ Each file is the configuration for a specific bus. For now only main bus and per
 In each file, each row of the file holds a property name and value pair.
 Some properties are array, with elements separated by a space " " character. The following table details the supported properties.
 
-> **IMPORTANT NOTE**: For now, addresses are not sanitized! Hence, in case of overlaps or width-related misconfiguration, the interconnect might not be fully funcional.
-
-> **IMPORTANT NOTE**: The base address of a bus that is the slave of another bus must be the same address associated to it in the parent. E.g. if the peripheral bus (pbus) has the address 0x10000 in the main bus (mbus) then the first peripheral in the pbus (uart) must have the base address 0x10000.
+> **IMPORTANT NOTE**: the address range of a bus (child) that is a slave of another bus (parent), in its configuration (.csv) file, must be an absolute address range, this means that if the child bus is mapped in the parent bus at the address 0x1000 to 0x1FFF, then the peripherals in the child bus must be in the address range 0x1000 to 0x1FFFE 
 
 | Name  | Description | Values | Default
 |-|-|-|-|
