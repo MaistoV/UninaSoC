@@ -137,18 +137,14 @@ module custom_top_wrapper # (
     assign dbg_slave_mem_gnt   = '0;
     assign dbg_slave_mem_error = '0;
 
-    // Constrained by dm_top
-    // assert (LOCAL_MEM_DATA_WIDTH == LOCAL_MEM_ADDR_WIDTH) else $error();
-
     // Debug Module
     dm_top #(
         .NrHarts        ( NrHarts              ),
-        .BusWidth       ( LOCAL_MEM_DATA_WIDTH ),
+        .BusWidth       ( LOCAL_MEM_DATA_WIDTH ), // Must be the same as LOCAL_MEM_ADDR_WIDTH
         .DmBaseAddress  ( DmBaseAddress        )
     ) dm_top_u (
         .clk_i,
-        .rst_ni, // Power-on-reset, not the system reset
-        // .rst_ni               ( debug_reset_n_sync    ), // Power-on-reset, not the system reset
+        .rst_ni,
         // Deug ports
         .testmode_i           ( '0                    ),
         .ndmreset_o           ( ndmreset_o            ),
@@ -199,12 +195,10 @@ module custom_top_wrapper # (
         .dmi_resp_valid_i ( dmi_resp_valid ),
         .testmode_i       ( '0             ), // Unused
         // From JTAG
-        // .tck_i            ( clk_i          ), // Necessary for internal CDC
-        .tck_i            ( '0 ), // Necessary for internal CDC
-        .tms_i            ( '0 ), // Unused, Floating
-        .trst_ni          ( '1 ), // Necessary for reset and CDC
-        // .trst_ni          ( debug_reset_n_sync ), // Necessary for reset and CDC
-        .td_i             ( '0             ), // Unused, Floating
+        .tck_i            ( '0             ), // Unused
+        .tms_i            ( '0             ), // Unused
+        .trst_ni          ( '1             ), // Unused
+        .td_i             ( '0             ), // Unused
         .td_o             (                ), // Open
         .tdo_oe_o         (                )  // Open
     );

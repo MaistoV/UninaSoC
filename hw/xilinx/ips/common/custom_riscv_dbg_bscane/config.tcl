@@ -1,5 +1,6 @@
 # Author: Stefano Mercogliano  <stefano.mercogliano@unina.it>
 # Description: create a custom IP using rtl sources
+# TODO31: make these common
 
 # Define the top_module name (NB: IP Name must be different from the top_module name)
 set top_module custom_top_wrapper

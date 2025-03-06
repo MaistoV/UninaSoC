@@ -152,9 +152,6 @@ module rvm_socket # (
             //////////////////////////
             //      CV32E40P        //
             //////////////////////////
-            // (* mark_debug = 1 *) logic debug_havereset_o;
-            // (* mark_debug = 1 *) logic debug_running_o;
-            // (* mark_debug = 1 *) logic debug_halted_o;
 
             custom_cv32e40p cv32e40p_core (
                 // Clock and Reset
@@ -176,9 +173,9 @@ module rvm_socket # (
                 .instr_mem_gnt          ( core_instr_mem_gnt        ),
                 .instr_mem_valid        ( core_instr_mem_valid      ),
                 .instr_mem_addr         ( core_instr_mem_addr       ),
-                .instr_mem_be           ( core_instr_mem_be         ), // Open
-                .instr_mem_we           ( core_instr_mem_we         ), // Open
-                .instr_mem_wdata        ( core_instr_mem_wdata      ), // Open
+                .instr_mem_be           ( core_instr_mem_be         ),
+                .instr_mem_we           ( core_instr_mem_we         ),
+                .instr_mem_wdata        ( core_instr_mem_wdata      ),
                 .instr_mem_rdata        ( core_instr_mem_rdata      ),
                 .instr_mem_error        ( core_instr_mem_error      ), // Although unused
 
@@ -200,9 +197,9 @@ module rvm_socket # (
 
                 // Debug Interface
                 .debug_req_i            ( debug_req_core            ),  // From Debug Module
-                .debug_havereset_o      ( debug_havereset_o         ),  // TBD
-                .debug_running_o        ( debug_running_o           ),  // TBD
-                .debug_halted_o         ( debug_halted_o            ),  // TBD
+                .debug_havereset_o      ( debug_havereset_o         ),  // Open
+                .debug_running_o        ( debug_running_o           ),  // Open
+                .debug_halted_o         ( debug_halted_o            ),  // Open
 
                 // CPU Control Signals
                 .fetch_enable_i         ( 1'b1                      ),
@@ -499,9 +496,6 @@ module rvm_socket # (
             .rst_ni             ( rst_ni                ),
             .s_mem_req          ( core_instr_mem_req    ),
             .s_mem_addr         ( core_instr_mem_addr   ),
-            // .s_mem_we           ( '0                    ),  // RO Interface
-            // .s_mem_wdata        ( '0                    ),  // RO Interface
-            // .s_mem_be           ( '0                    ),  // RO Interface
             .s_mem_we           ( core_instr_mem_we     ),  // RO Interface
             .s_mem_wdata        ( core_instr_mem_wdata  ),  // RO Interface
             .s_mem_be           ( core_instr_mem_be     ),  // RO Interface

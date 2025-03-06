@@ -26,6 +26,7 @@ curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf
 # Download dependencies (specify Target RTL and FPGA)
 printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"
 ./bender checkout
+# TODO31:
 # BENDER_TARGETS="-t xilinx -t bscane"
 # ./bender script flist ${BENDER_TARGETS} > rtl.flist
 ./bender script flist > rtl.flist

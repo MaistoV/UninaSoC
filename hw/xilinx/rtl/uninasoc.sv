@@ -172,8 +172,8 @@ module uninasoc (
     xlnx_vio vio_inst (
       .clk        ( soc_clk         ),
       .probe_out0 ( vio_resetn      ),
-      .probe_out1 (  ),
-      .probe_in0  ( sys_resetn )
+      .probe_out1 (                 ),
+      .probe_in0  ( sys_resetn      )
     );
 
     // Axi Crossbar
