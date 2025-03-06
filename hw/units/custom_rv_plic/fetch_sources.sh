@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>, Valerio Di Domenico <valer.didomenico@studenti.unina.it> 
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>, Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 # Description:
 #   This script fetches risc-v compliant PLIC sources.
 #   Files are mostly fetched from open-titan ips.
@@ -12,6 +12,10 @@ NC='\033[0m' # No Color
 #######################################
 # Fetch PLIC sources and depencencies #
 #######################################
+# TODO: this PYTHON flow requires: hjson and tabulate
+
+# TODO: Install them from here, as harmless if already installed
+# python3 -m pip install hjson tabulate
 
 # Check Python dependencies (hjson requires Python 3.3+). If you need more info, heck OpenTitan doc: https://opentitan.org/book/doc/contributing/style_guides/hjson_usage_style.html
 echo -e "${YELLOW}[FETCH_SOURCES] Checking for Python Module hjson ... ${NC}"
@@ -33,8 +37,10 @@ git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}
 cd ${CLONE_DIR};
 
 # Patch bender file to download latest register_interface version
-# This is required as axi_to_reg_v1 is broken, and we need version 2 
+# This is required as axi_to_reg_v1 is broken, and we need version 2
 sed -i 's/version: 0.3.9/version: 0.4.5/' Bender.yml
+# Add a fake commit
+git commit -i Bender.yml -m "Patch commit for axi_to_reg_v1"
 
 # Open-Titan peripherals (by PULP) requires a preliminar configuration and patching
 # Apply hjson configurations and patches
@@ -72,11 +78,11 @@ sudo rm -rf ${CLONE_DIR};
 # 1 - Remove absolute path in source files in order to allow a flatten source code organization
 # 2 . Remove interface definitions as vivado complaints even if interfaces are not instantiated at all
 echo -e "${YELLOW}[PATCH_SOURCES] Patching include paths for flat includes and specific substitutions${NC}"
-for rtl_file in ${RTL_DIR}/*; do    
+for rtl_file in ${RTL_DIR}/*; do
     if [[ -f $rtl_file ]]; then
         # Flatten includes for common_cells
         sed -i "s|\`include \"common_cells\/|\`include \"|g" $rtl_file
-        
+
         # Specific substitutions
         sed -i "s|\`include \"axi/typedef.svh\"|\`include \"axi_typedef.svh\"|g" $rtl_file
         sed -i "s|\`include \"axi/assign.svh\"|\`include \"axi_assign.svh\"|g" $rtl_file
