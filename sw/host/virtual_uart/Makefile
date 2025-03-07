@@ -7,7 +7,7 @@ PROJECT = virtual_uart
 CC      = gcc
 RM      = rm -rf
 MKDIR   = @mkdir -p $(@D)
- 
+
 LIB_DIR = src
 SRC_DIR = src
 BIN_DIR = bin
@@ -18,7 +18,7 @@ SRCS    = $(wildcard src/*.c)
 all: $(BIN_DIR)/$(PROJECT)
 
 $(BIN_DIR)/$(PROJECT): $(SRCS)
-	$(MKDIR) 
+	$(MKDIR)
 	$(CC) -o $@ $^ $(LIBS) -I$(LIB_DIR)
 
 

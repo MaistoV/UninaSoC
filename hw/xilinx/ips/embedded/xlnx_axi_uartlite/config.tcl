@@ -11,9 +11,9 @@ set_property -dict [list                        \
 
 # UART frequency and BaudRate relationships
 
-# Clock/Baudrate    9600    19200   38400   57600   115200    
-# 5Mhz              V       X       X       X       X         
-# 10Mhz             V       V       X       X       X         
-# 20Mhz             V       V       V       X       X        
+# Clock/Baudrate    9600    19200   38400   57600   115200
+# 5Mhz              V       X       X       X       X
+# 10Mhz             V       V       X       X       X
+# 20Mhz             V       V       V       X       X
 # 50Mhz             V       V       V       V       V
 # 100Mhz            V       V       V       V       V

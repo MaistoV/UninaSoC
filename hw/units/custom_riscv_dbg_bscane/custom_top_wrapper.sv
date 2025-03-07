@@ -181,7 +181,7 @@ module custom_top_wrapper # (
         .dmi_resp_o           ( dmi_resp              )
     );
 
-    // Debug Transfer Module and JTAG interface
+    // Debug Transport Module and JTAG interface
     dmi_jtag dtm_u (
         .clk_i,
         .rst_ni,

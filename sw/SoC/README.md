@@ -25,7 +25,7 @@ The existing examples include:
 - `echo` and `hello_world` - Supported on both embedded and HPC configurations.
 - `interrupts` - Supported on both embedded and HPC configurations.
 
-`echo` and `hello_world` examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library to support `printf()` and `scanf()` on UART. 
+`echo` and `hello_world` examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library to support `printf()` and `scanf()` on UART.
 
 You can build individual examples or create new projects as described in the following sections.
 Each directory under examples or projects includes a `common/Makefile` that provides baseline commands for building code.

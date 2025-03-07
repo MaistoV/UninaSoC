@@ -7,7 +7,7 @@ void tim_configure(){
 
     // Configure timer prescaler
     *(tim_addr + ( 0x4 )/ sizeof(uint32_t)) = 0x1312D00;  // That is 20000000 to count one second at 20 MHz
-    
+
     // Set the LOAD0 bit to transfer the value to TCR0
     *(tim_addr) = 0x00000020;  // LOAD0 = 1 (bit 5), all others set to 0
 
@@ -30,13 +30,13 @@ void tim_enable_int(){
 void tim_enable(){
 
     uint32_t * tim_addr = (uint32_t *) &_peripheral_TIM0_start;
-    
+
     // Enable the timer
-    *(tim_addr) |= 0x80;  // ENT0 = 1 (bit 7), timer enabled    
+    *(tim_addr) |= 0x80;  // ENT0 = 1 (bit 7), timer enabled
 }
 
 void tim_handler(){
-    
+
     uint32_t * tim_addr = (uint32_t *) &_peripheral_TIM0_start;
 
     // Print
@@ -46,6 +46,6 @@ void tim_handler(){
     *tim_addr = 0x100;
 
     // Restart the timer
-    *tim_addr = 0xD2;   
+    *tim_addr = 0xD2;
 
 }

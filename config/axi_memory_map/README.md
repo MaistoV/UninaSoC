@@ -19,13 +19,13 @@ configs
 │   ├── config_main_bus.csv          # Main bus config file
 │   └── config_peripheral_bus.csv    # Peripheral bus config file
 └── PoC_config.csv                   # Proof-of-Concept config file
-``` 
+```
 
 Each file is the configuration for a specific bus. For now only main bus and peripheral bus are supported.
 In each file, each row of the file holds a property name and value pair.
 Some properties are array, with elements separated by a space " " character. The following table details the supported properties.
 
-> **IMPORTANT NOTE**: the address range of a bus (child) that is a slave of another bus (parent), in its configuration (.csv) file, must be an absolute address range, this means that if the child bus is mapped in the parent bus at the address 0x1000 to 0x1FFF, then the peripherals in the child bus must be in the address range 0x1000 to 0x1FFFE 
+> **IMPORTANT NOTE**: the address range of a bus (child) that is a slave of another bus (parent), in its configuration (.csv) file, must be an absolute address range, this means that if the child bus is mapped in the parent bus at the address 0x1000 to 0x1FFF, then the peripherals in the child bus must be in the address range 0x1000 to 0x1FFFE
 
 | Name  | Description | Values | Default
 |-|-|-|-|

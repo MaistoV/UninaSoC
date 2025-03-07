@@ -1,5 +1,5 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: This module is a wrapper for a single DDR4 channel. 
+// Description: This module is a wrapper for a single DDR4 channel.
 //              It includes :
 //                 - A clock converter to increase the frequency to 300 MHz
 //                 - A datawidth converter to increase the datawidth to 512 bit
@@ -7,7 +7,7 @@
 //
 //              It has the following sub-architecture
 //
-//                                             
+//
 //             _______________            ADDR: 32 bit  ____________  ADDR: 32 bit     ADDR: 34 bit    ____________
 //   250 MHz  |     Clock     | 300 MHz   DATA: 32 bit |   Dwidth   | DATA: 512 bit    DATA: 512 bit  |            |
 // ---------> |   Converter   |----------------------->| Converter  |-------------------------------->| DDR4 (MIG) |
@@ -30,7 +30,7 @@ module ddr4_channel_wrapper (
     // DDR4 channel interface (to PHYs)
     `DEFINE_DDR4_PORTS(x),
 
-    // AXI-lite CSR interface 
+    // AXI-lite CSR interface
     `DEFINE_AXILITE_SLAVE_PORTS(s_ctrl),
 
     // AXI4 Slave interface
@@ -47,7 +47,7 @@ module ddr4_channel_wrapper (
         end else begin
             ddr4_reset <= 1'b0;
         end
-    end 
+    end
 
     // DDR4 output clk and rst
     logic ddr_clk;
@@ -61,28 +61,28 @@ module ddr4_channel_wrapper (
 
     // Dwidth converter master ID signals assigned to 0
     // Since the AXI data width converter has a reordering depth of 1 it doesn't have ID in its master ports - for more details see the documentation
-    // Thus, we assign 0 to all these signals that go to the DDR MIG 
+    // Thus, we assign 0 to all these signals that go to the DDR MIG
     assign dwidth_conv_to_ddr4_axi_awid = '0;
-    assign dwidth_conv_to_ddr4_axi_bid  = '0; 
+    assign dwidth_conv_to_ddr4_axi_bid  = '0;
     assign dwidth_conv_to_ddr4_axi_arid = '0;
     assign dwidth_conv_to_ddr4_axi_rid  = '0;
 
     // AXI Clock converter from 250 MHz (xdma global design clk) to 300 MHz (AXI user interface DDR clk) - the data width here is 32 bit
     xlnx_axi_clock_converter axi_clk_conv_u (
         .s_axi_aclk     ( clock_i        ),
-        .s_axi_aresetn  ( reset_ni       ), 
+        .s_axi_aresetn  ( reset_ni       ),
 
         .m_axi_aclk     ( ddr_clk        ),
-        .m_axi_aresetn  ( ~ddr_rst       ), 
+        .m_axi_aresetn  ( ~ddr_rst       ),
 
-        .s_axi_awid     ( s_axi_awid     ), 
-        .s_axi_awaddr   ( s_axi_awaddr   ), 
-        .s_axi_awlen    ( s_axi_awlen    ), 
-        .s_axi_awsize   ( s_axi_awsize   ), 
+        .s_axi_awid     ( s_axi_awid     ),
+        .s_axi_awaddr   ( s_axi_awaddr   ),
+        .s_axi_awlen    ( s_axi_awlen    ),
+        .s_axi_awsize   ( s_axi_awsize   ),
         .s_axi_awburst  ( s_axi_awburst  ),
         .s_axi_awlock   ( s_axi_awlock   ),
-        .s_axi_awcache  ( s_axi_awcache  ), 
-        .s_axi_awprot   ( s_axi_awprot   ), 
+        .s_axi_awcache  ( s_axi_awcache  ),
+        .s_axi_awprot   ( s_axi_awprot   ),
         .s_axi_awqos    ( s_axi_awqos    ),
         .s_axi_awvalid  ( s_axi_awvalid  ),
         .s_axi_awready  ( s_axi_awready  ),
@@ -96,7 +96,7 @@ module ddr4_channel_wrapper (
         .s_axi_bresp    ( s_axi_bresp    ),
         .s_axi_bvalid   ( s_axi_bvalid   ),
         .s_axi_bready   ( s_axi_bready   ),
-        .s_axi_arid     ( s_axi_arid     ), 
+        .s_axi_arid     ( s_axi_arid     ),
         .s_axi_araddr   ( s_axi_araddr   ),
         .s_axi_arlen    ( s_axi_arlen    ),
         .s_axi_arsize   ( s_axi_arsize   ),
@@ -113,8 +113,8 @@ module ddr4_channel_wrapper (
         .s_axi_rresp    ( s_axi_rresp    ),
         .s_axi_rlast    ( s_axi_rlast    ),
         .s_axi_rvalid   ( s_axi_rvalid   ),
-        .s_axi_rready   ( s_axi_rready   ),  
-        
+        .s_axi_rready   ( s_axi_rready   ),
+
         .m_axi_awid     ( clk_conv_to_dwidth_conv_axi_awid      ),
         .m_axi_awaddr   ( clk_conv_to_dwidth_conv_axi_awaddr    ),
         .m_axi_awlen    ( clk_conv_to_dwidth_conv_axi_awlen     ),
@@ -158,7 +158,7 @@ module ddr4_channel_wrapper (
     );
 
 
-    // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface DDR data width) 
+    // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface DDR data width)
     xlnx_axi_dwidth_to512_converter axi_dwidth_conv_u (
         .s_axi_aclk     ( ddr_clk      ),
         .s_axi_aresetn  ( ~ddr_rst     ),
@@ -204,7 +204,7 @@ module ddr4_channel_wrapper (
         .s_axi_arqos    ( 0   ),
         .s_axi_arregion ( 0   ),
 
-        
+
         // Master to DDR
         // .m_axi_awid     ( dwidth_conv_to_ddr4_axi_awid    ),
         .m_axi_awaddr   ( dwidth_conv_to_ddr4_axi_awaddr  ),
@@ -242,12 +242,12 @@ module ddr4_channel_wrapper (
         .m_axi_rresp    ( dwidth_conv_to_ddr4_axi_rresp   ),
         .m_axi_rlast    ( dwidth_conv_to_ddr4_axi_rlast   ),
         .m_axi_rvalid   ( dwidth_conv_to_ddr4_axi_rvalid  ),
-        .m_axi_rready   ( dwidth_conv_to_ddr4_axi_rready  ) 
+        .m_axi_rready   ( dwidth_conv_to_ddr4_axi_rready  )
 
     );
 
     xlnx_ddr4 ddr4_u (
-        .c0_sys_clk_n                ( clk_300mhz_0_n_i ), 
+        .c0_sys_clk_n                ( clk_300mhz_0_n_i ),
         .c0_sys_clk_p                ( clk_300mhz_0_p_i ),
 
         .sys_rst                     ( ddr4_reset       ),
@@ -300,7 +300,7 @@ module ddr4_channel_wrapper (
         .c0_ddr4_s_axi_ctrl_rresp    ( s_ctrl_axilite_rresp   ),
 
 
-        // AXI4 interface 
+        // AXI4 interface
         .c0_ddr4_s_axi_awid          ( dwidth_conv_to_ddr4_axi_awid    ),
         .c0_ddr4_s_axi_awaddr        ( { 2'b00, dwidth_conv_to_ddr4_axi_awaddr } ),
         .c0_ddr4_s_axi_awlen         ( dwidth_conv_to_ddr4_axi_awlen   ),

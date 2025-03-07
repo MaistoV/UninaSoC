@@ -16,7 +16,7 @@ void virtual_uart_tx_char (virtual_uart_t * virtual_uart, char c)
 }
 
 /* Receive a char from the virtual uart peripheral */
-char virtual_uart_rx_char (virtual_uart_t * virtual_uart, unsigned int u_poll_period) 
+char virtual_uart_rx_char (virtual_uart_t * virtual_uart, unsigned int u_poll_period)
 {
     /* Poll on the status flag TX full - waiting for the char */
     uint8_t status_tx_full = (((uint8_t)virtual_uart->sts_reg & TX_FULL_BIT_MASK) >> 3);
@@ -31,7 +31,7 @@ char virtual_uart_rx_char (virtual_uart_t * virtual_uart, unsigned int u_poll_pe
 
 /* Read to start the communication - the SoC waits for the first read to starts sending chars */
 void virtual_uart_init (virtual_uart_t * virtual_uart)
-{  
+{
     char c = (char) virtual_uart->tx_reg;
     return;
 }

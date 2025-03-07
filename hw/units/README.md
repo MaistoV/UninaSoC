@@ -22,7 +22,7 @@ This tree is meant to allow users to automate the creation of a simulation envir
 Installation steps: TBD
 
 ### Creating a new simulation environment
-A template project structure is provided in `template.prj/`. In this directory, a symlink to a common Makefile is provided to orchestrate the whole flow, while the template directory contains an example of the final outcome for whichever unit. 
+A template project structure is provided in `template.prj/`. In this directory, a symlink to a common Makefile is provided to orchestrate the whole flow, while the template directory contains an example of the final outcome for whichever unit.
 
 To create a new project, you need to:
 ```

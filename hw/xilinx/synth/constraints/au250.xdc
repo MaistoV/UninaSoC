@@ -34,23 +34,23 @@
 #            The FPGA A200 and A250 are pin for pin compatible devices.
 #               +----------------+---------------+---------------+---------------+
 #               | A250 Bank      | A200 Bank     | Usage         | Voltage       |
-#               +----------------+---------------+---------------+---------------+ 
+#               +----------------+---------------+---------------+---------------+
 #               | Bank 61,62,63  | Bank 40,41,42 | DDR4 C0 Int.  | 1.2V          |
-#               +----------------+---------------+---------------+---------------+ 
+#               +----------------+---------------+---------------+---------------+
 #               | Bank 65,66,67  | Bank 65,66,67 | DDR4 C1 Int.  | 1.2V          |
-#               +----------------+---------------+---------------+---------------+ 
+#               +----------------+---------------+---------------+---------------+
 #               | Bank 69,70,71  | Bank 46,47,48 | DDR4 C2 Int.  | 1.2V          |
-#               +----------------+---------------+---------------+---------------+ 
+#               +----------------+---------------+---------------+---------------+
 #               | Bank 72,73,74  | Bank 70,71,72 | DDR4 C3 Int.  | 1.2V          |
-#               +----------------+---------------+---------------+---------------+ 
+#               +----------------+---------------+---------------+---------------+
 #               | Bank 64        | Bank 64       | Misc. IO      | 1.2V          |
-#               +----------------+---------------+---------------+---------------+ 
+#               +----------------+---------------+---------------+---------------+
 #               | Bank 231       | Bank 231      | QSFP0         | NA            |
-#               +----------------+---------------+---------------+---------------+ 
-#               | Bank 230       | Bank 230      | QSFP1         | NA            |  
-#               +----------------+---------------+---------------+---------------+ 
-#               | Bank 224-227   | Bank 224-227  | PCIE          | NA            |  
-#               +----------------+---------------+---------------+---------------+ 
+#               +----------------+---------------+---------------+---------------+
+#               | Bank 230       | Bank 230      | QSFP1         | NA            |
+#               +----------------+---------------+---------------+---------------+
+#               | Bank 224-227   | Bank 224-227  | PCIE          | NA            |
+#               +----------------+---------------+---------------+---------------+
 #
 #
 #   Key Notes:
@@ -82,7 +82,7 @@
 #                PINS: "QSFP0_FS[0]"         - IO_L10P_T1U_N6_QBC_AD4P_64_AT20
 #                PINS: "QSFP0_FS[1]"         - IO_L9N_T1L_N5_AD12N_64_AU22
 #
-#      - RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting. 
+#      - RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting.
 #                PINS: "QSFP0_RECLK_RESET"   - IO_L9P_T1L_N4_AD12P_64_AT22
 #
 #      - OUT0--> SYSCLK_300_P/SYSCLK_300_N @ 300.0000Mhz to 1-to-4 Clock buffer (Fixed and Unchanged by FS[1:0])
@@ -116,7 +116,7 @@
 #                PINS: "QSFP1_FS[0]"         - IO_L8P_T1L_N2_AD5P_64_AR22
 #                PINS: "QSFP1_FS[1]"         - IO_L7N_T1L_N1_QBC_AD13N_64_AU20
 #
-#      - RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting. 
+#      - RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting.
 #                PINS: "QSFP1_RECLK_RESET"   - IO_L8N_T1L_N3_AD5N_64_AR21
 #
 #      - OUT0--> 300.0000Mhz (Fixed and Unchanged by FS[1:0])
@@ -144,14 +144,14 @@
 #
 #################################################################################
 
-# Bitstream Generation for QSPI                              
+# Bitstream Generation for QSPI
 set_property CONFIG_VOLTAGE 1.8                        [current_design]
-set_property BITSTREAM.CONFIG.CONFIGFALLBACK Enable    [current_design]                  ;# Golden image is the fall back image if  new bitstream is corrupted.    
+set_property BITSTREAM.CONFIG.CONFIGFALLBACK Enable    [current_design]                  ;# Golden image is the fall back image if  new bitstream is corrupted.
 set_property BITSTREAM.CONFIG.EXTMASTERCCLK_EN disable [current_design]
-set_property BITSTREAM.CONFIG.CONFIGRATE 63.8          [current_design] 
+set_property BITSTREAM.CONFIG.CONFIGRATE 63.8          [current_design]
 #set_property BITSTREAM.CONFIG.CONFIGRATE 85.0          [current_design]                 ;# Customer can try but may not be reliable over all conditions.
-set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4           [current_design]  
-set_property BITSTREAM.GENERAL.COMPRESS TRUE           [current_design]  
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4           [current_design]
+set_property BITSTREAM.GENERAL.COMPRESS TRUE           [current_design]
 set_property BITSTREAM.CONFIG.SPI_FALL_EDGE YES        [current_design]
 set_property BITSTREAM.CONFIG.SPI_32BIT_ADDR Yes       [current_design]
 set_property BITSTREAM.CONFIG.UNUSEDPIN Pullup         [current_design]
@@ -163,7 +163,7 @@ set_operating_conditions -design_power_budget 160
 #
 # LVDS Input SYSTEM CLOCKS for Memory Interfaces
 #
-# System clocks 
+# System clocks
 # 300 MHz (DDR CH0)
 set_property -dict {PACKAGE_PIN AY38 IOSTANDARD DIFF_POD12_DCI } [get_ports clk_300mhz_0_n_i]; # Bank 42 VCCO - VCC1V2 Net "SYSCLK0_300_N" - IO_L13N_T2L_N1_GC_QBC_42
 set_property -dict {PACKAGE_PIN AY37 IOSTANDARD DIFF_POD12_DCI } [get_ports clk_300mhz_0_p_i]; # Bank 42 VCCO - VCC1V2 Net "SYSCLK0_300_P" - IO_L13P_T2L_N0_GC_QBC_42
@@ -223,7 +223,7 @@ set_input_delay 0 [get_ports pcie_resetn_i]
 # # QSFP0 Clock Control Signals
 # #       FS[1:0] <-- Clock Select Pin FS[1:0] = 1X -> 161.132812 MHz 1.8V LVDS (default when FPGA pin Hi-Z due to 10K pullups)
 # #                                    FS[1:0] = 01 -> 156.250000 MHz 1.8V LVDS
-# #       RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting. 
+# #       RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting.
 # #
 # set_property -dict {PACKAGE_PIN AT20 IOSTANDARD LVCMOS12       } [get_ports QSFP0_FS[0]       ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_FS0"           - IO_L10P_T1U_N6_QBC_AD4P_64
 # set_property -dict {PACKAGE_PIN AU22 IOSTANDARD LVCMOS12       } [get_ports QSFP0_FS[1]       ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_FS1"           - IO_L9N_T1L_N5_AD12N_64
@@ -256,7 +256,7 @@ set_input_delay 0 [get_ports pcie_resetn_i]
 # # QSFP1 Clock Control Signals
 # #      - FS[1:0] <-- Clock Select Pin FS[1:0] = 1X -> 161.132812 MHz 1.8V LVDS (default when FPGA pin Hi-Z due to 10K pullups)
 # #                                     FS[1:0] = 01 -> 156.250000 MHz 1.8V LVDS
-# #      - RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting. 
+# #      - RESET <-- Device Reset - Asserting this pin (driving high) is required to change FS1,FS0 pin setting.
 # #                PINS: "QSFP1_RECLK_RESET"   - IO_L8N_T1L_N3_AD5N_64_AR21
 # #
 # set_property -dict {PACKAGE_PIN AR22 IOSTANDARD LVCMOS12       } [get_ports QSFP1_FS[0]       ]; # Bank 64 VCCO - VCC1V2 Net "QSFP1_FS0"           - IO_L8P_T1L_N2_AD5P_64
@@ -489,7 +489,7 @@ set_property -dict {PACKAGE_PIN BD21 IOSTANDARD LVCMOS12       } [get_ports pcie
 # set_property -dict {PACKAGE_PIN R15  IOSTANDARD POD12_DCI      } [get_ports c3_ddr4_dq[69]   ]; # Bank 70  VCCO - VCC1V2 Net "DDR4_C3_DQ69"     - IO_L2N_T0L_N3_70
 # set_property -dict {PACKAGE_PIN T15  IOSTANDARD POD12_DCI      } [get_ports c3_ddr4_dq[68]   ]; # Bank 70  VCCO - VCC1V2 Net "DDR4_C3_DQ68"     - IO_L2P_T0L_N2_70
 # set_property -dict {PACKAGE_PIN R13  IOSTANDARD DIFF_POD12_DCI } [get_ports c3_ddr4_dqs_c[17]]; # Bank 70  VCCO - VCC1V2 Net "DDR4_C3_DQS_C17"  - IO_L1N_T0L_N1_DBC_70
-# set_property -dict {PACKAGE_PIN T13  IOSTANDARD DIFF_POD12_DCI } [get_ports c3_ddr4_dqs_t[17]]; # Bank 70  VCCO - VCC1V2 Net "DDR4_C3_DQS_T17"  - IO_L1P_T0L_N0_DBC_70        
+# set_property -dict {PACKAGE_PIN T13  IOSTANDARD DIFF_POD12_DCI } [get_ports c3_ddr4_dqs_t[17]]; # Bank 70  VCCO - VCC1V2 Net "DDR4_C3_DQS_T17"  - IO_L1P_T0L_N0_DBC_70
 # #
 # # DDR4 RDIMM Controller 1, 72-bit Data Interface, x4 Componets, Single Rank
 # #     <<<NOTE>>> DQS Clock strobes have been swapped from JEDEC standard to match Xilinx MIG Clock order:
