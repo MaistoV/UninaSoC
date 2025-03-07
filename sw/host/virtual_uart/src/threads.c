@@ -1,8 +1,8 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Description: Virtual Uart host application - threads
-//              This is a two-posix-thread application. 
-//              The write_thread writes on the RX uart register (writes to the core) 
-//              The read_thread reads on the TX uart register (reads from the host) polling with u_poll_period microseconds           
+//              This is a two-posix-thread application.
+//              The write_thread writes on the RX uart register (writes to the core)
+//              The read_thread reads on the TX uart register (reads from the host) polling with u_poll_period microseconds
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -15,7 +15,7 @@
 #include "virtual_uart.h"
 #include "threads.h"
 
-void * write_thread_function(void * arg) 
+void * write_thread_function(void * arg)
 {
     int fd;
     uint64_t paddr;
@@ -23,7 +23,7 @@ void * write_thread_function(void * arg)
     off_t pa_offset;                    /* page aligned offset */
     virtual_uart_t * virtual_uart;      /* virtual address from mmap */
 
-    char c;                             /* Char to send when write on the console */ 
+    char c;                             /* Char to send when write on the console */
 
     /* Get the arguments */
     write_thread_arg_t * thread_arg = (write_thread_arg_t *) arg;
@@ -39,7 +39,7 @@ void * write_thread_function(void * arg)
 
     /* Compute the page aligned offset  */
     pa_offset = paddr & ~(sysconf(_SC_PAGE_SIZE) - 1);
-    
+
     /* Get the virtual address */
     virtual_uart = (virtual_uart_t *) mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
     if (virtual_uart == MAP_FAILED) {
@@ -58,7 +58,7 @@ void * write_thread_function(void * arg)
     }
 
     end:
-        if(virtual_uart) 
+        if(virtual_uart)
             munmap((void *)virtual_uart, length + paddr - pa_offset);
         if (fd)
             close(fd);
@@ -66,16 +66,16 @@ void * write_thread_function(void * arg)
 }
 
 
-void * read_thread_function( void * arg ) 
+void * read_thread_function( void * arg )
 {
     int fd;
-    uint64_t paddr;   
+    uint64_t paddr;
     size_t length;
     off_t pa_offset;                       /* page aligned offset */
     virtual_uart_t * virtual_uart;         /* virtual address from mmap */
-    unsigned int u_poll_period; 
+    unsigned int u_poll_period;
 
-    char c;                                /* Char to send when write on the console */ 
+    char c;                                /* Char to send when write on the console */
 
     /* Get the arguments */
     read_thread_arg_t * thread_arg = (read_thread_arg_t *) arg;
@@ -92,7 +92,7 @@ void * read_thread_function( void * arg )
 
     /* Compute the page aligned offset  */
     pa_offset = paddr & ~(sysconf(_SC_PAGE_SIZE) - 1);
-    
+
     /* Get the virtual address */
     virtual_uart = (virtual_uart_t *) mmap(NULL, length + paddr - pa_offset, PROT_READ | PROT_WRITE, MAP_SHARED, fd, pa_offset);
     if (virtual_uart == MAP_FAILED) {
@@ -114,7 +114,7 @@ void * read_thread_function( void * arg )
     }
 
     end:
-        if(virtual_uart) 
+        if(virtual_uart)
             munmap((void *)virtual_uart, length + paddr - pa_offset);
         if (fd)
             close(fd);

@@ -8,7 +8,7 @@ void plic_configure(){
 
     //Set interrupt priorities
     for (int i = 1; i < SOURCE_NUM; i++) {
-        
+
         *(plic_addr + (0x4 * i) / sizeof(uint32_t)) = 0x1;
 
     }

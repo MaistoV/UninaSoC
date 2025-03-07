@@ -7,7 +7,7 @@
 #include "utils.h"
 
 /* Disable stdin buffering */
-void disable_buffering () 
+void disable_buffering ()
 {
     struct termios t;
     tcgetattr(STDIN_FILENO, &t);           // Get current terminal settings
@@ -17,7 +17,7 @@ void disable_buffering ()
 }
 
 /* Enable stdin buffering */
-void enable_buffering () 
+void enable_buffering ()
 {
     struct termios t;
     tcgetattr(STDIN_FILENO, &t);           // Get current terminal settings
@@ -29,10 +29,10 @@ void enable_buffering ()
 /* Help function */
 void help (char * ex_name)
 {
-    printf("------------------------------ VIRTUAL UART ------------------------------------- \n"); 
-    printf("Usage: %s <uart_paddr> [uart_length] [u_poll_period]\n", ex_name); 
+    printf("------------------------------ VIRTUAL UART ------------------------------------- \n");
+    printf("Usage: %s <uart_paddr> [uart_length] [u_poll_period]\n", ex_name);
     printf("    uart_paddr    : UART physical address in hex 0x... (PCIe BAR)\n");
     printf("    uart_length   : UART total registers length in byte (decimal), default 20\n");
     printf("    u_poll_period : Poll period in microseconds, default 10\n");
-    printf("--------------------------------------------------------------------------------- \n"); 
+    printf("--------------------------------------------------------------------------------- \n");
 }

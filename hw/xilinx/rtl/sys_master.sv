@@ -1,6 +1,6 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Description: Sys master - Instantiates the right masetr AXI based on the SoC Configuration and gives the clk and rst to the soc
-//              EMBEDDED -> Jtag2Axi 
+//              EMBEDDED -> Jtag2Axi
 //              HPC      -> XDMA
 
 
@@ -18,7 +18,7 @@ module sys_master
     // Input clock and reset
     input logic sys_clock_i,
     input logic sys_reset_i,
-    
+
     // HPC ONLY
     // Input clock and reset
     input logic pcie_refclk_p_i,
@@ -26,12 +26,12 @@ module sys_master
     input logic pcie_resetn_i,
     // PCIe interface
     `DEFINE_PCIE_PORTS,
-    
+
     // Output clk and reset
     output logic soc_clk_o,
     output logic sys_resetn_o,
 
-    // AXI Master interface 
+    // AXI Master interface
     `DEFINE_AXI_MASTER_PORTS(m)
 );
 
@@ -59,7 +59,7 @@ module sys_master
 
     `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
 
-    // XDMA Master 
+    // XDMA Master
     xlnx_xdma xlnx_xdma_u (
         // Input clock and reset
         .sys_clk      ( ibuf_os_odiv2 ),
@@ -72,7 +72,7 @@ module sys_master
 
         // PCI interface
         .pci_exp_rxn  ( pci_exp_rxn_i ),
-        .pci_exp_rxp  ( pci_exp_rxp_i ), 
+        .pci_exp_rxp  ( pci_exp_rxp_i ),
         .pci_exp_txn  ( pci_exp_txn_o ),
         .pci_exp_txp  ( pci_exp_txp_o ),
 
@@ -80,42 +80,42 @@ module sys_master
         .usr_irq_req    ( 0      ),
 
         // AXI Master
-        .m_axib_awid     ( xdma_to_axi_dwidth_converter_axi_awid    ), 
-        .m_axib_awaddr   ( xdma_to_axi_dwidth_converter_axi_awaddr  ), 
-        .m_axib_awlen    ( xdma_to_axi_dwidth_converter_axi_awlen   ), 
-        .m_axib_awsize   ( xdma_to_axi_dwidth_converter_axi_awsize  ), 
-        .m_axib_awburst  ( xdma_to_axi_dwidth_converter_axi_awburst ), 
-        .m_axib_awlock   ( xdma_to_axi_dwidth_converter_axi_awlock  ), 
-        .m_axib_awcache  ( xdma_to_axi_dwidth_converter_axi_awcache ), 
-        .m_axib_awprot   ( xdma_to_axi_dwidth_converter_axi_awprot  ), 
-        // .m_axib_awqos    ( xdma_to_axi_dwidth_converter_axi_awqos   ), 
-        .m_axib_awvalid  ( xdma_to_axi_dwidth_converter_axi_awvalid ), 
-        .m_axib_awready  ( xdma_to_axi_dwidth_converter_axi_awready ), 
-        .m_axib_wdata    ( xdma_to_axi_dwidth_converter_axi_wdata   ), 
-        .m_axib_wstrb    ( xdma_to_axi_dwidth_converter_axi_wstrb   ), 
-        .m_axib_wlast    ( xdma_to_axi_dwidth_converter_axi_wlast   ), 
-        .m_axib_wvalid   ( xdma_to_axi_dwidth_converter_axi_wvalid  ), 
-        .m_axib_wready   ( xdma_to_axi_dwidth_converter_axi_wready  ), 
-        .m_axib_bid      ( xdma_to_axi_dwidth_converter_axi_bid     ), 
-        .m_axib_bresp    ( xdma_to_axi_dwidth_converter_axi_bresp   ), 
-        .m_axib_bvalid   ( xdma_to_axi_dwidth_converter_axi_bvalid  ), 
-        .m_axib_bready   ( xdma_to_axi_dwidth_converter_axi_bready  ), 
-        .m_axib_arid     ( xdma_to_axi_dwidth_converter_axi_arid    ), 
-        .m_axib_araddr   ( xdma_to_axi_dwidth_converter_axi_araddr  ), 
-        .m_axib_arlen    ( xdma_to_axi_dwidth_converter_axi_arlen   ), 
-        .m_axib_arsize   ( xdma_to_axi_dwidth_converter_axi_arsize  ), 
-        .m_axib_arburst  ( xdma_to_axi_dwidth_converter_axi_arburst ), 
-        .m_axib_arlock   ( xdma_to_axi_dwidth_converter_axi_arlock  ), 
-        .m_axib_arcache  ( xdma_to_axi_dwidth_converter_axi_arcache ), 
-        .m_axib_arprot   ( xdma_to_axi_dwidth_converter_axi_arprot  ), 
-        // .m_axib_arqos    ( xdma_to_axi_dwidth_converter_axi_arqos   ), 
-        .m_axib_arvalid  ( xdma_to_axi_dwidth_converter_axi_arvalid ), 
-        .m_axib_arready  ( xdma_to_axi_dwidth_converter_axi_arready ), 
-        .m_axib_rid      ( xdma_to_axi_dwidth_converter_axi_rid     ), 
-        .m_axib_rdata    ( xdma_to_axi_dwidth_converter_axi_rdata   ), 
-        .m_axib_rresp    ( xdma_to_axi_dwidth_converter_axi_rresp   ), 
-        .m_axib_rlast    ( xdma_to_axi_dwidth_converter_axi_rlast   ), 
-        .m_axib_rvalid   ( xdma_to_axi_dwidth_converter_axi_rvalid  ), 
+        .m_axib_awid     ( xdma_to_axi_dwidth_converter_axi_awid    ),
+        .m_axib_awaddr   ( xdma_to_axi_dwidth_converter_axi_awaddr  ),
+        .m_axib_awlen    ( xdma_to_axi_dwidth_converter_axi_awlen   ),
+        .m_axib_awsize   ( xdma_to_axi_dwidth_converter_axi_awsize  ),
+        .m_axib_awburst  ( xdma_to_axi_dwidth_converter_axi_awburst ),
+        .m_axib_awlock   ( xdma_to_axi_dwidth_converter_axi_awlock  ),
+        .m_axib_awcache  ( xdma_to_axi_dwidth_converter_axi_awcache ),
+        .m_axib_awprot   ( xdma_to_axi_dwidth_converter_axi_awprot  ),
+        // .m_axib_awqos    ( xdma_to_axi_dwidth_converter_axi_awqos   ),
+        .m_axib_awvalid  ( xdma_to_axi_dwidth_converter_axi_awvalid ),
+        .m_axib_awready  ( xdma_to_axi_dwidth_converter_axi_awready ),
+        .m_axib_wdata    ( xdma_to_axi_dwidth_converter_axi_wdata   ),
+        .m_axib_wstrb    ( xdma_to_axi_dwidth_converter_axi_wstrb   ),
+        .m_axib_wlast    ( xdma_to_axi_dwidth_converter_axi_wlast   ),
+        .m_axib_wvalid   ( xdma_to_axi_dwidth_converter_axi_wvalid  ),
+        .m_axib_wready   ( xdma_to_axi_dwidth_converter_axi_wready  ),
+        .m_axib_bid      ( xdma_to_axi_dwidth_converter_axi_bid     ),
+        .m_axib_bresp    ( xdma_to_axi_dwidth_converter_axi_bresp   ),
+        .m_axib_bvalid   ( xdma_to_axi_dwidth_converter_axi_bvalid  ),
+        .m_axib_bready   ( xdma_to_axi_dwidth_converter_axi_bready  ),
+        .m_axib_arid     ( xdma_to_axi_dwidth_converter_axi_arid    ),
+        .m_axib_araddr   ( xdma_to_axi_dwidth_converter_axi_araddr  ),
+        .m_axib_arlen    ( xdma_to_axi_dwidth_converter_axi_arlen   ),
+        .m_axib_arsize   ( xdma_to_axi_dwidth_converter_axi_arsize  ),
+        .m_axib_arburst  ( xdma_to_axi_dwidth_converter_axi_arburst ),
+        .m_axib_arlock   ( xdma_to_axi_dwidth_converter_axi_arlock  ),
+        .m_axib_arcache  ( xdma_to_axi_dwidth_converter_axi_arcache ),
+        .m_axib_arprot   ( xdma_to_axi_dwidth_converter_axi_arprot  ),
+        // .m_axib_arqos    ( xdma_to_axi_dwidth_converter_axi_arqos   ),
+        .m_axib_arvalid  ( xdma_to_axi_dwidth_converter_axi_arvalid ),
+        .m_axib_arready  ( xdma_to_axi_dwidth_converter_axi_arready ),
+        .m_axib_rid      ( xdma_to_axi_dwidth_converter_axi_rid     ),
+        .m_axib_rdata    ( xdma_to_axi_dwidth_converter_axi_rdata   ),
+        .m_axib_rresp    ( xdma_to_axi_dwidth_converter_axi_rresp   ),
+        .m_axib_rlast    ( xdma_to_axi_dwidth_converter_axi_rlast   ),
+        .m_axib_rvalid   ( xdma_to_axi_dwidth_converter_axi_rvalid  ),
         .m_axib_rready   ( xdma_to_axi_dwidth_converter_axi_rready  ),
 
         // AXI lite (configuration channel)
@@ -185,7 +185,7 @@ module sys_master
         .s_axi_arqos    ( 0   ),
         .s_axi_arregion ( 0   ),
 
-        
+
         // Master to output port
         // .m_axi_awid     ( m_axi_awid    ),
         .m_axi_awaddr   ( m_axi_awaddr  ),
@@ -223,12 +223,12 @@ module sys_master
         .m_axi_rresp    ( m_axi_rresp   ),
         .m_axi_rlast    ( m_axi_rlast   ),
         .m_axi_rvalid   ( m_axi_rvalid  ),
-        .m_axi_rready   ( m_axi_rready  ) 
+        .m_axi_rready   ( m_axi_rready  )
     );
 
 `elsif  EMBEDDED
     // EMBEDDED
-    
+
     assign sys_resetn_o = ~sys_reset_i;
     assign m_axi_awregion = '0;
     assign m_axi_arregion = '0;
@@ -285,7 +285,7 @@ module sys_master
         .m_axi_rresp    ( m_axi_rresp   ), // input wire [1 : 0] m_axi_rresp
         .m_axi_rlast    ( m_axi_rlast   ), // input wire m_axi_rlast
         .m_axi_rvalid   ( m_axi_rvalid  ), // input wire m_axi_rvalid
-        .m_axi_rready   ( m_axi_rready  )  // output wire m_axi_rready 
+        .m_axi_rready   ( m_axi_rready  )  // output wire m_axi_rready
     );
 
 `endif

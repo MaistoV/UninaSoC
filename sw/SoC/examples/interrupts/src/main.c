@@ -1,13 +1,13 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Description:
-//      This code demonstrates the usage of PLIC and interrupts. 
-//      Physically, three interrupt lines are connected (in addition to line 0, which is reserved). 
-//      Logically, two interrupt sources are utilized: a timer and gpio_in. 
-//      The timer sends a message on the serial device every second, while gpio_in enables 
+//      This code demonstrates the usage of PLIC and interrupts.
+//      Physically, three interrupt lines are connected (in addition to line 0, which is reserved).
+//      Logically, two interrupt sources are utilized: a timer and gpio_in.
+//      The timer sends a message on the serial device every second, while gpio_in enables
 //      the LED corresponding to a specific switch (only applicable in embedded configurations).
 //
-//      Note 1: The PLIC is connected to the core via the EXT line. Both the timer and gpio_in are expected 
+//      Note 1: The PLIC is connected to the core via the EXT line. Both the timer and gpio_in are expected
 //      to be connected to the PLIC. The timer must NOT be connected directly to the core's TIM line in this example.
 //
 //      Note 2: The IS_EMBEDDED macro is automatically defined in this example's Makefile depending on
@@ -23,7 +23,7 @@
 
 #ifdef IS_EMBEDDED
     #include "xlnx_gpio.h"
-#endif 
+#endif
 
 int main(){
 
@@ -43,7 +43,7 @@ int main(){
 
     #ifdef IS_EMBEDDED
     // Configure the GPIO (embedded only)
-    
+
         gpio_in_configure();
         gpio_in_enable_int();
     #endif

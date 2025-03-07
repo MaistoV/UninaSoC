@@ -25,10 +25,10 @@ import pandas as pd
 ##############
 
 # CSV configuration file path
-config_file_names = ['config/axi_memory_map/configs/embedded/config_main_bus.csv', 'config/axi_memory_map/configs/embedded/config_peripheral_bus.csv'] 
+config_file_names = ['config/axi_memory_map/configs/embedded/config_main_bus.csv', 'config/axi_memory_map/configs/embedded/config_peripheral_bus.csv']
 if len(sys.argv) >= 3:
 	# Get the array of bus names from the second arg to the last but one
-	config_file_names = sys.argv[1:3]   
+	config_file_names = sys.argv[1:3]
 
 # Target linker script file
 ld_file_name = 'sw/SoC/common/UninaSoC.ld'
@@ -51,7 +51,7 @@ RANGE_NAMES = []
 RANGE_BASE_ADDR = []
 RANGE_ADDR_WIDTH = []
 # For each bus
-for config_df in config_dfs: 
+for config_df in config_dfs:
 	# Read number of masters interfaces
 	NUM_MI.append(int(config_df.loc["NUM_MI"]["Value"]))
 	# print("[DEBUG] NUM_MI", NUM_MI)
@@ -78,7 +78,7 @@ BOOT_MEMORY_BLOCK = 0x0
 # # Sanity check #
 # ################
 # For each bus
-for i in range(len(NUM_MI)): 
+for i in range(len(NUM_MI)):
 	assert (NUM_MI[i] == len(RANGE_NAMES[i])) & (NUM_MI[i] == len(RANGE_BASE_ADDR[i]) ) & (NUM_MI[i]  == len(RANGE_ADDR_WIDTH[i])), \
 		"Mismatch in lenght of configurations: NUM_MI(" + str(NUM_MI[i]) + "), RANGE_NAMES (" + str(len(RANGE_NAMES[i])) + \
 		"), RANGE_BASE_ADDR(" + str(len(RANGE_BASE_ADDR[i])) + ") RANGE_ADDR_WIDTH(" + str(len(RANGE_ADDR_WIDTH[i])) + ")"
@@ -104,8 +104,8 @@ for i in range(len(RANGE_NAMES)):
 
 			# peripherals
 			case _:
-				# Check if the device is not a bus (the last three chars are not BUS) 
-				if device[-3:] != "BUS":  
+				# Check if the device is not a bus (the last three chars are not BUS)
+				if device[-3:] != "BUS":
 					device_dict['peripheral'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[i][counter]})
 
 		# Increment counter
@@ -113,7 +113,7 @@ for i in range(len(RANGE_NAMES)):
 		# If we reach the last element of a bus we need to reset the counter to start with a new bus
 		if counter == len(RANGE_NAMES[i]):
 			counter = 0
-			
+
 
 ###############################
 # Generate Linker Script File #
@@ -155,10 +155,10 @@ fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "016x") + 
 # The stack is allocated at the end of first memory block
 # _stack_end can be user-defined for the application, as bss and rodata
 
-# Note: The memory size specified in the config.csv file may differ from the 
+# Note: The memory size specified in the config.csv file may differ from the
 # physical memory allocated for the SoC (refer to hw/xilinx/ips/common/xlnx_blk_mem_gen/config.tcl).
 # Currently, the configuration process does not ensure alignment between config.csv
-# and xlnx_blk_mem_gen/config.tcl. As a result, we assume a maximum memory size of 
+# and xlnx_blk_mem_gen/config.tcl. As a result, we assume a maximum memory size of
 # 32KB for now, based on the current setting in `config.tcl`.
 
 stack_start = min(0x7ffc, device_dict['memory'][BOOT_MEMORY_BLOCK]['base'] + device_dict['memory'][BOOT_MEMORY_BLOCK]['range'] - 0x4)

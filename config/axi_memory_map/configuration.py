@@ -3,7 +3,7 @@
 
 # Wrapper class for configuration properties
 class Configuration:
-	def __init__(self): 
+	def __init__(self):
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
 		self.ADDR_WIDTH			 : int = 32 	# Address Width

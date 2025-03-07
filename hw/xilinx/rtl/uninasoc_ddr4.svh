@@ -23,7 +23,7 @@
     inout  logic [71:0]  c``channel``_ddr4_dq,      \
     inout  logic [17:0]  c``channel``_ddr4_dqs_t,   \
     inout  logic [17:0]  c``channel``_ddr4_dqs_c
-    
 
 
-`endif 
+
+`endif

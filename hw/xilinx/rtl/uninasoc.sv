@@ -15,7 +15,7 @@
 //  |            |                                    |          |                   |   (slave)    |
 //  | sys_master |----------------------------------->|          |------------------>| Debug Module |
 //  |____________|                                    |          |                   |______________|
-//   ______________                                   |          |                    ________________ 
+//   ______________                                   |          |                    ________________
 //  |   (master)   |                                  |          |                   |                |
 //  | Debug Module |--------------------------------->|          |------------------>| Peripheral bus |---------|
 //  |______________|                                  |          |                   |     (PBUS)     |         |
@@ -23,11 +23,11 @@
 //   _________              ____________              |          |                    ________________          | interrupts
 //  |         |            |            |             |          |                   |                |         |
 //  |   vio   |----------->| rvm_socket |------------>|          |------------------>|      PLIC      |<--------|
-//  |_________|            |____________|             |          |                   |________________| 
+//  |_________|            |____________|             |          |                   |________________|
 //                                ^                   |          |                            |
-//                                |                   |__________|                            |  
+//                                |                   |__________|                            |
 //                                |                                                           |
-//                                |___________________________________________________________| 
+//                                |___________________________________________________________|
 //                                                 platform interrupt
 
 /////////////////////
@@ -70,9 +70,9 @@ module uninasoc (
         input logic clk_300mhz_0_p_i,
         input logic clk_300mhz_0_n_i,
 
-        // DDR4 Channel 0 interface 
-        `DEFINE_DDR4_PORTS(0), 
-        
+        // DDR4 Channel 0 interface
+        `DEFINE_DDR4_PORTS(0),
+
         // PCIe clock and reset
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
@@ -87,7 +87,7 @@ module uninasoc (
     /////////////////////
     // Local variables //
     /////////////////////
-    
+
     localparam peripherals_interrupts_num = 4;
 
     ///////////////////
@@ -127,7 +127,7 @@ module uninasoc (
 
      // xbar -> PLIC
     `DECLARE_AXI_BUS(xbar_to_plic, AXI_DATA_WIDTH);
-    
+
     // XBAR to peripheral bus
     `DECLARE_AXI_BUS(xbar_to_peripheral_bus, AXI_DATA_WIDTH);
 
@@ -264,7 +264,7 @@ module uninasoc (
         // EMBEDDED ONLY
         .sys_clock_i(sys_clock_i),
         .sys_reset_i(sys_reset_i),
-        
+
         // HPC ONLY
         .pcie_refclk_p_i(pcie_refclk_p_i),
         .pcie_refclk_n_i(pcie_refclk_n_i),
@@ -472,7 +472,7 @@ module uninasoc (
     // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support this yet)
     // others - reserved
 
-    assign plic_int_line = {'0, pbus_int_line, 1'b0}; 
+    assign plic_int_line = {'0, pbus_int_line, 1'b0};
 
     custom_rv_plic custom_rv_plic_u (
         .clk_i          ( soc_clk                       ), // input wire s_axi_aclk
@@ -522,10 +522,10 @@ module uninasoc (
         .s_axi_rvalid   ( xbar_to_plic_axi_rvalid       ), // output wire s_axi_rvalid
         .s_axi_rready   ( xbar_to_plic_axi_rready       )
     );
-    
+
     ////////////////////
     // PERIPHERAL BUS //
-    //////////////////// 
+    ////////////////////
 
     peripheral_bus peripheral_bus_u (
 
@@ -535,7 +535,7 @@ module uninasoc (
         // EMBEDDED ONLY
         .uart_rx_i      ( uart_rx_i      ),
         .uart_tx_o      ( uart_tx_o      ),
-        .gpio_out_o     ( gpio_out_o     ), 
+        .gpio_out_o     ( gpio_out_o     ),
         .gpio_in_i      ( gpio_in_i      ),
 
         .int_o          ( pbus_int_line  ),
@@ -543,13 +543,13 @@ module uninasoc (
         .s_axi_awid     ( xbar_to_peripheral_bus_axi_awid     ),
         .s_axi_awaddr   ( xbar_to_peripheral_bus_axi_awaddr   ),
         .s_axi_awlen    ( xbar_to_peripheral_bus_axi_awlen    ),
-        .s_axi_awsize   ( xbar_to_peripheral_bus_axi_awsize   ), 
+        .s_axi_awsize   ( xbar_to_peripheral_bus_axi_awsize   ),
         .s_axi_awburst  ( xbar_to_peripheral_bus_axi_awburst  ),
-        .s_axi_awlock   ( xbar_to_peripheral_bus_axi_awlock   ), 
-        .s_axi_awcache  ( xbar_to_peripheral_bus_axi_awcache  ), 
+        .s_axi_awlock   ( xbar_to_peripheral_bus_axi_awlock   ),
+        .s_axi_awcache  ( xbar_to_peripheral_bus_axi_awcache  ),
         .s_axi_awprot   ( xbar_to_peripheral_bus_axi_awprot   ),
-        .s_axi_awregion ( xbar_to_peripheral_bus_axi_awregion ), 
-        .s_axi_awqos    ( xbar_to_peripheral_bus_axi_awqos    ),  
+        .s_axi_awregion ( xbar_to_peripheral_bus_axi_awregion ),
+        .s_axi_awqos    ( xbar_to_peripheral_bus_axi_awqos    ),
         .s_axi_awvalid  ( xbar_to_peripheral_bus_axi_awvalid  ),
         .s_axi_awready  ( xbar_to_peripheral_bus_axi_awready  ),
         .s_axi_wdata    ( xbar_to_peripheral_bus_axi_wdata    ),
@@ -628,45 +628,45 @@ module uninasoc (
         .s_ctrl_axilite_rresp    (       ),
 
         // Slave interface
-        .s_axi_awid           ( xbar_to_ddr4_axi_awid     ), 
-        .s_axi_awaddr         ( xbar_to_ddr4_axi_awaddr   ), 
-        .s_axi_awlen          ( xbar_to_ddr4_axi_awlen    ), 
-        .s_axi_awsize         ( xbar_to_ddr4_axi_awsize   ), 
-        .s_axi_awburst        ( xbar_to_ddr4_axi_awburst  ), 
-        .s_axi_awlock         ( xbar_to_ddr4_axi_awlock   ), 
-        .s_axi_awcache        ( xbar_to_ddr4_axi_awcache  ), 
-        .s_axi_awprot         ( xbar_to_ddr4_axi_awprot   ), 
-        .s_axi_awregion       ( xbar_to_ddr4_axi_awregion ), 
-        .s_axi_awqos          ( xbar_to_ddr4_axi_awqos    ), 
-        .s_axi_awvalid        ( xbar_to_ddr4_axi_awvalid  ), 
-        .s_axi_awready        ( xbar_to_ddr4_axi_awready  ), 
-        .s_axi_wdata          ( xbar_to_ddr4_axi_wdata    ), 
-        .s_axi_wstrb          ( xbar_to_ddr4_axi_wstrb    ), 
-        .s_axi_wlast          ( xbar_to_ddr4_axi_wlast    ), 
-        .s_axi_wvalid         ( xbar_to_ddr4_axi_wvalid   ), 
-        .s_axi_wready         ( xbar_to_ddr4_axi_wready   ), 
-        .s_axi_bid            ( xbar_to_ddr4_axi_bid      ), 
-        .s_axi_bresp          ( xbar_to_ddr4_axi_bresp    ), 
+        .s_axi_awid           ( xbar_to_ddr4_axi_awid     ),
+        .s_axi_awaddr         ( xbar_to_ddr4_axi_awaddr   ),
+        .s_axi_awlen          ( xbar_to_ddr4_axi_awlen    ),
+        .s_axi_awsize         ( xbar_to_ddr4_axi_awsize   ),
+        .s_axi_awburst        ( xbar_to_ddr4_axi_awburst  ),
+        .s_axi_awlock         ( xbar_to_ddr4_axi_awlock   ),
+        .s_axi_awcache        ( xbar_to_ddr4_axi_awcache  ),
+        .s_axi_awprot         ( xbar_to_ddr4_axi_awprot   ),
+        .s_axi_awregion       ( xbar_to_ddr4_axi_awregion ),
+        .s_axi_awqos          ( xbar_to_ddr4_axi_awqos    ),
+        .s_axi_awvalid        ( xbar_to_ddr4_axi_awvalid  ),
+        .s_axi_awready        ( xbar_to_ddr4_axi_awready  ),
+        .s_axi_wdata          ( xbar_to_ddr4_axi_wdata    ),
+        .s_axi_wstrb          ( xbar_to_ddr4_axi_wstrb    ),
+        .s_axi_wlast          ( xbar_to_ddr4_axi_wlast    ),
+        .s_axi_wvalid         ( xbar_to_ddr4_axi_wvalid   ),
+        .s_axi_wready         ( xbar_to_ddr4_axi_wready   ),
+        .s_axi_bid            ( xbar_to_ddr4_axi_bid      ),
+        .s_axi_bresp          ( xbar_to_ddr4_axi_bresp    ),
         .s_axi_bvalid         ( xbar_to_ddr4_axi_bvalid   ),
-        .s_axi_bready         ( xbar_to_ddr4_axi_bready   ), 
-        .s_axi_arid           ( xbar_to_ddr4_axi_arid     ), 
-        .s_axi_araddr         ( xbar_to_ddr4_axi_araddr   ), 
-        .s_axi_arlen          ( xbar_to_ddr4_axi_arlen    ), 
-        .s_axi_arsize         ( xbar_to_ddr4_axi_arsize   ), 
-        .s_axi_arburst        ( xbar_to_ddr4_axi_arburst  ), 
-        .s_axi_arlock         ( xbar_to_ddr4_axi_arlock   ), 
-        .s_axi_arcache        ( xbar_to_ddr4_axi_arcache  ), 
-        .s_axi_arprot         ( xbar_to_ddr4_axi_arprot   ), 
-        .s_axi_arregion       ( xbar_to_ddr4_axi_arregion ), 
-        .s_axi_arqos          ( xbar_to_ddr4_axi_arqos    ), 
-        .s_axi_arvalid        ( xbar_to_ddr4_axi_arvalid  ), 
-        .s_axi_arready        ( xbar_to_ddr4_axi_arready  ), 
-        .s_axi_rid            ( xbar_to_ddr4_axi_rid      ), 
-        .s_axi_rdata          ( xbar_to_ddr4_axi_rdata    ), 
-        .s_axi_rresp          ( xbar_to_ddr4_axi_rresp    ), 
-        .s_axi_rlast          ( xbar_to_ddr4_axi_rlast    ), 
-        .s_axi_rvalid         ( xbar_to_ddr4_axi_rvalid   ), 
-        .s_axi_rready         ( xbar_to_ddr4_axi_rready   ) 
+        .s_axi_bready         ( xbar_to_ddr4_axi_bready   ),
+        .s_axi_arid           ( xbar_to_ddr4_axi_arid     ),
+        .s_axi_araddr         ( xbar_to_ddr4_axi_araddr   ),
+        .s_axi_arlen          ( xbar_to_ddr4_axi_arlen    ),
+        .s_axi_arsize         ( xbar_to_ddr4_axi_arsize   ),
+        .s_axi_arburst        ( xbar_to_ddr4_axi_arburst  ),
+        .s_axi_arlock         ( xbar_to_ddr4_axi_arlock   ),
+        .s_axi_arcache        ( xbar_to_ddr4_axi_arcache  ),
+        .s_axi_arprot         ( xbar_to_ddr4_axi_arprot   ),
+        .s_axi_arregion       ( xbar_to_ddr4_axi_arregion ),
+        .s_axi_arqos          ( xbar_to_ddr4_axi_arqos    ),
+        .s_axi_arvalid        ( xbar_to_ddr4_axi_arvalid  ),
+        .s_axi_arready        ( xbar_to_ddr4_axi_arready  ),
+        .s_axi_rid            ( xbar_to_ddr4_axi_rid      ),
+        .s_axi_rdata          ( xbar_to_ddr4_axi_rdata    ),
+        .s_axi_rresp          ( xbar_to_ddr4_axi_rresp    ),
+        .s_axi_rlast          ( xbar_to_ddr4_axi_rlast    ),
+        .s_axi_rvalid         ( xbar_to_ddr4_axi_rvalid   ),
+        .s_axi_rready         ( xbar_to_ddr4_axi_rready   )
 
     );
 

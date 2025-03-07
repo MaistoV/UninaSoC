@@ -1,5 +1,5 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: Virtual Uart - This module simulates the physical uart connected to XDMA through AXI lite 
+// Description: Virtual Uart - This module simulates the physical uart connected to XDMA through AXI lite
 
 
 // Import packages
@@ -13,8 +13,8 @@ module virtual_uart (
     input logic clock_i,
     input logic reset_ni,
 
-    // Interrupts 
-    // 0 - to the Core 
+    // Interrupts
+    // 0 - to the Core
     // 1 - to the XDMA
     output logic int_core_o,
     output logic int_xdma_o,
@@ -23,13 +23,13 @@ module virtual_uart (
     // AXILITE Slave interface
     `DEFINE_AXILITE_SLAVE_PORTS(s)
 );
-    
-    
+
+
     // Uart CSR - for more details see PG142
     // 0 - 00h - RX register
     // 1 - 04h - TX register
     // 2 - 08h - Status register
-    // 3 - 0Ch - Control register 
+    // 3 - 0Ch - Control register
     // 4 - 10h - ACK from the host interrupt
     localparam RX_REG           = 0;
     localparam TX_REG           = 1;
@@ -44,16 +44,16 @@ module virtual_uart (
     localparam STS_RX_VALID_BIT = 0;     // Status  - RX register valid
     localparam STS_RX_FULL_BIT  = 1;     // Status  - RX register full
     localparam STS_TX_EMPTY_BIT = 2;     // Status  - TX register empty
-    localparam STS_TX_FULL_BIT  = 3;     // Status  - TX register full 
+    localparam STS_TX_FULL_BIT  = 3;     // Status  - TX register full
 
-    logic [AXI_DATA_WIDTH-1:0] uart_csr [0:4]; 
+    logic [AXI_DATA_WIDTH-1:0] uart_csr [0:4];
 
 
     /* AXILITE Write logic */
     always_ff @( posedge clock_i or negedge reset_ni ) begin
         if ( !reset_ni ) begin
             s_axilite_awready <= 1'b0;
-        end 
+        end
         else begin
             s_axilite_awready <= (s_axilite_awvalid && !s_axilite_awready);
         end
@@ -64,7 +64,7 @@ module virtual_uart (
             s_axilite_wready <= 1'b0;
             s_axilite_bvalid <= 1'b0;
             s_axilite_bresp  <= 2'b00;
-        end 
+        end
         else begin
             if ( s_axilite_wvalid && s_axilite_wready && s_axilite_awvalid && s_axilite_awready ) begin
                 s_axilite_bvalid <= 1'b1;
@@ -110,12 +110,12 @@ module virtual_uart (
     always_ff @( posedge clock_i or negedge reset_ni ) begin
         if ( !reset_ni ) begin
             foreach(uart_csr[i]) uart_csr[i] <= 0;
-        end 
+        end
         else begin
-            if ( s_axilite_wvalid && s_axilite_wready && s_axilite_awvalid && s_axilite_awready ) begin                
+            if ( s_axilite_wvalid && s_axilite_wready && s_axilite_awvalid && s_axilite_awready ) begin
                 // If there is a write on the control register
                 if ( s_axilite_awaddr[4:2] == CONTROL_REG /*&& s_axilite_wstrb[0]*/ ) begin
-                    
+
                     // RST TX register
                     if (s_axilite_wdata[CTRL_RST_TX_BIT]) begin
                         uart_csr[TX_REG] <= 0;
@@ -161,7 +161,7 @@ module virtual_uart (
             end
 
             if ( s_axilite_arvalid && s_axilite_arready ) begin
-                
+
                 // There is a read on the RX register
                 if ( s_axilite_araddr[4:2] == RX_REG ) begin
                     // RX register valid
@@ -179,17 +179,17 @@ module virtual_uart (
                 end
             end
 
-            
+
         end
     end
 
-    // Interrupts logic 
+    // Interrupts logic
     // THIS IS A STUB - TO DO
     always_ff @( posedge clock_i or negedge reset_ni ) begin
         if ( !reset_ni ) begin
             int_core_o <= '0;
             int_xdma_o <= '0;
-        end 
+        end
         else begin
             if ( s_axilite_wvalid && s_axilite_wready && s_axilite_awvalid && s_axilite_awready ) begin
 
@@ -203,7 +203,7 @@ module virtual_uart (
                     int_xdma_o <= 1'b0;
                 end
 
-                
+
             end
         end
     end

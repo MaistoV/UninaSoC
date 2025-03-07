@@ -2,28 +2,28 @@
 // Description: This module is the module wrapping the entire peripheral bus
 //              it adds a AXI protocol converter before the axilite crossbar and all the peripherals connected to the axilite crossbar
 //
-//                                             
+//
 //            _______________                  _____________             _______
 //   AXI4    |   AXI Prot    |   AXI Lite     |             |           |       |
 // --------->|   Converter   |--------------->|             |---------->| UART  |
 //           |_______________|                | Pheripheral |           |_______|
-//                                            |    XBAR     |                    
-//                                            |  (axilite)  |            ___________       
+//                                            |    XBAR     |
+//                                            |  (axilite)  |            ___________
 //                                            |             |           |           |
 //                                            |             |---------->| GPIO_out  |
-//                                            |             |           |___________| 
-//                                            |             |            ___________       
+//                                            |             |           |___________|
+//                                            |             |            ___________
 //                                            |             |           |           |
 //                                            |             |---------->| GPIO_in   |
-//                                            |             |           |___________| 
-//                                            |             |            ________      
+//                                            |             |           |___________|
+//                                            |             |            ________
 //                                            |             |           |        |
 //                                            |             |---------->| TIM0   |
-//                                            |             |           |________| 
-//                                            |             |            ________      
+//                                            |             |           |________|
+//                                            |             |            ________
 //                                            |             |           |        |
 //                                            |             |---------->| TIM1   |
-//                                            |_____________|           |________| 
+//                                            |_____________|           |________|
 //
 //
 //
@@ -51,10 +51,10 @@ module peripheral_bus #(
     // GPIOs
     input  logic [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
     output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o,
-    
+
     // Interrupts
-    output logic [NUM_IRQ - 1 : 0]      int_o 
-    
+    output logic [NUM_IRQ - 1 : 0]      int_o
+
 );
 
     /////////////////////
@@ -171,8 +171,8 @@ module peripheral_bus #(
 
     // AXI Lite crossbar
     xlnx_peripheral_crossbar peripheral_xbar_u (
-        .aclk           ( clock_i  ), 
-        .aresetn        ( reset_ni ), 
+        .aclk           ( clock_i  ),
+        .aresetn        ( reset_ni ),
 
         .s_axi_awaddr   ( prot_conv_to_xbar_axilite_awaddr       ),
         .s_axi_awprot   ( prot_conv_to_xbar_axilite_awprot       ),
@@ -192,7 +192,7 @@ module peripheral_bus #(
         .s_axi_rdata    ( prot_conv_to_xbar_axilite_rdata        ),
         .s_axi_rresp    ( prot_conv_to_xbar_axilite_rresp        ),
         .s_axi_rvalid   ( prot_conv_to_xbar_axilite_rvalid       ),
-        .s_axi_rready   ( prot_conv_to_xbar_axilite_rready       ), 
+        .s_axi_rready   ( prot_conv_to_xbar_axilite_rready       ),
 
         .m_axi_awaddr   ( xbar_slaves_axilite_awaddr             ),
         .m_axi_awprot   ( xbar_slaves_axilite_awprot             ),
@@ -214,7 +214,7 @@ module peripheral_bus #(
         .m_axi_rvalid   ( xbar_slaves_axilite_rvalid             ),
         .m_axi_rready   ( xbar_slaves_axilite_rready             )
 
-    ); 
+    );
 
     /////////////////////
     // AXI-lite Slaves //
@@ -234,21 +234,21 @@ module peripheral_bus #(
 
 
         // AXI4 lite slave port (from xbar lite)
-        .s_axilite_awaddr   ( xbar_to_uart_axilite_awaddr       ), 
-        .s_axilite_awprot   ( xbar_to_uart_axilite_awprot       ), 
-        .s_axilite_awvalid  ( xbar_to_uart_axilite_awvalid      ), 
-        .s_axilite_awready  ( xbar_to_uart_axilite_awready      ), 
+        .s_axilite_awaddr   ( xbar_to_uart_axilite_awaddr       ),
+        .s_axilite_awprot   ( xbar_to_uart_axilite_awprot       ),
+        .s_axilite_awvalid  ( xbar_to_uart_axilite_awvalid      ),
+        .s_axilite_awready  ( xbar_to_uart_axilite_awready      ),
         .s_axilite_wdata    ( xbar_to_uart_axilite_wdata        ),
         .s_axilite_wstrb    ( xbar_to_uart_axilite_wstrb        ),
         .s_axilite_wvalid   ( xbar_to_uart_axilite_wvalid       ),
         .s_axilite_wready   ( xbar_to_uart_axilite_wready       ),
         .s_axilite_bresp    ( xbar_to_uart_axilite_bresp        ),
-        .s_axilite_bvalid   ( xbar_to_uart_axilite_bvalid       ), 
-        .s_axilite_bready   ( xbar_to_uart_axilite_bready       ), 
-        .s_axilite_araddr   ( xbar_to_uart_axilite_araddr       ), 
-        .s_axilite_arprot   ( xbar_to_uart_axilite_arprot       ), 
-        .s_axilite_arvalid  ( xbar_to_uart_axilite_arvalid      ), 
-        .s_axilite_arready  ( xbar_to_uart_axilite_arready      ), 
+        .s_axilite_bvalid   ( xbar_to_uart_axilite_bvalid       ),
+        .s_axilite_bready   ( xbar_to_uart_axilite_bready       ),
+        .s_axilite_araddr   ( xbar_to_uart_axilite_araddr       ),
+        .s_axilite_arprot   ( xbar_to_uart_axilite_arprot       ),
+        .s_axilite_arvalid  ( xbar_to_uart_axilite_arvalid      ),
+        .s_axilite_arready  ( xbar_to_uart_axilite_arready      ),
         .s_axilite_rdata    ( xbar_to_uart_axilite_rdata        ),
         .s_axilite_rresp    ( xbar_to_uart_axilite_rresp        ),
         .s_axilite_rvalid   ( xbar_to_uart_axilite_rvalid       ),

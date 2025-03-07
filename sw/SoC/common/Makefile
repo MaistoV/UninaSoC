@@ -29,7 +29,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(MKDIR)
 	$(CC) -o $@ $^ -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS)
 
-obj/startup.o: 
+obj/startup.o:
 	@echo "\n[OBJ]	Creating OBJs from $(STARTUP_DIR)/startup.s"
 	$(MKDIR)
 	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s -I$(LIB_INC_LIST) $(CFLAGS)
