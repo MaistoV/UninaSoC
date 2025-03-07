@@ -58,7 +58,7 @@ OBJDUMP 	= $(RV_PREFIX)objdump
 OBJCOPY 	= $(RV_PREFIX)objcopy
 
 DFLAG		= -g
-CFLAGS 		= -march=rv32ima_zicsr_zifencei -mabi=ilp32 -O0 $(MACRO_LIST) $(DFLAG) -c
+CFLAGS 		= -march=rv32imac_zicsr_zifencei -mabi=ilp32 -O0 $(MACRO_LIST) $(DFLAG) -c
 LDFLAGS 	= $(LIB_OBJ_LIST) -nostdlib -T$(LD_SCRIPT)
 
 include $(SW_ROOT)/SoC/common/Makefile
