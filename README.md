@@ -66,6 +66,13 @@ W.r.t. the single tools:
 | Verilator       | TBD              |
 | gtkwave         | TBD              |
 
+## Architecture
+
+Basic SoC architecture and host connection:
+> NOTE: this needs refinement
+
+![SoC Architecture](./Base_SoC_layout.png)
+
 ## Documentation Index
 
 If you need finer-grained documentation and insights to control the building flow, refer to the documentation:
