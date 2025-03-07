@@ -72,7 +72,7 @@ $ make config_xilinx # update xilinx config
 # Scripting Architecture
 The configuration scripting architecture is structured as in the following figure:
 
-![Configuration flow](./axi_xbar_config.png)
+![Configuration flow](./axi_xbar_config_with_check.png)
 
 * Linker script generation is handled solely by `create_linker_script.py` source.
 * TCL file generation is divided in multiple files, with `create_crossbar_config.py` as master script
