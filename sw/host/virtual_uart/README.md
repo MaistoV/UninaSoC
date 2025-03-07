@@ -15,7 +15,7 @@ sudo ./host_virtual_uart <uart_paddr> [uart_length] [u_poll_period]
 The application starts a prompt to interact with the SoC.
 Each char you digit is sent to the SoC through the virtual uart peripheral.
 
-The expected behaviour depends on the application running on the SoC. 
+The expected behaviour depends on the application running on the SoC.
 As a reference, our examples using the uart behave as follow:
 * `sw/SoC/examples/hello_world`: it simply prints the "Hello world" string.
 * `sw/SoC/examples/echo`: it waits for a string then replies with the same string.

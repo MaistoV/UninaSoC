@@ -42,7 +42,7 @@ LIB_INC_LIST 	= $(LIB_INC_TINYIO)
 ##########
 
 MACRO_LIST =
-ifeq ($(SOC_CONFIG), embedded) 
+ifeq ($(SOC_CONFIG), embedded)
 MACRO_LIST += -DIS_EMBEDDED
 endif
 

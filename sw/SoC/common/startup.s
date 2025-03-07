@@ -9,10 +9,10 @@
   # Only the reset handler is defined in this file, while all other handlers points to
   # the default_handler (a loop)
 
-  jal x0, _reset_handler         
+  jal x0, _reset_handler
   .rept 31
   jal x0, _default_handler
-  .endr        
+  .endr
 
 .section .text.handlers
 
@@ -62,7 +62,7 @@ _reset_handler:
   # Set mtvec to vectored mode
   la a0, _vector_table_start  # Load vector table base address
   li a1, 1                    # Set vectored mode bit
-  or a1, a1, a0               
+  or a1, a1, a0
   csrw mtvec, a1              # Commit on mtvec register
 
   # Enable global interrupts
@@ -87,11 +87,11 @@ _default_handler:
   j _default_handler
 
 .section .text.start
-  
+
 _start:
   .global _start
 
-  # jump to main program entry point (argc = argv = 0) 
+  # jump to main program entry point (argc = argv = 0)
   mv a0, zero
   mv a1, zero
 
@@ -100,4 +100,4 @@ _start:
 
 
 
- 
+

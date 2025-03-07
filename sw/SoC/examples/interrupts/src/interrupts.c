@@ -4,7 +4,7 @@
 
 #ifdef IS_EMBEDDED
     #include "xlnx_gpio.h"
-#endif 
+#endif
 
 
 // This function is based on low risc demo system hal
@@ -48,17 +48,17 @@ void _timer_handler(void) {
 
 void _ext_handler(void) {
 
-    // Interrupts are automatically disabled by the microarchitecture (uarch). 
-    // Nested interrupts can be enabled manually by setting the IE bit in the mstatus register, 
-    // but this requires careful handling of registers. 
+    // Interrupts are automatically disabled by the microarchitecture (uarch).
+    // Nested interrupts can be enabled manually by setting the IE bit in the mstatus register,
+    // but this requires careful handling of registers.
     // Interrupts are automatically re-enabled by the microarchitecture when the MRET instruction is executed.
 
-    // Since this code calls other functions, the compiler will likely save ALL registers, 
-    // including floating-point and vector registers. To ensure compatibility with most processors, 
+    // Since this code calls other functions, the compiler will likely save ALL registers,
+    // including floating-point and vector registers. To ensure compatibility with most processors,
     // we compile using only the IMA extensions.
 
-    // In this example, the core is connected to PLIC target 1 line. 
-    // Therefore, we need to access the PLIC claim/complete register 1 (base_addr + 0x200004). 
+    // In this example, the core is connected to PLIC target 1 line.
+    // Therefore, we need to access the PLIC claim/complete register 1 (base_addr + 0x200004).
     // The interrupt source ID is obtained from the claim register.
     uint32_t * plic_addr = (uint32_t *) &_peripheral_PLIC_start;
     uint32_t interrupt_id = *(plic_addr + 0x200004/sizeof(uint32_t));

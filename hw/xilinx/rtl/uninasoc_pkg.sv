@@ -8,7 +8,7 @@ package uninasoc_pkg;
     // SoC-level defines //
     ///////////////////////
 
-    localparam int unsigned NUM_GPIO_IN  = 16; 
+    localparam int unsigned NUM_GPIO_IN  = 16;
     localparam int unsigned NUM_GPIO_OUT = 16;
 
     //////////////////
@@ -16,7 +16,7 @@ package uninasoc_pkg;
     //////////////////
     // Crosbar masters
     // - RVM socket (instr and data)
-    // - Sys Master 
+    // - Sys Master
     localparam int unsigned NUM_AXI_MASTERS = 3; // {socket_instr, socket_data, jtag2axi}
 
     // Main Crosbar slaves if EMBEDDED
@@ -44,7 +44,7 @@ package uninasoc_pkg;
     // - GPIOs in input
     // - Timer 0
     // - Timer 1
-    `ifdef EMBEDDED 
+    `ifdef EMBEDDED
         localparam int unsigned NUM_AXILITE_SLAVES = 5;
     // Slaves if HPC
     // - UART (Virtual)

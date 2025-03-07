@@ -1,7 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description:
 // This module is intended as a top-level wrapper for the code in ./rtl
-// IT might support either MEM protocol or AXI protocol, using the 
+// IT might support either MEM protocol or AXI protocol, using the
 // uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
 
 
@@ -97,9 +97,9 @@ module custom_top_wrapper # (
     //  Bus Array Interfaces  //
     ////////////////////////////
 
-    // MEM Master Interface Array 
+    // MEM Master Interface Array
     `DEFINE_MEM_MASTER_PORTS(instr),
-    // MEM Slave Interface Array 
+    // MEM Slave Interface Array
     `DEFINE_MEM_MASTER_PORTS(data)
 );
 
@@ -226,10 +226,10 @@ module custom_top_wrapper # (
     logic           mem_data_error;
 
     logic 		    mem_valid;
-	logic           mem_ready; 
-    logic [31:0]    mem_addr;         
-	logic [31:0]    mem_rdata;     
-    logic [3:0]     mem_wstrb;   
+	logic           mem_ready;
+    logic [31:0]    mem_addr;
+	logic [31:0]    mem_rdata;
+    logic [3:0]     mem_wstrb;
 
     //////////////////////////
     //    Demultiplexing    //
@@ -280,7 +280,7 @@ module custom_top_wrapper # (
 	assign data_mem_be      = mem_data_be;
     assign data_mem_we      = mem_data_we;
     assign data_mem_wdata   = mem_data_wdata;
-    
+
 
 
 endmodule : custom_top_wrapper

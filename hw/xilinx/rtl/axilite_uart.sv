@@ -1,6 +1,6 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Description: AXI4 Uart - This module encapsulates the AXI lite uart. The uart is selected based on the SOC_CONFIG.
-//              EMBEDDED -> AXILITE UART 
+//              EMBEDDED -> AXILITE UART
 //              HPC      -> VIRTUAL UART
 
 
@@ -24,10 +24,10 @@ module axilite_uart (
     `DEFINE_AXILITE_SLAVE_PORTS(s),
 
     // EMBEDDED ONLY
-    // RX and TX signas 
+    // RX and TX signas
     output logic        tx_o,
     input  logic        rx_i
-    
+
 );
 
     `ifdef HPC

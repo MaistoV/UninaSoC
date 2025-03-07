@@ -7,7 +7,7 @@
 //////////////////
 // PCIe defines //
 //////////////////
-localparam int unsigned NUM_PCIE_LANES = 8; 
+localparam int unsigned NUM_PCIE_LANES = 8;
 
 // PCIe define ports
 `define DEFINE_PCIE_PORTS()                          \

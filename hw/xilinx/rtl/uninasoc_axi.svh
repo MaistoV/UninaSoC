@@ -257,7 +257,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``src``_axi_rlast     = ``dest``_axi_rlast    ; \
     assign ``src``_axi_rvalid    = ``dest``_axi_rvalid   ;
 
-// Assign srce to dest signals AXILITE 
+// Assign srce to dest signals AXILITE
 `define ASSIGN_AXILITE_BUS(dest, src)                      \
     assign ``dest``_axilite_awaddr   = ``src``_axilite_awaddr    ; \
     assign ``dest``_axilite_awprot   = ``src``_axilite_awprot    ; \
@@ -749,7 +749,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     input  axi_ready_t  ``slave_name``_axilite_rready
 
 
-// AXI4 LITE SLAVE PORTS ARRAY 
+// AXI4 LITE SLAVE PORTS ARRAY
 `define DEFINE_AXILITE_SLAVE_PORTS_ARRAY(slave_array_name, size)                 \
     // AW channel                                                                \
     input  axi_addr_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_awaddr,   \
@@ -777,7 +777,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     input  axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_rready
 
 
-// AXI4 LITE MASTER PORTS ARRAY 
+// AXI4 LITE MASTER PORTS ARRAY
 `define DEFINE_AXILITE_MASTER_PORTS_ARRAY(master_array_name, size)                \
     // AW channel                                                                 \
     output axi_addr_t  [``size`` -1 : 0]  ``master_array_name``_axilite_awaddr,   \
