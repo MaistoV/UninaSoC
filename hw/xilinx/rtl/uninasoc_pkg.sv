@@ -18,7 +18,7 @@ package uninasoc_pkg;
     // - RVM socket (instr and data)
     // - JTAG2AXI
     // - DM
-    localparam int unsigned NUM_AXI_MASTERS = 4; // {debug_module, socket_instr, socket_data, jtag2axi}
+    localparam int unsigned NUM_AXI_MASTERS = 4;
 
     // Main Crosbar slaves if EMBEDDED
     // - Peripheral bus
@@ -27,7 +27,7 @@ package uninasoc_pkg;
     // - PLIC
     `ifdef EMBEDDED
         // NB: we should find a better and automatic way of count AXI and MASTERs
-        localparam int unsigned NUM_AXI_SLAVES = 3;
+        localparam int unsigned NUM_AXI_SLAVES = 4;
 
     // Crosbar slaves if HPC
     // - Main memory (BRAM)
