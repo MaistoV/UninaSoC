@@ -61,9 +61,17 @@ def __print_error(txt : str) -> None:
 # Check intra configuration #
 #############################
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
-    # Supported cores
-    if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
-        __print_error(f"Invalid core in {config_file_name}")
+
+    # Only main but can select a core
+    # NOTE: this is a bit dirty, any other idea?
+    if ( "main_bus" in config.NAME ):
+        # Supported cores
+        if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
+            __print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
+            return False
+    # If a non-main bus config wants to select a core
+    elif ( config.CORE_SELECTOR != "" ) :
+        __print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in main bus")
         return False
 
     # Check if the protocol is valid
@@ -161,6 +169,8 @@ def read_config(config_file_names : list) -> list:
     for name in config_file_names:
         # Create a configuration object for each bus
         config = configuration.Configuration()
+        # Set config name
+        config.NAME = name
 
         # Reading the CSV
         for index, row in pd.read_csv(name, sep=",").iterrows():
@@ -202,11 +212,12 @@ if __name__ == "__main__":
     __print(f"Starting checking {len(configs)} config...")
     __print("Checking intra config validity")
     for i in range(len(configs)):
+        __print(f"Checking {configs[i].NAME} config...")
         status = check_intra_config(configs[i], config_file_names[i])
 
-    # Some check failed
-    if status == False:
-        exit(1)
+        # This check failed
+        if status == False:
+            exit(1)
 
     # Success intra-config check
     __print("Checking intra config validity done!")

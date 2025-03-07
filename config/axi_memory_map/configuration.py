@@ -6,8 +6,9 @@
 # Wrapper class for configuration properties
 class Configuration:
 	def __init__(self):
+		self.NAME				 : str = "No name"	# Name this object
 		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_MICROBLAZEV"]
-		self.CORE_SELECTOR		 : str = "CORE_MICROBLAZEV"	# Microblaze-V RISC-V core
+		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
 		self.ADDR_WIDTH			 : int = 32 	# Address Width
