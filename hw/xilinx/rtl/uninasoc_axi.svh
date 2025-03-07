@@ -125,7 +125,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     // AW channel                               \
     axi_addr_t  ``bus_name``_axilite_awaddr;    \
     axi_prot_t  ``bus_name``_axilite_awprot;    \
-    axi_valid_t ``bus_name``_axilite_awvalid;    \
+    axi_valid_t ``bus_name``_axilite_awvalid;   \
     axi_ready_t ``bus_name``_axilite_awready;   \
     // W channel                                \
     axi_data_t  ``bus_name``_axilite_wdata;     \
@@ -189,6 +189,28 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     axi_valid_t  [``size`` -1 : 0] ``array_name``_axi_rvalid   ; \
     axi_ready_t  [``size`` -1 : 0] ``array_name``_axi_rready   ;
 
+// Declare AXI4 LITE array
+`define DECLARE_AXILITE_BUS_ARRAY(array_name, size) \
+    axi_addr_t   [``size`` -1 : 0] ``array_name``_axilite_awaddr   ; \
+    axi_prot_t   [``size`` -1 : 0] ``array_name``_axilite_awprot   ; \
+    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_awvalid  ; \
+    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_awready  ; \
+    axi_data_t   [``size`` -1 : 0] ``array_name``_axilite_wdata    ; \
+    axi_strb_t   [``size`` -1 : 0] ``array_name``_axilite_wstrb    ; \
+    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_wvalid   ; \
+    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_wready   ; \
+    axi_resp_t   [``size`` -1 : 0] ``array_name``_axilite_bresp    ; \
+    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_bvalid   ; \
+    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_bready   ; \
+    axi_addr_t   [``size`` -1 : 0] ``array_name``_axilite_araddr   ; \
+    axi_prot_t   [``size`` -1 : 0] ``array_name``_axilite_arprot   ; \
+    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_arvalid  ; \
+    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_arready  ; \
+    axi_data_t   [``size`` -1 : 0] ``array_name``_axilite_rdata    ; \
+    axi_resp_t   [``size`` -1 : 0] ``array_name``_axilite_rresp    ; \
+    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_rvalid   ; \
+    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_rready   ;
+
 ///////////////////////
 //  Bus Assignment   //
 ///////////////////////
@@ -234,6 +256,28 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``src``_axi_rresp     = ``dest``_axi_rresp    ; \
     assign ``src``_axi_rlast     = ``dest``_axi_rlast    ; \
     assign ``src``_axi_rvalid    = ``dest``_axi_rvalid   ;
+
+// Assign srce to dest signals AXILITE
+`define ASSIGN_AXILITE_BUS(dest, src)                      \
+    assign ``dest``_axilite_awaddr   = ``src``_axilite_awaddr    ; \
+    assign ``dest``_axilite_awprot   = ``src``_axilite_awprot    ; \
+    assign ``dest``_axilite_awvalid  = ``src``_axilite_awvalid   ; \
+    assign ``dest``_axilite_wdata    = ``src``_axilite_wdata     ; \
+    assign ``dest``_axilite_wstrb    = ``src``_axilite_wstrb     ; \
+    assign ``dest``_axilite_wvalid   = ``src``_axilite_wvalid    ; \
+    assign ``dest``_axilite_araddr   = ``src``_axilite_araddr    ; \
+    assign ``dest``_axilite_arprot   = ``src``_axilite_arprot    ; \
+    assign ``dest``_axilite_arvalid  = ``src``_axilite_arvalid   ; \
+    assign ``dest``_axilite_rready   = ``src``_axilite_rready    ; \
+    assign ``dest``_axilite_bready   = ``src``_axilite_bready    ; \
+    assign ``src``_axilite_awready   = ``dest``_axilite_awready  ; \
+    assign ``src``_axilite_wready    = ``dest``_axilite_wready   ; \
+    assign ``src``_axilite_bresp     = ``dest``_axilite_bresp    ; \
+    assign ``src``_axilite_bvalid    = ``dest``_axilite_bvalid   ; \
+    assign ``src``_axilite_arready   = ``dest``_axilite_arready  ; \
+    assign ``src``_axilite_rdata     = ``dest``_axilite_rdata    ; \
+    assign ``src``_axilite_rresp     = ``dest``_axilite_rresp    ; \
+    assign ``src``_axilite_rvalid    = ``dest``_axilite_rvalid   ;
 
 ////////////////////////
 //  Bus Concatenation //
@@ -418,6 +462,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``array_name``_axi_rlast   = {``bus_name2``_axi_rlast      , ``bus_name1``_axi_rlast      , ``bus_name0``_axi_rlast    }; \
     assign ``array_name``_axi_rvalid  = {``bus_name2``_axi_rvalid     , ``bus_name1``_axi_rvalid     , ``bus_name0``_axi_rvalid   };
 
+
 // Concatenate 4 master buses
 `define CONCAT_AXI_MASTERS_ARRAY4(array_name, bus_name3, bus_name2, bus_name1, bus_name0) \
     assign ``array_name``_axi_awid     = {``bus_name3``_axi_awid      , ``bus_name2``_axi_awid      , ``bus_name1``_axi_awid      , ``bus_name0``_axi_awid     }; \
@@ -459,6 +504,122 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign {``bus_name3``_axi_rresp      , ``bus_name2``_axi_rresp      , ``bus_name1``_axi_rresp     , ``bus_name0``_axi_rresp    } = ``array_name``_axi_rresp   ; \
     assign {``bus_name3``_axi_rlast      , ``bus_name2``_axi_rlast      , ``bus_name1``_axi_rlast     , ``bus_name0``_axi_rlast    } = ``array_name``_axi_rlast   ; \
     assign {``bus_name3``_axi_rvalid     , ``bus_name2``_axi_rvalid     , ``bus_name1``_axi_rvalid    , ``bus_name0``_axi_rvalid   } = ``array_name``_axi_rvalid  ;
+
+
+// Concatenate 1 master axilite buses
+`define CONCAT_AXILITE_MASTERS_ARRAY1(array_name, bus_name0) \
+    `ASSIGN_AXILITE_BUS(``array_name``, ``bus_name0``)
+
+// Concatenate 2 master axilite buses
+`define CONCAT_AXILITE_MASTERS_ARRAY2(array_name, bus_name1, bus_name0) \
+    assign ``array_name``_axilite_awaddr   = {``bus_name1``_axilite_awaddr     , ``bus_name0``_axilite_awaddr   }; \
+    assign ``array_name``_axilite_awprot   = {``bus_name1``_axilite_awprot     , ``bus_name0``_axilite_awprot   }; \
+    assign ``array_name``_axilite_awvalid  = {``bus_name1``_axilite_awvalid    , ``bus_name0``_axilite_awvalid  }; \
+    assign ``array_name``_axilite_wdata    = {``bus_name1``_axilite_wdata      , ``bus_name0``_axilite_wdata    }; \
+    assign ``array_name``_axilite_wstrb    = {``bus_name1``_axilite_wstrb      , ``bus_name0``_axilite_wstrb    }; \
+    assign ``array_name``_axilite_wvalid   = {``bus_name1``_axilite_wvalid     , ``bus_name0``_axilite_wvalid   }; \
+    assign ``array_name``_axilite_bready   = {``bus_name1``_axilite_bready     , ``bus_name0``_axilite_bready   }; \
+    assign ``array_name``_axilite_araddr   = {``bus_name1``_axilite_araddr     , ``bus_name0``_axilite_araddr   }; \
+    assign ``array_name``_axilite_arprot   = {``bus_name1``_axilite_arprot     , ``bus_name0``_axilite_arprot   }; \
+    assign ``array_name``_axilite_arvalid  = {``bus_name1``_axilite_arvalid    , ``bus_name0``_axilite_arvalid  }; \
+    assign ``array_name``_axilite_rready   = {``bus_name1``_axilite_rready     , ``bus_name0``_axilite_rready   }; \
+    assign {``bus_name1``_axilite_awready    , ``bus_name0``_axilite_awready  } = ``array_name``_axilite_awready ; \
+    assign {``bus_name1``_axilite_wready     , ``bus_name0``_axilite_wready   } = ``array_name``_axilite_wready  ; \
+    assign {``bus_name1``_axilite_bresp      , ``bus_name0``_axilite_bresp    } = ``array_name``_axilite_bresp   ; \
+    assign {``bus_name1``_axilite_bvalid     , ``bus_name0``_axilite_bvalid   } = ``array_name``_axilite_bvalid  ; \
+    assign {``bus_name1``_axilite_arready    , ``bus_name0``_axilite_arready  } = ``array_name``_axilite_arready ; \
+    assign {``bus_name1``_axilite_rdata      , ``bus_name0``_axilite_rdata    } = ``array_name``_axilite_rdata   ; \
+    assign {``bus_name1``_axilite_rresp      , ``bus_name0``_axilite_rresp    } = ``array_name``_axilite_rresp   ; \
+    assign {``bus_name1``_axilite_rvalid     , ``bus_name0``_axilite_rvalid   } = ``array_name``_axilite_rvalid  ;
+
+// Concatenate 2 slave axilite buses
+`define CONCAT_AXILITE_SLAVES_ARRAY2(array_name, bus_name1, bus_name0) \
+    assign {``bus_name1``_axilite_awaddr     , ``bus_name0``_axilite_awaddr   } = ``array_name``_axilite_awaddr  ; \
+    assign {``bus_name1``_axilite_awprot     , ``bus_name0``_axilite_awprot   } = ``array_name``_axilite_awprot  ; \
+    assign {``bus_name1``_axilite_awvalid    , ``bus_name0``_axilite_awvalid  } = ``array_name``_axilite_awvalid ; \
+    assign {``bus_name1``_axilite_wdata      , ``bus_name0``_axilite_wdata    } = ``array_name``_axilite_wdata   ; \
+    assign {``bus_name1``_axilite_wstrb      , ``bus_name0``_axilite_wstrb    } = ``array_name``_axilite_wstrb   ; \
+    assign {``bus_name1``_axilite_wvalid     , ``bus_name0``_axilite_wvalid   } = ``array_name``_axilite_wvalid  ; \
+    assign {``bus_name1``_axilite_bready     , ``bus_name0``_axilite_bready   } = ``array_name``_axilite_bready  ; \
+    assign {``bus_name1``_axilite_araddr     , ``bus_name0``_axilite_araddr   } = ``array_name``_axilite_araddr  ; \
+    assign {``bus_name1``_axilite_arprot     , ``bus_name0``_axilite_arprot   } = ``array_name``_axilite_arprot  ; \
+    assign {``bus_name1``_axilite_arvalid    , ``bus_name0``_axilite_arvalid  } = ``array_name``_axilite_arvalid ; \
+    assign {``bus_name1``_axilite_rready     , ``bus_name0``_axilite_rready   } = ``array_name``_axilite_rready  ; \
+    assign ``array_name``_axilite_awready = {``bus_name1``_axilite_awready    , ``bus_name0``_axilite_awready  }; \
+    assign ``array_name``_axilite_wready  = {``bus_name1``_axilite_wready     , ``bus_name0``_axilite_wready   }; \
+    assign ``array_name``_axilite_bresp   = {``bus_name1``_axilite_bresp      , ``bus_name0``_axilite_bresp    }; \
+    assign ``array_name``_axilite_bvalid  = {``bus_name1``_axilite_bvalid     , ``bus_name0``_axilite_bvalid   }; \
+    assign ``array_name``_axilite_arready = {``bus_name1``_axilite_arready    , ``bus_name0``_axilite_arready  }; \
+    assign ``array_name``_axilite_rdata   = {``bus_name1``_axilite_rdata      , ``bus_name0``_axilite_rdata    }; \
+    assign ``array_name``_axilite_rresp   = {``bus_name1``_axilite_rresp      , ``bus_name0``_axilite_rresp    }; \
+    assign ``array_name``_axilite_rvalid  = {``bus_name1``_axilite_rvalid     , ``bus_name0``_axilite_rvalid   };
+
+// Concatenate 3 slave axilite buses
+`define CONCAT_AXILITE_SLAVES_ARRAY3(array_name, bus_name2, bus_name1, bus_name0) \
+    assign {``bus_name2``_axilite_awaddr     , ``bus_name1``_axilite_awaddr , ``bus_name0``_axilite_awaddr   } = ``array_name``_axilite_awaddr  ; \
+    assign {``bus_name2``_axilite_awprot     , ``bus_name1``_axilite_awprot , ``bus_name0``_axilite_awprot   } = ``array_name``_axilite_awprot  ; \
+    assign {``bus_name2``_axilite_awvalid    , ``bus_name1``_axilite_awvalid , ``bus_name0``_axilite_awvalid  } = ``array_name``_axilite_awvalid ; \
+    assign {``bus_name2``_axilite_wdata      , ``bus_name1``_axilite_wdata , ``bus_name0``_axilite_wdata    } = ``array_name``_axilite_wdata   ; \
+    assign {``bus_name2``_axilite_wstrb      , ``bus_name1``_axilite_wstrb , ``bus_name0``_axilite_wstrb    } = ``array_name``_axilite_wstrb   ; \
+    assign {``bus_name2``_axilite_wvalid     , ``bus_name1``_axilite_wvalid , ``bus_name0``_axilite_wvalid   } = ``array_name``_axilite_wvalid  ; \
+    assign {``bus_name2``_axilite_bready     , ``bus_name1``_axilite_bready , ``bus_name0``_axilite_bready   } = ``array_name``_axilite_bready  ; \
+    assign {``bus_name2``_axilite_araddr     , ``bus_name1``_axilite_araddr , ``bus_name0``_axilite_araddr   } = ``array_name``_axilite_araddr  ; \
+    assign {``bus_name2``_axilite_arprot     , ``bus_name1``_axilite_arprot , ``bus_name0``_axilite_arprot   } = ``array_name``_axilite_arprot  ; \
+    assign {``bus_name2``_axilite_arvalid    , ``bus_name1``_axilite_arvalid , ``bus_name0``_axilite_arvalid  } = ``array_name``_axilite_arvalid ; \
+    assign {``bus_name2``_axilite_rready     , ``bus_name1``_axilite_rready , ``bus_name0``_axilite_rready   } = ``array_name``_axilite_rready  ; \
+    assign ``array_name``_axilite_awready = {``bus_name2``_axilite_awready    , ``bus_name1``_axilite_awready    , ``bus_name0``_axilite_awready  }; \
+    assign ``array_name``_axilite_wready  = {``bus_name2``_axilite_wready     , ``bus_name1``_axilite_wready     , ``bus_name0``_axilite_wready   }; \
+    assign ``array_name``_axilite_bresp   = {``bus_name2``_axilite_bresp      , ``bus_name1``_axilite_bresp      , ``bus_name0``_axilite_bresp    }; \
+    assign ``array_name``_axilite_bvalid  = {``bus_name2``_axilite_bvalid     , ``bus_name1``_axilite_bvalid     , ``bus_name0``_axilite_bvalid   }; \
+    assign ``array_name``_axilite_arready = {``bus_name2``_axilite_arready    , ``bus_name1``_axilite_arready    , ``bus_name0``_axilite_arready  }; \
+    assign ``array_name``_axilite_rdata   = {``bus_name2``_axilite_rdata      , ``bus_name1``_axilite_rdata      , ``bus_name0``_axilite_rdata    }; \
+    assign ``array_name``_axilite_rresp   = {``bus_name2``_axilite_rresp      , ``bus_name1``_axilite_rresp      , ``bus_name0``_axilite_rresp    }; \
+    assign ``array_name``_axilite_rvalid  = {``bus_name2``_axilite_rvalid     , ``bus_name1``_axilite_rvalid     , ``bus_name0``_axilite_rvalid   };
+
+// Concatenate 4 slave axilite buses
+`define CONCAT_AXILITE_SLAVES_ARRAY4(array_name, bus_name3, bus_name2, bus_name1, bus_name0) \
+    assign {``bus_name3``_axilite_awaddr     , ``bus_name2``_axilite_awaddr , ``bus_name1``_axilite_awaddr , ``bus_name0``_axilite_awaddr   } = ``array_name``_axilite_awaddr  ; \
+    assign {``bus_name3``_axilite_awprot     , ``bus_name2``_axilite_awprot , ``bus_name1``_axilite_awprot , ``bus_name0``_axilite_awprot   } = ``array_name``_axilite_awprot  ; \
+    assign {``bus_name3``_axilite_awvalid    , ``bus_name2``_axilite_awvalid , ``bus_name1``_axilite_awvalid , ``bus_name0``_axilite_awvalid  } = ``array_name``_axilite_awvalid ; \
+    assign {``bus_name3``_axilite_wdata      , ``bus_name2``_axilite_wdata , ``bus_name1``_axilite_wdata , ``bus_name0``_axilite_wdata    } = ``array_name``_axilite_wdata   ; \
+    assign {``bus_name3``_axilite_wstrb      , ``bus_name2``_axilite_wstrb , ``bus_name1``_axilite_wstrb , ``bus_name0``_axilite_wstrb    } = ``array_name``_axilite_wstrb   ; \
+    assign {``bus_name3``_axilite_wvalid     , ``bus_name2``_axilite_wvalid , ``bus_name1``_axilite_wvalid , ``bus_name0``_axilite_wvalid   } = ``array_name``_axilite_wvalid  ; \
+    assign {``bus_name3``_axilite_bready     , ``bus_name2``_axilite_bready , ``bus_name1``_axilite_bready , ``bus_name0``_axilite_bready   } = ``array_name``_axilite_bready  ; \
+    assign {``bus_name3``_axilite_araddr     , ``bus_name2``_axilite_araddr , ``bus_name1``_axilite_araddr , ``bus_name0``_axilite_araddr   } = ``array_name``_axilite_araddr  ; \
+    assign {``bus_name3``_axilite_arprot     , ``bus_name2``_axilite_arprot , ``bus_name1``_axilite_arprot , ``bus_name0``_axilite_arprot   } = ``array_name``_axilite_arprot  ; \
+    assign {``bus_name3``_axilite_arvalid    , ``bus_name2``_axilite_arvalid , ``bus_name1``_axilite_arvalid , ``bus_name0``_axilite_arvalid  } = ``array_name``_axilite_arvalid ; \
+    assign {``bus_name3``_axilite_rready     , ``bus_name2``_axilite_rready , ``bus_name1``_axilite_rready , ``bus_name0``_axilite_rready   } = ``array_name``_axilite_rready  ; \
+    assign ``array_name``_axilite_awready = {``bus_name3``_axilite_awready    , ``bus_name2``_axilite_awready    , ``bus_name1``_axilite_awready    , ``bus_name0``_axilite_awready  }; \
+    assign ``array_name``_axilite_wready  = {``bus_name3``_axilite_wready     , ``bus_name2``_axilite_wready     , ``bus_name1``_axilite_wready     , ``bus_name0``_axilite_wready   }; \
+    assign ``array_name``_axilite_bresp   = {``bus_name3``_axilite_bresp      , ``bus_name2``_axilite_bresp      , ``bus_name1``_axilite_bresp      , ``bus_name0``_axilite_bresp    }; \
+    assign ``array_name``_axilite_bvalid  = {``bus_name3``_axilite_bvalid     , ``bus_name2``_axilite_bvalid     , ``bus_name1``_axilite_bvalid     , ``bus_name0``_axilite_bvalid   }; \
+    assign ``array_name``_axilite_arready = {``bus_name3``_axilite_arready    , ``bus_name2``_axilite_arready    , ``bus_name1``_axilite_arready    , ``bus_name0``_axilite_arready  }; \
+    assign ``array_name``_axilite_rdata   = {``bus_name3``_axilite_rdata      , ``bus_name2``_axilite_rdata      , ``bus_name1``_axilite_rdata      , ``bus_name0``_axilite_rdata    }; \
+    assign ``array_name``_axilite_rresp   = {``bus_name3``_axilite_rresp      , ``bus_name2``_axilite_rresp      , ``bus_name1``_axilite_rresp      , ``bus_name0``_axilite_rresp    }; \
+    assign ``array_name``_axilite_rvalid  = {``bus_name3``_axilite_rvalid     , ``bus_name2``_axilite_rvalid     , ``bus_name1``_axilite_rvalid     , ``bus_name0``_axilite_rvalid   };
+
+// Concatenate 5 slave axilite buses
+`define CONCAT_AXILITE_SLAVES_ARRAY5(array_name, bus_name4, bus_name3, bus_name2, bus_name1, bus_name0) \
+    assign {``bus_name4``_axilite_awaddr     , ``bus_name3``_axilite_awaddr     , ``bus_name2``_axilite_awaddr , ``bus_name1``_axilite_awaddr , ``bus_name0``_axilite_awaddr   } = ``array_name``_axilite_awaddr  ; \
+    assign {``bus_name4``_axilite_awprot     , ``bus_name3``_axilite_awprot     , ``bus_name2``_axilite_awprot , ``bus_name1``_axilite_awprot , ``bus_name0``_axilite_awprot   } = ``array_name``_axilite_awprot  ; \
+    assign {``bus_name4``_axilite_awvalid    , ``bus_name3``_axilite_awvalid    , ``bus_name2``_axilite_awvalid , ``bus_name1``_axilite_awvalid , ``bus_name0``_axilite_awvalid  } = ``array_name``_axilite_awvalid ; \
+    assign {``bus_name4``_axilite_wdata      , ``bus_name3``_axilite_wdata      , ``bus_name2``_axilite_wdata , ``bus_name1``_axilite_wdata , ``bus_name0``_axilite_wdata    } = ``array_name``_axilite_wdata   ; \
+    assign {``bus_name4``_axilite_wstrb      , ``bus_name3``_axilite_wstrb      , ``bus_name2``_axilite_wstrb , ``bus_name1``_axilite_wstrb , ``bus_name0``_axilite_wstrb    } = ``array_name``_axilite_wstrb   ; \
+    assign {``bus_name4``_axilite_wvalid     , ``bus_name3``_axilite_wvalid     , ``bus_name2``_axilite_wvalid , ``bus_name1``_axilite_wvalid , ``bus_name0``_axilite_wvalid   } = ``array_name``_axilite_wvalid  ; \
+    assign {``bus_name4``_axilite_bready     , ``bus_name3``_axilite_bready     , ``bus_name2``_axilite_bready , ``bus_name1``_axilite_bready , ``bus_name0``_axilite_bready   } = ``array_name``_axilite_bready  ; \
+    assign {``bus_name4``_axilite_araddr     , ``bus_name3``_axilite_araddr     , ``bus_name2``_axilite_araddr , ``bus_name1``_axilite_araddr , ``bus_name0``_axilite_araddr   } = ``array_name``_axilite_araddr  ; \
+    assign {``bus_name4``_axilite_arprot     , ``bus_name3``_axilite_arprot     , ``bus_name2``_axilite_arprot , ``bus_name1``_axilite_arprot , ``bus_name0``_axilite_arprot   } = ``array_name``_axilite_arprot  ; \
+    assign {``bus_name4``_axilite_arvalid    , ``bus_name3``_axilite_arvalid    , ``bus_name2``_axilite_arvalid , ``bus_name1``_axilite_arvalid , ``bus_name0``_axilite_arvalid  } = ``array_name``_axilite_arvalid ; \
+    assign {``bus_name4``_axilite_rready     , ``bus_name3``_axilite_rready     , ``bus_name2``_axilite_rready , ``bus_name1``_axilite_rready , ``bus_name0``_axilite_rready   } = ``array_name``_axilite_rready  ; \
+    assign ``array_name``_axilite_awready = {``bus_name4``_axilite_awready    , ``bus_name3``_axilite_awready    , ``bus_name2``_axilite_awready    , ``bus_name1``_axilite_awready    , ``bus_name0``_axilite_awready  }; \
+    assign ``array_name``_axilite_wready  = {``bus_name4``_axilite_wready     , ``bus_name3``_axilite_wready     , ``bus_name2``_axilite_wready     , ``bus_name1``_axilite_wready     , ``bus_name0``_axilite_wready   }; \
+    assign ``array_name``_axilite_bresp   = {``bus_name4``_axilite_bresp      , ``bus_name3``_axilite_bresp      , ``bus_name2``_axilite_bresp      , ``bus_name1``_axilite_bresp      , ``bus_name0``_axilite_bresp    }; \
+    assign ``array_name``_axilite_bvalid  = {``bus_name4``_axilite_bvalid     , ``bus_name3``_axilite_bvalid     , ``bus_name2``_axilite_bvalid     , ``bus_name1``_axilite_bvalid     , ``bus_name0``_axilite_bvalid   }; \
+    assign ``array_name``_axilite_arready = {``bus_name4``_axilite_arready    , ``bus_name3``_axilite_arready    , ``bus_name2``_axilite_arready    , ``bus_name1``_axilite_arready    , ``bus_name0``_axilite_arready  }; \
+    assign ``array_name``_axilite_rdata   = {``bus_name4``_axilite_rdata      , ``bus_name3``_axilite_rdata      , ``bus_name2``_axilite_rdata      , ``bus_name1``_axilite_rdata      , ``bus_name0``_axilite_rdata    }; \
+    assign ``array_name``_axilite_rresp   = {``bus_name4``_axilite_rresp      , ``bus_name3``_axilite_rresp      , ``bus_name2``_axilite_rresp      , ``bus_name1``_axilite_rresp      , ``bus_name0``_axilite_rresp    }; \
+    assign ``array_name``_axilite_rvalid  = {``bus_name4``_axilite_rvalid     , ``bus_name3``_axilite_rvalid     , ``bus_name2``_axilite_rvalid     , ``bus_name1``_axilite_rvalid     , ``bus_name0``_axilite_rvalid   };
+
 
 //////////////////
 //  Bus Ports   //
@@ -513,7 +674,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 
 
 // AXI4 SLAVE PORTS
-`define DEFINE_AXI_SLAVE_PORTS(slave_name)           \
+`define DEFINE_AXI_SLAVE_PORTS(slave_name)         \
   // AW channel                                    \
   input  axi_id_t     ``slave_name``_axi_awid,     \
   input  axi_addr_t   ``slave_name``_axi_awaddr,   \
@@ -559,6 +720,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
   output axi_valid_t  ``slave_name``_axi_rvalid,   \
   input  axi_ready_t  ``slave_name``_axi_rready
 
+
 // AXI4 LITE SLAVE PORTS
 `define DEFINE_AXILITE_SLAVE_PORTS(slave_name)           \
     // AW channel                                        \
@@ -586,6 +748,61 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     output axi_valid_t  ``slave_name``_axilite_rvalid,   \
     input  axi_ready_t  ``slave_name``_axilite_rready
 
+
+// AXI4 LITE SLAVE PORTS ARRAY
+`define DEFINE_AXILITE_SLAVE_PORTS_ARRAY(slave_array_name, size)                 \
+    // AW channel                                                                \
+    input  axi_addr_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_awaddr,   \
+    input  axi_prot_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_awprot,   \
+    input  axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_awvalid,  \
+    output axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_awready,  \
+    // W channel                                                                 \
+    input  axi_data_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_wdata,    \
+    input  axi_strb_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_wstrb,    \
+    input  axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_wvalid,   \
+    output axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_wready,   \
+    // B channel                                                                 \
+    output axi_resp_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_bresp,    \
+    output axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_bvalid,   \
+    input  axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_bready,   \
+    // AR channel                                                                \
+    input  axi_addr_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_araddr,   \
+    input  axi_prot_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_arprot,   \
+    input  axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_arvalid,  \
+    output axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_arready,  \
+    // R channel                                                                 \
+    output axi_data_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_rdata,    \
+    output axi_resp_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_rresp,    \
+    output axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_rvalid,   \
+    input  axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_rready
+
+
+// AXI4 LITE MASTER PORTS ARRAY
+`define DEFINE_AXILITE_MASTER_PORTS_ARRAY(master_array_name, size)                \
+    // AW channel                                                                 \
+    output axi_addr_t  [``size`` -1 : 0]  ``master_array_name``_axilite_awaddr,   \
+    output axi_prot_t  [``size`` -1 : 0]  ``master_array_name``_axilite_awprot,   \
+    output axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_awvalid,  \
+    input  axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_awready,  \
+    // W channel                                                                  \
+    output axi_data_t  [``size`` -1 : 0]  ``master_array_name``_axilite_wdata,    \
+    output axi_strb_t  [``size`` -1 : 0]  ``master_array_name``_axilite_wstrb,    \
+    output axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_wvalid,   \
+    input  axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_wready,   \
+    // B channel                                                                  \
+    input  axi_resp_t  [``size`` -1 : 0]  ``master_array_name``_axilite_bresp,    \
+    input  axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_bvalid,   \
+    output axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_bready,   \
+    // AR channel                                                                 \
+    output axi_addr_t  [``size`` -1 : 0]  ``master_array_name``_axilite_araddr,   \
+    output axi_prot_t  [``size`` -1 : 0]  ``master_array_name``_axilite_arprot,   \
+    output axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_arvalid,  \
+    input  axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_arready,  \
+    // R channel                                                                  \
+    input  axi_data_t  [``size`` -1 : 0]  ``master_array_name``_axilite_rdata,    \
+    input  axi_resp_t  [``size`` -1 : 0]  ``master_array_name``_axilite_rresp,    \
+    input  axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_rvalid,   \
+    output axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_rready
 
 
 `endif // UNINASOC_AXI_SVH__

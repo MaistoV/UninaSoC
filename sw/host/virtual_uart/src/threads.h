@@ -13,7 +13,7 @@ typedef struct {
 typedef struct {
     uint64_t paddr;               /* PCIe BAR of the uart device */
     size_t length;                /* The length of the mapping   */
-    unsigned int u_poll_period;   /* Poll period in microseconds */   
+    unsigned int u_poll_period;   /* Poll period in microseconds */
 } read_thread_arg_t;
 
 /* Threads functions */

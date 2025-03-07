@@ -1,55 +1,27 @@
-# TODO: this is just a skeleton
+# Author: Vincenzo Maistoo	<vincenzo.maisto2@unina.it>
+# Description:
+#  Top Makefile for the software flow. It just redirects to sub-folders' Makefiles.
 
-# RISC-V toolchain
-XLEN	?= 32
-TARGET 	?= riscv${XLEN}-unknown-elf
-CC 		:= ${TARGET}-gcc
-LD 		:= ${TARGET}-ld
-AS 		:= ${TARGET}-as
-OBJCOPY := ${TARGET}-objcopy
-OBJDUMP := ${TARGET}-objdump
-RISCV_MARCH ?= rv32gc_zicsr_zifencei
+# Environment check
+ifndef SW_ROOT
+$(error Setup script settings.sh has not been sourced, aborting)
+endif
 
-LD_GEN = TBD
-BIN2COE = bin2coe
 
-all: template
+all: host SoC
 
-# Only temporary, until bootrom is added
+VIRTUAL_UART_PATH = ${SW_HOST_ROOT}/virtual_uart
+host:
+# 	Virtual UART is the only host application so far
+	make -C ${VIRTUAL_UART_PATH}
 
-.PHONY: template host_virtual_uart soc_virtual_uart_hello_world soc_virtual_uart_echo_server
+SoC:
+#	Init and checkout tinyIO
+	git submodule update --init SoC/lib/tinyio
+	make -C ${SW_SOC_ROOT}
 
-# For now the selection of the application is a mare target, we could also pass the application to this Makefile (i.e. make APP=...)
-# SoC applications
-template:
-	${MAKE} -C SoC/template
+clean:
+	make -C ${VIRTUAL_UART_PATH} clean
+	make -C ${SW_SOC_ROOT} clean
 
-soc_virtual_uart_hello_world:
-	${MAKE} -C SoC/examples/virtual_uart_hello_world
-
-soc_virtual_uart_echo_server:
-	${MAKE} -C SoC/examples/virtual_uart_echo_server
-
-# Host applications
-host_virtual_uart:
-	${MAKE} -C host/virtual_uart
-
-###############################################################################################################
-
-linker/UninaSoC.ld: linker/UninaSoC.ld.tpl
-	${LD_GEN} $< -o $@
-
-objs/bootrom.o: src/bootrom.s
-	${AS} --march=${RISCV_MARCH} $< -o $@
-
-objs/bootrom.elf: src/bootrom.c objs/bootrom.o linker/UninaSoC.ld
-	mkdir -p objs
-	${CC} src/bootrom.c objs/bootrom.o -o $@ -T linker/UninaSoC.ld
-
-# Convert ELF to binary
-objs/bootrom.bin: objs/bootrom.elf
-	${OBJCOPY} -O binary $< $@
-
-# Convert binary to COE
-${BOOTROM_COE}: objs/bootrom.bin
-	${BIN2COE} -i $< -o $@ -w 32
+.PHONY: host SoC

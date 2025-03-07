@@ -1,13 +1,14 @@
 #!/bin/python3.10
-# Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Stefano Toscano 		<stefa.toscano@studenti.unina.it>
+# Author: Vincenzo Maisto 		<vincenzo.maisto2@unina.it>
+# Author: Stefano Mercogliano 		<stefano.mercogliano@unina.it>
 # Description:
-#   Generate and fd script from the CSV configuration.
+#   Generate a linker script file from the CSV configuration.
 # Note:
 #   Addresses overlaps are not sanitized.
 # Args:
 #   1: Input configuration file
-#   2: Output generated fd script
+#   2: Output generated ld script
 
 ####################
 # Import libraries #
@@ -24,133 +25,178 @@ import pandas as pd
 ##############
 
 # CSV configuration file path
-config_file_name = 'config/axi_memory_map/configs/config.csv'
-# config_file_name = 'config/axi_memory_map/configs/PoC_config.csv'
-if len(sys.argv) >= 2:
-	config_file_name = sys.argv[1]
-
-# Target TCL file
-ld_file_name = 'sw/SoC/linker/UninaSoC.ld'
+config_file_names = ['config/axi_memory_map/configs/embedded/config_main_bus.csv', 'config/axi_memory_map/configs/embedded/config_peripheral_bus.csv']
 if len(sys.argv) >= 3:
-	ld_file_name = sys.argv[2]
+	# Get the array of bus names from the second arg to the last but one
+	config_file_names = sys.argv[1:3]
+
+# Target linker script file
+ld_file_name = 'sw/SoC/common/UninaSoC.ld'
+if len(sys.argv) >= 4:
+	# Get the linker script name, the last arg
+	ld_file_name = sys.argv[3]
 
 
 ###############
 # Read config #
 ###############
-# Read CSV file
-config_df = pd.read_csv(config_file_name, sep=",", index_col=0)
+# Read CSV files for each bus
+config_dfs = []
+for name in config_file_names:
+	config_dfs.append(pd.read_csv(name, sep=",", index_col=0))
 
-# Read number of masters interfaces
-NUM_MI = int(config_df.loc["NUM_MI"]["Value"])
-# print("[DEBUG] NUM_MI", NUM_MI)
+# Each bus has an element in these vectors
+NUM_MI = []
+RANGE_NAMES = []
+RANGE_BASE_ADDR = []
+RANGE_ADDR_WIDTH = []
+# For each bus
+for config_df in config_dfs:
+	# Read number of masters interfaces
+	NUM_MI.append(int(config_df.loc["NUM_MI"]["Value"]))
+	# print("[DEBUG] NUM_MI", NUM_MI)
 
-# Read slaves' names
-RANGE_NAMES = config_df.loc["RANGE_NAMES"]["Value"].split()
-# print("[DEBUG] RANGE_NAMES", RANGE_NAMES)
+	# Read slaves' names
+	RANGE_NAMES.append(config_df.loc["RANGE_NAMES"]["Value"].split())
+	# print("[DEBUG] RANGE_NAMES", RANGE_NAMES)
 
-# Read address Ranges
-RANGE_BASE_ADDR = config_df.loc["RANGE_BASE_ADDR"]["Value"].split()
-# print("[DEBUG] RANGE_BASE_ADDR", RANGE_BASE_ADDR)
+	# Read address Ranges
+	RANGE_BASE_ADDR.append(config_df.loc["RANGE_BASE_ADDR"]["Value"].split())
+	# print("[DEBUG] RANGE_BASE_ADDR", RANGE_BASE_ADDR)
 
-# Read address widths
-RANGE_ADDR_WIDTH = config_df.loc["RANGE_ADDR_WIDTH"]["Value"].split()
-# Turns the values into Integers
-for i in range(len(RANGE_ADDR_WIDTH)):
-	RANGE_ADDR_WIDTH[i] = int(RANGE_ADDR_WIDTH[i])
-# print("[DEBUG] RANGE_ADDR_WIDTH", RANGE_ADDR_WIDTH)
+	# Read address widths
+	RANGE_ADDR_WIDTH.append(config_df.loc["RANGE_ADDR_WIDTH"]["Value"].split())
+	# Turns the values into Integers
+	for i in range(len(RANGE_ADDR_WIDTH[-1])):
+		RANGE_ADDR_WIDTH[-1][i] = int(RANGE_ADDR_WIDTH[-1][i])
 
-################
-# Sanity check #
-################
-assert (NUM_MI == len(RANGE_NAMES)) & (NUM_MI == len(RANGE_BASE_ADDR) ) & (NUM_MI  == len(RANGE_ADDR_WIDTH)), \
-	"Mismatch in lenght of configurations: NUM_MI(" + str(NUM_MI) + "), RANGE_NAMES (" + str(len(RANGE_NAMES)) + \
-	"), RANGE_BASE_ADDR(" + str(len(RANGE_BASE_ADDR)) + ") RANGE_ADDR_WIDTH(" + str(len(RANGE_ADDR_WIDTH)) + ")"
+# Currently the first memory device is selected as the boot memory device
+BOOT_MEMORY_BLOCK = 0x0
 
-###########################
-# Calculate memory blocks #
-###########################
-# NOTE: this assumes peripherals slaves to always be after memory regions
+
+# ################
+# # Sanity check #
+# ################
+# For each bus
+for i in range(len(NUM_MI)):
+	assert (NUM_MI[i] == len(RANGE_NAMES[i])) & (NUM_MI[i] == len(RANGE_BASE_ADDR[i]) ) & (NUM_MI[i]  == len(RANGE_ADDR_WIDTH[i])), \
+		"Mismatch in lenght of configurations: NUM_MI(" + str(NUM_MI[i]) + "), RANGE_NAMES (" + str(len(RANGE_NAMES[i])) + \
+		"), RANGE_BASE_ADDR(" + str(len(RANGE_BASE_ADDR[i])) + ") RANGE_ADDR_WIDTH(" + str(len(RANGE_ADDR_WIDTH[i])) + ")"
+
+##########################
+# Generate memory blocks #
+##########################
+# Currently only one copy of BRAM, DDR and HBM memory ranges are supported.
+
+device_dict = {
+	'memory':		[],
+	'peripheral':	[]
+}
+
 counter = 0
-PERIPHERALS_LENGTH = 0
-BRAM_LENGTH = 0
-DDR_LENGTH = 0
-HBM_LENGTH = 0
-BRAM_END = 0
-DDR_END = 0
-HBM_END = 0
-for name in RANGE_NAMES:
-	match name:
-		# BRAM
-		case "BRAM":
-			BRAM_ORIGIN = int(RANGE_BASE_ADDR[counter], 16)
-			BRAM_LENGTH = 2 << RANGE_ADDR_WIDTH[counter]
-			BRAM_END 	= BRAM_ORIGIN + BRAM_LENGTH
-		# DDR
-		case "DDR":
-			DDR_ORIGIN = int(RANGE_BASE_ADDR[counter], 16)
-			DDR_LENGTH = 2 << RANGE_ADDR_WIDTH[counter]
-			DDR_END    = DDR_ORIGIN + DDR_LENGTH
-		# HBM
-		case "HBM":
-			HBM_ORIGIN = int(RANGE_BASE_ADDR[counter], 16)
-			HBM_LENGTH = 2 << RANGE_ADDR_WIDTH[counter]
-			HBM_END    = HBM_ORIGIN + HBM_LENGTH
-		# Peripherals
-		case _:
-			# Max reduce
-			PERIPHERALS_LENGTH = max(PERIPHERALS_LENGTH, 2 << RANGE_ADDR_WIDTH[counter])
+# For each bus
+for i in range(len(RANGE_NAMES)):
+	for device in RANGE_NAMES[i]:
+		match device:
+			# memory blocks
+			case "BRAM" | "DDR" | "HBM":
+				device_dict['memory'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[i][counter]})
 
-	# Increment counter
-	counter += 1
+			# peripherals
+			case _:
+				# Check if the device is not a bus (the last three chars are not BUS)
+				if device[-3:] != "BUS":
+					device_dict['peripheral'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[i][counter]})
 
-# Peripherals base, soon as the memory space ends
-PERIPHERALS_ORIGIN = max(BRAM_END, DDR_END, HBM_END)
+		# Increment counter
+		counter += 1
+		# If we reach the last element of a bus we need to reset the counter to start with a new bus
+		if counter == len(RANGE_NAMES[i]):
+			counter = 0
 
-# Peripherals length,
-PERIPHERALS_LENGTH = 0
-for i in range(1, len(RANGE_ADDR_WIDTH)):
-	PERIPHERALS_LENGTH += (2 << RANGE_ADDR_WIDTH[i])
 
-#################
-# Write to file #
-#################
-# Open output file
+###############################
+# Generate Linker Script File #
+###############################
+
+# Create the Linker Script File
 fd = open(ld_file_name,  "w")
 
 # Write header
 fd.write("/* This file is auto-generated with " + os.path.basename(__file__) + " */\n")
 
-# BLOCKS
+# Generate the memory blocks layout
 fd.write("\n")
 fd.write("/* Memory blocks */\n")
 fd.write("MEMORY\n")
 fd.write("{\n")
-# Memories
-if BRAM_LENGTH != 0:
-	fd.write("\tBRAM (xrw) : ORIGIN = " + hex(BRAM_ORIGIN) + ",  LENGTH = " + hex(BRAM_LENGTH) + "\n")
-if DDR_LENGTH != 0:
-	fd.write("\tDDR (xrw) : ORIGIN = " + hex(DDR_ORIGIN) + ",  LENGTH = " + hex(DDR_LENGTH) + "\n")
-if HBM_LENGTH != 0:
-	fd.write("\tHBM (xrw) : ORIGIN = " + hex(HBM_ORIGIN) + ",  LENGTH = " + hex(HBM_LENGTH) + "\n")
-# Peripherals
-fd.write("\tPERIPHERALS (rw) : ORIGIN = " + hex(PERIPHERALS_ORIGIN) + ",  LENGTH = " + hex(PERIPHERALS_LENGTH) + "\n")
+
+for block in device_dict['memory']:
+	fd.write("\t" + block['device'] + " (xrw) : ORIGIN = 0x" + format(block['base'], "016x") + ",  LENGTH = " + hex(block['range']) + "\n")
 fd.write("}\n")
 
-# SECTIONS
+# Generate symbols from peripherals
+fd.write("\n")
+fd.write("/* Peripherals symbols */\n")
+for peripheral in device_dict['peripheral']:
+	fd.write("_peripheral_" + peripheral['device'] + "_start = 0x" + format(peripheral['base'], "016x") + ";\n")
+	fd.write("_peripheral_" + peripheral['device'] + "_end = 0x" + format(peripheral['base'] + peripheral['range'], "016x") + ";\n")
+
+# Generate global symbols
+fd.write("\n")
+fd.write("/* Global symbols */\n")
+# Vector table is placed at the beggining of the boot memory block.
+# It is aligned to 256 bytes and is 32 words deep. (as described in risc-v spec)
+#vector_table_start  =  memory_block_list[BOOT_MEMORY_BLOCK][DEVICE_ORIGIN]
+vector_table_start  =  device_dict['memory'][BOOT_MEMORY_BLOCK]['base']
+fd.write("_vector_table_start = 0x" + format(vector_table_start, "016x") + ";\n")
+fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "016x") + ";\n")
+
+# The stack is allocated at the end of first memory block
+# _stack_end can be user-defined for the application, as bss and rodata
+
+# Note: The memory size specified in the config.csv file may differ from the
+# physical memory allocated for the SoC (refer to hw/xilinx/ips/common/xlnx_blk_mem_gen/config.tcl).
+# Currently, the configuration process does not ensure alignment between config.csv
+# and xlnx_blk_mem_gen/config.tcl. As a result, we assume a maximum memory size of
+# 32KB for now, based on the current setting in `config.tcl`.
+
+stack_start = min(0x7ffc, device_dict['memory'][BOOT_MEMORY_BLOCK]['base'] + device_dict['memory'][BOOT_MEMORY_BLOCK]['range'] - 0x4)
+fd.write("_stack_start = 0x" + format(stack_start, "016x") + ";\n")
+
+# Generate sections
+# vector table and text sections are here defined.
+# data, bss and rodata can be explicitly defined by the user application if required.
 fd.write("\n")
 fd.write("/* Sections */\n")
 fd.write("SECTIONS\n")
 fd.write("{\n")
-start = int(RANGE_BASE_ADDR[0], 16)
-for i in range(NUM_MI):
-	range_start = int(RANGE_BASE_ADDR[i], 16)
-	range_end = range_start + (2 << RANGE_ADDR_WIDTH[i])
-	fd.write("\t_slave_" + RANGE_NAMES[i] + "_base = " + hex(range_start) + ";\n")
-	fd.write("\t_slave_" + RANGE_NAMES[i] + "_end = "  + hex(range_end)   + ";\n")
+
+# Vector Table section
+fd.write("\t.vector_table _vector_table_start :\n")
+fd.write("\t{\n")
+fd.write("\t\tKEEP(*(.vector_table))\n")
+fd.write("\t}> " + device_dict['memory'][BOOT_MEMORY_BLOCK]['device'] + "\n")
+
+# Text section
+fd.write("\n")
+fd.write("\t.text :\n")
+fd.write("\t{\n")
+fd.write("\t\t. = ALIGN(32);\n")
+fd.write("\t\t_text_start = .;\n")
+fd.write("\t\t*(.text.handlers)\n")
+fd.write("\t\t*(.text.start)\n")
+fd.write("\t\t*(.text)\n")
+fd.write("\t\t*(.text*)\n")
+fd.write("\t\t. = ALIGN(32);\n")
+fd.write("\t\t_text_end = .;\n")
+fd.write("\t}> " + device_dict['memory'][BOOT_MEMORY_BLOCK]['device'] + "\n")
+
 fd.write("}\n")
 
 # Files closing
 fd.write("\n")
 fd.close()
+
+
 
