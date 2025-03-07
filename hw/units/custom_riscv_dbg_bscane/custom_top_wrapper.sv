@@ -18,7 +18,7 @@ module custom_top_wrapper # (
     //////////////////////////////////////
     parameter int unsigned        NrHarts          = 1,
     // parameter int unsigned        BusWidth         = 32,
-    parameter logic [31:0]        DmBaseAddress    = 32'h10000, // TODO: match from config
+    parameter logic [31:0]        DmBaseAddress    = 32'h10000, // TODO34: match from config
     // parameter int unsigned        DmBaseAddress    = 'h1000, // default to non-zero page
     // Bitmask to select physically available harts for systems
     // that don't use hart numbers in a contiguous fashion.
@@ -207,20 +207,25 @@ module custom_top_wrapper # (
     // AXI adapters //
     //////////////////
 
+    // From cheshire_soc.sv
+    localparam int unsigned axi_to_mem_NumBanks = 1;
+    localparam int unsigned axi_to_mem_BufDepth = 4;
+
     // AXI access to debug module
-    axi_to_mem_interleaved #(
-        .axi_req_t  ( axi_req_t ),
-        .axi_resp_t ( axi_resp_t ),
+    // axi_to_mem_interleaved #(
+    axi_to_mem #(
+        .axi_req_t  ( axi_req_t             ),
+        .axi_resp_t ( axi_resp_t            ),
         .AddrWidth  ( LOCAL_AXI_ADDR_WIDTH  ),
         .DataWidth  ( LOCAL_AXI_DATA_WIDTH  ),
         .IdWidth    ( LOCAL_AXI_ID_WIDTH    ),
-        .NumBanks   ( 1 ),
-        .BufDepth   ( 4 )
+        .NumBanks   ( axi_to_mem_NumBanks   ),
+        .BufDepth   ( axi_to_mem_BufDepth   )
     ) axi_to_mem_u (
         .clk_i,
         .rst_ni,
-        .test_i       ( test_mode_i ),
-        .busy_o       ( ),
+        // .test_i       ( test_mode_i ), // only for axi_to_mem_interleaved
+        .busy_o       ( busy_o               ), // Open
         .axi_req_i    ( dbg_slave_axi_req    ),
         .axi_resp_o   ( dbg_slave_axi_resp   ),
         .mem_req_o    ( dbg_slave_mem_req    ),
@@ -228,7 +233,7 @@ module custom_top_wrapper # (
         .mem_addr_o   ( dbg_slave_mem_addr   ),
         .mem_wdata_o  ( dbg_slave_mem_wdata  ),
         .mem_strb_o   ( dbg_slave_mem_be     ),
-        .mem_atop_o   (  ),
+        .mem_atop_o   ( mem_atop_o           ), // Open
         .mem_we_o     ( dbg_slave_mem_we     ),
         .mem_rvalid_i ( dbg_slave_mem_valid  ),
         .mem_rdata_i  ( dbg_slave_mem_rdata  )
@@ -245,15 +250,19 @@ module custom_top_wrapper # (
         end
     end
 
+    // From cheshire_pkg.sv
+    localparam int unsigned     axi_from_mem_MaxRequests = 4;
+    localparam axi_pkg::prot_t  axi_from_mem_AxiProt = 3'b000;
+
     // Debug module system bus access to AXI crossbar
     axi_from_mem #(
-        .MemAddrWidth ( LOCAL_AXI_ADDR_WIDTH ),
-        .AxiAddrWidth ( LOCAL_AXI_ADDR_WIDTH ),
-        .DataWidth    ( LOCAL_AXI_DATA_WIDTH ),
-        .MaxRequests  ( 4                    ), // From cheshire_pkg.sv
-        .AxiProt      ( '0                   ),
-        .axi_req_t    ( axi_req_t            ),
-        .axi_rsp_t    ( axi_resp_t           )
+        .MemAddrWidth ( LOCAL_AXI_ADDR_WIDTH     ),
+        .AxiAddrWidth ( LOCAL_AXI_ADDR_WIDTH     ),
+        .DataWidth    ( LOCAL_AXI_DATA_WIDTH     ),
+        .MaxRequests  ( axi_from_mem_MaxRequests ),
+        .AxiProt      ( '0                       ),
+        .axi_req_t    ( axi_req_t                ),
+        .axi_rsp_t    ( axi_resp_t               )
     ) axi_from_mem_u (
         .clk_i,
         .rst_ni,
