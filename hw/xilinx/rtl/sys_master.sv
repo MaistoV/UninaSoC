@@ -229,12 +229,9 @@ module sys_master
 `elsif  EMBEDDED
     // EMBEDDED
 
-<<<<<<< HEAD
-    // Drive unused signals
-    assign pci_exp_txn_o = '0;
+    // TODO31: Drive unused signals
+    // assign pci_exp_txn_o = '0;
 
-=======
->>>>>>> origin/main
     assign sys_resetn_o = ~sys_reset_i;
     assign m_axi_awregion = '0;
     assign m_axi_arregion = '0;
