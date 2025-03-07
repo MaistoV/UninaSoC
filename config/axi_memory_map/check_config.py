@@ -1,5 +1,6 @@
 #!/bin/python3.10
 # Author: Manuel Maddaluno        <manuel.maddaluno@unina.it>
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description:
 #   Check the validity of the CSV configurations
 #   The checks are split in two part: 1) intra configuration checks and 2) inter configuration checks
@@ -60,6 +61,11 @@ def __print_error(txt : str) -> None:
 # Check intra configuration #
 #############################
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
+    # Supported cores
+    if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
+        __print_error(f"Invalid core in {config_file_name}")
+        return False
+
     # Check if the protocol is valid
     if config.PROTOCOL not in VALID_PROTOCOLS:
         __print_error(f"Invalid protocol in {config_file_name}")

@@ -29,6 +29,7 @@ Some properties are array, with elements separated by a space " " character. The
 
 | Name  | Description | Values | Default
 |-|-|-|-|
+| CORE_SELECTOR         | Select target RV core                                     | CORE_PICORV32, CORE_CV32E40P, CORE_MICROBLAZEV            | CORE_MICROBLAZEV
 | PROTOCOL              | AXI PROTOCOL                                              | (AXI4, AXI4LITE, AXI3)                                    | AXI4
 | CONNECTIVITY_MODE     | Crossbar Interconnection                                  | Shared-Address, Multiple-Data(SAMD), Shared-Address/Shared-Data(SASD)                | SAMD
 | ADDR_WIDTH            | AXI Address Width                                         | (12..64) for AXI4 and AXI3, (1..64) for AXI4LITE          | 32
