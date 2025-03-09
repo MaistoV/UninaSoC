@@ -1,4 +1,5 @@
 Property,Value
+CORE_SELECTOR,CORE_CV32E40P
 NUM_SI,2
 RANGE_NAMES,Slave_Name_A Slave_Name_B
 NUM_MI,2
