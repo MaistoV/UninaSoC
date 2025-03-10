@@ -87,9 +87,9 @@ XILINX_ILA ?= 0
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=								\
-	AXI_DATA_WIDTH=${DATA_WIDTH}					\
-	AXI_ADDR_WIDTH=${ADDR_WIDTH}					\
-	AXI_ID_WIDTH=${ID_WIDTH}						\
+	DATA_WIDTH=${DATA_WIDTH}						\
+	ADDR_WIDTH=${ADDR_WIDTH}						\
+	ID_WIDTH=${ID_WIDTH}							\
 	CORE_SELECTOR=${CORE_SELECTOR}					\
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
@@ -176,5 +176,5 @@ clean_ips:
 ###########
 # PHONIES #
 ###########
-.PHONY:  bitstream ips clean clean_ips # $(filter-out %.xci,$(MAKECMDGOALS))
+.PHONY:  bitstream ips clean clean_ips
 
