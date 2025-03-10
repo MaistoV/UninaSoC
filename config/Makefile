@@ -34,5 +34,5 @@ config_check:
 CONFIG_CSV ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv
 OUTPUT_MK_FILE ?= ${XILINX_ROOT}/make/config.mk
 config_xilinx:
-	bash -x ${CONFIG_ROOT}/config_xilinx.sh ${CONFIG_CSV} ${OUTPUT_MK_FILE}
+	${CONFIG_ROOT}/config_xilinx.sh ${CONFIG_CSV} ${OUTPUT_MK_FILE}
 
