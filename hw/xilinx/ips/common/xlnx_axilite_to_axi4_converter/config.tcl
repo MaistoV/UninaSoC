@@ -9,6 +9,6 @@ set_property -dict  [list	CONFIG.MI_PROTOCOL      {AXI4} \
                     ] [get_ips $::env(IP_NAME)]
 
 # Use envvars out of list
-set_property CONFIG.DATA_WIDTH  $::env(AXI_DATA_WIDTH)  [get_ips $::env(IP_NAME)]
-set_property CONFIG.ADDR_WIDTH  $::env(AXI_ADDR_WIDTH)  [get_ips $::env(IP_NAME)]
+set_property CONFIG.DATA_WIDTH  $::env(DATA_WIDTH)  [get_ips $::env(IP_NAME)]
+set_property CONFIG.ADDR_WIDTH  $::env(ADDR_WIDTH)  [get_ips $::env(IP_NAME)]
 

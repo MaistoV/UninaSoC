@@ -1,9 +1,6 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: Set ILA triggers, control and arm
-# Note: Assuming a single ILA IP in the design
-
-# Connects to hw_server and sets variable hw_device
-source  $::env(XILINX_SYNTH_TCL_ROOT)/open_hw_manager.tcl
+# Note: Assuming a single ILA IP in the design and hw_server already connected
 
 #####################
 # ILA configuration #

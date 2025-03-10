@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description:
-#   This script downloads axi_to_mem from https://github.com/pulp-platform/axi/ sources and flattens them into the rtl directory
+# This script uses bender to download riscv-dbg and axi sources, and flattens them into the rtl/ directory
 
 RED='\033[1;31m'
 GREEN='\033[1;32m'
@@ -12,24 +12,18 @@ NC='\033[0m' # No Color
 RTL_DIR=rtl
 mkdir ${RTL_DIR}
 
-# clone repo
-GIT_URL=https://github.com/pulp-platform/axi.git
-GIT_TAG=v0.39.6
-CLONE_DIR=axi
-printf "${YELLOW}[FETCH_SOURCES] Cloning source repository at ${GIT_TAG} ${NC}\n"
-git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}
-cd ${CLONE_DIR};
-
-# Clone Bender
+##############
+# Bender.yml #
+##############
+# Download Bender
 printf "${YELLOW}[FETCH_SOURCES] Download Bender${NC}\n"
 curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf | sh
 
 # Download dependencies (specify Target RTL and FPGA)
 printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"
 ./bender checkout
-BENDER_TARGETS="-t xilinx -t fpga"
-./bender script flist ${BENDER_TARGETS} > ../rtl.flist
-cd ..
+BENDER_TARGETS="-t xilinx -t bscane"
+./bender script flist ${BENDER_TARGETS} > rtl.flist
 
 # Copy all RTL files into rtl dir
 printf "${YELLOW}[FETCH_SOURCES] Copy all sources into ${RTL_DIR}/${NC}\n" s
@@ -38,6 +32,7 @@ for rtl_file in $(cat rtl.flist) ; do
 done;
 
 # Add header files, not listed by bender
+CLONE_DIR=.bender
 cp $(find ${CLONE_DIR} -name typedef.svh) ${RTL_DIR}/
 cp $(find ${CLONE_DIR} -name assertions.svh) ${RTL_DIR}/
 cp $(find ${CLONE_DIR} -name registers.svh) ${RTL_DIR}/
@@ -54,6 +49,6 @@ done
 
 # Delete the cloned repo and temporary flist
 printf "${YELLOW}[FETCH_SOURCES] Clean all artifacts${NC}\n"
-sudo rm -r ${CLONE_DIR}
+sudo rm -rf ${CLONE_DIR}
 rm *.flist
 printf "${GREEN}[FETCH_SOURCES] Completed${NC}\n"

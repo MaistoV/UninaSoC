@@ -17,8 +17,7 @@ custom_%/rtl:
 
 # Remove all RTL dirs
 clean:
-	rm -rf custom_cv32e40p/rtl
-	rm -rf custom_picorv32/rtl
+	rm -rf ${HW_UNITS_ROOT}/*/rtl
 
 
 .PHONY: clean

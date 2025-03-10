@@ -73,9 +73,10 @@ IP_LIST_XCI = ${XILINX_IP_LIST_XCI} ${CUSTOM_IP_LIST_XCI}
 # Runtime optimized run strategies
 # SYNTH_STRATEGY 	?= Flow_RuntimeOptimized
 # IMPL_STRATEGY 	?= Flow_RuntimeOptimized
-
-SYNTH_STRATEGY 	?= "Vivado Synthesis Defaults"
-IMPL_STRATEGY 	?= "Vivado Implementation Defaults"
+SYNTH_STRATEGY 	?= "Flow_PerfOptimized_high"
+IMPL_STRATEGY 	?= "Performance_ExtraTimingOpt"
+# SYNTH_STRATEGY 	?= "Vivado Synthesis Defaults"
+# IMPL_STRATEGY 	?= "Vivado Implementation Defaults"
 
 # Implementation artifacts
 XILINX_BITSTREAM   ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.bit
@@ -86,11 +87,13 @@ XILINX_ILA ?= 0
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=								\
-	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
-	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
-	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
+	DATA_WIDTH=${DATA_WIDTH}						\
+	ADDR_WIDTH=${ADDR_WIDTH}						\
+	ID_WIDTH=${ID_WIDTH}							\
 	CORE_SELECTOR=${CORE_SELECTOR}					\
-	DEBUG_MODULE=${DEBUG_MODULE}					\
+	NUM_SI=${NUM_SI}								\
+	NUM_MI=${NUM_MI}								\
+	PBUS_NUM_MI=${PBUS_NUM_MI}						\
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
@@ -119,18 +122,19 @@ all: bitstream
 bitstream: ips
 	mkdir -p ${XILINX_PROJECT_REPORTS_DIR}
 	cd ${XILINX_PROJECT_BUILD_DIR};			\
-	${XILINX_VIVADO} -source ${XILINX_ROOT}/synth/tcl/build_bitstream.tcl
+	${XILINX_VIVADO} -source ${XILINX_SYNTH_TCL_ROOT}/build_bitstream.tcl
 
 # Generate ips
-IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
+IP_NAMES ?= $(addprefix ips/, $(addsuffix .xci, ${IP_LIST}))
 ips: ${IP_NAMES}
 
 # Build single IP
-%.xci: IP_NAME=$*
-%.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
-%.xci: IP_BUILD_DIR=${IP_DIR}/build
-%.xci: ips/*/%/config.tcl
-	@echo "Generating IP $@"
+ips/%.xci: IP_NAME=$*
+ips/%.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
+ips/%.xci: IP_BUILD_DIR=${IP_DIR}/build
+# For custom IPs, also depend on RTL wrapper
+ips/custom_%.xci: ${HW_UNITS_ROOT}/%/custom_top_wrapper.sv
+ips/%.xci: ${XILINX_IPS_ROOT}/*/%/config.tcl
 	mkdir -p ${IP_BUILD_DIR}; 						 		\
 	cd       ${IP_BUILD_DIR}; 						 		\
 	export IP_DIR=${IP_DIR};								\
@@ -170,7 +174,7 @@ clean:
 
 clean_ips:
 	rm -rf ${XILINX_IPS_ROOT}/*/*/build
-	rm -rf *.xci
+	rm -rf ${XILINX_IPS_ROOT}/*.xci
 
 ###########
 # PHONIES #
