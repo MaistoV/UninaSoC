@@ -50,9 +50,6 @@ if { $argc != 3 } {
 # Disable message limit
 set_msg_config -id {Labtoolstcl 44-481} -limit 99999
 
-# Connects to hw_server and sets variable hw_device
-source $::env(XILINX_SYNTH_TCL_ROOT)/open_hw_manager.tcl
-
 # File size in bytes
 set fsize [file size $filename]
 

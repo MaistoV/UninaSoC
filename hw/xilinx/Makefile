@@ -119,7 +119,7 @@ all: bitstream
 bitstream: ips
 	mkdir -p ${XILINX_PROJECT_REPORTS_DIR}
 	cd ${XILINX_PROJECT_BUILD_DIR};			\
-	${XILINX_VIVADO} -source ${XILINX_ROOT}/synth/tcl/build_bitstream.tcl
+	${XILINX_VIVADO} -source ${XILINX_SYNTH_TCL_ROOT}/build_bitstream.tcl
 
 # Generate ips
 IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})

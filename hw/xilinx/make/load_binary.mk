@@ -18,6 +18,7 @@ load_binary: load_binary_${SOC_CONFIG}
 load_binary_embedded: ${BIN_PATH}
 	${XILINX_VIVADO} \
 		-source ${XILINX_SYNTH_TCL_ROOT}/jtag2axi_load_binary.tcl \
+		-source ${XILINX_SYNTH_TCL_ROOT}/utils/open_hw_manager.tcl \
 		-tclargs ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}
 
 # Write the binary to BRAM/DDR through XDMA

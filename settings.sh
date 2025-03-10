@@ -113,6 +113,7 @@ export XILINX_ROOT=${ROOT_DIR}/hw/xilinx
 export XILINX_IPS_ROOT=${XILINX_ROOT}/ips
 # Synthesis
 export XILINX_SYNTH_ROOT=${XILINX_ROOT}/synth
+export XILINX_SCRIPT_ROOT=${XILINX_SYNTH_ROOT}/scripts
 export XILINX_SYNTH_TCL_ROOT=${XILINX_SYNTH_ROOT}/tcl
 export XILINX_SYNTH_XDC_ROOT=${XILINX_SYNTH_ROOT}/constraints
 # Hardware Server Host
