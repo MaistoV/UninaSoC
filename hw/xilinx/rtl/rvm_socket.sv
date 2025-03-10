@@ -17,8 +17,8 @@ module rvm_socket # (
     parameter int unsigned    NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
-    input  logic                            rst_ni,         // System reset, also resets core
-    input  logic                            core_reset_i,   // Core-only reset
+    input  logic                            rst_ni,         // System-wide reset (also resets core)
+    input  logic                            core_reset_i,   // Core-only reset (does not reset DM and other modules)
     input  logic [AXI_ADDR_WIDTH -1 : 0 ]   bootaddr_i,
     input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
 
