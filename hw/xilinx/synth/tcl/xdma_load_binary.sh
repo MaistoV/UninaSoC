@@ -35,7 +35,7 @@ FILE_SIZE=$(stat -c%s "$FILE_NAME");
 hex_file=$(xxd -p -c 9999999999 $FILE_NAME);
 
 # Set the transaction size in bytes
-trans_size=64; # XDMA supports 64-bytes transactions
+trans_size=8; # Host-side BAR space supports 8-bytes transactions
 
 # Compute number of transactions
 num_trans=$(($FILE_SIZE/$trans_size));
