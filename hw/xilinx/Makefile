@@ -87,9 +87,9 @@ XILINX_ILA ?= 0
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=								\
-	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
-	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
-	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
+	AXI_DATA_WIDTH=${DATA_WIDTH}					\
+	AXI_ADDR_WIDTH=${ADDR_WIDTH}					\
+	AXI_ID_WIDTH=${ID_WIDTH}						\
 	CORE_SELECTOR=${CORE_SELECTOR}					\
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
@@ -122,16 +122,16 @@ bitstream: ips
 	${XILINX_VIVADO} -source ${XILINX_SYNTH_TCL_ROOT}/build_bitstream.tcl
 
 # Generate ips
-IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
+IP_NAMES ?= $(addprefix ips/, $(addsuffix .xci, ${IP_LIST}))
 ips: ${IP_NAMES}
 
 # Build single IP
-# TODO31: make this dependent on ${HW_UNITS_ROOT}/%/custom_top_wrapper.tcl
-%.xci: IP_NAME=$*
-%.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
-%.xci: IP_BUILD_DIR=${IP_DIR}/build
-%.xci: ips/*/%/config.tcl
-	@echo "Generating IP $@"
+ips/%.xci: IP_NAME=$*
+ips/%.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
+ips/%.xci: IP_BUILD_DIR=${IP_DIR}/build
+# For custom IPs, also depend on RTL wrapper
+ips/custom_%.xci: ${HW_UNITS_ROOT}/%/custom_top_wrapper.sv
+ips/%.xci: ${XILINX_IPS_ROOT}/*/%/config.tcl
 	mkdir -p ${IP_BUILD_DIR}; 						 		\
 	cd       ${IP_BUILD_DIR}; 						 		\
 	export IP_DIR=${IP_DIR};								\
@@ -171,10 +171,10 @@ clean:
 
 clean_ips:
 	rm -rf ${XILINX_IPS_ROOT}/*/*/build
-	rm -rf *.xci
+	rm -rf ${XILINX_IPS_ROOT}/*.xci
 
 ###########
 # PHONIES #
 ###########
-.PHONY:  bitstream ips clean clean_ips
+.PHONY:  bitstream ips clean clean_ips # $(filter-out %.xci,$(MAKECMDGOALS))
 

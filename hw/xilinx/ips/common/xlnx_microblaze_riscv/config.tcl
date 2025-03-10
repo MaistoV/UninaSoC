@@ -58,13 +58,13 @@ set_property -dict [list \
 # AXI interconnect parameters #
 ###############################
 # Data width
-set_property CONFIG.C_DATA_SIZE $::env(AXI_DATA_WIDTH) [get_ips $::env(IP_NAME)]
+set_property CONFIG.C_DATA_SIZE $::env(DATA_WIDTH) [get_ips $::env(IP_NAME)]
 # Address width
 # - If RV32, address width is fixed equal to data width
 # - If RV64, supported: 32, 36, 40, 44, 48, 52, 56, 64
-set_property CONFIG.C_ADDR_SIZE $::env(AXI_ADDR_WIDTH)  [get_ips $::env(IP_NAME)]
+set_property CONFIG.C_ADDR_SIZE $::env(ADDR_WIDTH)  [get_ips $::env(IP_NAME)]
 # AXI ID width is fixed to 1
-# set_property CONFIG.ID_WIDTH    $::env(AXI_ID_WIDTH)    [get_ips $::env(IP_NAME)]
+# set_property CONFIG.ID_WIDTH    $::env(ID_WIDTH)    [get_ips $::env(IP_NAME)]
 
 ##########
 # RISC-V #

@@ -17,9 +17,9 @@ if { "$::env(SOC_CONFIG)" == "hpc" } {
 }
 
 # AXI config
-lappend verilog_defines AXI_DATA_WIDTH=$::env(AXI_DATA_WIDTH)
-lappend verilog_defines AXI_ADDR_WIDTH=$::env(AXI_ADDR_WIDTH)
-lappend verilog_defines AXI_ID_WIDTH=$::env(AXI_ID_WIDTH)
+lappend verilog_defines AXI_DATA_WIDTH=$::env(DATA_WIDTH)
+lappend verilog_defines AXI_ADDR_WIDTH=$::env(ADDR_WIDTH)
+lappend verilog_defines AXI_ID_WIDTH=$::env(ID_WIDTH)
 lappend verilog_defines CORE_SELECTOR=$::env(CORE_SELECTOR)
 
 # Set property to list

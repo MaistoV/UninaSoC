@@ -34,12 +34,5 @@ config_check:
 CONFIG_CSV ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv
 OUTPUT_MK_FILE ?= ${XILINX_ROOT}/make/config.mk
 config_xilinx:
-	export AXI_ADDR_WIDTH=$(shell grep "\bADDR_WIDTH\b" ${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	export AXI_DATA_WIDTH=$(shell grep "\bDATA_WIDTH\b" ${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	export AXI_ID_WIDTH=$(shell grep "\bID_WIDTH\b" 	${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	export CORE_SELECTOR=$(shell grep "\bCORE_SELECTOR\b" 	${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	sed -E -i "s/AXI_ADDR_WIDTH.?\?=.+/AXI_ADDR_WIDTH \?= $${AXI_ADDR_WIDTH}/g" ${OUTPUT_MK_FILE}; \
-	sed -E -i "s/AXI_DATA_WIDTH.?\?=.+/AXI_DATA_WIDTH \?= $${AXI_DATA_WIDTH}/g" ${OUTPUT_MK_FILE}; \
-	sed -E -i "s/AXI_ID_WIDTH.?\?=.+/AXI_ID_WIDTH \?= $${AXI_ID_WIDTH}/g" 		${OUTPUT_MK_FILE}; \
-	sed -E -i "s/CORE_SELECTOR.?\?=.+/CORE_SELECTOR \?= $${CORE_SELECTOR}/g" 	${OUTPUT_MK_FILE}
-	@echo "[CONFIG] Output file is at ${OUTPUT_MK_FILE}"
+	bash -x ${CONFIG_ROOT}/config_xilinx.sh ${CONFIG_CSV} ${OUTPUT_MK_FILE}
+
