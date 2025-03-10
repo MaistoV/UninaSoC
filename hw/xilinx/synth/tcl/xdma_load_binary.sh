@@ -68,7 +68,7 @@ do
     # Clear accumulator
     hex_data="";
 
-    # Flip endiannes from string (0x01234567 -> 0x67543201)
+    # Flip endiannes from string (0x01234567 -> 0x67452301)
     # For each byte (2 nibbles) in $trans_size
     for((j=$i*2*$trans_size-2; j>$(($i-1))*2*$trans_size-2; j=j-2));
     do
