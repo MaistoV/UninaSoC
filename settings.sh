@@ -89,19 +89,19 @@ else
     # Use wildcard instead device specific part number
     export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Digilent/*
 
-    # if [[ ${BOARD_CONFIG} == "nexys_a7_50t" ]]; then
-    #     # Nexys A7-50t
+    if [[ ${BOARD_CONFIG} == "nexys_a7_50t" ]]; then
+        # Nexys A7-50t
         export XILINX_PART_NUMBER=xc7a50ticsg324-1L
         export XILINX_BOARD_PART=digilentinc.com:nexys-a7-50t:part0:1.3
         export XILINX_HW_DEVICE=xc7a50t_0
         export BOARD=Nexys-A7-50T-Master
-    # else
+    else
         # Nexsys A7-100T
-        # export XILINX_PART_NUMBER=xc7a100tcsg324-1
-        # export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.0
-        # export XILINX_HW_DEVICE=xc7a100t_0
-        # export BOARD=Nexys-A7-100T-Master
-    # fi
+        export XILINX_PART_NUMBER=xc7a100tcsg324-1
+        export XILINX_BOARD_PART=digilentinc.com:nexys-a7-100t:part0:1.0
+        export XILINX_HW_DEVICE=xc7a100t_0
+        export BOARD=Nexys-A7-100T-Master
+    fi
 fi
 
 ###############
