@@ -68,5 +68,8 @@ package uninasoc_pkg;
         CORE_MICROBLAZEV
     } core_selector_t;
 
+    // Select core from macro
+    localparam core_selector_t CORE_SELECTOR = `CORE_SELECTOR;
+
 
 endpackage : uninasoc_pkg
