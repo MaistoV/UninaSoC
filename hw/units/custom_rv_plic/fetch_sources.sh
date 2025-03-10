@@ -12,13 +12,10 @@ NC='\033[0m' # No Color
 #######################################
 # Fetch PLIC sources and depencencies #
 #######################################
-# TODO31: this PYTHON flow requires: hjson and tabulate
-# TODO31: Install them from here, as harmless if already installed
-# python3 -m pip install hjson tabulate
 
 # Check Python dependencies (hjson requires Python 3.3+). If you need more info, heck OpenTitan doc: https://opentitan.org/book/doc/contributing/style_guides/hjson_usage_style.html
-echo -e "${YELLOW}[FETCH_SOURCES] Checking for Python Module hjson ... ${NC}"
-python3 -c "import hjson" &>/dev/null || { echo "${RED}hjson module not found, please install it${NC}"; exit 1; }
+echo -e "${YELLOW}[FETCH_SOURCES] Checking and installin Python modules ... ${NC}"
+python3 -m pip install hjson tabulate
 
 # Create the rtl directory structure
 # Create rtl dir
