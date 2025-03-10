@@ -1007,17 +1007,6 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 
 // Sink AXI-lite master interface
 `define SINK_AXILITE_MASTER_INTERFACE(bus_name) \
-    assign ``bus_name`_axilite_awready = '0;    \
-    assign ``bus_name`_axilite_wready  = '0;    \
-    assign ``bus_name`_axilite_bvalid  = '0;    \
-    assign ``bus_name`_axilite_bresp   = '0;    \
-    assign ``bus_name`_axilite_arready = '0;    \
-    assign ``bus_name`_axilite_rdata   = '0;    \
-    assign ``bus_name`_axilite_rvalid  = '0;    \
-    assign ``bus_name`_axilite_rresp   = '0;
-
-// Sink AXI-lite master interface
-`define SINK_AXILITE_MASTER_INTERFACE(bus_name) \
     assign ``bus_name``_axilite_awaddr  = '0;   \
     assign ``bus_name``_axilite_awprot  = '0;   \
     assign ``bus_name``_axilite_awvalid = '0;   \
