@@ -63,8 +63,7 @@ def __print_error(txt : str) -> None:
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
 
     # Only main but can select a core
-    # NOTE: this is a bit dirty, any other idea?
-    if ( "main_bus" in config.NAME ):
+    if ( config.BUS_NAME == "MBUS" ):
         # Supported cores
         if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
             __print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
@@ -169,8 +168,6 @@ def read_config(config_file_names : list) -> list:
     for name in config_file_names:
         # Create a configuration object for each bus
         config = configuration.Configuration()
-        # Set config name
-        config.NAME = name
 
         # Reading the CSV
         for index, row in pd.read_csv(name, sep=",").iterrows():
@@ -212,7 +209,7 @@ if __name__ == "__main__":
     __print(f"Starting checking {len(configs)} config...")
     __print("Checking intra config validity")
     for i in range(len(configs)):
-        __print(f"Checking {configs[i].NAME} config...")
+        __print(f"Checking {configs[i].BUS_NAME} config...")
         status = check_intra_config(configs[i], config_file_names[i])
 
         # This check failed

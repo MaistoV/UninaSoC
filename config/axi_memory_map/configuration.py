@@ -6,7 +6,7 @@
 # Wrapper class for configuration properties
 class Configuration:
 	def __init__(self):
-		self.NAME				 : str = "No name"	# Name this object
+		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
 		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_MICROBLAZEV"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
@@ -38,5 +38,4 @@ class Configuration:
 		self.WUSER_WIDTH		 : int = 0		# AXI  W User width
 		self.RUSER_WIDTH		 : int = 0		# AXI  R User width
 		self.BUSER_WIDTH		 : int = 0		# AXI  B User width
-		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
 
