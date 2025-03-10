@@ -30,7 +30,6 @@ config_check:
 	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/check_config.py ${CONFIG_CSVS}
 
 # Update config in Makefile
-# TODO31: make this prettier, in a call-like or for-loop style
 CONFIG_CSV ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv
 OUTPUT_MK_FILE ?= ${XILINX_ROOT}/make/config.mk
 config_xilinx:
