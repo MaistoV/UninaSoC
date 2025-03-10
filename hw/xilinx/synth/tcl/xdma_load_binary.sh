@@ -32,7 +32,8 @@ READBACK=$3;
 FILE_SIZE=$(stat -c%s "$FILE_NAME");
 
 # Read the entire file in hexadecimal
-hex_file=$(xxd -p -c 9999999999 $FILE_NAME);
+# We need the -u flag for the devmem-based read-back check
+hex_file=$(xxd -p -c -u 9999999999 $FILE_NAME);
 
 # Set the transaction size in bytes
 trans_size=8; # Host-side BAR space supports 8-bytes transactions
