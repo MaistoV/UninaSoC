@@ -119,4 +119,5 @@ puts "    \[REPORT\] prj         [current_project]
     \[REPORT\] status      [get_property status         [get_runs]]
     \[REPORT\] elapsed     [get_property stats.elapsed  [get_runs]]
     \[REPORT\] wns         [get_property stats.wns      [get_runs impl_1]]
+    \[REPORT\] whs         [get_property stats.whs      [get_runs impl_1]]
 "
