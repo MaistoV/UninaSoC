@@ -332,7 +332,7 @@ module uninasoc (
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( sys_resetn ),
-        .core_reset_i   ( vio_resetn ),
+        .core_resetn_i  ( vio_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( rvm_socket_interrupt_line ),
 

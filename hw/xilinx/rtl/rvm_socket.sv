@@ -17,8 +17,8 @@ module rvm_socket # (
     parameter int unsigned    NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
-    input  logic                            rst_ni,         // System-wide reset (also resets core)
-    input  logic                            core_reset_i,   // Core-only reset (does not reset DM and other modules)
+    input  logic                            rst_ni,        // System-wide reset (also resets core)
+    input  logic                            core_resetn_i, // Core-only reset (does not reset DM and other modules)
     input  logic [AXI_ADDR_WIDTH -1 : 0 ]   bootaddr_i,
     input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
 
@@ -60,8 +60,8 @@ module rvm_socket # (
     //////////////////////////////////////
 
     // Core reset
-    logic core_reset_internal;
-    assign core_reset_internal = rst_ni & core_reset_i;
+    logic core_resetn_internal;
+    assign core_resetn_internal = rst_ni & core_resetn_i;
 
     // Declare AXI interfaces for instruction memory port and data memory port
     `DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
@@ -98,7 +98,7 @@ module rvm_socket # (
 
             custom_picorv32 picorv32_core (
                 .clk_i              ( clk_i                     ),
-                .rst_ni             ( core_reset_internal       ),
+                .rst_ni             ( core_resetn_internal       ),
                 .trap_o             (                           ),
 
                 .instr_mem_req      ( core_instr_mem_req        ),
@@ -156,7 +156,7 @@ module rvm_socket # (
             custom_cv32e40p cv32e40p_core (
                 // Clock and Reset
                 .clk_i                  ( clk_i                     ),
-                .rst_ni                 ( core_reset_internal       ),
+                .rst_ni                 ( core_resetn_internal       ),
 
                 .pulp_clock_en_i        ( '0                        ),  // PULP clock enable (only used if COREV_CLUSTER = 1)
                 .scan_cg_en_i           ( '0                        ),  // Enable all clock gates for testing
