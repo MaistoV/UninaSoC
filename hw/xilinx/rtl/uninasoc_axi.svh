@@ -962,20 +962,6 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 
 // Sink AXI master interface
 `define SINK_AXI_MASTER_INTERFACE(bus_name)     \
-    assign ``bus_name``_axi_awready     = '0;   \
-    assign ``bus_name``_axi_wready      = '0;   \
-    assign ``bus_name``_axi_bid         = '0;   \
-    assign ``bus_name``_axi_bresp       = '0;   \
-    assign ``bus_name``_axi_bvalid      = '0;   \
-    assign ``bus_name``_axi_arready     = '0;   \
-    assign ``bus_name``_axi_rid         = '0;   \
-    assign ``bus_name``_axi_rdata       = '0;   \
-    assign ``bus_name``_axi_rresp       = '0;   \
-    assign ``bus_name``_axi_rlast       = '0;   \
-    assign ``bus_name``_axi_rvalid      = '0;
-
-// Sink AXI slave interface
-`define SINK_AXI_SLAVE_INTERFACE(bus_name)     \
     assign ``bus_name``_axi_awid       = '0;   \
     assign ``bus_name``_axi_awaddr     = '0;   \
     assign ``bus_name``_axi_awlen      = '0;   \
@@ -991,7 +977,7 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``bus_name``_axi_wstrb      = '0;   \
     assign ``bus_name``_axi_wlast      = '0;   \
     assign ``bus_name``_axi_wvalid     = '0;   \
-    assign ``bus_name``_axi_bready     = '0;   \
+    assign ``bus_name``_axi_bready     = '1;   \
     assign ``bus_name``_axi_araddr     = '0;   \
     assign ``bus_name``_axi_arlen      = '0;   \
     assign ``bus_name``_axi_arsize     = '0;   \
@@ -1003,7 +989,21 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``bus_name``_axi_arvalid    = '0;   \
     assign ``bus_name``_axi_arid       = '0;   \
     assign ``bus_name``_axi_arregion   = '0;   \
-    assign ``bus_name``_axi_rready     = '0;
+    assign ``bus_name``_axi_rready     = '1;
+
+// Sink AXI slave interface
+`define SINK_AXI_SLAVE_INTERFACE(bus_name)     \
+    assign ``bus_name``_axi_awready     = '1;   \
+    assign ``bus_name``_axi_wready      = '1;   \
+    assign ``bus_name``_axi_bid         = '0;   \
+    assign ``bus_name``_axi_bresp       = '0;   \
+    assign ``bus_name``_axi_bvalid      = '0;   \
+    assign ``bus_name``_axi_arready     = '1;   \
+    assign ``bus_name``_axi_rid         = '0;   \
+    assign ``bus_name``_axi_rdata       = '0;   \
+    assign ``bus_name``_axi_rresp       = '0;   \
+    assign ``bus_name``_axi_rlast       = '0;   \
+    assign ``bus_name``_axi_rvalid      = '0;
 
 // Sink AXI-lite master interface
 `define SINK_AXILITE_MASTER_INTERFACE(bus_name) \
@@ -1013,19 +1013,19 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``bus_name``_axilite_wdata   = '0;   \
     assign ``bus_name``_axilite_wstrb   = '0;   \
     assign ``bus_name``_axilite_wvalid  = '0;   \
-    assign ``bus_name``_axilite_bready  = '0;   \
+    assign ``bus_name``_axilite_bready  = '1;   \
     assign ``bus_name``_axilite_araddr  = '0;   \
     assign ``bus_name``_axilite_arprot  = '0;   \
     assign ``bus_name``_axilite_arvalid = '0;   \
-    assign ``bus_name``_axilite_rready  = '0;
+    assign ``bus_name``_axilite_rready  = '1;
 
 // Sink AXI-lite slave interface
 `define SINK_AXILITE_SLAVE_INTERFACE(bus_name)  \
-    assign ``bus_name`_axilite_awready = '0;    \
-    assign ``bus_name`_axilite_wready  = '0;    \
+    assign ``bus_name`_axilite_awready = '1;    \
+    assign ``bus_name`_axilite_wready  = '1;    \
     assign ``bus_name`_axilite_bvalid  = '0;    \
     assign ``bus_name`_axilite_bresp   = '0;    \
-    assign ``bus_name`_axilite_arready = '0;    \
+    assign ``bus_name`_axilite_arready = '1;    \
     assign ``bus_name`_axilite_rdata   = '0;    \
     assign ``bus_name`_axilite_rvalid  = '0;    \
     assign ``bus_name`_axilite_rresp   = '0;
