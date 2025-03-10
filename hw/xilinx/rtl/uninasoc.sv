@@ -324,7 +324,7 @@ module uninasoc (
     // RVM Socket
     rvm_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH )
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
         .CORE_SELECTOR ( CORE_SELECTOR  )
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
