@@ -2,7 +2,7 @@
 # Description: Hold all the Xilinx-related utility targets
 
 # Common scripts directory
-XILINX_SCRIPTS_UTILS_ROOT := ${XILINX_SYNTH_TCL_ROOT}/utils
+XILINX_SCRIPTS_UTILS_ROOT := ${XILINX_SCRIPT_ROOT}/utils
 
 # Open project in TCL mode
 open_prj:
