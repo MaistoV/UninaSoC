@@ -13,6 +13,16 @@ import math
 # configuration Class declaration
 from configuration import *
 
+def parse_CORE_SELECTOR (
+		config,
+		property_name : str,
+		property_value: str,
+	):
+	value = str(property_value)
+	config.CORE_SELECTOR = value
+
+	return config
+
 def parse_Interfaces (
 		config,
 		property_name : str,

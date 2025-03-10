@@ -1,9 +1,14 @@
 # Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
+# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: Declaration of wrapper class for configuration properties with their default values (if any). Lists are just initialized as empty.
 
 # Wrapper class for configuration properties
 class Configuration:
 	def __init__(self):
+		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
+		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_MICROBLAZEV"]
+		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
 		self.ADDR_WIDTH			 : int = 32 	# Address Width
@@ -33,5 +38,4 @@ class Configuration:
 		self.WUSER_WIDTH		 : int = 0		# AXI  W User width
 		self.RUSER_WIDTH		 : int = 0		# AXI  R User width
 		self.BUSER_WIDTH		 : int = 0		# AXI  B User width
-		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
 
