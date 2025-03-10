@@ -2,8 +2,9 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: Replace config-based content of hw/make/config.mk
 # Args:
-#   $1: Source CSV config
-#   $2: Target MK file
+#   $1: MBUS Source CSV config
+#   $2: PBUS Target MK file
+#   $3: Target MK file
 
 ##############
 # Parse args #
@@ -14,14 +15,14 @@ ARGC=$#;
 
 # Check argc
 if [ $ARGC -ne $EXPECTED_ARGC ]; then
-    echo  "Invalid number of arguments, please check the inputs and try again";
-
+    echo  "[CONFIG_XILINX][ERROR] Invalid number of arguments, please check the inputs and try again";
     return 1;
 fi
 
 # Read args
-CONFIG_CSV=$1
-OUTPUT_MK_FILE=$2
+CONFIG_MAIN_CSV=$1
+CONFIG_PBUS_CSV=$2
+OUTPUT_MK_FILE=$3
 
 ##########
 # Script #
@@ -33,14 +34,33 @@ target_values=(
         ADDR_WIDTH
         DATA_WIDTH
         ID_WIDTH
+        NUM_SI
+        NUM_MI
+        PBUS_NUM_MI
     )
 
 # Loop over targets
 for target in ${target_values[*]}; do
-    echo "[CONFIG] Updating ${target}"
-	target_value=$(grep "${target}" ${CONFIG_CSV} | grep -v RANGE | awk -F "," '{print $2}');
+
+    # Special case for PBUS
+    # Assume a prexif
+    if [[ "$target" == "PBUS_"* ]]; then
+        # Discard prefix (first 5 chars)
+        prefix_len=5
+        grep_target=${target:$prefix_len}
+        # Search for value
+	    target_value=$(grep "${grep_target}" ${CONFIG_PBUS_CSV} | awk -F "," '{print $2}');
+    else
+        # Search in main bus config
+	    target_value=$(grep "${target}" ${CONFIG_MAIN_CSV=$1} | grep -v RANGE | awk -F "," '{print $2}');
+    fi
+
+    # Info print
+    echo "[CONFIG_XILINX] Updating ${target} = ${target_value} "
+
+    # Replace in target file
 	sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
 done
 
 # Done
-echo "[CONFIG] Output file is at ${OUTPUT_MK_FILE}"
+echo "[CONFIG_XILINX] Output file is at ${OUTPUT_MK_FILE}"
