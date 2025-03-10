@@ -32,58 +32,65 @@ READBACK=$3;
 FILE_SIZE=$(stat -c%s "$FILE_NAME");
 
 # Read the entire file in hexadecimal
-hex_file=$(xxd -p -u -c 9999999999 $FILE_NAME);
+# We need the -u flag for the devmem-based read-back check
+hex_file=$(xxd -p -c -u 9999999999 $FILE_NAME);
 
 # Set the transaction size in bytes
-trans_size=4;
+trans_size=8; # Host-side BAR space supports 8-bytes transactions
 
+# Compute number of transactions
 num_trans=$(($FILE_SIZE/$trans_size));
 remaining_bytes=$(($FILE_SIZE%$trans_size));
+
+# Print warning
+if [ $remaining_bytes -ne 0 ]; then
+    # Padding size
+    pad_size=$(( $trans_size - $remaining_bytes ))
+    # Warning message
+    echo "[WARINING] Binary has non $trans_size-aligned size ($FILE_SIZE), padding with $pad_size zero-bytes" >&2
+    # Pad with zeros
+    for((i=0; i<$pad_size; i=i+1));
+    do
+        hex_file="$hex_file""00"
+    done
+    # Add one burst
+    num_trans=$(($num_trans +1))
+fi
+
+# Golden result for later readback check
+golden_hex=""
 
 # Write the binary
 addr=$BASE_ADDRESS;
 echo "Start writing...";
-
-for i in $(seq 0 $(($num_trans-1)));
+# For each transaction
+for i in $(seq 1 $num_trans);
 do
-    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
-    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
-    #   - no C-extension
-    #   - no 8-byte (or longer) transactions
-    if [ $trans_size != 4 ]; then
-        echo "Unsupported trans_size=$trans_size! Supported value is 4, for now." >&2
-        return 1
-    fi
+    # Clear accumulator
     hex_data="";
-    for((j=$trans_size*$i*2-1+$trans_size*2;j>=$i*2*$trans_size;j=j-2));
+
+    # Flip endiannes from string (0x01234567 -> 0x67452301)
+    # For each byte (2 nibbles) in $trans_size
+    for((j=$i*2*$trans_size-2; j>$(($i-1))*2*$trans_size-2; j=j-2));
     do
-        hex_data=${hex_data}${hex_file:$((j-1)):$((2))};
+        # Append a single byte (2 nibbles slice)
+        hex_data=${hex_data}${hex_file:$((j)):$((2))}
     done
+
+    # Write to BAR-mapped address
     hex_addr=$(printf "%x" $addr);
-    sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
-    addr=$(($addr+$trans_size));
+    sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data
+
+    # Increment address
+    addr=$(($addr + $trans_size));
+
+    # Save for readback
+    if [[ ${READBACK} == "true" ]];
+    then
+        # Append to old
+        golden_hex=${golden_hex}${hex_data}
+    fi
 done
-
-# Write remaining bytes
-if [ $remaining_bytes -gt 0 ];
-then
-    hex_data="";
-
-    # Invert endiannes from string (0xAABBCCDD -> 0xDDCCBBAA)
-    # NOTE: for now assumes fixed-width 4-bytes instructions, i.e.:
-    #   - no C-extension
-    #   - no 8-byte (or longer) transactions
-    if [ $trans_size != 4 ]; then
-        echo "Unsupported trans_size=$trans_size! Supported value is 4, for now." >&2
-        return 1
-    fi
-    for((j=$trans_size*($i+1)*2-1+$remaining_bytes*2;j>=($i+1)*2*$trans_size;j=j-2));
-    do
-        hex_data=${hex_data}${hex_file:$((j-1)):$((2))};
-    done
-    hex_addr=$(printf "%x" $addr);
-    sudo busybox devmem 0x$hex_addr $(($trans_size*8)) 0x$hex_data;
-fi
 
 echo "Write complete!";
 
@@ -96,43 +103,18 @@ then
     for i in $(seq 0 $(($num_trans-1)));
     do
         hex_addr=$(printf "%x" $addr);
-        read_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
-        read_data=${read_data:$((2))};
-        tmp_data="";
-
-        # Restore the inverse endianness reading the data
-        for((j=$trans_size*2-1;j>=0;j=j-2));
-        do
-            tmp_data=${tmp_data}${read_data:$((j-1)):$((2))};
-        done
-
-        readback_data=$readback_data${tmp_data};
-
+        readback_data=${readback_data}$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
         addr=$(($addr+$trans_size));
     done
 
-    if [ $remaining_bytes -gt 0 ];
-    then
-        hex_addr=$(printf "%x" $addr);
-        read_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
-        read_data=${read_data:$((2))};
-        tmp_data="";
-
-        # Restore the inverse endianness reading the data
-        for((j=$trans_size*2-1;j>=0;j=j-2));
-        do
-            tmp_data=${tmp_data}${read_data:$((j-1)):$((2))};
-        done
-        remaining_index=$((($trans_size-$remaining_bytes)*2));
-        readback_data=$readback_data${tmp_data:$((0)):$(($remaining_index))};
-    fi
     echo "Readback complete!";
-    echo "Original hexadecimal binary:";
-    echo $hex_file;
+    echo "Golden hexadecimal binary:";
+    echo $golden_hex;
     echo "Readback hexadecimal data:";
     echo $readback_data;
 
-    if [[ ${hex_file} == ${readback_data} ]];
+    # Check they are the same
+    if [[ ${golden_hex} == ${readback_data} ]];
     then
         echo "Test passed :)";
     else
