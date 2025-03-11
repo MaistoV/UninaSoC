@@ -1,4 +1,3 @@
-
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 # Description: XDMA configuration file
 create_ip -name xdma -vendor xilinx.com -library ip -version 4.1 -module_name $::env(IP_NAME)
@@ -19,3 +18,6 @@ set_property -dict [list \
   CONFIG.ref_clk_freq {100_MHz} \
   CONFIG.pciebar2axibar_0 {0x000000000000000} \
 ] [get_ips $::env(IP_NAME)]
+
+# NOTE: The safe (and adopted) maximum BAR size is 32 MB on the MSI Z590 PLUS (MS-7D11) motherboard,
+#       but it strictly depends on the motherboard.
