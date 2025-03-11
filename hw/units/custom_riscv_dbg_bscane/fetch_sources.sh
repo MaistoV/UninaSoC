@@ -8,13 +8,18 @@ GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+
 # Create rtl dir
-RTL_DIR=rtl
+RTL_DIR=$(pwd)/rtl
 mkdir ${RTL_DIR}
 
 ##############
 # Bender.yml #
 ##############
+
+# Move into assets dir
+cd assets/
+
 # Download Bender
 printf "${YELLOW}[FETCH_SOURCES] Download Bender${NC}\n"
 curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf | sh
@@ -50,5 +55,5 @@ done
 # Delete the cloned repo and temporary flist
 printf "${YELLOW}[FETCH_SOURCES] Clean all artifacts${NC}\n"
 sudo rm -rf ${CLONE_DIR}
-rm *.flist
+rm rtl.flist bender
 printf "${GREEN}[FETCH_SOURCES] Completed${NC}\n"
