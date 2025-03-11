@@ -145,6 +145,10 @@ typedef logic                           mem_logic_t;
 // Sink interfaces //
 /////////////////////
 
+// These macros are meant to emulate a stub master or slave,
+// never really doing anything. This way, we avoid to leave
+// floating signals around.
+
 // Sink MEM master interface
 `define SINK_MEM_MASTER_INTERFACE(bus_name) \
     assign ``bus_name``_mem_gnt     = '0;   \
