@@ -73,13 +73,21 @@ module custom_top_wrapper # (
 );
 
     // Architecture:
-    //   __________              ______________
-    //  | (bscane) |            |              |
-    //  | dmi_jtag | -- DMI --> |    dm_top    | -- debug_req_o -->
-    //  |__________|            |______________|
-    //                            |           ^
-    //                            v           |
-    //                       AXI master   AXI slave
+    //   __________              _________________
+    //  | (bscane) |            |                 |
+    //  | dmi_jtag | -- DMI --> |      dm_top     | -- debug_req_o -->
+    //  |__________|            |_________________|
+    //                            |              ^
+    //                            v              |
+    //                       MEM master      MEM slave
+    //                            |              ^
+    //                     _______v______   _____|______
+    //                    |              | |            |
+    //                    | axi_from_mem | | axi_to_mem |
+    //                    |______________| |____________|
+    //                            |              ^
+    //                            v              |
+    //                       AXI master      AXI slave
     //
 
     ///////////////////
