@@ -37,6 +37,7 @@ Some properties are array, with elements separated by a space " " character. The
 | ID_WIDTH              | AXI ID Width                                              | (4..32)                                                   | 4
 | NUM_MI                | Number of Master Interfaces (number of slaves)            | (0..16)                                                   | 2
 | NUM_SI                | Number of Slave Interfaces (number of masters)            | (0..16)                                                   | 1
+| MASTER_NAMES          | Names of masters connected to the bus                     | [NUM_SI] Strings | N/A
 | RANGE_NAMES           | Names of slave memory ranges                                               | [NUM_MI] Strings                                          | N/A
 | ADDR_RANGES           | Number of ranges for master interfaces                    | (1..16)                                                   | 1
 | BASE_ADDR             | The Base Addresses for each range of each Master          | [NUM_MI*ADDR_RANGES] 64 bits hex                          | 0x100000 for the first range of every Master, otherwise is 0xffffffffffffffff [not used], it must be lesser or equal of Global ADDR_WIDTH

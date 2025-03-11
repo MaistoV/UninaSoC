@@ -90,6 +90,10 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         __print_error(f"The NUM_MI does not match ADDR_WIDTH in {config_file_name}")
         return False
 
+    if config.NUM_SI != len(config.MASTER_NAMES):
+        __print_error(f"The NUM_SI does not match MASTER_NAMES in {config_file_name}")
+        return False
+
     # Check the minimum widths (AXI4 12, AXI4LITE 1)
     for addr_width in config.RANGE_ADDR_WIDTH:
         if addr_width > config.ADDR_WIDTH:
