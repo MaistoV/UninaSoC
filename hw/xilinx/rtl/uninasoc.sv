@@ -144,13 +144,13 @@ module uninasoc (
     // Concatenate AXI buses //
     ///////////////////////////
 
-    `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
+    `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_SI);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `CONCAT_AXI_MASTERS_ARRAY4(xbar_masters, dbg_master, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
 
     // Concatenate AXI slave buses
-    `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
+    `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_MI);
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `ifdef EMBEDDED
@@ -761,4 +761,3 @@ module uninasoc (
 
 
 endmodule : uninasoc
-

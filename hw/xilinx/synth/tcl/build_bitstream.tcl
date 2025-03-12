@@ -3,7 +3,7 @@
 # Description: Create a Vivado project, import sources and IPs and run: elaboration,
 #              synthesis and implementation up to bitstream generation.
 # Input args:
-#	None
+#    None
 # Note:
 #   This script entirely relies on enironment variables
 
@@ -97,7 +97,7 @@ if { $::env(XILINX_ILA) == 1 } {
 # # Set strategy
 set_property STRATEGY                                       $::env(IMPL_STRATEGY)    [get_runs impl_1]
 # # Enable physical optimizations (longer runtime)
-# set_property STEPS.PHYS_OPT_DESIGN.IS_ENABLED 		        true                     [get_runs impl_1]
+# set_property STEPS.PHYS_OPT_DESIGN.IS_ENABLED                 true                     [get_runs impl_1]
 # set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.IS_ENABLED    true                     [get_runs impl_1]
 
 # Run

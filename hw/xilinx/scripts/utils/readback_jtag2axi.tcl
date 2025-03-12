@@ -48,9 +48,6 @@ if { $argc != 2 } {
 # Disable message limit
 set_msg_config -id {Labtoolstcl 44-481} -limit 99999
 
-# Connects to hw_server and sets variable hw_device
-source $::env(XILINX_SYNTH_TCL_ROOT)/open_hw_manager.tcl
-
 # AXI transaction names
 set gpio_wr_txn gpio_wr_txn
 set gpio_rd_txn gpio_rd_txn

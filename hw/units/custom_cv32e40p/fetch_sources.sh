@@ -25,10 +25,14 @@ curl --proto '=https' --tlsv1.2 https://pulp-platform.github.io/bender/init -sSf
 
 # Download dependencies (specify Target RTL and FPGA)
 printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"
+# Inject pre-solved conflicts
+# - package `riscv` requires `^0.1.1`
+# - package `common_cells` requires `^0.2.11`
+cp ../assets/cv32e40_Bender.lock Bender.lock
+# Checkout
 ./bender checkout
-# TODO31:
-# BENDER_TARGETS="-t xilinx -t bscane"
-# ./bender script flist ${BENDER_TARGETS} > rtl.flist
+BENDER_TARGETS="-t xilinx -t fpga"
+./bender script flist ${BENDER_TARGETS} > rtl.flist
 ./bender script flist > rtl.flist
 cp cv32e40p_fpu_manifest.flist ../local.flist
 

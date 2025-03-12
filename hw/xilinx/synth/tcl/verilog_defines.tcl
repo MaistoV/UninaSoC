@@ -1,7 +1,7 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: Define Verilog macros for build environment, in an opened project
 # Input args:
-#	None
+#    None
 
 # Prepare list
 set verilog_defines ""
@@ -17,9 +17,13 @@ if { "$::env(SOC_CONFIG)" == "hpc" } {
 }
 
 # AXI config
-lappend verilog_defines AXI_DATA_WIDTH=$::env(AXI_DATA_WIDTH)
-lappend verilog_defines AXI_ADDR_WIDTH=$::env(AXI_ADDR_WIDTH)
-lappend verilog_defines AXI_ID_WIDTH=$::env(AXI_ID_WIDTH)
+lappend verilog_defines AXI_DATA_WIDTH=$::env(DATA_WIDTH)
+lappend verilog_defines AXI_ADDR_WIDTH=$::env(ADDR_WIDTH)
+lappend verilog_defines AXI_ID_WIDTH=$::env(ID_WIDTH)
+lappend verilog_defines NUM_SI=$::env(NUM_SI)
+lappend verilog_defines NUM_MI=$::env(NUM_MI)
+lappend verilog_defines PBUS_NUM_MI=$::env(PBUS_NUM_MI)
+# Core selection
 lappend verilog_defines CORE_SELECTOR=$::env(CORE_SELECTOR)
 
 # Set property to list

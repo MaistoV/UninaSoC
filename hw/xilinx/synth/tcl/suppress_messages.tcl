@@ -1,7 +1,7 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: Suppress or change severity of Vivado messages
 # Input args:
-#	None
+#    None
 
 # The IP file <...> has been moved from its original location, as a result the outputs for this IP will now be generated in <...>. Alternatively a copy of the IP can be imported into the project using one of the 'import_ip' or 'import_files' commands.
 set_msg_config -id {[Vivado 12-13650]} -suppress

@@ -5,7 +5,8 @@ endif
 
 SHELL := /bin/bash
 
-IP_RTL_LIST	= $(shell basename --multiple ${HW_UNITS_ROOT}/custom_*)
+# All custom IPs directories, excluding custom_template
+IP_RTL_LIST = $(filter-out custom_template, $(shell basename --multiple ${HW_UNITS_ROOT}/custom_*) )
 
 all: units
 
@@ -17,10 +18,7 @@ custom_%/rtl:
 
 # Remove all RTL dirs
 clean:
-#	TODO31: clean this up from #31
-	rm -rf custom_cv32e40p/rtl
-	rm -rf custom_picorv32/rtl
-	rm -rf custom_rv_plic/rtl
+	rm -rf ${HW_UNITS_ROOT}/*/rtl
 
 
 .PHONY: clean

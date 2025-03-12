@@ -11,7 +11,7 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rvm_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_MICROBLAZEV,
+    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, // TODO: Change default only for development, while waiting for the core selection flow
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
     parameter int unsigned    NUM_IRQ       = 32

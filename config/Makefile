@@ -3,7 +3,7 @@ PYTHON ?= python3.10 # Requires >= 3.10
 
 # csv array for check config and create linker script
 CONFIG_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
-               ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
+			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
 
 all: config_main_bus config_peripheral_bus config_ld config_xilinx
 
@@ -30,16 +30,7 @@ config_check:
 	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/check_config.py ${CONFIG_CSVS}
 
 # Update config in Makefile
-# TODO31: make this prettier, in a call-like or for-loop style
-CONFIG_CSV ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv
 OUTPUT_MK_FILE ?= ${XILINX_ROOT}/make/config.mk
 config_xilinx:
-	export AXI_ADDR_WIDTH=$(shell grep "\bADDR_WIDTH\b" ${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	export AXI_DATA_WIDTH=$(shell grep "\bDATA_WIDTH\b" ${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	export AXI_ID_WIDTH=$(shell grep "\bID_WIDTH\b" 	${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	export CORE_SELECTOR=$(shell grep "\bCORE_SELECTOR\b" 	${CONFIG_CSV} | awk -F "," '{print $$2}'); \
-	sed -E -i "s/AXI_ADDR_WIDTH.?\?=.+/AXI_ADDR_WIDTH \?= $${AXI_ADDR_WIDTH}/g" ${OUTPUT_MK_FILE}; \
-	sed -E -i "s/AXI_DATA_WIDTH.?\?=.+/AXI_DATA_WIDTH \?= $${AXI_DATA_WIDTH}/g" ${OUTPUT_MK_FILE}; \
-	sed -E -i "s/AXI_ID_WIDTH.?\?=.+/AXI_ID_WIDTH \?= $${AXI_ID_WIDTH}/g" 		${OUTPUT_MK_FILE}; \
-	sed -E -i "s/CORE_SELECTOR.?\?=.+/CORE_SELECTOR \?= $${CORE_SELECTOR}/g" 	${OUTPUT_MK_FILE}
-	@echo "[CONFIG] Output file is at ${OUTPUT_MK_FILE}"
+	${CONFIG_ROOT}/config_xilinx.sh ${CONFIG_CSVS} ${OUTPUT_MK_FILE}
+

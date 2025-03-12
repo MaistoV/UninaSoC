@@ -2,9 +2,9 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: tcl script used to transfer a .bin file in a BRAM memory using jtag2axi IP and axi transactions
 # Input args:
-#	-argv0: absolute path to bin file to transfer
-#	-argv1: base address of BRAM
-#	-argv2: whether to read-back data after writing
+#    -argv0: absolute path to bin file to transfer
+#    -argv1: base address of BRAM
+#    -argv2: whether to read-back data after writing
 
 #########
 # Utils #
@@ -16,7 +16,7 @@ proc read_file_to_words {filename fsize} {
     set fp [open $filename r]
 
     # Translate file to binary
-	fconfigure $fp -translation binary
+    fconfigure $fp -translation binary
 
     # Read data
     set file_data [read $fp $fsize]
@@ -39,8 +39,8 @@ if { $argc != 3 } {
     return
 } else {
     set filename        [lindex $argv 0]
-	set base_address    [lindex $argv 1]
-	set read_back       [lindex $argv 2]
+    set base_address    [lindex $argv 1]
+    set read_back       [lindex $argv 2]
 }
 
 ########
@@ -50,9 +50,6 @@ if { $argc != 3 } {
 # Disable message limit
 set_msg_config -id {Labtoolstcl 44-481} -limit 99999
 
-# Connects to hw_server and sets variable hw_device
-source $::env(XILINX_SYNTH_TCL_ROOT)/open_hw_manager.tcl
-
 # File size in bytes
 set fsize [file size $filename]
 
@@ -61,10 +58,10 @@ set gpio_wr_txn gpio_wr_txn
 set gpio_rd_txn gpio_rd_txn
 
 # Internal variables:
-#	-data_list: binary file read at absolute path
-#	-num_bursts: size of each "burst" (data sent) in each transaction in bytes (4 -> 32 bits). This parameter is architecture dependent.
-#	-remaining bytes: reminder in terms of bytes that will handled with padding.
-#	-segment: chunk of $burst_size bytes extracted from data_lists and converted in hexadecimal
+#    -data_list: binary file read at absolute path
+#    -num_bursts: size of each "burst" (data sent) in each transaction in bytes (4 -> 32 bits). This parameter is architecture dependent.
+#    -remaining bytes: reminder in terms of bytes that will handled with padding.
+#    -segment: chunk of $burst_size bytes extracted from data_lists and converted in hexadecimal
 
 # Read file
 set data_list [read_file_to_words $filename $fsize]

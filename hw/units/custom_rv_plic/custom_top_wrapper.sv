@@ -1,4 +1,5 @@
-// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>, Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description:
 //  This module is intended as a top-level wrapper for the code in ./rtl
 //  It might support either MEM protocol or AXI protocol, using the

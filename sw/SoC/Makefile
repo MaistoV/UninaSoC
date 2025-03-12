@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano 	<stefano.mercogliano@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
 #  This is a global makefile for the System-on-Chip software projects.
 #  It can be used to compile all default examples
@@ -8,8 +8,8 @@ ifndef ROOT_DIR
 $(error Setup script settings.sh has not been sourced, aborting)
 endif
 
-EXAMPLES_NAMES	:= $(shell basename --multiple $(SW_ROOT)/SoC/examples/*)
-EXAMPLES_LIST	:= $(foreach ip,${EXAMPLES_NAMES},$(SW_ROOT)/SoC/examples/${ip})
+EXAMPLES_NAMES := $(shell basename --multiple $(SW_ROOT)/SoC/examples/*)
+EXAMPLES_LIST  := $(foreach ip,${EXAMPLES_NAMES},$(SW_ROOT)/SoC/examples/${ip})
 
 all: examples
 
