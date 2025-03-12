@@ -3,27 +3,29 @@ This tree allows for the automatic generation of the AXI crossbar IP and linker 
 
 ## Prerequisites and Tools versions
 This tree has been verified with the following tools and versions
-* Vivado 2022.2 2024.2
+* Vivado 2022.2 - 2024.2
 * AXI Interconnect v2.1
 * Pyhton >= 3.10
 * Pandas >= 2.2.3
 
 ##  Configuration file format
 The input configuration files are CSV files. These files are under the configs directory structured as follows:
-```
+``` bash
 configs
 ├── embedded                         # Config files for embedded
 │   ├── config_main_bus.csv          # Main bus config file
 │   └── config_peripheral_bus.csv    # Peripheral bus config file
-├── hpc                              # Config files for hpc
-│   ├── config_main_bus.csv          # Main bus config file
-│   └── config_peripheral_bus.csv    # Peripheral bus config file
-└── PoC_config.csv                   # Proof-of-Concept config file
+└── hpc                              # Config files for hpc
+    ├── config_main_bus.csv          # Main bus config file
+    └── config_peripheral_bus.csv    # Peripheral bus config file
 ```
 
-Each file is the configuration for a specific bus. For now only main bus and peripheral bus are supported.
+Each file is the configuration for a specific bus. For now only main bus and peripheral bus are supported, **but file names must match those above**.
+
 In each file, each row of the file holds a property name and value pair.
-Some properties are array, with elements separated by a space " " character. The following table details the supported properties.
+Some properties are array, with elements separated by a white space " " character.
+
+The following table details the supported properties.
 
 > **IMPORTANT NOTE**: the address range of a bus (child) that is a slave of another bus (parent), in its configuration (.csv) file, must be an absolute address range, this means that if the child bus is mapped in the parent bus at the address 0x1000 to 0x1FFF, then the peripherals in the child bus must be in the address range 0x1000 to 0x1FFFE
 
@@ -61,23 +63,29 @@ Some properties are array, with elements separated by a space " " character. The
 | BUSER_WIDTH           | AXI  B User width                                         | (0..1024)                                                 | 0
 
 ## Genenerate Configurations
-To generate configurations change the CSV files according to your needs and:
+After applying configutrations changes to the target CSV files (`embedded` or `hpc`), apply such changes though `make`.
+
+Alternatively, you can control the generation of single targets:
 ``` bash
-$ make config_main_bus # generates main bus config
-$ make config_peripheral_bus # generates peripheral bus config
-$ make config_ld # generates linker script
-$ make config_xilinx # update xilinx config
+$ make config_check             # Preliminary sanity check for configuration
+$ make config_main_bus          # Generates main bus config
+$ make config_peripheral_bus    # Generates peripheral bus config
+$ make config_ld                # Generates linker script
+$ make config_xilinx            # Update xilinx config
 ```
 
-# Scripting Architecture
-The configuration scripting architecture is structured as in the following figure:
+### Scripting Architecture
+The directory `scripts/` holds multiple scripts, acting in the following scripting architecture:
 
-![Configuration flow](./axi_xbar_config_with_check.png)
+![Configuration flow](./doc/axi_xbar_config_with_check.png)
 
-* Linker script generation is handled solely by `create_linker_script.py` source.
-* TCL file generation is divided in multiple files, with `create_crossbar_config.py` as master script
+The multiple scripts genrate outputs from common inputs:
+1. The Xilinx-related environment configuration in [`config.mk`](../hw/xilinx/make/config.mk) is handled by [`config_xilinx.sh`](scripts/config_xilinx.sh).
+1. [Linker script](../sw/SoC/common/UninaSoC.ld) generation is handled solely by [`create_linker_script.py`](scripts/create_linker_script.py) source.
+1. Configuration TCL files (for [MBUS](../hw/xilinx/ips/common/xlnx_main_crossbar/config.tcl) and [PBUS](../hw/xilinx/ips/common/xlnx_peripheral_crossbar/config.tcl)) for the platform crossbars are generated with [`create_crossbar_config.py`](scripts/create_crossbar_config.py) as master script.
 
 ### How to add a new property
+In the table above, multiple properties are supported, but more can be added.
 To add a new property:
 1. In the target CSV file, e.g. `config_main_bus.csv`, add the new key-value pair.
 2. In file `configuration.py`, add the new property to the config class. Name must match the key in `config_main_bus.csv`.
@@ -88,3 +96,4 @@ To add a new property:
     - how it updates the `configuration` structure.
 5. In file `create_crossbar_config.py` file, after the loop setting the `configuration` structure,
 create the tcl property string and add it to the list of commands, which will then be flushed on the output file.
+6. If necessary, add new checks in the `check_config.py` script.

@@ -1,10 +1,14 @@
 # Xilinx flow
 This tree holds the building environment for Xilinx FPGAs.
 
-More technical documentation can be found in the `doc/` folder for:
-* [board-specific installation instructions](doc/BOARDS_INSTALLATION.md).
+## Installation
+
+Additional installation-related technical documentation can be found in the `doc/` folder for:
+* [UART FDTI connection](doc/UART_CONNECTION.md).
+* [Board-specific installation instructions](doc/BOARDS_INSTALLATION.md).
 * [Linux-specific instructions for Vivado](doc/INSTALL_CABLE_DRIVERS.md).
 * [Vivado-specific patches](doc/VIVADO_PATCHES.md).
+
 
 ## Build Bitstream and Program Device
 In order to build the bitstream all sources for custom IPs must be available for the project.
