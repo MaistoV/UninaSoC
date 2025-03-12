@@ -144,7 +144,7 @@ module uninasoc (
     // Concatenate AXI buses //
     ///////////////////////////
 
-    `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
+    `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_SI);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `CONCAT_AXI_MASTERS_ARRAY4(xbar_masters, dbg_master, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
@@ -327,14 +327,52 @@ module uninasoc (
     // RVM Socket
     rvm_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
+<<<<<<< HEAD
+<<<<<<< HEAD
         .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
         .CORE_SELECTOR ( CORE_SELECTOR  )
+=======
+        .DEBUG_MODULE  ( `DEBUG_MODULE  )
+>>>>>>> 0c3cb80 (wip for BSCAN DM)
+=======
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH )
+<<<<<<< HEAD
+//        ,
+//        .DEBUG_MODULE  ( `DEBUG_MODULE  )
+>>>>>>> 82409ef (Update RTL)
+=======
+>>>>>>> ed589cc (Rebase fixes)
+=======
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
+        .CORE_SELECTOR ( CORE_CV32E40P  ) // TODO31: core selector?
+>>>>>>> ea9da58 (Add core-only reset from VIO and minor fixes)
+=======
+        .CORE_SELECTOR ( CORE_CV32E40P ) // TODO31: core selector?
+>>>>>>> ec20c2f (Swap axi_to_mem_interleaved with axi_to_mem to save resources)
+=======
+        .CORE_SELECTOR ( CORE_SELECTOR  )
+>>>>>>> a3e8961 (Rebasing on feature/core_selection)
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
         .rst_ni         ( sys_resetn ),
         .core_resetn_i  ( vio_resetn ),
         .bootaddr_i     ( '0         ),
+<<<<<<< HEAD
         .irq_i          ( rvm_socket_interrupt_line ),
+=======
+        .irq_i          ( '0         ),
+<<<<<<< HEAD
+<<<<<<< HEAD
+        .jtag_trst_ni   ( sys_resetn ),
+>>>>>>> 4cbf814 ([Debug Module] Integration, WiP)
+=======
+        // .jtag_trst_ni   ( sys_resetn ),
+>>>>>>> 0c3cb80 (wip for BSCAN DM)
+=======
+>>>>>>> 82409ef (Update RTL)
 
         // Instruction AXI Port
         .rvm_socket_instr_axi_awid,

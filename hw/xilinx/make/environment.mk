@@ -1,21 +1,19 @@
-# Environment check
-ifndef XILINX_ROOT
-$(error Setup script settings.sh has not been sourced, aborting)
-endif
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+# Description:
+#	Hold all the environment variables for Xilinx tools.
 
-#########################
-# Include configuration #
-#########################
+# Basic variables for Vivado
+XILINX_VIVADO_CMD ?= vivado
+XILINX_VIVADO_MODE ?= batch
+# Build directory
+XILINX_PROJECT_BUILD_DIR ?= ${XILINX_ROOT}/build
+# Vivado's compilation reports directory
+XILINX_PROJECT_REPORTS_DIR ?= ${XILINX_PROJECT_BUILD_DIR}/reports
+# Hardware server
+XILINX_HW_SERVER ?= hw_server
 
-include make/config.mk
-
-######################
-# Vivado environment #
-######################
-
-include make/environment.mk
-
-<<<<<<< HEAD
 # List of the Xilinx IPs to build and import in the design
 # Parsing from directory ips/
 XILINX_COMMON_IP_LIST 	= $(shell basename --multiple ${XILINX_IPS_ROOT}/common/xlnx_*)
@@ -80,42 +78,13 @@ XILINX_ILA ?= 0
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=								\
-<<<<<<< HEAD
-<<<<<<< HEAD
-	AXI_DATA_WIDTH=${AXI_DATA_WIDTH}				\
-	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
-	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	AXI_DATA_WIDTH=${DATA_WIDTH}					\
-	AXI_ADDR_WIDTH=${ADDR_WIDTH}					\
-	AXI_ID_WIDTH=${ID_WIDTH}						\
->>>>>>> efc4c7f ([config] Script config_xilinx make target)
-=======
 	DATA_WIDTH=${DATA_WIDTH}						\
 	ADDR_WIDTH=${ADDR_WIDTH}						\
 	ID_WIDTH=${ID_WIDTH}							\
->>>>>>> 06b9db8 (Minor fixes)
 	CORE_SELECTOR=${CORE_SELECTOR}					\
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-	DEBUG_MODULE=${DEBUG_MODULE}					\
-=======
->>>>>>> 0c3cb80 (wip for BSCAN DM)
-=======
->>>>>>> ed589cc (Rebase fixes)
-=======
-	CORE_SELECTOR=${CORE_SELECTOR}					\
->>>>>>> a3e8961 (Rebasing on feature/core_selection)
-=======
 	NUM_SI=${NUM_SI}								\
 	NUM_MI=${NUM_MI}								\
 	PBUS_NUM_MI=${PBUS_NUM_MI}						\
->>>>>>> d39a7e5 (set num master and slaves in uninasoc_pkg.sv with macros from config flow (hw/xilinx/make/config.mk))
->>>>>>> origin/refactor/xilinx_scripts
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
@@ -137,74 +106,3 @@ XILINX_VIVADO_ENV ?=								\
 # Package Vivado command in a single variable
 XILINX_VIVADO := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode ${XILINX_VIVADO_MODE}
 XILINX_VIVADO_BATCH := ${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} -mode batch
-=======
->>>>>>> 15b7a86 (Add make/environment.mk)
-
-# Default target
-all: bitstream
-
-#########
-# Build #
-#########
-
-<<<<<<< HEAD
-# Generate ips
-IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
-ips: ${IP_NAMES}
-
-# Build single IP
-# TODO31: make this dependent on ${HW_UNITS_ROOT}/%/custom_top_wrapper.tcl
-%.xci: IP_NAME=$*
-%.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
-%.xci: IP_BUILD_DIR=${IP_DIR}/build
-%.xci: ips/*/%/config.tcl
-	@echo "Generating IP $@"
-	mkdir -p ${IP_BUILD_DIR}; 						 		\
-	cd       ${IP_BUILD_DIR}; 						 		\
-	export IP_DIR=${IP_DIR};								\
-	export IP_PRJ_NAME=${IP_NAME}_prj;						\
-	export IP_NAME=${IP_NAME}; 								\
-	${XILINX_VIVADO_BATCH}									\
-		-source ${XILINX_IPS_ROOT}/common/tcl/pre_config.tcl 	\
-		-source ${IP_DIR}/config.tcl							\
-		-source ${XILINX_IPS_ROOT}/common/tcl/post_config.tcl
-	touch $@
-=======
-include make/build.mk
->>>>>>> origin/refactor/xilinx_scripts
-
-#############
-# Utilities #
-#############
-
-include make/utils.mk
-
-##############
-# Simulation #
-##############
-
-include make/sim.mk
-
-###############
-# Load binary #
-###############
-
-include make/load_binary.mk
-
-############
-# Cleaning #
-############
-# Clean up project
-clean:
-	rm -rf ${XILINX_PROJECT_BUILD_DIR}
-	rm -rf vivado*.log vivado*.jou vivado*.str
-
-clean_ips:
-	rm -rf ${XILINX_IPS_ROOT}/*/*/build
-	rm -rf ${XILINX_IPS_ROOT}/*.xci
-
-###########
-# PHONIES #
-###########
-.PHONY:  bitstream ips clean clean_ips
-

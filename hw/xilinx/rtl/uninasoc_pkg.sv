@@ -11,51 +11,22 @@ package uninasoc_pkg;
     localparam int unsigned NUM_GPIO_IN  = 16;
     localparam int unsigned NUM_GPIO_OUT = 16;
 
-    //////////////////
-    // AXI crossbar //
-    //////////////////
-    // Crosbar masters
-    // - RVM socket (instr and data)
-    // - JTAG2AXI
-    // - DM
-    localparam int unsigned NUM_AXI_MASTERS = 4;
+    ///////////////////////
+    // AXI main crossbar //
+    ///////////////////////
 
-    // Main Crosbar slaves if EMBEDDED
-    // - Peripheral bus
-    // - DM slave
-    // - Main memory (BRAM)
-    // - PLIC
-    `ifdef EMBEDDED
-        // NB: we should find a better and automatic way of count AXI and MASTERs
-        localparam int unsigned NUM_AXI_SLAVES = 4;
+    // Main Crosbar masters
+    localparam int unsigned NUM_SI = `NUM_SI;
+    // Main Crosbar slaves
+    localparam int unsigned NUM_MI = `NUM_MI;
 
-    // Crosbar slaves if HPC
-    // - Main memory (BRAM)
-    // - Peripheral bus
-    // - DDR4
-    // - DM
-    // - PLIC
-    `elsif HPC
-        localparam int unsigned NUM_AXI_SLAVES = 5;
-    `endif
+    /////////////////////////////
+    // AXI Lite peripheral bus //
+    /////////////////////////////
 
-
-    // AXI Lite peripheral bus
-    // Slaves if EMBEDDED
-    // - UART (physical)
-    // - GPIOs in outputs
-    // - GPIOs in input
-    // - Timer 0
-    // - Timer 1
-    `ifdef EMBEDDED
-        localparam int unsigned NUM_AXILITE_SLAVES = 5;
-    // Slaves if HPC
-    // - UART (Virtual)
-    // - Timer 0
-    // - Timer 1
-    `elsif HPC
-        localparam int unsigned NUM_AXILITE_SLAVES = 3;
-    `endif
+    // Always assume 1 master
+    // Peripheral bus slaves
+    localparam int unsigned NUM_AXILITE_SLAVES = `PBUS_NUM_MI;
 
 
     //////////////////////////
