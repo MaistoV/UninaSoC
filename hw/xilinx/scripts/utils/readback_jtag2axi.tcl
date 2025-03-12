@@ -1,8 +1,8 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: tcl script used to read back from AXI
 # Input args:
-#	-argv0: base address
-#	-argv1: number of transactions
+#    -argv0: base address
+#    -argv1: number of transactions
 
 #########
 # Utils #
@@ -14,7 +14,7 @@ proc read_file_to_words {filename fsize} {
     set fp [open $filename r]
 
     # Translate file to binary
-	fconfigure $fp -translation binary
+    fconfigure $fp -translation binary
 
     # Read data
     set file_data [read $fp $fsize]
@@ -35,10 +35,10 @@ puts "num_bytes     : number of bytes"
 if { $argc != 2 } {
     # Default
     set base_address    0x0000
-	set num_bytes       16
+    set num_bytes       16
 } else {
     set base_address    [lindex $argv 0]
-	set num_bytes       [lindex $argv 1]
+    set num_bytes       [lindex $argv 1]
 }
 
 ########

@@ -51,17 +51,17 @@ for target in ${target_values[*]}; do
         prefix_len=5
         grep_target=${target:$prefix_len}
         # Search for value
-	    target_value=$(grep "${grep_target}" ${CONFIG_PBUS_CSV} | awk -F "," '{print $2}');
+        target_value=$(grep "${grep_target}" ${CONFIG_PBUS_CSV} | awk -F "," '{print $2}');
     else
         # Search in main bus config
-	    target_value=$(grep "${target}" ${CONFIG_MAIN_CSV=$1} | grep -v RANGE | awk -F "," '{print $2}');
+        target_value=$(grep "${target}" ${CONFIG_MAIN_CSV=$1} | grep -v RANGE | awk -F "," '{print $2}');
     fi
 
     # Info print
     echo "[CONFIG_XILINX] Updating ${target} = ${target_value} "
 
     # Replace in target file
-	sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
+    sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
 done
 
 # Done

@@ -57,5 +57,5 @@ clean_ips:
 ###########
 # PHONIES #
 ###########
-.PHONY:  bitstream ips clean clean_ips
+.PHONY: bitstream ips clean clean_ips
 

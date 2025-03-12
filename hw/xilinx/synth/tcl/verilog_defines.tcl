@@ -1,7 +1,7 @@
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: Define Verilog macros for build environment, in an opened project
 # Input args:
-#	None
+#    None
 
 # Prepare list
 set verilog_defines ""
