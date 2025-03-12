@@ -229,11 +229,15 @@ module sys_master
 `elsif  EMBEDDED
     // EMBEDDED
 
+    // Drive unused signals
+    assign pci_exp_txn_o = '0;
+    assign pci_exp_txp_o = '0;
+
     assign sys_resetn_o = ~sys_reset_i;
     assign m_axi_awregion = '0;
     assign m_axi_arregion = '0;
-    // PLL
 
+    // PLL
     xlnx_clk_wiz clkwiz_u (
         .clk_in1  ( sys_clock_i  ),
         .resetn   ( sys_resetn_o ),
@@ -245,7 +249,6 @@ module sys_master
     );
 
     // JTAG2AXI Master
-
     xlnx_jtag_axi jtag_axi_u (
         .aclk           ( soc_clk_o       ), // input wire aclk
         .aresetn        ( sys_resetn_o    ), // input wire aresetn

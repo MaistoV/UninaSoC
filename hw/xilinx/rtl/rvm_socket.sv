@@ -11,18 +11,24 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rvm_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_MICROBLAZEV,
+    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, // TODO: Change default only for development, while waiting for the core selection flow
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
     parameter int unsigned    NUM_IRQ       = 32
 ) (
     input  logic                            clk_i,
-    input  logic                            rst_ni,
+    input  logic                            rst_ni,        // System-wide reset (also resets core)
+    input  logic                            core_resetn_i, // Core-only reset (does not reset DM and other modules)
     input  logic [AXI_ADDR_WIDTH -1 : 0 ]   bootaddr_i,
     input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
 
+    // Core
     `DEFINE_AXI_MASTER_PORTS(rvm_socket_instr),
-    `DEFINE_AXI_MASTER_PORTS(rvm_socket_data)
+    `DEFINE_AXI_MASTER_PORTS(rvm_socket_data),
+
+    // Debug module
+    `DEFINE_AXI_MASTER_PORTS(dbg_master),
+    `DEFINE_AXI_SLAVE_PORTS(dbg_slave)
 );
 
     //////////////////////////////////////////////////////
@@ -32,6 +38,14 @@ module rvm_socket # (
     //   |_| \__,_|_| \__,_|_|_|_\___|\__\___|_| /__/   //
     //                                                  //
     //////////////////////////////////////////////////////
+
+    // Let's assume single core
+    localparam logic [31:0] hart_id = 32'h0;
+    localparam logic [31:0] DEBUG_START   = 32'h10000; // From config
+
+    // From dm_pkg
+    localparam logic [31:0] dm_HaltAddress = 64'h800;
+    localparam logic [31:0] dm_ExceptionAddress = dm_HaltAddress + 16;
 
     localparam SW_INT_PIN = 3;
     localparam TIM_INT_PIN = 7;
@@ -45,6 +59,10 @@ module rvm_socket # (
     //         |___/                    //
     //////////////////////////////////////
 
+    // Core reset
+    logic core_resetn_internal;
+    assign core_resetn_internal = rst_ni & core_resetn_i;
+
     // Declare AXI interfaces for instruction memory port and data memory port
     `DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
     `DECLARE_AXI_BUS(core_data_to_socket_data, DATA_WIDTH);
@@ -53,7 +71,7 @@ module rvm_socket # (
     `DECLARE_MEM_BUS(core_instr, DATA_WIDTH);
     `DECLARE_MEM_BUS(core_data, DATA_WIDTH);
 
-    // Debug request
+    // Debug request DM -> RV core
     logic debug_req_core;
 
     //////////////////////////////////////////////////////
@@ -80,14 +98,15 @@ module rvm_socket # (
 
             custom_picorv32 picorv32_core (
                 .clk_i              ( clk_i                     ),
-                .rst_ni             ( rst_ni                    ),
+                .rst_ni             ( core_resetn_internal       ),
                 .trap_o             (                           ),
 
                 .instr_mem_req      ( core_instr_mem_req        ),
                 .instr_mem_gnt      ( core_instr_mem_gnt        ),
                 .instr_mem_valid    ( core_instr_mem_valid      ),
                 .instr_mem_addr     ( core_instr_mem_addr       ),
-                .instr_mem_rdata    ( core_instr_mem_rdata  ),
+                .instr_mem_rdata    ( core_instr_mem_rdata      ),
+                .instr_mem_error    ( core_instr_mem_error      ), // Although unused
 
                 .data_mem_req       ( core_data_mem_req         ),
                 .data_mem_valid     ( core_data_mem_valid       ),
@@ -96,7 +115,8 @@ module rvm_socket # (
                 .data_mem_be        ( core_data_mem_be          ),
                 .data_mem_addr      ( core_data_mem_addr        ),
                 .data_mem_wdata     ( core_data_mem_wdata       ),
-                .data_mem_rdata     ( core_data_mem_rdata   ),
+                .data_mem_rdata     ( core_data_mem_rdata       ),
+                .data_mem_error     ( core_data_mem_error       ), // Although unused
 
                 .irq_i              ( irq_i                     ),
 
@@ -136,24 +156,28 @@ module rvm_socket # (
             custom_cv32e40p cv32e40p_core (
                 // Clock and Reset
                 .clk_i                  ( clk_i                     ),
-                .rst_ni                 ( rst_ni                    ),
+                .rst_ni                 ( core_resetn_internal       ),
 
                 .pulp_clock_en_i        ( '0                        ),  // PULP clock enable (only used if COREV_CLUSTER = 1)
                 .scan_cg_en_i           ( '0                        ),  // Enable all clock gates for testing
 
                 // Core ID, Cluster ID, debug mode halt address and boot address are considered more or less static
                 .boot_addr_i            ( bootaddr_i                ),
+                .hart_id_i              ( hart_id                   ),
                 .mtvec_addr_i           ( '0                        ),  // TBD
-                .dm_halt_addr_i         ( '0                        ),  // TBD
-                .hart_id_i              ( '0                        ),  // TBD
-                .dm_exception_addr_i    ( '0                        ),  // TBD
+                .dm_halt_addr_i         ( DEBUG_START + dm_HaltAddress[31:0]      ),  // TBD
+                .dm_exception_addr_i    ( DEBUG_START + dm_ExceptionAddress[31:0] ),  // TBD
 
                 // Instruction memory interface
                 .instr_mem_req          ( core_instr_mem_req        ),
                 .instr_mem_gnt          ( core_instr_mem_gnt        ),
                 .instr_mem_valid        ( core_instr_mem_valid      ),
                 .instr_mem_addr         ( core_instr_mem_addr       ),
+                .instr_mem_be           ( core_instr_mem_be         ),
+                .instr_mem_we           ( core_instr_mem_we         ),
+                .instr_mem_wdata        ( core_instr_mem_wdata      ),
                 .instr_mem_rdata        ( core_instr_mem_rdata      ),
+                .instr_mem_error        ( core_instr_mem_error      ), // Although unused
 
                 // Data memory interface
                 .data_mem_req           ( core_data_mem_req         ),
@@ -164,6 +188,7 @@ module rvm_socket # (
                 .data_mem_addr          ( core_data_mem_addr        ),
                 .data_mem_wdata         ( core_data_mem_wdata       ),
                 .data_mem_rdata         ( core_data_mem_rdata       ),
+                .data_mem_error         ( core_data_mem_error       ), // Although unused
 
                 // Interrupt inputs
                 .irq_i                  ( irq_i                     ),  // CLINT interrupts + CLINT extension interrupts
@@ -171,10 +196,10 @@ module rvm_socket # (
                 .irq_id_o               (                           ),  // TBD
 
                 // Debug Interface
-                .debug_req_i            (     '0                    ),
-                .debug_havereset_o      (                           ),  // TBD
-                .debug_running_o        (                           ),  // TBD
-                .debug_halted_o         (                           ),  // TBD
+                .debug_req_i            ( debug_req_core            ),  // From Debug Module
+                .debug_havereset_o      ( debug_havereset_o         ),  // Open
+                .debug_running_o        ( debug_running_o           ),  // Open
+                .debug_halted_o         ( debug_halted_o            ),  // Open
 
                 // CPU Control Signals
                 .fetch_enable_i         ( 1'b1                      ),
@@ -183,6 +208,11 @@ module rvm_socket # (
 
         end
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
+
+            // Tie-off unused signals
+            assign core_instr_mem_wdata = '0;
+            assign core_instr_mem_we    = '0;
+            assign core_instr_mem_be    = '0;
 
             //////////////////////////
             //      MICROBLAZE      //
@@ -405,13 +435,14 @@ module rvm_socket # (
     // Here we are allocating commong module and signals.                   //
     //////////////////////////////////////////////////////////////////////////
 
-    /////////////////////////////////////////////////////////////////////
-    //  Cores to socket (AXI-Full) converters (Instruction and Data)   //
-    /////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //  Cores (mem) to socket (AXI-Full) converters (Instruction and Data)   //
+    ///////////////////////////////////////////////////////////////////////////
 
     // Few exceptions:
     // - Microblaze V has its own interfaces and debug module
-    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : not_microblaze
+    // - TODO: Rocket
+    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : mem_convert
 
         // Connect memory interfaces to socket output memory ports
         `ASSIGN_AXI_BUS( rvm_socket_instr, core_instr_to_socket_instr );
@@ -465,9 +496,9 @@ module rvm_socket # (
             .rst_ni             ( rst_ni                ),
             .s_mem_req          ( core_instr_mem_req    ),
             .s_mem_addr         ( core_instr_mem_addr   ),
-            .s_mem_we           ( '0                    ),  // RO Interface
-            .s_mem_wdata        ( '0                    ),  // RO Interface
-            .s_mem_be           ( '0                    ),  // RO Interface
+            .s_mem_we           ( core_instr_mem_we     ),  // RO Interface
+            .s_mem_wdata        ( core_instr_mem_wdata  ),  // RO Interface
+            .s_mem_be           ( core_instr_mem_be     ),  // RO Interface
             .s_mem_gnt          ( core_instr_mem_gnt    ),
             .s_mem_valid        ( core_instr_mem_valid  ),
             .s_mem_rdata        ( core_instr_mem_rdata  ),
@@ -532,5 +563,118 @@ module rvm_socket # (
         );
     end
 
+    ///////////////////////////////////
+    //    ___  ___ ___ _   _  ___    //
+    //   |   \| __| _ ) | | |/ __|   //
+    //   | |) | _|| _ \ |_| | (_ |   //
+    //   |___/|___|___/\___/ \___|   //
+    //                               //
+    ///////////////////////////////////
+
+    // This is only for PULP cores, that share a common debug module
+    // Other cores are required to instatiate their own DM
+    if ( CORE_SELECTOR inside {CORE_CV32E40P} ) begin : dm_gen
+
+        //  BSCANE2 tap
+        (* keep_hierarchy = "yes" *)  // DEBUG
+        custom_riscv_dbg_bscane riscv_dbg_u (
+            .clk_i                  ( clk_i                   ),
+            .rst_ni                 ( rst_ni                  ),
+            .unavailable_i          ( '0                      ),
+            .ndmreset_o             ( ndmreset_o              ), // Open
+            .dmactive_o             ( dmactive_o              ), // Open
+            // AXI Slave
+            .dbg_slave_axi_awid         ( dbg_slave_axi_awid      ),
+            .dbg_slave_axi_awaddr       ( dbg_slave_axi_awaddr    ),
+            .dbg_slave_axi_awlen        ( dbg_slave_axi_awlen     ),
+            .dbg_slave_axi_awsize       ( dbg_slave_axi_awsize    ),
+            .dbg_slave_axi_awburst      ( dbg_slave_axi_awburst   ),
+            .dbg_slave_axi_awlock       ( dbg_slave_axi_awlock    ),
+            .dbg_slave_axi_awcache      ( dbg_slave_axi_awcache   ),
+            .dbg_slave_axi_awprot       ( dbg_slave_axi_awprot    ),
+            .dbg_slave_axi_awqos        ( dbg_slave_axi_awqos     ),
+            .dbg_slave_axi_awvalid      ( dbg_slave_axi_awvalid   ),
+            .dbg_slave_axi_awready      ( dbg_slave_axi_awready   ),
+            .dbg_slave_axi_wdata        ( dbg_slave_axi_wdata     ),
+            .dbg_slave_axi_wstrb        ( dbg_slave_axi_wstrb     ),
+            .dbg_slave_axi_wlast        ( dbg_slave_axi_wlast     ),
+            .dbg_slave_axi_wvalid       ( dbg_slave_axi_wvalid    ),
+            .dbg_slave_axi_wready       ( dbg_slave_axi_wready    ),
+            .dbg_slave_axi_bid          ( dbg_slave_axi_bid       ),
+            .dbg_slave_axi_bresp        ( dbg_slave_axi_bresp     ),
+            .dbg_slave_axi_bvalid       ( dbg_slave_axi_bvalid    ),
+            .dbg_slave_axi_bready       ( dbg_slave_axi_bready    ),
+            .dbg_slave_axi_arid         ( dbg_slave_axi_arid      ),
+            .dbg_slave_axi_araddr       ( dbg_slave_axi_araddr    ),
+            .dbg_slave_axi_arlen        ( dbg_slave_axi_arlen     ),
+            .dbg_slave_axi_arsize       ( dbg_slave_axi_arsize    ),
+            .dbg_slave_axi_arburst      ( dbg_slave_axi_arburst   ),
+            .dbg_slave_axi_arlock       ( dbg_slave_axi_arlock    ),
+            .dbg_slave_axi_arcache      ( dbg_slave_axi_arcache   ),
+            .dbg_slave_axi_arprot       ( dbg_slave_axi_arprot    ),
+            .dbg_slave_axi_arqos        ( dbg_slave_axi_arqos     ),
+            .dbg_slave_axi_arvalid      ( dbg_slave_axi_arvalid   ),
+            .dbg_slave_axi_arready      ( dbg_slave_axi_arready   ),
+            .dbg_slave_axi_rid          ( dbg_slave_axi_rid       ),
+            .dbg_slave_axi_rdata        ( dbg_slave_axi_rdata     ),
+            .dbg_slave_axi_rresp        ( dbg_slave_axi_rresp     ),
+            .dbg_slave_axi_rlast        ( dbg_slave_axi_rlast     ),
+            .dbg_slave_axi_rvalid       ( dbg_slave_axi_rvalid    ),
+            .dbg_slave_axi_rready       ( dbg_slave_axi_rready    ),
+            // AXI Master
+            .dbg_master_axi_awid        ( dbg_master_axi_awid     ),
+            .dbg_master_axi_awaddr      ( dbg_master_axi_awaddr   ),
+            .dbg_master_axi_awlen       ( dbg_master_axi_awlen    ),
+            .dbg_master_axi_awsize      ( dbg_master_axi_awsize   ),
+            .dbg_master_axi_awburst     ( dbg_master_axi_awburst  ),
+            .dbg_master_axi_awlock      ( dbg_master_axi_awlock   ),
+            .dbg_master_axi_awcache     ( dbg_master_axi_awcache  ),
+            .dbg_master_axi_awprot      ( dbg_master_axi_awprot   ),
+            .dbg_master_axi_awregion    ( dbg_master_axi_awregion ),
+            .dbg_master_axi_awqos       ( dbg_master_axi_awqos    ),
+            .dbg_master_axi_awvalid     ( dbg_master_axi_awvalid  ),
+            .dbg_master_axi_awready     ( dbg_master_axi_awready  ),
+            .dbg_master_axi_wdata       ( dbg_master_axi_wdata    ),
+            .dbg_master_axi_wstrb       ( dbg_master_axi_wstrb    ),
+            .dbg_master_axi_wlast       ( dbg_master_axi_wlast    ),
+            .dbg_master_axi_wvalid      ( dbg_master_axi_wvalid   ),
+            .dbg_master_axi_wready      ( dbg_master_axi_wready   ),
+            .dbg_master_axi_bid         ( dbg_master_axi_bid      ),
+            .dbg_master_axi_bresp       ( dbg_master_axi_bresp    ),
+            .dbg_master_axi_bvalid      ( dbg_master_axi_bvalid   ),
+            .dbg_master_axi_bready      ( dbg_master_axi_bready   ),
+            .dbg_master_axi_arid        ( dbg_master_axi_arid     ),
+            .dbg_master_axi_araddr      ( dbg_master_axi_araddr   ),
+            .dbg_master_axi_arlen       ( dbg_master_axi_arlen    ),
+            .dbg_master_axi_arsize      ( dbg_master_axi_arsize   ),
+            .dbg_master_axi_arburst     ( dbg_master_axi_arburst  ),
+            .dbg_master_axi_arlock      ( dbg_master_axi_arlock   ),
+            .dbg_master_axi_arcache     ( dbg_master_axi_arcache  ),
+            .dbg_master_axi_arprot      ( dbg_master_axi_arprot   ),
+            .dbg_master_axi_arregion    ( dbg_master_axi_arregion ),
+            .dbg_master_axi_arqos       ( dbg_master_axi_arqos    ),
+            .dbg_master_axi_arvalid     ( dbg_master_axi_arvalid  ),
+            .dbg_master_axi_arready     ( dbg_master_axi_arready  ),
+            .dbg_master_axi_rid         ( dbg_master_axi_rid      ),
+            .dbg_master_axi_rdata       ( dbg_master_axi_rdata    ),
+            .dbg_master_axi_rresp       ( dbg_master_axi_rresp    ),
+            .dbg_master_axi_rlast       ( dbg_master_axi_rlast    ),
+            .dbg_master_axi_rvalid      ( dbg_master_axi_rvalid   ),
+            .dbg_master_axi_rready      ( dbg_master_axi_rready   ),
+            // To PULP core
+            .debug_req_o            ( debug_req_core           )
+        );
+
+    end : dm_gen
+    else begin : dm_not_gen
+
+        // Tie-off debug request signal to cores
+        assign debug_req_core = '0;
+
+        // Sink unused interafces
+        `SINK_AXI_MASTER_INTERFACE(dbg_master);
+        `SINK_AXI_SLAVE_INTERFACE(dbg_slave);
+
+    end : dm_not_gen
 
 endmodule : rvm_socket

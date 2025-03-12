@@ -1,4 +1,5 @@
-# Downloaded RTL files
-custom_picorv32/rtl/*
-custom_cv32e40p/rtl/*
-custom_rv_plic/rtl/*
+# Ignore rtl folders for downloaded sources
+*/rtl/*
+
+# Downloaded binaries
+bender

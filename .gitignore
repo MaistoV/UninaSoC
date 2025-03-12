@@ -19,4 +19,5 @@ build/
 # Temporary files and directories
 tmp*
 backup*
+*.log
 

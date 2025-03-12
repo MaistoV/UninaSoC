@@ -14,7 +14,7 @@ VLTSTD_INC = /usr/share/verilator/include/vltstd/
 # Project directories #
 #######################
 
-# Unit-Under-Test top module sv file name 	
+# Unit-Under-Test top module sv file name
 PROJECT_NAME ?= test
 # Directory containing the RTL module
 RTL_DIR = rtl
@@ -35,12 +35,12 @@ VGEN_DIR = verilator
 TB = $(TB_DIR)/$(PROJECT_NAME)_tb
 
 # Add here all the .sv dependencies dirs (e.g. -y dir0 -y dir1 -y dir2 etc.)
-SV_INC_DIR = 
+SV_INC_DIR =
 # TestBench included cpp files, separated by space (e.g. $(RTL_DIR)/module0.cpp $(RTL_DIR)/module1.cpp $(RTL_DIR)/module2.cpp etc.)
 TB_INC_DIR =
-TB_SRC_DIR = 
+TB_SRC_DIR =
 # Verilator warning suppression. (Check https://verilator.org/guide/latest/warnings.html)
-WARNINGSBYPASS = -Wno-UNUSED -Wno-PINCONNECTEMPTY -Wno-SYNCASYNCNET -Wno-IMPORTSTAR -Wno-MODDUP 
+WARNINGSBYPASS = -Wno-UNUSED -Wno-PINCONNECTEMPTY -Wno-SYNCASYNCNET -Wno-IMPORTSTAR -Wno-MODDUP
 # Enable Verilator debug messages
 VERILATOR_DEBUG = #--debug --gdbbt
 
@@ -67,4 +67,4 @@ clean:
 	rm -f "$(PROJECT_NAME)/$(BIN_DIR)/$(PROJECT_NAME)_run
 	rm -f $(PROJECT_NAME)/$(WAVES_DIR)/trace.vcd;
 
-	
+

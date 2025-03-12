@@ -1,5 +1,6 @@
 #!/bin/python3.10
 # Author: Manuel Maddaluno        <manuel.maddaluno@unina.it>
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description:
 #   Check the validity of the CSV configurations
 #   The checks are split in two part: 1) intra configuration checks and 2) inter configuration checks
@@ -60,6 +61,18 @@ def __print_error(txt : str) -> None:
 # Check intra configuration #
 #############################
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
+
+    # Only main but can select a core
+    if ( config.BUS_NAME == "MBUS" ):
+        # Supported cores
+        if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
+            __print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
+            return False
+    # If a non-main bus config wants to select a core
+    elif ( config.CORE_SELECTOR != "" ) :
+        __print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in main bus")
+        return False
+
     # Check if the protocol is valid
     if config.PROTOCOL not in VALID_PROTOCOLS:
         __print_error(f"Invalid protocol in {config_file_name}")
@@ -196,11 +209,12 @@ if __name__ == "__main__":
     __print(f"Starting checking {len(configs)} config...")
     __print("Checking intra config validity")
     for i in range(len(configs)):
+        __print(f"Checking {configs[i].BUS_NAME} config...")
         status = check_intra_config(configs[i], config_file_names[i])
 
-    # Some check failed
-    if status == False:
-        exit(1)
+        # This check failed
+        if status == False:
+            exit(1)
 
     # Success intra-config check
     __print("Checking intra config validity done!")

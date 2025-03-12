@@ -96,6 +96,7 @@ module uninasoc (
 
     // Reset negative
     logic sys_resetn;
+    logic vio_debug_resetn;
     // clkwiz -> all
     logic soc_clk;
 
@@ -115,8 +116,11 @@ module uninasoc (
     // sys_master -> crossbar
     `DECLARE_AXI_BUS(sys_master_to_xbar, AXI_DATA_WIDTH);
     // rvm_socket -> crossbar
-    `DECLARE_AXI_BUS(rvm_socket_instr, AXI_DATA_WIDTH);
-    `DECLARE_AXI_BUS(rvm_socket_data, AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_instr , AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(rvm_socket_data  , AXI_DATA_WIDTH);
+    `DECLARE_AXI_BUS(dbg_master       , AXI_DATA_WIDTH);
+    // crossbar -> rvm_socket
+    `DECLARE_AXI_BUS(dbg_slave        , AXI_DATA_WIDTH);
 
     /////////////////
     // AXI Slaves  //
@@ -125,7 +129,7 @@ module uninasoc (
     // xbar -> main memory
     `DECLARE_AXI_BUS(xbar_to_main_mem, AXI_DATA_WIDTH);
 
-     // xbar -> PLIC
+    // xbar -> PLIC
     `DECLARE_AXI_BUS(xbar_to_plic, AXI_DATA_WIDTH);
 
     // XBAR to peripheral bus
@@ -140,20 +144,19 @@ module uninasoc (
     // Concatenate AXI buses //
     ///////////////////////////
 
-    `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_AXI_MASTERS);
+    `DECLARE_AXI_BUS_ARRAY(xbar_masters, NUM_SI);
     // NOTE: The order in this macro expansion is must match with xbar slave ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
-    `CONCAT_AXI_MASTERS_ARRAY3(xbar_masters, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
+    `CONCAT_AXI_MASTERS_ARRAY4(xbar_masters, dbg_master, rvm_socket_instr, rvm_socket_data, sys_master_to_xbar);
 
     // Concatenate AXI slave buses
-    `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_AXI_SLAVES);
-
+    `DECLARE_AXI_BUS_ARRAY(xbar_slaves, NUM_MI);
     // NOTE: The order in this macro expansion must match with xbar master ports!
     //                      array_name,            bus N,           bus N-1,    ...     bus 0
     `ifdef EMBEDDED
-        `CONCAT_AXI_SLAVES_ARRAY3(xbar_slaves, xbar_to_plic, xbar_to_peripheral_bus, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY4(xbar_slaves, xbar_to_plic, xbar_to_peripheral_bus, dbg_slave, xbar_to_main_mem);
     `elsif HPC
-        `CONCAT_AXI_SLAVES_ARRAY4(xbar_slaves, xbar_to_plic, xbar_to_ddr4, xbar_to_peripheral_bus, xbar_to_main_mem);
+        `CONCAT_AXI_SLAVES_ARRAY5(xbar_slaves, xbar_to_plic, xbar_to_ddr4, xbar_to_peripheral_bus, dbg_slave, xbar_to_main_mem);
     `endif
 
     ///////////////////////
@@ -169,7 +172,7 @@ module uninasoc (
     xlnx_vio vio_inst (
       .clk        ( soc_clk         ),
       .probe_out0 ( vio_resetn      ),
-      .probe_out1 ( vio_jtag_trst_n ),
+      .probe_out1 (                 ),
       .probe_in0  ( sys_resetn      )
     );
 
@@ -324,11 +327,12 @@ module uninasoc (
     // RVM Socket
     rvm_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH )
-        //.DEBUG_MODULE  ( DEBUG_MODULE   )
+        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
+        .CORE_SELECTOR ( CORE_SELECTOR  )
     ) rvm_socket_u (
         .clk_i          ( soc_clk    ),
-        .rst_ni         ( sys_resetn & vio_resetn ),
+        .rst_ni         ( sys_resetn ),
+        .core_resetn_i  ( vio_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( rvm_socket_interrupt_line ),
 
@@ -412,7 +416,89 @@ module uninasoc (
         .rvm_socket_data_axi_rresp,
         .rvm_socket_data_axi_rlast,
         .rvm_socket_data_axi_rvalid,
-        .rvm_socket_data_axi_rready
+        .rvm_socket_data_axi_rready,
+
+        // Debug AXI master
+        .dbg_master_axi_awid,
+        .dbg_master_axi_awaddr,
+        .dbg_master_axi_awlen,
+        .dbg_master_axi_awsize,
+        .dbg_master_axi_awburst,
+        .dbg_master_axi_awlock,
+        .dbg_master_axi_awcache,
+        .dbg_master_axi_awprot,
+        .dbg_master_axi_awqos,
+        .dbg_master_axi_awvalid,
+        .dbg_master_axi_awready,
+        .dbg_master_axi_awregion,
+        .dbg_master_axi_wdata,
+        .dbg_master_axi_wstrb,
+        .dbg_master_axi_wlast,
+        .dbg_master_axi_wvalid,
+        .dbg_master_axi_wready,
+        .dbg_master_axi_bid ,
+        .dbg_master_axi_bresp,
+        .dbg_master_axi_bvalid,
+        .dbg_master_axi_bready,
+        .dbg_master_axi_arid,
+        .dbg_master_axi_araddr,
+        .dbg_master_axi_arlen,
+        .dbg_master_axi_arsize,
+        .dbg_master_axi_arburst,
+        .dbg_master_axi_arlock,
+        .dbg_master_axi_arcache,
+        .dbg_master_axi_arprot,
+        .dbg_master_axi_arqos,
+        .dbg_master_axi_arvalid,
+        .dbg_master_axi_arready,
+        .dbg_master_axi_arregion,
+        .dbg_master_axi_rid,
+        .dbg_master_axi_rdata,
+        .dbg_master_axi_rresp,
+        .dbg_master_axi_rlast,
+        .dbg_master_axi_rvalid,
+        .dbg_master_axi_rready,
+
+        // Debug AXI slave
+        .dbg_slave_axi_awid,
+        .dbg_slave_axi_awaddr,
+        .dbg_slave_axi_awlen,
+        .dbg_slave_axi_awsize,
+        .dbg_slave_axi_awburst,
+        .dbg_slave_axi_awlock,
+        .dbg_slave_axi_awcache,
+        .dbg_slave_axi_awprot,
+        .dbg_slave_axi_awqos,
+        .dbg_slave_axi_awvalid,
+        .dbg_slave_axi_awready,
+        .dbg_slave_axi_awregion,
+        .dbg_slave_axi_wdata,
+        .dbg_slave_axi_wstrb,
+        .dbg_slave_axi_wlast,
+        .dbg_slave_axi_wvalid,
+        .dbg_slave_axi_wready,
+        .dbg_slave_axi_bid ,
+        .dbg_slave_axi_bresp,
+        .dbg_slave_axi_bvalid,
+        .dbg_slave_axi_bready,
+        .dbg_slave_axi_arid,
+        .dbg_slave_axi_araddr,
+        .dbg_slave_axi_arlen,
+        .dbg_slave_axi_arsize,
+        .dbg_slave_axi_arburst,
+        .dbg_slave_axi_arlock,
+        .dbg_slave_axi_arcache,
+        .dbg_slave_axi_arprot,
+        .dbg_slave_axi_arqos,
+        .dbg_slave_axi_arvalid,
+        .dbg_slave_axi_arready,
+        .dbg_slave_axi_arregion,
+        .dbg_slave_axi_rid,
+        .dbg_slave_axi_rdata,
+        .dbg_slave_axi_rresp,
+        .dbg_slave_axi_rlast,
+        .dbg_slave_axi_rvalid,
+        .dbg_slave_axi_rready
     );
 
     ////////////////
@@ -675,4 +761,3 @@ module uninasoc (
 
 
 endmodule : uninasoc
-

@@ -29,6 +29,7 @@ Some properties are array, with elements separated by a space " " character. The
 
 | Name  | Description | Values | Default
 |-|-|-|-|
+| CORE_SELECTOR         | Select target RV core (**only for main_bus**)             | CORE_PICORV32, CORE_CV32E40P, CORE_MICROBLAZEV            | None (**mandatory value**)
 | PROTOCOL              | AXI PROTOCOL                                              | (AXI4, AXI4LITE, AXI3)                                    | AXI4
 | CONNECTIVITY_MODE     | Crossbar Interconnection                                  | Shared-Address, Multiple-Data(SAMD), Shared-Address/Shared-Data(SASD)                | SAMD
 | ADDR_WIDTH            | AXI Address Width                                         | (12..64) for AXI4 and AXI3, (1..64) for AXI4LITE          | 32
@@ -65,12 +66,13 @@ To generate configurations change the CSV files according to your needs and:
 $ make config_main_bus # generates main bus config
 $ make config_peripheral_bus # generates peripheral bus config
 $ make config_ld # generates linker script
+$ make config_xilinx # update xilinx config
 ```
 
 # Scripting Architecture
 The configuration scripting architecture is structured as in the following figure:
 
-![Configuration flow](./axi_xbar_config.png)
+![Configuration flow](./axi_xbar_config_with_check.png)
 
 * Linker script generation is handled solely by `create_linker_script.py` source.
 * TCL file generation is divided in multiple files, with `create_crossbar_config.py` as master script

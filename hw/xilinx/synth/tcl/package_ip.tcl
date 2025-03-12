@@ -1,7 +1,7 @@
 # Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description: Package Vivado IP from $src_file_list over $top_module, from an opened project
 # Input args:
-#	None
+#    None
 
 # Add files to project
 import_files -norecurse -fileset [current_fileset] $src_file_list

@@ -65,7 +65,7 @@ module peripheral_bus #(
     `DECLARE_AXILITE_BUS(prot_conv_to_xbar);
 
     // AXI Lite bus array from the axilite crossbar to the slaves (peripherals)
-    `DECLARE_AXILITE_BUS_ARRAY(xbar_slaves, NUM_AXILITE_SLAVES);
+    `DECLARE_AXILITE_BUS_ARRAY(xbar_slaves, PBUS_NUM_MI);
 
     // AXI Lite bus from the axilite crossbar to the UART
     `DECLARE_AXILITE_BUS(xbar_to_uart);
