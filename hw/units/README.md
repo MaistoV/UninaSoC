@@ -1,14 +1,44 @@
 # Custom IP Implementation and Simulation
 
-The source files for the custom IPs used in the SoC are located in this directory. These custom IPs are packaged using the Makefile IPS flow found in the `hw/xilinx directory`. Each IP's build and packaging process directly references the source files in `units/custom_IP_NAME`. Additionally, the RTL source files can be utilized by the simulation framework, which is currently under development.
+The source files for the custom IPs used in the SoC are located in this directory. These custom IPs are packaged using the Makefile IPs flow found in the `hw/xilinx directory`. Each IP's build and packaging process directly references the source files in `units/custom_IP_NAME`.
 
-## Units Development
+## Custom Units Integration
 
-Each custom IP, or unit, is represented by two subdirectories: one in `hw/units` and another in `hw/xilinx/ips`. These two directories must share the same name, both using the `custom_` prefix. For the directory in `hw/xilinx/ips`, you can simply reuse the `config.tcl` file found in other examples (e.g., `hw/xilinx/ips/common/custom_cv32e40p`), as it is standard across all custom IPs. On the other hand, the directory in `hw/units` needs to be uniquely designed based on the specific IP.
+Each custom IP, or unit, is represented by two subdirectories: one in `hw/units` and another in `hw/xilinx/ips`.
 
-The `/custom_template` directory contains a template project for custom IPs, including a wrapper module and a script. If the custom IP originates from a remote repository (e.g., a GitHub project), the script should: (a) create the rtl directory, (b) clone and copy all source files into the rtl directory in a flattened structure, and (c) remove all temporary files created during this process. For a practical example, refer to the `/custom_cv32e40p/fetch_sources.sh` script.
+```
+├── units
+│   └── custom_<IP name>
+|       ├── assets/
+|       ├── custom_top_wrapper.sv
+|       └── fetch_sources.sh
+└── xilinx
+    ├── doc
+    ├── ips
+    ├── common
+    │   └── custom_<IP name>
+    |       └── config.tcl -> ../tcl/custom_config.tcl
+    ├── embedded
+    └── hpc
+```
 
-The file `/custom_template/custom_top_wrapper.sv` is a wrapper module designed to make the custom IP compatible with the SoC. It leverages the `hw/xilinx/rtl/uninasoc_mem.svh` and `hw/xilinx/rtl/uninasoc_axi.svh` headers (which are already included in the Vivado project packaging flow) to define macros for the MEM and AXI bus interfaces. While custom signals are allowed, we expect the custom IP to primarily communicate via either AXI (preferably) or MEM.
+These two directories must share the same name, both using the `custom_` prefix:
+- The directory in `hw/xilinx/ips`, you can simply link to the `ips/common/config.tcl` file.
+- The directory in `hw/units` must expose:
+    1. A `fetch_sources.sh` script.
+    2. A `custom_top_wrapper.sv` RTL source to wrap
+
+
+If the custom IP originates from a remote repository (e.g., a GitHub project), the  `fetch_sources.sh` script should:
+(a) create an `rtl/` directory,
+(b) clone and copy all source files into the `rtl/` directory in a **flattened structure**, and
+(c) remove all temporary files created during this process.
+
+The `custom_template/` directory contains a template project for custom IPs, including a wrapper module and a script.
+
+## Using MEM and AXI interfaces
+
+The file `custom_template/custom_top_wrapper.sv` is a wrapper module designed to make the custom IP compatible with the SoC. It leverages the `hw/xilinx/rtl/uninasoc_mem.svh` and `hw/xilinx/rtl/uninasoc_axi.svh` headers (which are already included in the Vivado project packaging flow) to define macros for the MEM and AXI bus interfaces. While custom signals are allowed, we expect the custom IP to primarily communicate via either AXI (preferably) or MEM.
 
 To fetch rtl sources, just use:
 ```
