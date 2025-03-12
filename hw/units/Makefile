@@ -5,7 +5,8 @@ endif
 
 SHELL := /bin/bash
 
-IP_RTL_LIST	= $(shell basename --multiple ${HW_UNITS_ROOT}/custom_*)
+# All custom IPs directories, excluding custom_template
+IP_RTL_LIST = $(filter-out custom_template, $(shell basename --multiple ${HW_UNITS_ROOT}/custom_*) )
 
 all: units
 
