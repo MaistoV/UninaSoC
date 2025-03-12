@@ -1,4 +1,4 @@
-# Xilinx flow
+# Xilinx FPGA Flow
 This tree holds the building environment for Xilinx FPGAs.
 
 ## Installation
@@ -12,7 +12,14 @@ Additional installation-related technical documentation can be found in the `doc
 
 ## Build Bitstream and Program Device
 In order to build the bitstream all sources for custom IPs must be available for the project.
-Check [hw/units/README.md](../units/README.md) for more info regarding it.
+Check [hw/units/README.md](../units/README.md) for more info.
+
+To build Xilinx and custom IPs:
+``` bash
+make ips
+make ips/<IP name>.xci # For a single IP
+```
+
 To build the bitstream just run:
 ``` bash
 make bistream
@@ -20,21 +27,51 @@ make bistream
 
 Once the build is completed, program target device running:
 ``` bash
-make start_hw_server # Only once after host boot
+make start_hw_server # Only once after host boot and for older versions of Vivado
 make program_bitstream
 ```
 
 ## Load Binary on the Device
 Assuming:
 1. The bistream has been programmed
-2. A binary has been built (in binary, non elf format), e.g. bootrom
+2. A binary has been built (in binary or elf format).
+> The software compilation flow builds both elf and binary.
 
+### Load ELFs
+Load ELF with GDB and either OpenOCD or XSDB as back-ends.
+
+#### Microblaze-V
+If `CORE_SELECTION` is `CORE_MICROBLAZEV`:
+``` bash
+make xsdb_run_elf
+```
+Or
+``` bash
+make xsdb_backend
+```
+
+##### Other Cores
+Otherwise, **for all other cores**, assuming no `hw_server` instance is running:
+``` bash
+make run_openocd
+```
+
+##### All cores
+Once OpenOCD or XSDB backends are up, in another shell run RISC-V GDB and attach to GDB port `3004`, or run:
+
+> 3004 is just the default RISC-V 32-bits GDB port for XSDB
+
+``` bash
+make run_gdb
+```
+
+
+### Load Binary
 You can load your binary into the device memory running the following command, optionally setting some environment variables:
 ``` bash
 make load_binary bin_path=<path-to-bin> base_address=<value> JTAG_READBACK=<false|true>
 ```
-The default configuration loads the bootrom.
-> NOTE: this loading flow does not support C-extension yet.
+The default variable values loads the [blinky](../../sw/SoC/examples/blinky/) example.
 
 ## Directory Structure
 This tree is structured as follows:
@@ -48,16 +85,18 @@ This tree is structured as follows:
 │   │       └── config.tcl          # Script setting IP properties
 |   ├── embedded                    # Embedded IPs
 |   └── hpc                         # HPC IPs
-├── Makefile                        # Make file for Xilinx flow
+├── make                            # Included Makefiles
+├── Makefile                        # Top Make file for Xilinx flow
 ├── README.md                       # This file
 ├── rtl                             # RTL sources
+├── scripts                         # Utilty scripts
 ├── sim                             # Xilinx-specific simulation
 └── synth                           # Xilinx-specific synthesis
     ├── constraints                 # Constraint files for Xilinx FPGA designs
-    └── tcl                         # FPGA-synthesis TCL scripts
+    └── tcl                         # Synthesis-related TCL scripts
 ```
 
-## IPs flow
+## IPs Flow
 The system features both Xilinx-provided and custom IPs.
 
 ### Add and Configure a Xilinx IP
@@ -72,14 +111,16 @@ The name of the directory will be the name of your IP in the design. In the dire
 
 (Re-)configure the IP by:
 1. Editing the property keys and values in `config.tcl`;
-2. Running make `<ip_name>`
+2. Running `make ips/<ip_name>.xci`
 > NOTE: Vivado versions must match between IP build and IP import during system build.
+
+## Custom IPs
+Custom IPs are built alongside Xilinx IPs.
+
+For further info on custom IPs see [related documentation](../units/README.md).
 
 ### Prepare IP Simulation
 tbd
-
-## Custom IPs
-TBD
 
 ## In-system Debug Probing with Xilinx ILAs
 This environment supports the automatic insertion of Internal Logic Analyzer (ILA) probes, ([PG172](https://docs.amd.com/v/u/en-US/pg172-ila) ).

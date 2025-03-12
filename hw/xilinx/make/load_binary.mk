@@ -47,18 +47,18 @@ XSDB_DEBUG_PORT ?= 3004
 
 # Load program directly with XSDB
 xsdb_run_elf:
-	${XSDB} ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_run_elf.tcl ${ELF_PATH} ${XILINX_BITSTREAM}
+	${XSDB} ${XILINX_SCRIPTS_LOAD_ROOT}/$@.tcl ${ELF_PATH} ${XILINX_BITSTREAM}
 
 # Use XSDB as a backend
-debug_backend:
-	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_connect.tcl
+xsdb_backend:
+	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/$@.tcl
 
 # Use GDB to load the ELF and run (open the backend in a shell before) (TO TEST)
-debug_run:
-	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/run_gdb.sh ${ELF_PATH} ${XSDB_DEBUG_PORT}"
+run_gdb:
+	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/$@.sh ${ELF_PATH} ${XSDB_DEBUG_PORT}"
 
 # PHONIES
-.PHONY: load_binary load_binary_embedded load_binary_hpc xsdb_run_elf debug_backend debug_run
+.PHONY: load_binary load_binary_embedded load_binary_hpc xsdb_run_elf xsdb_backend debug_run
 
 ###########
 # OpenOCD #
@@ -66,6 +66,6 @@ debug_run:
 OPENOCD ?= openocd
 OPENOCD_TARGET ?= nexysA7
 OPENOCD_SCRIPT ?= ${XILINX_SYNTH_TCL_ROOT}/openocd_${OPENOCD_TARGET}.cfg
-openocd_run:
+run_openocd:
 	@echo "[INFO] Make sure to kill any instance of hw_server running on the target USB device"
 	${OPENOCD} -f ${OPENOCD_SCRIPT}

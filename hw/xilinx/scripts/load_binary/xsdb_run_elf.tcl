@@ -51,10 +51,4 @@ dow $ELF_FILE
 # Wait 0.5 seconds
 after 500
 # Start execution
-puts "\[INFO\] Start execution"
-con
-# Wait for 5 seconds
-# after 5000
-# Stop program
-# stop
-
+puts "\[INFO\] Run \"con\" to start execution"
