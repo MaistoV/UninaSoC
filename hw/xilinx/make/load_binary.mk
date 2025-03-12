@@ -49,3 +49,13 @@ debug_run:
 
 # PHONIES
 .PHONY: load_binary load_binary_embedded load_binary_hpc xsdb_run_elf debug_backend debug_run
+
+###########
+# OpenOCD #
+###########
+OPENOCD ?= openocd
+OPENOCD_TARGET ?= nexysA7
+OPENOCD_SCRIPT ?= ${XILINX_SYNTH_TCL_ROOT}/openocd_${OPENOCD_TARGET}.cfg
+openocd_run:
+	@echo "[INFO] Make sure to kill any instance of hw_server running on the target USB device"
+	${OPENOCD} -f ${OPENOCD_SCRIPT}

@@ -118,7 +118,7 @@ typedef logic                           mem_logic_t;
 //  Bus Ports   //
 //////////////////
 
-// MEM4 MASTER PORTS
+// MEM MASTER PORTS
 `define DEFINE_MEM_MASTER_PORTS(bus_name)               \
     output mem_logic_t     ``bus_name``_mem_req,        \
     input  mem_logic_t     ``bus_name``_mem_gnt,        \
@@ -141,5 +141,27 @@ typedef logic                           mem_logic_t;
     input  mem_strb_t      ``bus_name``_mem_be,         \
     output mem_logic_t     ``bus_name``_mem_error
 
+/////////////////////
+// Sink interfaces //
+/////////////////////
+
+// These macros are meant to emulate a stub master or slave,
+// never really doing anything. This way, we avoid to leave
+// floating signals around.
+
+// Sink MEM master interface
+`define SINK_MEM_MASTER_INTERFACE(bus_name) \
+    assign ``bus_name``_mem_gnt     = '0;   \
+    assign ``bus_name``_mem_valid   = '0;   \
+    assign ``bus_name``_mem_rdata   = '0;   \
+    assign ``bus_name``_mem_error   = '0;
+
+// Sink MEM slave interface
+`define SINK_MEM_SLAVE_INTERFACE(bus_name)  \
+    assign ``bus_name``_mem_req     = '0;   \
+    assign ``bus_name``_mem_addr    = '0;   \
+    assign ``bus_name``_mem_wdata   = '0;   \
+    assign ``bus_name``_mem_we      = '0;   \
+    assign ``bus_name``_mem_be      = '0;
 
 `endif // UNINASOC_MEM_SVH__

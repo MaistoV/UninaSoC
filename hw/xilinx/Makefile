@@ -73,9 +73,10 @@ IP_LIST_XCI = ${XILINX_IP_LIST_XCI} ${CUSTOM_IP_LIST_XCI}
 # Runtime optimized run strategies
 # SYNTH_STRATEGY 	?= Flow_RuntimeOptimized
 # IMPL_STRATEGY 	?= Flow_RuntimeOptimized
-
-SYNTH_STRATEGY 	?= "Vivado Synthesis Defaults"
-IMPL_STRATEGY 	?= "Vivado Implementation Defaults"
+SYNTH_STRATEGY 	?= "Flow_PerfOptimized_high"
+IMPL_STRATEGY 	?= "Performance_ExtraTimingOpt"
+# SYNTH_STRATEGY 	?= "Vivado Synthesis Defaults"
+# IMPL_STRATEGY 	?= "Vivado Implementation Defaults"
 
 # Implementation artifacts
 XILINX_BITSTREAM   ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.bit
@@ -90,7 +91,6 @@ XILINX_VIVADO_ENV ?=								\
 	AXI_ADDR_WIDTH=${AXI_ADDR_WIDTH}				\
 	AXI_ID_WIDTH=${AXI_ID_WIDTH}					\
 	CORE_SELECTOR=${CORE_SELECTOR}					\
-	DEBUG_MODULE=${DEBUG_MODULE}					\
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\
 	IMPL_STRATEGY=${IMPL_STRATEGY}					\
@@ -126,6 +126,7 @@ IP_NAMES ?= $(addsuffix .xci, ${IP_LIST})
 ips: ${IP_NAMES}
 
 # Build single IP
+# TODO31: make this dependent on ${HW_UNITS_ROOT}/%/custom_top_wrapper.tcl
 %.xci: IP_NAME=$*
 %.xci: IP_DIR=$(firstword $(shell find ${XILINX_IPS_ROOT} -name '$*'))
 %.xci: IP_BUILD_DIR=${IP_DIR}/build

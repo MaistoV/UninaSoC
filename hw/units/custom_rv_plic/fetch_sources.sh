@@ -12,6 +12,9 @@ NC='\033[0m' # No Color
 #######################################
 # Fetch PLIC sources and depencencies #
 #######################################
+# TODO31: this PYTHON flow requires: hjson and tabulate
+# TODO31: Install them from here, as harmless if already installed
+# python3 -m pip install hjson tabulate
 
 # Check Python dependencies (hjson requires Python 3.3+). If you need more info, heck OpenTitan doc: https://opentitan.org/book/doc/contributing/style_guides/hjson_usage_style.html
 echo -e "${YELLOW}[FETCH_SOURCES] Checking for Python Module hjson ... ${NC}"
@@ -35,6 +38,8 @@ cd ${CLONE_DIR};
 # Patch bender file to download latest register_interface version
 # This is required as axi_to_reg_v1 is broken, and we need version 2
 sed -i 's/version: 0.3.9/version: 0.4.5/' Bender.yml
+# Add a fake commit
+git commit -i Bender.yml -m "Patch commit for axi_to_reg_v1"
 
 # Open-Titan peripherals (by PULP) requires a preliminar configuration and patching
 # Apply hjson configurations and patches
