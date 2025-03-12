@@ -57,48 +57,10 @@ module peripheral_bus #(
 
 );
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    // IMPORTANT NOTICE: DON'T TOUCH THESE FOLLOWING COMMENTS THEY ARE USED BY THE CONFIGURATION FLOW //
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /////////////////////
-    // Bus Definitions //
-    /////////////////////
-
-
-    /////////////////
-    // AXI Masters //
-    /////////////////
-
-	`DECLARE_AXILITE_BUS(PROT_CONV_to_PBUS);
-    // END AXI Masters //
-
-    /////////////////
-    // AXI Slaves  //
-    /////////////////
-
-	`DECLARE_AXILITE_BUS(PBUS_to_UART);
-	`DECLARE_AXILITE_BUS(PBUS_to_GPIO_out);
-	`DECLARE_AXILITE_BUS(PBUS_to_GPIO_in);
-	`DECLARE_AXILITE_BUS(PBUS_to_TIM0);
-	`DECLARE_AXILITE_BUS(PBUS_to_TIM1);
-    // END AXI Slaves  //
-
-    ///////////////////////////
-    // Concatenate AXI buses //
-    ///////////////////////////
-
-    // Concatenate AXI master buses //
-
-	`DECLARE_AXILITE_BUS_ARRAY(PBUS_masters, PBUS_NUM_SI);
-	`CONCAT_AXILITE_MASTERS_ARRAY1(PBUS_masters, PROT_CONV_to_PBUS);
-    // END Concatenate AXI master buses //
-
-    // Concatenate AXI slave buses //
-
-	`DECLARE_AXILITE_BUS_ARRAY(PBUS_slaves, PBUS_NUM_MI);
-	`CONCAT_AXILITE_SLAVES_ARRAY5(PBUS_slaves, PBUS_to_TIM1, PBUS_to_TIM0, PBUS_to_GPIO_in, PBUS_to_GPIO_out, PBUS_to_UART);
-    // END Concatenate AXI slave buses //
+    /////////////////////////////////////////
+    // Buses declaration and concatenation //
+    /////////////////////////////////////////
+    `include "pbus_buses.txt"
 
     ///////////////////////
     // Interrupt Signals //

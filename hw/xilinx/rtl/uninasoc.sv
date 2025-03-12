@@ -109,45 +109,10 @@ module uninasoc (
     // Peripheral bus interrupts
     logic [peripherals_interrupts_num-1:0] pbus_int_line;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    // IMPORTANT NOTICE: DON'T TOUCH THESE FOLLOWING COMMENTS THEY ARE USED BY THE CONFIGURATION FLOW //
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /////////////////
-    // AXI Masters //
-    /////////////////
-
-	`DECLARE_AXI_BUS(SYS_MASTER_to_MBUS, AXI_DATA_WIDTH);
-	`DECLARE_AXI_BUS(RVM_SOCKET_DATA_to_MBUS, AXI_DATA_WIDTH);
-	`DECLARE_AXI_BUS(RVM_SOCKET_INSTR_to_MBUS, AXI_DATA_WIDTH);
-	`DECLARE_AXI_BUS(DBG_MASTER_to_MBUS, AXI_DATA_WIDTH);
-    // END AXI Masters //
-
-    /////////////////
-    // AXI Slaves  //
-    /////////////////
-
-	`DECLARE_AXI_BUS(MBUS_to_BRAM, AXI_DATA_WIDTH);
-	`DECLARE_AXI_BUS(MBUS_to_DM_mem, AXI_DATA_WIDTH);
-	`DECLARE_AXI_BUS(MBUS_to_PBUS, AXI_DATA_WIDTH);
-	`DECLARE_AXI_BUS(MBUS_to_PLIC, AXI_DATA_WIDTH);
-    // END AXI Slaves  //
-
-    ///////////////////////////
-    // Concatenate AXI buses //
-    ///////////////////////////
-
-    // Concatenate AXI master buses //
-
-	`DECLARE_AXI_BUS_ARRAY(MBUS_masters, NUM_SI);
-	`CONCAT_AXI_MASTERS_ARRAY4(MBUS_masters, DBG_MASTER_to_MBUS, RVM_SOCKET_INSTR_to_MBUS, RVM_SOCKET_DATA_to_MBUS, SYS_MASTER_to_MBUS);
-    // END Concatenate AXI master buses //
-
-    // Concatenate AXI slave buses //
-
-	`DECLARE_AXI_BUS_ARRAY(MBUS_slaves, NUM_MI);
-	`CONCAT_AXI_SLAVES_ARRAY4(MBUS_slaves, MBUS_to_PLIC, MBUS_to_PBUS, MBUS_to_DM_mem, MBUS_to_BRAM);
-    // END Concatenate AXI slave buses //
+    /////////////////////////////////////////
+    // Buses declaration and concatenation //
+    /////////////////////////////////////////
+    `include "mbus_buses.txt"
 
     ///////////////////////
     // Local assignments //
@@ -751,14 +716,3 @@ module uninasoc (
 
 
 endmodule : uninasoc
-
-_DDR_axi_rready   )
-
-    );
-
-
-`endif
-
-
-endmodule : uninasoc
-

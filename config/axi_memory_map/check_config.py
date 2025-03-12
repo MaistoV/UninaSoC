@@ -25,11 +25,9 @@
 ####################
 # Parse args
 import sys
-# Manipulate CSV
-import pandas as pd
 # Sub-scripts
-import parse_properties_wrapper
 import configuration
+from read_config import read_config
 
 # Constants
 VALID_PROTOCOLS = ["AXI4", "AXI4LITE"]
@@ -162,32 +160,6 @@ def check_inter_config(configs : list) -> bool:
                             return False
     return True
 
-###############
-# Read config #
-###############
-def read_config(config_file_names : list) -> list:
-    __print("Reading configuration...")
-    # List of configuration objects (one for each bus)
-    configs = []
-    for name in config_file_names:
-        # Create a configuration object for each bus
-        config = configuration.Configuration()
-
-        # Reading the CSV
-        for index, row in pd.read_csv(name, sep=",").iterrows():
-            # Update the config
-	        config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
-
-        # Naming the actual bus
-        end_name = name.split("/")[-1]
-        config.BUS_NAME = BUS_NAMES[end_name]
-        # Append the config to the list
-        configs.append(config)
-
-    __print("Configuration read!")
-
-    return configs
-
 
 ##############
 # Parse args #
@@ -205,7 +177,9 @@ def parse_args(argv : list) -> list:
 
 if __name__ == "__main__":
     config_file_names = parse_args(sys.argv)
+    __print("Reading configuration...")
     configs = read_config(config_file_names)
+    __print("Configuration read!")
 
     status = True
 
