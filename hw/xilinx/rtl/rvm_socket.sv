@@ -74,11 +74,6 @@ module rvm_socket # (
     // Debug request DM -> RV core
     logic debug_req_core;
 
-    ///////////////////////////
-    //    Assignments        //
-    ///////////////////////////
-    // TODO: update this with Stefano's art
-
     //////////////////////////////////////////////////////
     //     ___               ___          _             //
     //    / __|___ _ _ ___  | _ \___ __ _(_)___ _ _     //
