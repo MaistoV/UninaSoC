@@ -89,3 +89,8 @@ To add a new property:
     - how it updates the `configuration` structure.
 5. In file `create_crossbar_config.py` file, after the loop setting the `configuration` structure,
 create the tcl property string and add it to the list of commands, which will then be flushed on the output file.
+
+### BRAM size configuration
+The entire flow also configures the BRAM size of the IP xlnx_blk_mem_gen according to the RANGE_ADDR_WIDTH assigned to the BRAM in the CSV.
+
+> **IMPORTANT NOTE**: The xlnx_blk_mem_gen config.tcl file configure the first BRAM occurrence, hence it uses the index 0. To add another BRAM, for now, you must add another BRAM occurrence in the CSV file and another configuration tcl with the right index.
