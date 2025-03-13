@@ -79,21 +79,22 @@ range_addr_widths=($(grep "RANGE_ADDR_WIDTH" ${CONFIG_MAIN_CSV} | awk -F "," '{p
 
 # For loop variables
 let cnt=0
-prefix_len=4
-bram_sizes=
+# prefix_len = strlen(bram_name)
+prefix_len=${#bram_name}
+bram_size_list=
 # Find the index for each BRAM into the slave names and get the right range_addr_width
 for slave in ${slaves[*]}; do
     # Assume each BRAM name starts with BRAM
     if [[ ${slave:0:$prefix_len} == $bram_name ]]; then
         range_width=${range_addr_widths[$cnt]}
         bram_size=$(( (1 << $range_width )/8 ))
-        bram_sizes="$bram_sizes $bram_size"
+        bram_size_list="$bram_size_list $bram_size"
     fi
     ((cnt++))
 done
 
 # Replace in target file
-sed -E -i "s/${bram_size_name}.?\?=.+/${bram_size_name} \?= ${bram_sizes}/g" ${OUTPUT_MK_FILE};
+sed -E -i "s/${bram_size_name}.?\?=.+/${bram_size_name} \?= ${bram_size_list}/g" ${OUTPUT_MK_FILE};
 
 # Done
 echo "[CONFIG_XILINX] Output file is at ${OUTPUT_MK_FILE}"
