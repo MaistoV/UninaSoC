@@ -1,5 +1,6 @@
 #!/bin/bash
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 # Description: Replace config-based content of hw/make/config.mk
 # Args:
 #   $1: MBUS Source CSV config
