@@ -53,13 +53,13 @@ PRINT_ERROR_PREFIX = "[ERROR]"
 PRINT_WARNING_PREFIX = "[WARNING]"
 
 # print info
-def __print(txt : str) -> None:
+def print_info(txt : str) -> None:
     print(f"{PRINT_PREFIX} {txt}")
 
 # print warning
-def __print_warning(txt : str) -> None:
+def print_warning(txt : str) -> None:
     print(f"{PRINT_PREFIX}{PRINT_WARNING_PREFIX} {txt}")
 
 # print error
-def __print_error(txt : str) -> None:
+def print_error(txt : str) -> None:
     print(f"{PRINT_PREFIX}{PRINT_ERROR_PREFIX} {txt}")

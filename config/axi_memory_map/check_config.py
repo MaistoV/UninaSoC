@@ -43,43 +43,43 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
     if ( config.BUS_NAME == "MBUS" ):
         # Supported cores
         if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
-            __print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
+            print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
             return False
     # If a non-main bus config wants to select a core
     elif ( config.CORE_SELECTOR != "" ) :
-        __print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in main bus")
+        print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in main bus")
         return False
 
     # Check if the protocol is valid
     if config.PROTOCOL not in VALID_PROTOCOLS:
-        __print_error(f"Invalid protocol in {config_file_name}")
+        print_error(f"Invalid protocol in {config_file_name}")
         return False
 
     # Check the number of slaves and relative data (range names, addresses, and address widths)
     if config.NUM_MI != len(config.RANGE_NAMES):
-        __print_error(f"The NUM_MI does not match RANGE_NAMES in {config_file_name}")
+        print_error(f"The NUM_MI does not match RANGE_NAMES in {config_file_name}")
         return False
     if config.NUM_MI != len(config.BASE_ADDR):
-        __print(config.BASE_ADDR)
-        __print_error(f"The NUM_MI does not match BASE_ADDR in {config_file_name}")
+        print_info(config.BASE_ADDR)
+        print_error(f"The NUM_MI does not match BASE_ADDR in {config_file_name}")
         return False
     if config.NUM_MI != len(config.RANGE_ADDR_WIDTH):
-        __print_error(f"The NUM_MI does not match ADDR_WIDTH in {config_file_name}")
+        print_error(f"The NUM_MI does not match ADDR_WIDTH in {config_file_name}")
         return False
 
     if config.NUM_SI != len(config.MASTER_NAMES):
-        __print_error(f"The NUM_SI does not match MASTER_NAMES in {config_file_name}")
+        print_error(f"The NUM_SI does not match MASTER_NAMES in {config_file_name}")
         return False
 
     # Check the minimum widths (AXI4 12, AXI4LITE 1)
     for addr_width in config.RANGE_ADDR_WIDTH:
         if addr_width > config.ADDR_WIDTH:
-            __print_error(f"RANGE_ADDR_WIDTH is greater than {config.ADDR_WIDTH} in {config_file_name}")
+            print_error(f"RANGE_ADDR_WIDTH is greater than {config.ADDR_WIDTH} in {config_file_name}")
         if config.PROTOCOL == "AXI4" and addr_width < MIN_AXI4_ADDR_WIDTH:
-            __print_error(f"RANGE_ADDR_WIDTH is less than {MIN_AXI4_ADDR_WIDTH} in {config_file_name}")
+            print_error(f"RANGE_ADDR_WIDTH is less than {MIN_AXI4_ADDR_WIDTH} in {config_file_name}")
             return False
         if config.PROTOCOL == "AXI4LITE" and addr_width < MIN_AXI4LITE_ADDR_WIDTH:
-            __print_error(f"RANGE_ADDR_WIDTH is less than {MIN_AXI4LITE_ADDR_WIDTH} in {config_file_name}")
+            print_error(f"RANGE_ADDR_WIDTH is less than {MIN_AXI4LITE_ADDR_WIDTH} in {config_file_name}")
             return False
 
     # Check the address range
@@ -92,7 +92,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
 
         # Check if the base addr does not fall into the addr range (e.g. base_addr: 0x100 is not allowed with range_width=12)
         if (base_address & ~(~1 << (config.RANGE_ADDR_WIDTH[i]-1)) ) != 0:
-            __print_error(f"BASE_ADDR does not match RANGE_ADDR_WIDTH in {config_file_name}")
+            print_error(f"BASE_ADDR does not match RANGE_ADDR_WIDTH in {config_file_name}")
             return False
 
         if i > 0:
@@ -103,7 +103,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
                     ((base_address <= base_addresses[j])  and (end_address >= end_addresses[j])  ) or \
                     ((base_address >= base_addresses[j])  and (end_address <= end_addresses[j])  ):
 
-                    __print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
+                    print_error(f"Address of {config.RANGE_NAMES[i]} overlaps with {config.RANGE_NAMES[i-1]} in {config_file_name}")
                     return False
         base_addresses.append(base_address)
         end_addresses.append(end_address)
@@ -135,7 +135,7 @@ def check_inter_config(configs : list) -> bool:
                         # Do the checks
                         # Check if the address space of the child is containted in the address space of the parent
                         if child_base_address < parent_base_address or child_end_address > parent_end_address:
-                            __print_error(f"Address of {child_config.BUS_NAME} is not properly contained in {config.BUS_NAME}")
+                            print_error(f"Address of {child_config.BUS_NAME} is not properly contained in {config.BUS_NAME}")
                             return False
     return True
 
@@ -144,29 +144,29 @@ def check_inter_config(configs : list) -> bool:
 # Parse args #
 ##############
 def parse_args(argv : list) -> list:
-    __print("Parsing arguments...")
+    print_info("Parsing arguments...")
     # CSV configuration file path
     config_file_names = ['configs/embedded/config_main_bus.csv', 'configs/embedded/config_peripheral_bus.csv']
     if len(sys.argv) >= 3:
         # Get the array of bus names from the second arg to the last but one
         config_file_names = sys.argv[1:3]
-    __print("Parsing done!")
+    print_info("Parsing done!")
     return config_file_names
 
 
 if __name__ == "__main__":
     config_file_names = parse_args(sys.argv)
-    __print("Reading configuration...")
+    print_info("Reading configuration...")
     configs = read_config(config_file_names)
-    __print("Configuration read!")
+    print_info("Configuration read!")
 
     status = True
 
     # Intra-config check
-    __print(f"Starting checking {len(configs)} config...")
-    __print("Checking intra config validity")
+    print_info(f"Starting checking {len(configs)} config...")
+    print_info("Checking intra config validity")
     for i in range(len(configs)):
-        __print(f"Checking {configs[i].BUS_NAME} config...")
+        print_info(f"Checking {configs[i].BUS_NAME} config...")
         status = check_intra_config(configs[i], config_file_names[i])
 
         # This check failed
@@ -174,11 +174,11 @@ if __name__ == "__main__":
             exit(1)
 
     # Success intra-config check
-    __print("Checking intra config validity done!")
+    print_info("Checking intra config validity done!")
 
 
     # Inter-config check
-    __print("Checking inter config validity")
+    print_info("Checking inter config validity")
 
     status = check_inter_config(configs)
     # Some check failed
@@ -186,5 +186,5 @@ if __name__ == "__main__":
         exit(1)
 
     # Success inter-config check
-    __print("Checking configuration done!")
+    print_info("Checking configuration done!")
     exit(0)
