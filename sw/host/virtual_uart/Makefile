@@ -4,16 +4,16 @@
 
 PROJECT = virtual_uart
 
-CC      = gcc
-RM      = rm -rf
-MKDIR   = @mkdir -p $(@D)
+CC    = gcc
+RM    = rm -rf
+MKDIR = @mkdir -p $(@D)
 
 LIB_DIR = src
 SRC_DIR = src
 BIN_DIR = bin
 
-LIBS    = -lc -lpthread
-SRCS    = $(wildcard src/*.c)
+LIBS = -lc -lpthread
+SRCS = $(wildcard src/*.c)
 
 all: $(BIN_DIR)/$(PROJECT)
 

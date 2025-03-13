@@ -1,4 +1,4 @@
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 // Description:
 // This module is intended as a top-level wrapper for the code in ./rtl
 // IT might support either MEM protocol or AXI protocol, using the
@@ -73,13 +73,21 @@ module custom_top_wrapper # (
 );
 
     // Architecture:
-    //   __________              ______________
-    //  | (bscane) |            |              |
-    //  | dmi_jtag | -- DMI --> |    dm_top    | -- debug_req_o -->
-    //  |__________|            |______________|
-    //                            |           ^
-    //                            v           |
-    //                       AXI master   AXI slave
+    //   __________              _________________
+    //  | (bscane) |            |                 |
+    //  | dmi_jtag | -- DMI --> |      dm_top     | -- debug_req_o -->
+    //  |__________|            |_________________|
+    //                            |              ^
+    //                            v              |
+    //                       MEM master      MEM slave
+    //                            |              ^
+    //                     _______v______   _____|______
+    //                    |              | |            |
+    //                    | axi_from_mem | | axi_to_mem |
+    //                    |______________| |____________|
+    //                            |              ^
+    //                            v              |
+    //                       AXI master      AXI slave
     //
 
     ///////////////////

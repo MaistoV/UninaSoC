@@ -3,7 +3,7 @@ PYTHON ?= python3.10 # Requires >= 3.10
 
 # csv array for check config and create linker script
 CONFIG_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
-               ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
+			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
 
 all: config_main_bus config_peripheral_bus config_ld config_xilinx
 

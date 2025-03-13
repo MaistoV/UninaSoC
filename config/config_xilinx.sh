@@ -1,7 +1,9 @@
 #!/bin/bash
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-# Description: Replace config-based content of hw/make/config.mk
+# Description:
+#   Replace config-based content of output file (hw/make/config.mk) based on input MBUS and PBUS configurations.
+#   Target values are parsed and from inputs and updated in output file.
 # Args:
 #   $1: MBUS Source CSV config
 #   $2: PBUS Target MK file
@@ -29,7 +31,7 @@ OUTPUT_MK_FILE=$3
 # Script #
 ##########
 
-# Array of target values
+# Array of target values to parse from input and update in output
 target_values=(
         CORE_SELECTOR
         ADDR_WIDTH
@@ -50,17 +52,17 @@ for target in ${target_values[*]}; do
         prefix_len=5
         grep_target=${target:$prefix_len}
         # Search for value
-	    target_value=$(grep "${grep_target}" ${CONFIG_PBUS_CSV} | awk -F "," '{print $2}');
+        target_value=$(grep "${grep_target}" ${CONFIG_PBUS_CSV} | awk -F "," '{print $2}');
     else
         # Search in main bus config
-	    target_value=$(grep "${target}" ${CONFIG_MAIN_CSV} | grep -v RANGE | awk -F "," '{print $2}');
+        target_value=$(grep "${target}" ${CONFIG_MAIN_CSV} | grep -v RANGE | awk -F "," '{print $2}');
     fi
 
     # Info print
     echo "[CONFIG_XILINX] Updating ${target} = ${target_value} "
 
     # Replace in target file
-	sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
+    sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
 done
 
 #################

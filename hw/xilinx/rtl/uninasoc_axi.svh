@@ -961,6 +961,10 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 // Sink interfaces //
 /////////////////////
 
+// These macros are meant to emulate a stub master or slave,
+// never really doing anything. This way, we avoid to leave
+// floating signals around.
+
 // Sink AXI master interface
 `define SINK_AXI_MASTER_INTERFACE(bus_name)     \
     assign ``bus_name``_axi_awid       = '0;   \

@@ -6,13 +6,13 @@ XILINX_SCRIPTS_UTILS_ROOT := ${XILINX_SCRIPT_ROOT}/utils
 
 # Open project in TCL mode
 open_prj:
-	cd ${XILINX_PROJECT_BUILD_DIR};			\
+	cd ${XILINX_PROJECT_BUILD_DIR}; \
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} \
 	-mode tcl ${XILINX_PROJECT_NAME}.xpr
 
 # Open project and GUI
 open_gui:
-	cd ${XILINX_PROJECT_BUILD_DIR};			\
+	cd ${XILINX_PROJECT_BUILD_DIR}; \
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO_CMD} \
 	-mode gui ${XILINX_PROJECT_NAME}.xpr
 
@@ -31,9 +31,10 @@ open_ila:
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/set_ila_trigger.tcl
 
-# OFFSET    ?= 0x40000
-# NUM_BYTES ?= 16
-jtag2axi_read:
+# Read back from address
+OFFSET	?= 0x40000
+NUM_BYTES ?= 16
+readback_jtag2axi:
 	${XILINX_VIVADO_ENV} ${XILINX_VIVADO} \
 	-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
 	-source ${XILINX_SCRIPTS_UTILS_ROOT}/$@.tcl -tclargs ${OFFSET} ${NUM_BYTES}
