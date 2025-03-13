@@ -47,10 +47,6 @@ module rvm_socket # (
     localparam logic [31:0] dm_HaltAddress = 64'h800;
     localparam logic [31:0] dm_ExceptionAddress = dm_HaltAddress + 16;
 
-    localparam SW_INT_PIN = 3;
-    localparam TIM_INT_PIN = 7;
-    localparam EXT_INT_PIN = 11;
-
     //////////////////////////////////////
     //    ___ _                _        //
     //   / __(_)__ _ _ _  __ _| |___    //

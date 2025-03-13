@@ -11,6 +11,10 @@ package uninasoc_pkg;
     localparam int unsigned NUM_GPIO_IN  = 16;
     localparam int unsigned NUM_GPIO_OUT = 16;
 
+    localparam int unsigned SW_INT_PIN = 3;
+    localparam int unsigned TIM_INT_PIN = 7;
+    localparam int unsigned EXT_INT_PIN = 11;
+
     ///////////////////////
     // AXI main crossbar //
     ///////////////////////
@@ -27,7 +31,6 @@ package uninasoc_pkg;
     // Always assume 1 master
     // Peripheral bus slaves
     localparam int unsigned PBUS_NUM_MI = `PBUS_NUM_MI;
-
 
     //////////////////////////
     // Supported Processors //

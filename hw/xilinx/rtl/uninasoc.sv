@@ -542,24 +542,31 @@ module uninasoc (
         .s_axi_rready   ( xbar_to_main_mem_axi_rready  )  // input wire s_axi_rready
     );
 
-
     // Platform-Level Interrupt Controller (PLIC)
     logic [31:0] plic_int_line;
     logic plic_int_irq_o;
 
-    // Line 11 corresponds to EXT interrupt in RISC-V specification
-    assign rvm_socket_interrupt_line = {'0, plic_int_irq_o, 11'h0};
+    always_comb begin : system_interrupts
 
-    // Currently, this is the interrupt line mapping (from PLIC perspective/registers)
-    // 0 - RESERVED
-    // 1 - GPIO_IN Interrupt (From PBUS) (Embedded Only)
-    // 2 - Timer 0 Interrupt (From PBUS)
-    // 3 - Timer 1 Interrupt (From PBUS)
-    // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support this yet)
-    // others - reserved
+        // Mapping PLIC input interrupts (only from pbus at the moment)
+        plic_int_line = {
+            '0,                 // others - reserved
+            pbus_int_line[3],   // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support this yet)
+            pbus_int_line[2],   // 3 - Timer 1 Interrupt (From PBUS)
+            pbus_int_line[1],   // 2 - Timer 0 Interrupt (From PBUS)
+            pbus_int_line[0],   // 1 - GPIO_IN Interrupt (From PBUS) (Embedded Only)
+            1'b0};              // 0 - RESERVED
 
-    assign plic_int_line = {'0, pbus_int_line, 1'b0};
+        // Mppinag PLIC to Socket interrupt lines
 
+        // Default non-assigned lines
+        rvm_socket_interrupt_line = '0;
+        // Map system-interrupts pins to socket interrupts
+        rvm_socket_interrupt_line[EXT_INT_PIN] = plic_int_irq_o;
+
+    end : system_interrupts
+
+ 
     custom_rv_plic custom_rv_plic_u (
         .clk_i          ( soc_clk                       ), // input wire s_axi_aclk
         .rst_ni         ( sys_resetn                    ), // input wire s_axi_aresetn
