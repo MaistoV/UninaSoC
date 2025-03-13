@@ -60,7 +60,7 @@ module peripheral_bus #(
     /////////////////////////////////////////
     // Buses declaration and concatenation //
     /////////////////////////////////////////
-    `include "pbus_buses.txt"
+    `include "pbus_buses.svinc"
 
     ///////////////////////
     // Interrupt Signals //

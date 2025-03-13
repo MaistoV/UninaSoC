@@ -93,6 +93,7 @@ XILINX_VIVADO_ENV ?=								\
 	CORE_SELECTOR=${CORE_SELECTOR}					\
 	NUM_SI=${NUM_SI}								\
 	NUM_MI=${NUM_MI}								\
+	BRAM_DEPTHS="${BRAM_DEPTHS}"                    \
 	PBUS_NUM_MI=${PBUS_NUM_MI}						\
 	XILINX_ILA=${XILINX_ILA}						\
 	SYNTH_STRATEGY=${SYNTH_STRATEGY}				\

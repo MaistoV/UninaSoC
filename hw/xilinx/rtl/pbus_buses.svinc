@@ -22,7 +22,6 @@
 // Concatenate AXI master buses //
 //////////////////////////////////
 `DECLARE_AXILITE_BUS_ARRAY(PBUS_masters, 1)
-
 `CONCAT_AXILITE_MASTERS_ARRAY1(PBUS_masters, PROT_CONV_to_PBUS)
 
 /////////////////////////////////

@@ -100,13 +100,13 @@ for i in range(len(RANGE_NAMES)):
 		match device:
 			# memory blocks
 			case "BRAM" | "DDR" | "HBM":
-				device_dict['memory'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[i][counter]})
+				device_dict['memory'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 1 << RANGE_ADDR_WIDTH[i][counter]})
 
 			# peripherals
 			case _:
 				# Check if the device is not a bus (the last three chars are not BUS)
 				if device[-3:] != "BUS":
-					device_dict['peripheral'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 2 << RANGE_ADDR_WIDTH[i][counter]})
+					device_dict['peripheral'].append({'device': device, 'base': int(RANGE_BASE_ADDR[i][counter], 16), 'range': 1 << RANGE_ADDR_WIDTH[i][counter]})
 
 		# Increment counter
 		counter += 1

@@ -112,7 +112,7 @@ module uninasoc (
     /////////////////////////////////////////
     // Buses declaration and concatenation //
     /////////////////////////////////////////
-    `include "mbus_buses.txt"
+    `include "mbus_buses.svinc"
 
     ///////////////////////
     // Local assignments //

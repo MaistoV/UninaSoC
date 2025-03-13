@@ -65,8 +65,8 @@ BASE_SUFFIX                        = ")\n"
 
 # RTL files to edit
 RTL_FILES                = {
-    "MBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/mbus_buses.txt",
-    "PBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/pbus_buses.txt"
+    "MBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/mbus_buses.svinc",
+    "PBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/pbus_buses.svinc"
 }
 
 # Write the concatenation macro for master/slave buses to the rtl file
