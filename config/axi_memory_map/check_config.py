@@ -27,33 +27,12 @@
 import sys
 # Sub-scripts
 import configuration
-from read_config import read_config
+from utils import *
 
 # Constants
 VALID_PROTOCOLS = ["AXI4", "AXI4LITE"]
-BUS_NAMES = {
-    "config_main_bus.csv" : "MBUS",
-    "config_peripheral_bus.csv" : "PBUS"
-}
 MIN_AXI4_ADDR_WIDTH = 12
 MIN_AXI4LITE_ADDR_WIDTH = 1
-
-# Print/debug stuff
-PRINT_PREFIX = "[CHECK_CONFIG]"
-PRINT_ERROR_PREFIX = "[ERROR]"
-PRINT_WARNING_PREFIX = "[WARNING]"
-# print info
-def __print(txt : str) -> None:
-    print(f"{PRINT_PREFIX} {txt}")
-
-# print warning
-def __print_warning(txt : str) -> None:
-    print(f"{PRINT_PREFIX}{PRINT_WARNING_PREFIX} {txt}")
-
-# print error
-def __print_error(txt : str) -> None:
-    print(f"{PRINT_PREFIX}{PRINT_ERROR_PREFIX} {txt}")
-
 
 #############################
 # Check intra configuration #

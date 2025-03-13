@@ -40,3 +40,26 @@ def read_config(config_file_names : list) -> list:
         configs.append(config)
 
     return configs
+
+
+
+############
+# PRINTING #
+############
+
+# Print/debug stuff
+PRINT_PREFIX = "[CHECK_CONFIG]"
+PRINT_ERROR_PREFIX = "[ERROR]"
+PRINT_WARNING_PREFIX = "[WARNING]"
+
+# print info
+def __print(txt : str) -> None:
+    print(f"{PRINT_PREFIX} {txt}")
+
+# print warning
+def __print_warning(txt : str) -> None:
+    print(f"{PRINT_PREFIX}{PRINT_WARNING_PREFIX} {txt}")
+
+# print error
+def __print_error(txt : str) -> None:
+    print(f"{PRINT_PREFIX}{PRINT_ERROR_PREFIX} {txt}")

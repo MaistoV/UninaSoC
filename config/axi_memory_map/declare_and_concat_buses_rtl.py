@@ -11,7 +11,7 @@ import sys
 import os
 # Sub-scripts
 import configuration
-from read_config import read_config
+from utils import *
 
 # Constants
 
