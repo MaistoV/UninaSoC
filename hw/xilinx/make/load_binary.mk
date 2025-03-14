@@ -73,4 +73,4 @@ gdb_run:
 # PHONIES #
 ###########
 
-.PHONY: load_binary load_binary_embedded load_binary_hpc xsdb_run_elf debug_backend debug_run
+.PHONY: load_binary load_binary_embedded load_binary_hpc xsdb_run openocd_run gdb_run
