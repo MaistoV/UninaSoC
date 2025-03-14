@@ -85,7 +85,7 @@ The directory `scripts/` holds multiple scripts, acting in the following scripti
 
 ![Configuration flow](./doc/axi_xbar_config_with_check.png)
 
-The multiple scripts genrate outputs from common inputs:
+The multiple scripts generate outputs from common inputs:
 1. The Xilinx-related environment configuration in [`config.mk`](../hw/xilinx/make/config.mk) is handled by [`config_xilinx.sh`](scripts/config_xilinx.sh).
 1. [Linker script](../sw/SoC/common/UninaSoC.ld) generation is handled solely by [`create_linker_script.py`](scripts/create_linker_script.py) source.
 1. Configuration TCL files (for [MBUS](../hw/xilinx/ips/common/xlnx_main_crossbar/config.tcl) and [PBUS](../hw/xilinx/ips/common/xlnx_peripheral_crossbar/config.tcl)) for the platform crossbars are generated with [`create_crossbar_config.py`](scripts/create_crossbar_config.py) as master script.
