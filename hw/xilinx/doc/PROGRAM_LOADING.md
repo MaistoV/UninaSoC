@@ -37,3 +37,4 @@ Once the binary is loaded, enable the system using `vio` reset target:
 ```
 make vio_resetn
 ```
+**Warning**: vio_resetn is currently bugged, this will be addressed in issue #23
