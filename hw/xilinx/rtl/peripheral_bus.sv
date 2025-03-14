@@ -57,35 +57,10 @@ module peripheral_bus #(
 
 );
 
-    /////////////////////
-    // Bus Definitions //
-    /////////////////////
-
-    // AXI Lite bus from the protocol converter to the axilite crossbar
-    `DECLARE_AXILITE_BUS(prot_conv_to_xbar);
-
-    // AXI Lite bus array from the axilite crossbar to the slaves (peripherals)
-    `DECLARE_AXILITE_BUS_ARRAY(xbar_slaves, PBUS_NUM_MI);
-
-    // AXI Lite bus from the axilite crossbar to the UART
-    `DECLARE_AXILITE_BUS(xbar_to_uart);
-
-    // AXI Lite bus from the axilite crossbar to the TIM0
-    `DECLARE_AXILITE_BUS(xbar_to_tim0);
-
-    // AXI Lite bus from the axilite crossbar to the TIM1
-    `DECLARE_AXILITE_BUS(xbar_to_tim1);
-
-    // EMBEDDED ONLY
-    // AXI Lite bus from the axilite crossbar to the GPIO_out
-    `DECLARE_AXILITE_BUS(xbar_to_gpio_in);
-    `DECLARE_AXILITE_BUS(xbar_to_gpio_out);
-
-    `ifdef HPC
-        `CONCAT_AXILITE_SLAVES_ARRAY3(xbar_slaves, xbar_to_tim1, xbar_to_tim0, xbar_to_uart);
-    `elsif EMBEDDED
-        `CONCAT_AXILITE_SLAVES_ARRAY5(xbar_slaves, xbar_to_tim1, xbar_to_tim0, xbar_to_gpio_in, xbar_to_gpio_out, xbar_to_uart);
-    `endif
+    /////////////////////////////////////////
+    // Buses declaration and concatenation //
+    /////////////////////////////////////////
+    `include "pbus_buses.svinc"
 
     ///////////////////////
     // Interrupt Signals //
@@ -148,25 +123,25 @@ module peripheral_bus #(
         .s_axi_rvalid   ( s_axi_rvalid   ),            // output wire s_axi_rvalid
         .s_axi_rready   ( s_axi_rready   ),            // input wire s_axi_rready
         // Master port (to AXI Lite crossbar)
-        .m_axi_awaddr   ( prot_conv_to_xbar_axilite_awaddr       ), // output wire [31 : 0] m_axi_awaddr
-        .m_axi_awprot   ( prot_conv_to_xbar_axilite_awprot       ), // output wire [2 : 0] m_axi_awprot
-        .m_axi_awvalid  ( prot_conv_to_xbar_axilite_awvalid      ), // output wire m_axi_awvalid
-        .m_axi_awready  ( prot_conv_to_xbar_axilite_awready      ), // input wire m_axi_awready
-        .m_axi_wdata    ( prot_conv_to_xbar_axilite_wdata        ), // output wire [31 : 0] m_axi_wdata
-        .m_axi_wstrb    ( prot_conv_to_xbar_axilite_wstrb        ), // output wire [3 : 0] m_axi_wstrb
-        .m_axi_wvalid   ( prot_conv_to_xbar_axilite_wvalid       ), // output wire m_axi_wvalid
-        .m_axi_wready   ( prot_conv_to_xbar_axilite_wready       ), // input wire m_axi_wready
-        .m_axi_bresp    ( prot_conv_to_xbar_axilite_bresp        ), // input wire [1 : 0] m_axi_bresp
-        .m_axi_bvalid   ( prot_conv_to_xbar_axilite_bvalid       ), // input wire m_axi_bvalid
-        .m_axi_bready   ( prot_conv_to_xbar_axilite_bready       ), // output wire m_axi_bready
-        .m_axi_araddr   ( prot_conv_to_xbar_axilite_araddr       ), // output wire [31 : 0] m_axi_araddr
-        .m_axi_arprot   ( prot_conv_to_xbar_axilite_arprot       ), // output wire [2 : 0] m_axi_arprot
-        .m_axi_arvalid  ( prot_conv_to_xbar_axilite_arvalid      ), // output wire m_axi_arvalid
-        .m_axi_arready  ( prot_conv_to_xbar_axilite_arready      ), // input wire m_axi_arready
-        .m_axi_rdata    ( prot_conv_to_xbar_axilite_rdata        ), // input wire [31 : 0] m_axi_rdata
-        .m_axi_rresp    ( prot_conv_to_xbar_axilite_rresp        ), // input wire [1 : 0] m_axi_rresp
-        .m_axi_rvalid   ( prot_conv_to_xbar_axilite_rvalid       ), // input wire m_axi_rvalid
-        .m_axi_rready   ( prot_conv_to_xbar_axilite_rready       )  // output wire m_axi_rready
+        .m_axi_awaddr   ( PROT_CONV_to_PBUS_axilite_awaddr  ), // output wire [31 : 0] m_axi_awaddr
+        .m_axi_awprot   ( PROT_CONV_to_PBUS_axilite_awprot  ), // output wire [2 : 0] m_axi_awprot
+        .m_axi_awvalid  ( PROT_CONV_to_PBUS_axilite_awvalid ), // output wire m_axi_awvalid
+        .m_axi_awready  ( PROT_CONV_to_PBUS_axilite_awready ), // input wire m_axi_awready
+        .m_axi_wdata    ( PROT_CONV_to_PBUS_axilite_wdata   ), // output wire [31 : 0] m_axi_wdata
+        .m_axi_wstrb    ( PROT_CONV_to_PBUS_axilite_wstrb   ), // output wire [3 : 0] m_axi_wstrb
+        .m_axi_wvalid   ( PROT_CONV_to_PBUS_axilite_wvalid  ), // output wire m_axi_wvalid
+        .m_axi_wready   ( PROT_CONV_to_PBUS_axilite_wready  ), // input wire m_axi_wready
+        .m_axi_bresp    ( PROT_CONV_to_PBUS_axilite_bresp   ), // input wire [1 : 0] m_axi_bresp
+        .m_axi_bvalid   ( PROT_CONV_to_PBUS_axilite_bvalid  ), // input wire m_axi_bvalid
+        .m_axi_bready   ( PROT_CONV_to_PBUS_axilite_bready  ), // output wire m_axi_bready
+        .m_axi_araddr   ( PROT_CONV_to_PBUS_axilite_araddr  ), // output wire [31 : 0] m_axi_araddr
+        .m_axi_arprot   ( PROT_CONV_to_PBUS_axilite_arprot  ), // output wire [2 : 0] m_axi_arprot
+        .m_axi_arvalid  ( PROT_CONV_to_PBUS_axilite_arvalid ), // output wire m_axi_arvalid
+        .m_axi_arready  ( PROT_CONV_to_PBUS_axilite_arready ), // input wire m_axi_arready
+        .m_axi_rdata    ( PROT_CONV_to_PBUS_axilite_rdata   ), // input wire [31 : 0] m_axi_rdata
+        .m_axi_rresp    ( PROT_CONV_to_PBUS_axilite_rresp   ), // input wire [1 : 0] m_axi_rresp
+        .m_axi_rvalid   ( PROT_CONV_to_PBUS_axilite_rvalid  ), // input wire m_axi_rvalid
+        .m_axi_rready   ( PROT_CONV_to_PBUS_axilite_rready  )  // output wire m_axi_rready
     );
 
     // AXI Lite crossbar
@@ -174,45 +149,45 @@ module peripheral_bus #(
         .aclk           ( clock_i  ),
         .aresetn        ( reset_ni ),
 
-        .s_axi_awaddr   ( prot_conv_to_xbar_axilite_awaddr       ),
-        .s_axi_awprot   ( prot_conv_to_xbar_axilite_awprot       ),
-        .s_axi_awvalid  ( prot_conv_to_xbar_axilite_awvalid      ),
-        .s_axi_awready  ( prot_conv_to_xbar_axilite_awready      ),
-        .s_axi_wdata    ( prot_conv_to_xbar_axilite_wdata        ),
-        .s_axi_wstrb    ( prot_conv_to_xbar_axilite_wstrb        ),
-        .s_axi_wvalid   ( prot_conv_to_xbar_axilite_wvalid       ),
-        .s_axi_wready   ( prot_conv_to_xbar_axilite_wready       ),
-        .s_axi_bresp    ( prot_conv_to_xbar_axilite_bresp        ),
-        .s_axi_bvalid   ( prot_conv_to_xbar_axilite_bvalid       ),
-        .s_axi_bready   ( prot_conv_to_xbar_axilite_bready       ),
-        .s_axi_araddr   ( prot_conv_to_xbar_axilite_araddr       ),
-        .s_axi_arprot   ( prot_conv_to_xbar_axilite_arprot       ),
-        .s_axi_arvalid  ( prot_conv_to_xbar_axilite_arvalid      ),
-        .s_axi_arready  ( prot_conv_to_xbar_axilite_arready      ),
-        .s_axi_rdata    ( prot_conv_to_xbar_axilite_rdata        ),
-        .s_axi_rresp    ( prot_conv_to_xbar_axilite_rresp        ),
-        .s_axi_rvalid   ( prot_conv_to_xbar_axilite_rvalid       ),
-        .s_axi_rready   ( prot_conv_to_xbar_axilite_rready       ),
+        .s_axi_awaddr   ( PBUS_masters_axilite_awaddr   ),
+        .s_axi_awprot   ( PBUS_masters_axilite_awprot   ),
+        .s_axi_awvalid  ( PBUS_masters_axilite_awvalid  ),
+        .s_axi_awready  ( PBUS_masters_axilite_awready  ),
+        .s_axi_wdata    ( PBUS_masters_axilite_wdata    ),
+        .s_axi_wstrb    ( PBUS_masters_axilite_wstrb    ),
+        .s_axi_wvalid   ( PBUS_masters_axilite_wvalid   ),
+        .s_axi_wready   ( PBUS_masters_axilite_wready   ),
+        .s_axi_bresp    ( PBUS_masters_axilite_bresp    ),
+        .s_axi_bvalid   ( PBUS_masters_axilite_bvalid   ),
+        .s_axi_bready   ( PBUS_masters_axilite_bready   ),
+        .s_axi_araddr   ( PBUS_masters_axilite_araddr   ),
+        .s_axi_arprot   ( PBUS_masters_axilite_arprot   ),
+        .s_axi_arvalid  ( PBUS_masters_axilite_arvalid  ),
+        .s_axi_arready  ( PBUS_masters_axilite_arready  ),
+        .s_axi_rdata    ( PBUS_masters_axilite_rdata    ),
+        .s_axi_rresp    ( PBUS_masters_axilite_rresp    ),
+        .s_axi_rvalid   ( PBUS_masters_axilite_rvalid   ),
+        .s_axi_rready   ( PBUS_masters_axilite_rready   ),
 
-        .m_axi_awaddr   ( xbar_slaves_axilite_awaddr             ),
-        .m_axi_awprot   ( xbar_slaves_axilite_awprot             ),
-        .m_axi_awvalid  ( xbar_slaves_axilite_awvalid            ),
-        .m_axi_awready  ( xbar_slaves_axilite_awready            ),
-        .m_axi_wdata    ( xbar_slaves_axilite_wdata              ),
-        .m_axi_wstrb    ( xbar_slaves_axilite_wstrb              ),
-        .m_axi_wvalid   ( xbar_slaves_axilite_wvalid             ),
-        .m_axi_wready   ( xbar_slaves_axilite_wready             ),
-        .m_axi_bresp    ( xbar_slaves_axilite_bresp              ),
-        .m_axi_bvalid   ( xbar_slaves_axilite_bvalid             ),
-        .m_axi_bready   ( xbar_slaves_axilite_bready             ),
-        .m_axi_araddr   ( xbar_slaves_axilite_araddr             ),
-        .m_axi_arprot   ( xbar_slaves_axilite_arprot             ),
-        .m_axi_arvalid  ( xbar_slaves_axilite_arvalid            ),
-        .m_axi_arready  ( xbar_slaves_axilite_arready            ),
-        .m_axi_rdata    ( xbar_slaves_axilite_rdata              ),
-        .m_axi_rresp    ( xbar_slaves_axilite_rresp              ),
-        .m_axi_rvalid   ( xbar_slaves_axilite_rvalid             ),
-        .m_axi_rready   ( xbar_slaves_axilite_rready             )
+        .m_axi_awaddr   ( PBUS_slaves_axilite_awaddr    ),
+        .m_axi_awprot   ( PBUS_slaves_axilite_awprot    ),
+        .m_axi_awvalid  ( PBUS_slaves_axilite_awvalid   ),
+        .m_axi_awready  ( PBUS_slaves_axilite_awready   ),
+        .m_axi_wdata    ( PBUS_slaves_axilite_wdata     ),
+        .m_axi_wstrb    ( PBUS_slaves_axilite_wstrb     ),
+        .m_axi_wvalid   ( PBUS_slaves_axilite_wvalid    ),
+        .m_axi_wready   ( PBUS_slaves_axilite_wready    ),
+        .m_axi_bresp    ( PBUS_slaves_axilite_bresp     ),
+        .m_axi_bvalid   ( PBUS_slaves_axilite_bvalid    ),
+        .m_axi_bready   ( PBUS_slaves_axilite_bready    ),
+        .m_axi_araddr   ( PBUS_slaves_axilite_araddr    ),
+        .m_axi_arprot   ( PBUS_slaves_axilite_arprot    ),
+        .m_axi_arvalid  ( PBUS_slaves_axilite_arvalid   ),
+        .m_axi_arready  ( PBUS_slaves_axilite_arready   ),
+        .m_axi_rdata    ( PBUS_slaves_axilite_rdata     ),
+        .m_axi_rresp    ( PBUS_slaves_axilite_rresp     ),
+        .m_axi_rvalid   ( PBUS_slaves_axilite_rvalid    ),
+        .m_axi_rready   ( PBUS_slaves_axilite_rready    )
 
     );
 
@@ -234,25 +209,25 @@ module peripheral_bus #(
 
 
         // AXI4 lite slave port (from xbar lite)
-        .s_axilite_awaddr   ( xbar_to_uart_axilite_awaddr       ),
-        .s_axilite_awprot   ( xbar_to_uart_axilite_awprot       ),
-        .s_axilite_awvalid  ( xbar_to_uart_axilite_awvalid      ),
-        .s_axilite_awready  ( xbar_to_uart_axilite_awready      ),
-        .s_axilite_wdata    ( xbar_to_uart_axilite_wdata        ),
-        .s_axilite_wstrb    ( xbar_to_uart_axilite_wstrb        ),
-        .s_axilite_wvalid   ( xbar_to_uart_axilite_wvalid       ),
-        .s_axilite_wready   ( xbar_to_uart_axilite_wready       ),
-        .s_axilite_bresp    ( xbar_to_uart_axilite_bresp        ),
-        .s_axilite_bvalid   ( xbar_to_uart_axilite_bvalid       ),
-        .s_axilite_bready   ( xbar_to_uart_axilite_bready       ),
-        .s_axilite_araddr   ( xbar_to_uart_axilite_araddr       ),
-        .s_axilite_arprot   ( xbar_to_uart_axilite_arprot       ),
-        .s_axilite_arvalid  ( xbar_to_uart_axilite_arvalid      ),
-        .s_axilite_arready  ( xbar_to_uart_axilite_arready      ),
-        .s_axilite_rdata    ( xbar_to_uart_axilite_rdata        ),
-        .s_axilite_rresp    ( xbar_to_uart_axilite_rresp        ),
-        .s_axilite_rvalid   ( xbar_to_uart_axilite_rvalid       ),
-        .s_axilite_rready   ( xbar_to_uart_axilite_rready       )
+        .s_axilite_awaddr   ( PBUS_to_UART_axilite_awaddr  ),
+        .s_axilite_awprot   ( PBUS_to_UART_axilite_awprot  ),
+        .s_axilite_awvalid  ( PBUS_to_UART_axilite_awvalid ),
+        .s_axilite_awready  ( PBUS_to_UART_axilite_awready ),
+        .s_axilite_wdata    ( PBUS_to_UART_axilite_wdata   ),
+        .s_axilite_wstrb    ( PBUS_to_UART_axilite_wstrb   ),
+        .s_axilite_wvalid   ( PBUS_to_UART_axilite_wvalid  ),
+        .s_axilite_wready   ( PBUS_to_UART_axilite_wready  ),
+        .s_axilite_bresp    ( PBUS_to_UART_axilite_bresp   ),
+        .s_axilite_bvalid   ( PBUS_to_UART_axilite_bvalid  ),
+        .s_axilite_bready   ( PBUS_to_UART_axilite_bready  ),
+        .s_axilite_araddr   ( PBUS_to_UART_axilite_araddr  ),
+        .s_axilite_arprot   ( PBUS_to_UART_axilite_arprot  ),
+        .s_axilite_arvalid  ( PBUS_to_UART_axilite_arvalid ),
+        .s_axilite_arready  ( PBUS_to_UART_axilite_arready ),
+        .s_axilite_rdata    ( PBUS_to_UART_axilite_rdata   ),
+        .s_axilite_rresp    ( PBUS_to_UART_axilite_rresp   ),
+        .s_axilite_rvalid   ( PBUS_to_UART_axilite_rvalid  ),
+        .s_axilite_rready   ( PBUS_to_UART_axilite_rready  )
     );
 
     // AXI4 Lite Timers
@@ -260,23 +235,23 @@ module peripheral_bus #(
     xlnx_axilite_timer tim0_u (
         .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
-        .s_axi_awaddr   ( xbar_to_tim0_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
-        .s_axi_awvalid  ( xbar_to_tim0_axilite_awvalid       ), // input wire s_axi_awvalid
-        .s_axi_awready  ( xbar_to_tim0_axilite_awready       ), // output wire s_axi_awready
-        .s_axi_wdata    ( xbar_to_tim0_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb    ( xbar_to_tim0_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wvalid   ( xbar_to_tim0_axilite_wvalid        ), // input wire s_axi_wvalid
-        .s_axi_wready   ( xbar_to_tim0_axilite_wready        ), // output wire s_axi_wready
-        .s_axi_bresp    ( xbar_to_tim0_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid   ( xbar_to_tim0_axilite_bvalid        ), // output wire s_axi_bvalid
-        .s_axi_bready   ( xbar_to_tim0_axilite_bready        ), // input wire s_axi_bready
-        .s_axi_araddr   ( xbar_to_tim0_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
-        .s_axi_arvalid  ( xbar_to_tim0_axilite_arvalid       ), // input wire s_axi_arvalid
-        .s_axi_arready  ( xbar_to_tim0_axilite_arready       ), // output wire s_axi_arready
-        .s_axi_rdata    ( xbar_to_tim0_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp    ( xbar_to_tim0_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
-        .s_axi_rvalid   ( xbar_to_tim0_axilite_rvalid        ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_tim0_axilite_rready        ), // input wire s_axi_rready
+        .s_axi_awaddr   ( PBUS_to_TIM0_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( PBUS_to_TIM0_axilite_awvalid       ), // input wire s_axi_awvalid
+        .s_axi_awready  ( PBUS_to_TIM0_axilite_awready       ), // output wire s_axi_awready
+        .s_axi_wdata    ( PBUS_to_TIM0_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( PBUS_to_TIM0_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( PBUS_to_TIM0_axilite_wvalid        ), // input wire s_axi_wvalid
+        .s_axi_wready   ( PBUS_to_TIM0_axilite_wready        ), // output wire s_axi_wready
+        .s_axi_bresp    ( PBUS_to_TIM0_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( PBUS_to_TIM0_axilite_bvalid        ), // output wire s_axi_bvalid
+        .s_axi_bready   ( PBUS_to_TIM0_axilite_bready        ), // input wire s_axi_bready
+        .s_axi_araddr   ( PBUS_to_TIM0_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( PBUS_to_TIM0_axilite_arvalid       ), // input wire s_axi_arvalid
+        .s_axi_arready  ( PBUS_to_TIM0_axilite_arready       ), // output wire s_axi_arready
+        .s_axi_rdata    ( PBUS_to_TIM0_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( PBUS_to_TIM0_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( PBUS_to_TIM0_axilite_rvalid        ), // output wire s_axi_rvalid
+        .s_axi_rready   ( PBUS_to_TIM0_axilite_rready        ), // input wire s_axi_rready
 
         .capturetrig0   ( '0                        ), // input [0:0]
         .capturetrig1   ( '0                        ), // input [0:0]
@@ -290,23 +265,23 @@ module peripheral_bus #(
     xlnx_axilite_timer tim1_u (
         .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
-        .s_axi_awaddr   ( xbar_to_tim1_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
-        .s_axi_awvalid  ( xbar_to_tim1_axilite_awvalid       ), // input wire s_axi_awvalid
-        .s_axi_awready  ( xbar_to_tim1_axilite_awready       ), // output wire s_axi_awready
-        .s_axi_wdata    ( xbar_to_tim1_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb    ( xbar_to_tim1_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wvalid   ( xbar_to_tim1_axilite_wvalid        ), // input wire s_axi_wvalid
-        .s_axi_wready   ( xbar_to_tim1_axilite_wready        ), // output wire s_axi_wready
-        .s_axi_bresp    ( xbar_to_tim1_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid   ( xbar_to_tim1_axilite_bvalid        ), // output wire s_axi_bvalid
-        .s_axi_bready   ( xbar_to_tim1_axilite_bready        ), // input wire s_axi_bready
-        .s_axi_araddr   ( xbar_to_tim1_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
-        .s_axi_arvalid  ( xbar_to_tim1_axilite_arvalid       ), // input wire s_axi_arvalid
-        .s_axi_arready  ( xbar_to_tim1_axilite_arready       ), // output wire s_axi_arready
-        .s_axi_rdata    ( xbar_to_tim1_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp    ( xbar_to_tim1_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
-        .s_axi_rvalid   ( xbar_to_tim1_axilite_rvalid        ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_tim1_axilite_rready        ), // input wire s_axi_rready
+        .s_axi_awaddr   ( PBUS_to_TIM1_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( PBUS_to_TIM1_axilite_awvalid       ), // input wire s_axi_awvalid
+        .s_axi_awready  ( PBUS_to_TIM1_axilite_awready       ), // output wire s_axi_awready
+        .s_axi_wdata    ( PBUS_to_TIM1_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( PBUS_to_TIM1_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( PBUS_to_TIM1_axilite_wvalid        ), // input wire s_axi_wvalid
+        .s_axi_wready   ( PBUS_to_TIM1_axilite_wready        ), // output wire s_axi_wready
+        .s_axi_bresp    ( PBUS_to_TIM1_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( PBUS_to_TIM1_axilite_bvalid        ), // output wire s_axi_bvalid
+        .s_axi_bready   ( PBUS_to_TIM1_axilite_bready        ), // input wire s_axi_bready
+        .s_axi_araddr   ( PBUS_to_TIM1_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( PBUS_to_TIM1_axilite_arvalid       ), // input wire s_axi_arvalid
+        .s_axi_arready  ( PBUS_to_TIM1_axilite_arready       ), // output wire s_axi_arready
+        .s_axi_rdata    ( PBUS_to_TIM1_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( PBUS_to_TIM1_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( PBUS_to_TIM1_axilite_rvalid        ), // output wire s_axi_rvalid
+        .s_axi_rready   ( PBUS_to_TIM1_axilite_rready        ), // input wire s_axi_rready
 
         .capturetrig0   ( '0                        ), // input [0:0]
         .capturetrig1   ( '0                        ), // input [0:0]
@@ -323,23 +298,23 @@ module peripheral_bus #(
     xlnx_axi_gpio_out gpio_out_u (
         .s_axi_aclk     ( clock_i                               ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                              ), // input wire s_axi_aresetn
-        .s_axi_awaddr   ( xbar_to_gpio_out_axilite_awaddr [8:0] ), // input wire [8 : 0] s_axi_awaddr
-        .s_axi_awvalid  ( xbar_to_gpio_out_axilite_awvalid      ), // input wire s_axi_awvalid
-        .s_axi_awready  ( xbar_to_gpio_out_axilite_awready      ), // output wire s_axi_awready
-        .s_axi_wdata    ( xbar_to_gpio_out_axilite_wdata        ), // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb    ( xbar_to_gpio_out_axilite_wstrb        ), // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wvalid   ( xbar_to_gpio_out_axilite_wvalid       ), // input wire s_axi_wvalid
-        .s_axi_wready   ( xbar_to_gpio_out_axilite_wready       ), // output wire s_axi_wready
-        .s_axi_bresp    ( xbar_to_gpio_out_axilite_bresp        ), // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid   ( xbar_to_gpio_out_axilite_bvalid       ), // output wire s_axi_bvalid
-        .s_axi_bready   ( xbar_to_gpio_out_axilite_bready       ), // input wire s_axi_bready
-        .s_axi_araddr   ( xbar_to_gpio_out_axilite_araddr [8:0] ), // input wire [8 : 0] s_axi_araddr
-        .s_axi_arvalid  ( xbar_to_gpio_out_axilite_arvalid      ), // input wire s_axi_arvalid
-        .s_axi_arready  ( xbar_to_gpio_out_axilite_arready      ), // output wire s_axi_arready
-        .s_axi_rdata    ( xbar_to_gpio_out_axilite_rdata        ), // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp    ( xbar_to_gpio_out_axilite_rresp        ), // output wire [1 : 0] s_axi_rresp
-        .s_axi_rvalid   ( xbar_to_gpio_out_axilite_rvalid       ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_gpio_out_axilite_rready       ), // input wire s_axi_rready
+        .s_axi_awaddr   ( PBUS_to_GPIO_out_axilite_awaddr [8:0] ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( PBUS_to_GPIO_out_axilite_awvalid      ), // input wire s_axi_awvalid
+        .s_axi_awready  ( PBUS_to_GPIO_out_axilite_awready      ), // output wire s_axi_awready
+        .s_axi_wdata    ( PBUS_to_GPIO_out_axilite_wdata        ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( PBUS_to_GPIO_out_axilite_wstrb        ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( PBUS_to_GPIO_out_axilite_wvalid       ), // input wire s_axi_wvalid
+        .s_axi_wready   ( PBUS_to_GPIO_out_axilite_wready       ), // output wire s_axi_wready
+        .s_axi_bresp    ( PBUS_to_GPIO_out_axilite_bresp        ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( PBUS_to_GPIO_out_axilite_bvalid       ), // output wire s_axi_bvalid
+        .s_axi_bready   ( PBUS_to_GPIO_out_axilite_bready       ), // input wire s_axi_bready
+        .s_axi_araddr   ( PBUS_to_GPIO_out_axilite_araddr [8:0] ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( PBUS_to_GPIO_out_axilite_arvalid      ), // input wire s_axi_arvalid
+        .s_axi_arready  ( PBUS_to_GPIO_out_axilite_arready      ), // output wire s_axi_arready
+        .s_axi_rdata    ( PBUS_to_GPIO_out_axilite_rdata        ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( PBUS_to_GPIO_out_axilite_rresp        ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( PBUS_to_GPIO_out_axilite_rvalid       ), // output wire s_axi_rvalid
+        .s_axi_rready   ( PBUS_to_GPIO_out_axilite_rready       ), // input wire s_axi_rready
         .gpio_io_o      ( gpio_out_o                            )  // input wire [0 : 0] gpio_io_o
     );
 
@@ -347,23 +322,23 @@ module peripheral_bus #(
     xlnx_axi_gpio_in gpio_in_u (
         .s_axi_aclk     ( clock_i                       ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                      ), // input wire s_axi_aresetn
-        .s_axi_awaddr   ( xbar_to_gpio_in_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
-        .s_axi_awvalid  ( xbar_to_gpio_in_axilite_awvalid       ), // input wire s_axi_awvalid
-        .s_axi_awready  ( xbar_to_gpio_in_axilite_awready       ), // output wire s_axi_awready
-        .s_axi_wdata    ( xbar_to_gpio_in_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb    ( xbar_to_gpio_in_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wvalid   ( xbar_to_gpio_in_axilite_wvalid        ), // input wire s_axi_wvalid
-        .s_axi_wready   ( xbar_to_gpio_in_axilite_wready        ), // output wire s_axi_wready
-        .s_axi_bresp    ( xbar_to_gpio_in_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid   ( xbar_to_gpio_in_axilite_bvalid        ), // output wire s_axi_bvalid
-        .s_axi_bready   ( xbar_to_gpio_in_axilite_bready        ), // input wire s_axi_bready
-        .s_axi_araddr   ( xbar_to_gpio_in_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
-        .s_axi_arvalid  ( xbar_to_gpio_in_axilite_arvalid       ), // input wire s_axi_arvalid
-        .s_axi_arready  ( xbar_to_gpio_in_axilite_arready       ), // output wire s_axi_arready
-        .s_axi_rdata    ( xbar_to_gpio_in_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp    ( xbar_to_gpio_in_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
-        .s_axi_rvalid   ( xbar_to_gpio_in_axilite_rvalid        ), // output wire s_axi_rvalid
-        .s_axi_rready   ( xbar_to_gpio_in_axilite_rready        ), // input wire s_axi_rready
+        .s_axi_awaddr   ( PBUS_to_GPIO_in_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
+        .s_axi_awvalid  ( PBUS_to_GPIO_in_axilite_awvalid       ), // input wire s_axi_awvalid
+        .s_axi_awready  ( PBUS_to_GPIO_in_axilite_awready       ), // output wire s_axi_awready
+        .s_axi_wdata    ( PBUS_to_GPIO_in_axilite_wdata         ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( PBUS_to_GPIO_in_axilite_wstrb         ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wvalid   ( PBUS_to_GPIO_in_axilite_wvalid        ), // input wire s_axi_wvalid
+        .s_axi_wready   ( PBUS_to_GPIO_in_axilite_wready        ), // output wire s_axi_wready
+        .s_axi_bresp    ( PBUS_to_GPIO_in_axilite_bresp         ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( PBUS_to_GPIO_in_axilite_bvalid        ), // output wire s_axi_bvalid
+        .s_axi_bready   ( PBUS_to_GPIO_in_axilite_bready        ), // input wire s_axi_bready
+        .s_axi_araddr   ( PBUS_to_GPIO_in_axilite_araddr [8:0]  ), // input wire [8 : 0] s_axi_araddr
+        .s_axi_arvalid  ( PBUS_to_GPIO_in_axilite_arvalid       ), // input wire s_axi_arvalid
+        .s_axi_arready  ( PBUS_to_GPIO_in_axilite_arready       ), // output wire s_axi_arready
+        .s_axi_rdata    ( PBUS_to_GPIO_in_axilite_rdata         ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( PBUS_to_GPIO_in_axilite_rresp         ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rvalid   ( PBUS_to_GPIO_in_axilite_rvalid        ), // output wire s_axi_rvalid
+        .s_axi_rready   ( PBUS_to_GPIO_in_axilite_rready        ), // input wire s_axi_rready
         .gpio_io_i      ( gpio_in_i                     ),
         .ip2intc_irpt   ( gpio_in_int                   )  // output wire [0:0] (interrupt)
     );

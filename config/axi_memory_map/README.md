@@ -37,6 +37,7 @@ Some properties are array, with elements separated by a space " " character. The
 | ID_WIDTH              | AXI ID Width                                              | (4..32)                                                   | 4
 | NUM_MI                | Number of Master Interfaces (number of slaves)            | (0..16)                                                   | 2
 | NUM_SI                | Number of Slave Interfaces (number of masters)            | (0..16)                                                   | 1
+| MASTER_NAMES          | Names of masters connected to the bus                     | [NUM_SI] Strings | N/A
 | RANGE_NAMES           | Names of slave memory ranges                                               | [NUM_MI] Strings                                          | N/A
 | ADDR_RANGES           | Number of ranges for master interfaces                    | (1..16)                                                   | 1
 | BASE_ADDR             | The Base Addresses for each range of each Master          | [NUM_MI*ADDR_RANGES] 64 bits hex                          | 0x100000 for the first range of every Master, otherwise is 0xffffffffffffffff [not used], it must be lesser or equal of Global ADDR_WIDTH
@@ -88,3 +89,8 @@ To add a new property:
     - how it updates the `configuration` structure.
 5. In file `create_crossbar_config.py` file, after the loop setting the `configuration` structure,
 create the tcl property string and add it to the list of commands, which will then be flushed on the output file.
+
+### BRAM size configuration
+The entire flow also configures the BRAM size of the IP xlnx_blk_mem_gen according to the RANGE_ADDR_WIDTH assigned to the BRAM in the CSV.
+
+> **IMPORTANT NOTE**: The xlnx_blk_mem_gen config.tcl file configure the first BRAM occurrence, hence it uses the index 0. For now, a single BRAM is supported, if multiple BRAMs are declared in the config (CSV) file, the config flow gives an error.

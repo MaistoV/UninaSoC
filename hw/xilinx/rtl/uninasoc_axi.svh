@@ -18,6 +18,7 @@
 //////////////////////////////////////////////////////
 
 // AXI4 bus parameters
+// NOTE: these cannot be macro-based because of Vivado IP packege constraints
 localparam int unsigned AXI_DATA_WIDTH   = 32;
 localparam int unsigned AXI_ADDR_WIDTH   = 32;
 localparam int unsigned AXI_STRB_WIDTH   = 4;

@@ -1,5 +1,6 @@
 # Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 # Description: this script calls the functions used to read and set configuration parameters
 # according to the given Parameter that has to be set. The Configuration class is taken as input and given to the called functions to modify the Configuration.
 
@@ -38,7 +39,7 @@ def parse_property (
 		# Slave Priorities, Slave Thread IDs Width, Slave Single Thread Modes, Slave Base IDs,
 		# Master SECURE Modes, Ranges' Base Address, Ranges' Width Acquisition
 		case "CORE_SELECTOR" | "STRATEGY" | "R_REGISTER" | "PROTOCOL" | "ADDR_WIDTH" | "DATA_WIDTH" | "CONNECTIVITY_MODE" | \
-			"Slave_Priority" | "THREAD_ID_WIDTH" | "SINGLE_THREAD" | "BASE_ID" | "SECURE" | "RANGE_BASE_ADDR" | "RANGE_ADDR_WIDTH" | "RANGE_NAMES":
+			"Slave_Priority" | "THREAD_ID_WIDTH" | "SINGLE_THREAD" | "BASE_ID" | "SECURE" | "RANGE_BASE_ADDR" | "RANGE_ADDR_WIDTH" | "RANGE_NAMES" | "MASTER_NAMES":
 			func_name = base_func_name + property_name
 		# ID Width Acquisition
 		case "ID_WIDTH":

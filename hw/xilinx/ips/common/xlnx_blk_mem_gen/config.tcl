@@ -14,7 +14,6 @@ set_property -dict [list CONFIG.Interface_Type {AXI4} \
                         CONFIG.Memory_Type {Simple_Dual_Port_RAM} \
                         CONFIG.Byte_Size {8} \
                         CONFIG.Assume_Synchronous_Clk {true} \
-                        CONFIG.Write_Depth_A {8192} \
                         CONFIG.Operating_Mode_A {READ_FIRST} \
                         CONFIG.Operating_Mode_B {READ_FIRST} \
                         CONFIG.Enable_B {Use_ENB_Pin} \
@@ -30,8 +29,13 @@ set_property -dict [list CONFIG.Interface_Type {AXI4} \
                 ] [get_ips $::env(IP_NAME)]
 
 # Use envvars out of list
-set_property CONFIG.Write_Width_A $::env(DATA_WIDTH) [get_ips $::env(IP_NAME)]
-set_property CONFIG.Read_Width_A  $::env(DATA_WIDTH) [get_ips $::env(IP_NAME)]
-set_property CONFIG.Write_Width_B $::env(DATA_WIDTH) [get_ips $::env(IP_NAME)]
-set_property CONFIG.Read_Width_B  $::env(DATA_WIDTH) [get_ips $::env(IP_NAME)]
-set_property CONFIG.AXI_ID_Width  $::env(ID_WIDTH)   [get_ips $::env(IP_NAME)]
+set_property CONFIG.Write_Width_A $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_A  $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Write_Width_B $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_B  $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.AXI_ID_Width  $::env(ID_WIDTH)       [get_ips $::env(IP_NAME)]
+
+# Get the BRAM depth
+set bram_depths [split $::env(BRAM_DEPTHS) " "]
+# This file is the config for the first BRAM occurrence, hence it uses the index 0
+set_property CONFIG.Write_Depth_A [lindex $bram_depths 0] [get_ips $::env(IP_NAME)]
