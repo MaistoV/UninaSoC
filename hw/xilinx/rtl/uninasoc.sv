@@ -554,7 +554,7 @@ module uninasoc (
 
         // Mapping PLIC input interrupts (only from pbus at the moment)
         // Mapping is static (refer to uninasoc_pkg.sv)
-        plic_int_line[PLIC_RESERVED_INTERRUPT]  = 1'b0; 
+        plic_int_line[PLIC_RESERVED_INTERRUPT]  = 1'b0;
         plic_int_line[PLIC_GPIOIN_INTERRUPT]    = pbus_int_line[PBUS_GPIOIN_INTERRUPT];
         plic_int_line[PLIC_TIM0_INTERRUPT]      = pbus_int_line[PBUS_TIM0_INTERRUPT];
         plic_int_line[PLIC_TIM1_INTERRUPT]      = pbus_int_line[PBUS_TIM1_INTERRUPT];
@@ -565,7 +565,7 @@ module uninasoc (
 
     end : system_interrupts
 
- 
+
     custom_rv_plic custom_rv_plic_u (
         .clk_i          ( soc_clk                       ), // input wire s_axi_aclk
         .rst_ni         ( sys_resetn                    ), // input wire s_axi_aresetn
