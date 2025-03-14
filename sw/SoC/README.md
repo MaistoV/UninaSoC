@@ -18,7 +18,7 @@ It is expected that libraries and projects depend at least on the common files, 
 
 to build the `examples`, run
 ```
-make build_examples
+make examples
 ```
 The existing examples include:
 - `blinky` - Supported only on the embedded configuration.

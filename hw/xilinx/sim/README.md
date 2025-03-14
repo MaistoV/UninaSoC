@@ -1,3 +1,3 @@
 # SoC Simulation (Questa)
 
-TBD
+> TBD: this is just a placeholder for future developments.

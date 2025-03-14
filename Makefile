@@ -16,7 +16,7 @@ xilinx: units config
 	${MAKE} -C ${XILINX_ROOT} -j ${MAX_VIVADO_INSTANCES}
 
 units:
-	${MAKE} -C ${HW_UNITS_ROOT}
+	${MAKE} -C ${HW_UNITS_ROOT} -j ${MAX_VIVADO_INSTANCES}
 
 sw: config
 	${MAKE} -C ${SW_ROOT}
