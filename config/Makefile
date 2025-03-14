@@ -16,6 +16,7 @@ config_%_bus: config_check
 		${CONFIG_CSV} \
 		${OUTPUT_TCL_FILE}
 	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE}"
+	${PYTHON} ${CONFIG_ROOT}/axi_memory_map/declare_and_concat_buses_rtl.py ${CONFIG_CSV}
 
 
 OUTPUT_LD_FILE ?= ${SW_ROOT}/SoC/common/UninaSoC.ld

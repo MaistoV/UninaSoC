@@ -16,6 +16,7 @@ class Configuration:
 		self.ID_WIDTH			 : int = 4		# ID Data Width for MI and SI (a subset of it is used by the Interfaces Thread IDs)
 		self.NUM_MI				 : int = 2 		# Master Interface (MI) Number
 		self.NUM_SI				 : int = 1 		# Slave Interface (SI) Number
+		self.MASTER_NAMES        : list = []    # List of names of masters connected to the bus
 		self.RANGE_NAMES         : list = []    # List of names of slaves connected to the bus
 		self.ADDR_RANGES		 : list = 1 	# Number of Address Ranges for all MI
 		self.BASE_ADDR			 : list = [] 	# the Base Address of each Range of each Master

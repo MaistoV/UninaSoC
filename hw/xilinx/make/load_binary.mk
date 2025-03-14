@@ -33,39 +33,44 @@ load_binary_embedded: ${BIN_PATH}
 load_binary_hpc: ${BIN_PATH}
 	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/xdma_load_binary.sh ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}"
 
-############
-# Load ELF #
-############
-# In case a debug module is available
-# Use XSDB as backend and GDB as a loader/debugger
+######################
+# Load ELF - Backend #
+######################
 
-XSDB ?= xsdb
+# To load a program as an .elf, a Debug Module must be available
+# Depending on the selected CPU, two backends flows are supported
+
 # Path to target elf
 ELF_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.elf
-# 32-bit RISC-V port exposed by Vivado HW Server is 3004
-XSDB_DEBUG_PORT ?= 3004
-
-# Load program directly with XSDB
-xsdb_run_elf:
-	${XSDB} ${XILINX_SCRIPTS_LOAD_ROOT}/$@.tcl ${ELF_PATH} ${XILINX_BITSTREAM}
 
 # Use XSDB as a backend
-xsdb_backend:
-	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/$@.tcl
+XSDB ?= xsdb
+# 32-bit RISC-V port exposed by Vivado HW Server is 3004 (same of OpenOCD)
+DEBUG_PORT ?= 3004
 
-# Use GDB to load the ELF and run (open the backend in a shell before) (TO TEST)
-run_gdb:
-	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/$@.sh ${ELF_PATH} ${XSDB_DEBUG_PORT}"
+xsdb_run:
+	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_connect.tcl
 
-# PHONIES
-.PHONY: load_binary load_binary_embedded load_binary_hpc xsdb_run_elf xsdb_backend debug_run
-
-###########
-# OpenOCD #
-###########
+# Use openOCD as a backed
 OPENOCD ?= openocd
 OPENOCD_TARGET ?= nexysA7
 OPENOCD_SCRIPT ?= ${XILINX_SYNTH_TCL_ROOT}/openocd_${OPENOCD_TARGET}.cfg
-run_openocd:
+
+openocd_run:
 	@echo "[INFO] Make sure to kill any instance of hw_server running on the target USB device"
 	${OPENOCD} -f ${OPENOCD_SCRIPT}
+
+##################################
+# Load ELF - Debugger and Loader #
+##################################
+
+# Use GDB to load the ELF and run (open the backend in a shell before)
+
+gdb_run:
+	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/run_gdb.sh ${ELF_PATH} ${DEBUG_PORT}"
+
+###########
+# PHONIES #
+###########
+
+.PHONY: load_binary load_binary_embedded load_binary_hpc xsdb_run_elf debug_backend debug_run

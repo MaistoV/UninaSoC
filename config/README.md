@@ -39,6 +39,7 @@ The following table details the supported properties.
 | ID_WIDTH              | AXI ID Width                                              | (4..32)                                                   | 4
 | NUM_MI                | Number of Master Interfaces (number of slaves)            | (0..16)                                                   | 2
 | NUM_SI                | Number of Slave Interfaces (number of masters)            | (0..16)                                                   | 1
+| MASTER_NAMES          | Names of masters connected to the bus                     | [NUM_SI] Strings | N/A
 | RANGE_NAMES           | Names of slave memory ranges                                               | [NUM_MI] Strings                                          | N/A
 | ADDR_RANGES           | Number of ranges for master interfaces                    | (1..16)                                                   | 1
 | BASE_ADDR             | The Base Addresses for each range of each Master          | [NUM_MI*ADDR_RANGES] 64 bits hex                          | 0x100000 for the first range of every Master, otherwise is 0xffffffffffffffff [not used], it must be lesser or equal of Global ADDR_WIDTH
@@ -73,6 +74,11 @@ $ make config_peripheral_bus    # Generates peripheral bus config
 $ make config_ld                # Generates linker script
 $ make config_xilinx            # Update xilinx config
 ```
+
+### BRAM size configuration
+The `config_xilinx` flow also configures the BRAM size of the IP `xlnx_blk_mem_gen` according to the `RANGE_ADDR_WIDTH` assigned to the BRAM in the CSV.
+
+> **NOTE**: The xlnx_blk_mem_gen/config.tcl file configures the first BRAM occurrence, hence it uses the index 0. For now, a single BRAM is supported, if multiple BRAMs are declared in the config (CSV) file, the config flow gives an error. Multiple BRAMs would be simple to add in the future.
 
 ### Scripting Architecture
 The directory `scripts/` holds multiple scripts, acting in the following scripting architecture:

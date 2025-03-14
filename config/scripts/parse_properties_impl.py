@@ -1,5 +1,6 @@
 # Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 # Description: Definitions of the property-specific parsing functions and checking constraint.
 #			  If constraints aren't respected, correct values are used, issuing a warning and ignoring the input.
 
@@ -603,4 +604,13 @@ def parse_RANGE_NAMES(
 ):
 	values = property_value.split()
 	config.RANGE_NAMES = values.copy()
+	return config
+
+def parse_MASTER_NAMES(
+	config,
+	property_name : str,
+	property_value: str,
+):
+	values = property_value.split()
+	config.MASTER_NAMES = values.copy()
 	return config
