@@ -66,17 +66,6 @@ make xilinx
 make sw
 ```
 
-## Simulation flow (TBD):
-The choice of the simulator is driven by the choice of the IPs and required licenses. We target two simulation flows:
-* Unit tests: Verilator
-   * Royalty-free, good for students
-   * No support for Xilin IPs
-* SoC-level tests, QuestaSim:
-   * Requires license
-   * Supports Xilinx IPs
-   * Students can access a licensed host for simulator access
-
-
 ## Architecture
 
 In both HPC and embedded profiles, the SoC architecture and host connection is depicted below:
@@ -104,4 +93,12 @@ Finer-grained documentation and insights to control the building flow, can be fo
    - [Hardware units](hw/units/README.md): prepare external custom IPs.
    - [Xilinx FPGA](hw/xilinx/README.md): build FPGA project and control device.
 3. [Software build](hw/sw/README.md): build software for UninaSoC.
+4. Simulation (TBD):
+   * Unit tests: Verilator
+      * Royalty-free, good for students
+      * No support for Xilin IPs
+   * SoC-level tests, QuestaSim:
+      * Requires license
+      * Supports Xilinx IPs
+      * Students can access a licensed host for simulator access
 

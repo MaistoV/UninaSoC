@@ -31,48 +31,6 @@ make start_hw_server # Only once after host boot and for older versions of Vivad
 make program_bitstream
 ```
 
-## Load Binary on the Device
-Assuming:
-1. The bistream has been programmed
-2. A binary has been built (in binary or elf format).
-> The software compilation flow builds both elf and binary.
-
-### Load ELFs
-Load ELF with GDB and either OpenOCD or XSDB as back-ends.
-
-#### Microblaze-V
-If `CORE_SELECTION` is `CORE_MICROBLAZEV`:
-``` bash
-make xsdb_run_elf
-```
-Or
-``` bash
-make xsdb_backend
-```
-
-##### Other Cores
-Otherwise, **for all other cores**, assuming no `hw_server` instance is running:
-``` bash
-make run_openocd
-```
-
-##### All cores
-Once OpenOCD or XSDB backends are up, in another shell run RISC-V GDB and attach to GDB port `3004`, or run:
-
-> 3004 is just the default RISC-V 32-bits GDB port for XSDB
-
-``` bash
-make run_gdb
-```
-
-
-### Load Binary
-You can load your binary into the device memory running the following command, optionally setting some environment variables:
-``` bash
-make load_binary bin_path=<path-to-bin> base_address=<value> JTAG_READBACK=<false|true>
-```
-The default variable values loads the [blinky](../../sw/SoC/examples/blinky/) example.
-
 ## Directory Structure
 This tree is structured as follows:
 ``` bash
@@ -134,3 +92,6 @@ To add probe on a net, you should mark it as `MARK_DEBUG=1` or `TRUE`, in one of
 1. Using the ILA core adds a couple of minutes to the flow to synthesize.
 2. Max 1023 nets can be probed in the current setup.
 3. Adding many probes might complicate the design and make it more difficult to build.
+
+## Running Software
+To load and run software on the platform, check the [related documentation](doc/PROGRAM_LOADING.md).
