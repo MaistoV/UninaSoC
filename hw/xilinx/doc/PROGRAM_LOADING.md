@@ -29,7 +29,10 @@ make debug_run ELF_PATH=<path-to-elf>
 
 ## Load a binary file
 
-Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated loading infrastructure (e.g. `CORE_PICORV32`), memory can also be programmed with a flat binary using _Xilinx jtag2axi_ or _Xilinx DMA_ IPs, both integrated into our `rtl/sys_master` component. This binary loading process is straightforward, as it directly writes bytes into memory. Therefore, ensure that the code is placed contiguously during linking to avoid memory size issues.
+Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated loading infrastructure (e.g. `CORE_PICORV32`), memory can also be programmed with a flat binary using _Xilinx jtag2axi_ or _Xilinx DMA_ IPs, both integrated into our `rtl/sys_master` component. This binary loading process is straightforward, as it directly writes bytes into memory. 
+
+> NOTE: This loading flow writes a flat binary image, including zero-padding between memory sections. Therefore, during linking, you might need to keep an eye for this.
+
 ```
 make load_binary BIN_PATH=<path-to-bin> BASE_ADDRESS=<value> JTAG_READBACK=<false|true>
 ```
