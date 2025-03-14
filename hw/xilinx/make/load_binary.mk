@@ -66,7 +66,7 @@ openocd_run:
 
 # Use GDB to load the ELF and run (open the backend in a shell before)
 
-debug_run:
+gdb_run:
 	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/run_gdb.sh ${ELF_PATH} ${DEBUG_PORT}"
 
 ###########
