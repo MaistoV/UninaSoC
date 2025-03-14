@@ -242,9 +242,9 @@ module rvm_socket # (
 
                 // Interrupts
                 // Ublaze can only take one external interrupt, which we tie to EXT interrupt (from the PLIC)
-                .Interrupt          ( irq_i[EXT_INT_PIN]    ), // input wire Interrupt
-                .Interrupt_Address  ('0                     ), // input wire [0 : 31] Interrupt_Address
-                .Interrupt_Ack      (                       ), // output wire [0 : 1] Interrupt_Ack
+                .Interrupt          ( irq_i[CORE_EXT_INTERRUPT] ), // input wire Interrupt
+                .Interrupt_Address  ('0                         ), // input wire [0 : 31] Interrupt_Address
+                .Interrupt_Ack      (                           ), // output wire [0 : 1] Interrupt_Ack
 
                 // Debug port to MDMV
                 .Dbg_Clk            ( Dbg_Clk     ), // input wire Dbg_Clk

@@ -97,7 +97,11 @@ module peripheral_bus #(
     // EMBEDDED ONLY
     logic gpio_in_int;
 
-    assign int_o = {uart_int, tim1_int, tim0_int, gpio_in_int};
+    // Assign interrupt pins
+    assign int_o[PBUS_GPIOIN_INTERRUPT] = gpio_in_int;
+    assign int_o[PBUS_TIM0_INTERRUPT]   = tim0_int;
+    assign int_o[PBUS_TIM1_INTERRUPT]   = tim1_int;
+    assign int_o[PBUS_UART_INTERRUPT]   = uart_int;
 
     /////////////////////
     // AXI-lite Master //

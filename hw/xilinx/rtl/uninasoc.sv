@@ -548,21 +548,20 @@ module uninasoc (
 
     always_comb begin : system_interrupts
 
-        // Mapping PLIC input interrupts (only from pbus at the moment)
-        plic_int_line = {
-            '0,                 // others - reserved
-            pbus_int_line[3],   // 4 - UART Interrupt    (From PBUS) (HPC implementation does not support this yet)
-            pbus_int_line[2],   // 3 - Timer 1 Interrupt (From PBUS)
-            pbus_int_line[1],   // 2 - Timer 0 Interrupt (From PBUS)
-            pbus_int_line[0],   // 1 - GPIO_IN Interrupt (From PBUS) (Embedded Only)
-            1'b0};              // 0 - RESERVED
-
-        // Mppinag PLIC to Socket interrupt lines
-
         // Default non-assigned lines
+        plic_int_line = '0;
         rvm_socket_interrupt_line = '0;
+
+        // Mapping PLIC input interrupts (only from pbus at the moment)
+        // Mapping is static (refer to uninasoc_pkg.sv)
+        plic_int_line[PLIC_RESERVED_INTERRUPT]  = 1'b0; 
+        plic_int_line[PLIC_GPIOIN_INTERRUPT]    = pbus_int_line[PBUS_GPIOIN_INTERRUPT];
+        plic_int_line[PLIC_TIM0_INTERRUPT]      = pbus_int_line[PBUS_TIM0_INTERRUPT];
+        plic_int_line[PLIC_TIM1_INTERRUPT]      = pbus_int_line[PBUS_TIM1_INTERRUPT];
+        plic_int_line[PLIC_UART_INTERRUPT]      = pbus_int_line[PBUS_UART_INTERRUPT];
+
         // Map system-interrupts pins to socket interrupts
-        rvm_socket_interrupt_line[EXT_INT_PIN] = plic_int_irq_o;
+        rvm_socket_interrupt_line[CORE_EXT_INTERRUPT] = plic_int_irq_o;
 
     end : system_interrupts
 
