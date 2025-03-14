@@ -207,6 +207,70 @@ module rvm_socket # (
             );
 
         end
+        else if (CORE_SELECTOR == CORE_CV32A6) begin: core_cv32a6
+
+            ////////////////////////
+            //      CV32A6        //
+            ////////////////////////
+
+            // CVA6 only has one Master port (for both data and instruction)
+            `DECLARE_AXI_BUS(cv32a6,DATA_WIDTH);
+
+            custom_cv32a6 cv32a6_core (
+
+                .clk_i           ( clk_i                    ),
+                .rst_ni          ( rst_ni                   ),
+                .boot_addr_i     ( bootaddr_i               ),
+                .hart_id_i       ( '0                       ),
+                .irq_i           ( {'0, irq_i[EXT_INT_PIN]} ), // EXT interrupt (bit 1 is for S-mode, bit 0 for M-mode)
+                .ipi_i           ( '0                       ), // Shoult be SW interrupt
+                .time_irq_i      ( '0                       ), // Should be TIM interrupt
+                .debug_req_i     ( debug_req_core           ),
+
+                .m_axi_awaddr   ( cv32a6_axi_awaddr        ), // output wire [31 : 0] m_axi_awaddr
+                .m_axi_awlen    ( cv32a6_axi_awlen         ), // output wire [7 : 0] m_axi_awlen
+                .m_axi_awsize   ( cv32a6_axi_awsize        ), // output wire [2 : 0] m_axi_awsize
+                .m_axi_awburst  ( cv32a6_axi_awburst       ), // output wire [1 : 0] m_axi_awburst
+                .m_axi_awlock   ( cv32a6_axi_awlock        ), // output wire [0 : 0] m_axi_awlock
+                .m_axi_awcache  ( cv32a6_axi_awcache       ), // output wire [3 : 0] m_axi_awcache
+                .m_axi_awprot   ( cv32a6_axi_awprot        ), // output wire [2 : 0] m_axi_awprot
+                .m_axi_awregion ( cv32a6_axi_awregion      ), // output wire [3 : 0] m_axi_awregion
+                .m_axi_awqos    ( cv32a6_axi_awqos         ), // output wire [3 : 0] m_axi_awqos
+                .m_axi_awvalid  ( cv32a6_axi_awvalid       ), // output wire m_axi_awvalid
+                .m_axi_awready  ( cv32a6_axi_awready       ), // input wire m_axi_awready
+                .m_axi_wdata    ( cv32a6_axi_wdata         ), // output wire [31 : 0] m_axi_wdata
+                .m_axi_wstrb    ( cv32a6_axi_wstrb         ), // output wire [3 : 0] m_axi_wstrb
+                .m_axi_wlast    ( cv32a6_axi_wlast         ), // output wire m_axi_wlast
+                .m_axi_wvalid   ( cv32a6_axi_wvalid        ), // output wire m_axi_wvalid
+                .m_axi_wready   ( cv32a6_axi_wready        ), // input wire m_axi_wready
+                .m_axi_bresp    ( cv32a6_axi_bresp         ), // input wire [1 : 0] m_axi_bresp
+                .m_axi_bvalid   ( cv32a6_axi_bvalid        ), // input wire m_axi_bvalid
+                .m_axi_bready   ( cv32a6_axi_bready        ), // output wire m_axi_bready
+                .m_axi_bid      ( cv32a6_axi_bid           ), // output wire m_axi_bready
+                .m_axi_araddr   ( cv32a6_axi_araddr        ), // output wire [31 : 0] m_axi_araddr
+                .m_axi_arlen    ( cv32a6_axi_arlen         ), // output wire [7 : 0] m_axi_arlen
+                .m_axi_arsize   ( cv32a6_axi_arsize        ), // output wire [2 : 0] m_axi_arsize
+                .m_axi_arburst  ( cv32a6_axi_arburst       ), // output wire [1 : 0] m_axi_arburst
+                .m_axi_arlock   ( cv32a6_axi_arlock        ), // output wire [0 : 0] m_axi_arlock
+                .m_axi_arcache  ( cv32a6_axi_arcache       ), // output wire [3 : 0] m_axi_arcache
+                .m_axi_arprot   ( cv32a6_axi_arprot        ), // output wire [2 : 0] m_axi_arprot
+                .m_axi_arregion ( cv32a6_axi_arregion      ), // output wire [3 : 0] m_axi_arregion
+                .m_axi_arqos    ( cv32a6_axi_arqos         ), // output wire [3 : 0] m_axi_arqos
+                .m_axi_arvalid  ( cv32a6_axi_arvalid       ), // output wire m_axi_arvalid
+                .m_axi_arready  ( cv32a6_axi_arready       ), // input wire m_axi_arready
+                .m_axi_rdata    ( cv32a6_axi_rdata         ), // input wire [31 : 0] m_axi_rdata
+                .m_axi_rresp    ( cv32a6_axi_rresp         ), // input wire [1 : 0] m_axi_rresp
+                .m_axi_rlast    ( cv32a6_axi_rlast         ), // input wire m_axi_rlast
+                .m_axi_rvalid   ( cv32a6_axi_rvalid        ), // input wire m_axi_rvalid
+                .m_axi_rready   ( cv32a6_axi_rready        ), // output wire m_axi_rready
+                .m_axi_rid      ( cv32a6_axi_rid           )  // output wire m_axi_rready
+
+            );
+
+            // Attach to socket (we only use data port)
+            `ASSIGN_AXI_BUS( rvm_socket_data , cv32a6 );
+
+        end
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
 
             // Tie-off unused signals
@@ -441,8 +505,9 @@ module rvm_socket # (
 
     // Few exceptions:
     // - Microblaze V has its own interfaces and debug module
+    // - CV32A6 already has its own AXI interface
     // - TODO: Rocket
-    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : mem_convert
+    if ( !( CORE_SELECTOR inside {CORE_CV32A6, CORE_MICROBLAZEV} ) ) begin : mem_convert
 
         // Connect memory interfaces to socket output memory ports
         `ASSIGN_AXI_BUS( rvm_socket_instr, core_instr_to_socket_instr );
@@ -573,7 +638,7 @@ module rvm_socket # (
 
     // This is only for PULP cores, that share a common debug module
     // Other cores are required to instatiate their own DM
-    if ( CORE_SELECTOR inside {CORE_CV32E40P} ) begin : dm_gen
+    if ( CORE_SELECTOR inside {CORE_CV32E40P, CORE_CV32A6} ) begin : dm_gen
 
         //  BSCANE2 tap
         (* keep_hierarchy = "yes" *)  // DEBUG

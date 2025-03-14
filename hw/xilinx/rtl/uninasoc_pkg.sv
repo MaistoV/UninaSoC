@@ -36,6 +36,7 @@ package uninasoc_pkg;
     typedef enum int unsigned {
         CORE_PICORV32,
         CORE_CV32E40P,
+        CORE_CV32A6,
         CORE_MICROBLAZEV
     } core_selector_t;
 

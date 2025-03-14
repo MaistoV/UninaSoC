@@ -7,7 +7,7 @@
 class Configuration:
 	def __init__(self):
 		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
-		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_MICROBLAZEV"]
+		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_CV32A6", "CORE_MICROBLAZEV"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
