@@ -11,14 +11,14 @@ For both flows, the default application loaded is `sw/SoC/examples/blinky`
 ## Load an ELF file
 
 To load a .elf file, a backend that supports the target platform and CPU is required. Currently, we support two backends:
-[PROGRAM_LOADING.md](OpenOCD) and XSDB (coming with Vivado). Both connect to port 3004, which is used for RISC-V 32-bit (64-bit support is not yet available).
+[OpenOCD](PROGRAM_LOADING.md) and XSDB (coming with Vivado). Both connect to port 3004, which is used for RISC-V 32-bit (64-bit support is not yet available).
 For loading, we primarily use the GDB debugger, though XSDB is also a viable option.
 
 If `CORE_SELECTOR` is set to `CORE_MICROBLAZE`, the .elf file can be loaded into memory and executed using:
 ```
 make xsdb_run
 ```
-Instead, if the `CORE_SELECTOR` is `CORE_CV32E40P` use openocd (be sure to have closed connections with Xilinx HW server before)
+Instead, if the `CORE_SELECTOR` is another one (e.g. `CORE_CV32E40P`) use openocd (be sure to have closed connections with Xilinx HW server before)
 ```
 make openocd_run
 ```
@@ -29,13 +29,11 @@ make debug_run ELF_PATH=<path-to-elf>
 
 ## Load a binary file
 
-Since not all `CORE_SELECTOR` valid CPUs support a backend and load infrastructure, it is also possible to program
-the memory with a flat binary using the Xilinx jtag2axi or Xilinx DMA IPs, both integrated in our `rtl/sys_master` component. 
-The binary loading process is quite naive and just writes bytes in memory; hence be careful in placing code contiguously at linking time.
-
-Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated loading infrastructure, memory can also be programmed with a flat binary using _Xilinx jtag2axi_ or _Xilinx DMA_ IPs, both integrated into our `rtl/sys_master` component. This binary loading process is straightforward, as it directly writes bytes into memory. Therefore, ensure that the code is placed contiguously during linking to avoid memory size issues.
+Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated loading infrastructure (e.g. `CORE_PICORV32`), memory can also be programmed with a flat binary using _Xilinx jtag2axi_ or _Xilinx DMA_ IPs, both integrated into our `rtl/sys_master` component. This binary loading process is straightforward, as it directly writes bytes into memory. Therefore, ensure that the code is placed contiguously during linking to avoid memory size issues.
 ```
 make load_binary BIN_PATH=<path-to-bin> BASE_ADDRESS=<value> JTAG_READBACK=<false|true>
 ```
-Expect this approach to be slower than loading an elf file.
-
+Once the binary is loaded, enable the system using `vio` reset target:
+```
+make vio_resetn
+```
