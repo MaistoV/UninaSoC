@@ -1,5 +1,5 @@
 #!/bin/python3.10
-# Author: Manuel Maddaluno        <manuel.maddaluno@unina.it>
+# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description:
 #   Check the validity of the CSV configurations
@@ -67,6 +67,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         print_error(f"The NUM_MI does not match ADDR_WIDTH in {config_file_name}")
         return False
 
+    # Check the number of masters and relative master names
     if config.NUM_SI != len(config.MASTER_NAMES):
         print_error(f"The NUM_SI does not match MASTER_NAMES in {config_file_name}")
         return False
@@ -108,6 +109,19 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         base_addresses.append(base_address)
         end_addresses.append(end_address)
 
+    # Check the presence of multiple BRAMs, for now a single occurrence of BRAM is supported
+    # Assume BRAM as prefix for any BRAM declaration
+    bram_name = "BRAM"
+    bram_prefix = len(bram_name)
+    bram_cnt = 0
+    for name in config.RANGE_NAMES:
+        if name[0:bram_prefix] == bram_name:
+            bram_cnt += 1
+    if bram_cnt > 1:
+        print_error(f"Found {bram_cnt} BRAMs, just one BRAM is supported")
+        return False
+
+    return True
 
 #############################
 # Check inter configuration #

@@ -93,4 +93,4 @@ create the tcl property string and add it to the list of commands, which will th
 ### BRAM size configuration
 The entire flow also configures the BRAM size of the IP xlnx_blk_mem_gen according to the RANGE_ADDR_WIDTH assigned to the BRAM in the CSV.
 
-> **IMPORTANT NOTE**: The xlnx_blk_mem_gen config.tcl file configure the first BRAM occurrence, hence it uses the index 0. To add another BRAM, for now, you must add another BRAM occurrence in the CSV file and another configuration tcl with the right index.
+> **IMPORTANT NOTE**: The xlnx_blk_mem_gen config.tcl file configure the first BRAM occurrence, hence it uses the index 0. For now, a single BRAM is supported, if multiple BRAMs are declared in the config (CSV) file, the config flow gives an error.

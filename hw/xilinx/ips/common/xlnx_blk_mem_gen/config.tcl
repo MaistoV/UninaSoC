@@ -38,5 +38,4 @@ set_property CONFIG.AXI_ID_Width  $::env(ID_WIDTH)       [get_ips $::env(IP_NAME
 # Get the BRAM depth
 set bram_depths [split $::env(BRAM_DEPTHS) " "]
 # This file is the config for the first BRAM occurrence, hence it uses the index 0
-# To add another BRAM, for now, you must add another BRAM occurrence in the CSV file and another configuration tcl with the right index
 set_property CONFIG.Write_Depth_A [lindex $bram_depths 0] [get_ips $::env(IP_NAME)]
