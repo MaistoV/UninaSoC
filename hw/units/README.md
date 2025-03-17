@@ -23,7 +23,7 @@ Each custom IP, or unit, is represented by two subdirectories: one in `hw/units`
 ```
 
 These two directories must share the same name, both using the `custom_` prefix:
-- The directory in `hw/xilinx/ips`, you can simply link to the `ips/common/config.tcl` file.
+- The directory in `hw/xilinx/ips`, can simply soft-link to the `ips/common/config.tcl` file.
 - The directory in `hw/units` must expose:
     1. A `fetch_sources.sh` script.
     1. A `custom_top_wrapper.sv` RTL source to wrap
