@@ -72,7 +72,7 @@ In both HPC and embedded profiles, the SoC architecture and host connection is d
 
 ![SoC Architecture](./Base_SoC_layout.png)
 
-The host connects to a RISC-V debug module though JTAG and a `Sys Master` AXI master module, allowing for direct control and read-back over the main bus.
+The host connects to a RISC-V debug module through JTAG and a `Sys Master` AXI master module, allowing for direct control and read-back over the main bus.
 
 ### Profiles:
 UninaSoC supports the following profiles:
