@@ -92,7 +92,7 @@ Finer-grained documentation and insights to control the building flow, can be fo
 2. Hardware build:
    - [Hardware units](hw/units/README.md): prepare external custom IPs.
    - [Xilinx FPGA](hw/xilinx/README.md): build FPGA project and control device.
-3. [Software build](hw/sw/README.md): build software for UninaSoC.
+3. [Software build](sw/README.md): build software for UninaSoC.
 4. Simulation (TBD):
    * Unit tests: Verilator
       * Royalty-free, good for students
