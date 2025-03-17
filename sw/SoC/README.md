@@ -72,7 +72,7 @@ To add user-defined code, place source files in the `src` directory and header f
 The `Makefile` in the project folder is a user-defined Makefile, that imports the common `Makefile`.
 In this Makefile the user can customize its project structure, compilation flags alongside toolchain selection and also the external libraries dependencies.
 A user can add new target rules in the user-defined Makefile. However, despite changes inside the user-defined `Makefile`, all targets
-described in **Build examples** ca ne applied
+described in **Build examples** ca be applied.
 
 ### User-defined linker script
 
