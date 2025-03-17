@@ -64,7 +64,7 @@ The following table details the supported properties.
 | BUSER_WIDTH           | AXI  B User width                                         | (0..1024)                                                 | 0
 
 ## Genenerate Configurations
-After applying configutrations changes to the target CSV files (`embedded` or `hpc`), apply such changes though `make`.
+After applying configuration changes to the target CSV files (`embedded` or `hpc`), apply though `make`.
 
 Alternatively, you can control the generation of single targets:
 ``` bash
