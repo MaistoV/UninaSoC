@@ -82,7 +82,7 @@ UninaSoC supports the following profiles:
    - `Sys Master`: through JTAG Xilinx `hw_server`
 - `hpc`:
    - UART: virtualized over PCIe.
-   - Memory: 8KB BRAM + 64GB DDR
+   - Memory: 8KB BRAM + 16GB DDR (per channel)
    - `Sys Master`: through PCIe BAR addres space.
 
 ## Documentation Index
