@@ -27,7 +27,7 @@ These two directories must share the same name, both using the `custom_` prefix:
 - The directory in `hw/units` must expose:
     1. A `fetch_sources.sh` script.
     1. A `custom_top_wrapper.sv` RTL source to wrap
-    1. An  `assets/` directory holding any other file.
+    1. An  `assets/` directory holding any other file used by the one script or wrapper above, e.g. a configuration file, a static file list, an RTL source, etc.
 
 If the custom IP originates from a remote repository (e.g., a GitHub project), the  `fetch_sources.sh` script should:
     1. create an `rtl/` directory,
