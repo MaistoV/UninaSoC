@@ -7,10 +7,6 @@ This project was verified on Ubuntu 22.04 and the following tools version:
 | Tool            | Verified version |
 |-----------------|------------------|
 | Vivado          | 2023.2*-2024.2   |
-| Mentor Questa   | 2020.4           |
-| g++             | TBD              |
-| Verilator       | TBD              |
-| gtkwave         | TBD              |
 >\* `CORE_MICROBLAZEV` is supported only in Vivado >= 2024.2
 
 ## SoC Profiles
