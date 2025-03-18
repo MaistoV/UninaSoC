@@ -65,14 +65,14 @@ make sw
 
 ## Architecture
 
-In both HPC and embedded profiles, the SoC architecture and host connection is depicted below:
+In both `hpc` and `embedded` profiles, the SoC architecture and host connection is depicted below:
 
 ![SoC Architecture](./Base_SoC_layout.png)
 
 The host connects to a RISC-V debug module through JTAG and a `Sys Master` AXI master module, allowing for direct control and read-back over the main bus.
 
 ### Profiles:
-UninaSoC supports the following profiles `embedded` adn `hpc`.
+UninaSoC supports the following profiles `embedded` and `hpc`.
 
 Physical resources depend on the target board and part number. W.r.t. the default supported boards, the platform offers:
 - Profile `embedded` on Nexys-A7-100T:
