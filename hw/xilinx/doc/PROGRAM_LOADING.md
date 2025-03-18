@@ -15,15 +15,15 @@ To load a .elf file, a backend that supports the target platform and CPU is requ
 For loading, we primarily use the GDB debugger, though XSDB is also a viable option.
 
 If `CORE_SELECTOR` is set to `CORE_MICROBLAZE`, the .elf file can be loaded into memory and executed using:
-```
+``` bash
 make xsdb_run
 ```
 Instead, if the `CORE_SELECTOR` is another one (e.g. `CORE_CV32E40P`) use openocd (be sure to have closed connections with Xilinx HW server before)
-```
+``` bash
 make openocd_run
 ```
 Once the backend is enabled, load the .elf file using
-```
+``` bash
 make debug_run ELF_PATH=<path-to-elf>
 ```
 
@@ -33,11 +33,11 @@ Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated load
 
 > NOTE: This loading flow writes a flat binary image, including zero-padding between memory sections. Therefore, during linking, you might need to keep an eye for this.
 
-```
+``` bash
 make load_binary BIN_PATH=<path-to-bin> BASE_ADDRESS=<value> JTAG_READBACK=<false|true>
 ```
 Once the binary is loaded, enable the system using `vio` reset target:
-```
+``` bash
 make vio_resetn
 ```
 **Warning**: vio_resetn is currently bugged, this will be addressed in issue #23
