@@ -30,36 +30,36 @@ Further support is coming soon for:
 The top-level `Makefile` can be used to build the platform for the specific target board.
 
 First, setup environment with:
-```
+``` bash
 source settings.sh <soc_config> <board>
 ```
 > NOTE: If no input parameter is specificed, we default to `embedded` profile and the Nexys A7-100T board.
 
 Build defaults with
 
-```
+``` bash
 make all
 ```
 
 Alternatively, you can control the individual steps.
 
 1. Configure the SoC:
-```
+``` bash
 make config # This is always called when operating from the top Makefile
 ```
 
 2. Download rtl sources for non-xilinx IPS:
-```
+``` bash
 make units
 ```
 
 3. Build the SoC bitstream by running:
-```
+``` bash
 make xilinx
 ```
 
 4. Build software examples with:
-```
+``` bash
 make sw
 ```
 
