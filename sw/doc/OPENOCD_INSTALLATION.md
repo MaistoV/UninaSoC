@@ -2,7 +2,7 @@
 
 To install OpenOCD,
 run the following commands:
-```
+``` bash
 git clone https://github.com/riscv/riscv-openocd
 cd riscv-openocd
 # git checkout v2018.12.0

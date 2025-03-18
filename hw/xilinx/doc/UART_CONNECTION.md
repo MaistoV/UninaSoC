@@ -8,9 +8,8 @@ Nexys to FTDI front        |  Nexys to FTDI back
 :-------------------------:|:-------------------------:
 ![Nexys to FTDI Front](nexys_ftdi_front.jpeg)  |  ![Nexys to FTDI Back](nexys_ftdi_back.jpeg)
 
-Any compatible device can be used, provided the pins are correctly connected.
-You can use any serial terminal application; however, we recommend [Minicom](https://github.com/Distrotech/minicom/tree/master).
-In the current implementation, the UART operates at a baud rate of 9600. For further details, refer to `hw/ips/embedded/xlnx_axi_uartlite/config.tcl`.
+Any compatible FTDI device can be used, provided the UART pins are correctly connected.
+In the current implementation, the UART operates at a baud rate of 9600. For further details on the UART hardware configuration, refer to `hw/ips/embedded/xlnx_axi_uartlite/config.tcl`.
 
 
 

@@ -12,4 +12,3 @@ sudo ./install_drivers
 ```
 > NOTE: for regualar Vivado installations, `<Vivado Install>` path can be retrieved from `XILINX_VIVADO` environment variable.
 
-> TODO: what about Alveos?

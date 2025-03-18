@@ -1,14 +1,25 @@
-# Xilinx flow
+# Xilinx FPGA Flow
 This tree holds the building environment for Xilinx FPGAs.
 
-More technical documentation can be found in the `doc/` folder for:
-* [board-specific installation instructions](doc/BOARDS_INSTALLATION.md).
+## Installation
+
+Additional installation-related technical documentation can be found in the `doc/` folder for:
+* [UART FDTI connection](doc/UART_CONNECTION.md).
+* [Board-specific installation instructions](doc/BOARDS_INSTALLATION.md).
 * [Linux-specific instructions for Vivado](doc/INSTALL_CABLE_DRIVERS.md).
 * [Vivado-specific patches](doc/VIVADO_PATCHES.md).
 
+
 ## Build Bitstream and Program Device
 In order to build the bitstream all sources for custom IPs must be available for the project.
-Check [hw/units/README.md](../units/README.md) for more info regarding it.
+Check [hw/units/README.md](../units/README.md) for more info.
+
+To build Xilinx and custom IPs:
+``` bash
+make ips
+make ips/<IP name>.xci # For a single IP
+```
+
 To build the bitstream just run:
 ``` bash
 make bistream
@@ -16,25 +27,13 @@ make bistream
 
 Once the build is completed, program target device running:
 ``` bash
-make start_hw_server # Only once after host boot
+make start_hw_server # Only once after host boot and for older versions of Vivado
 make program_bitstream
 ```
 
-## Load Binary on the Device
-Assuming:
-1. The bistream has been programmed
-2. A binary has been built (in binary, non elf format), e.g. bootrom
-
-You can load your binary into the device memory running the following command, optionally setting some environment variables:
-``` bash
-make load_binary bin_path=<path-to-bin> base_address=<value> JTAG_READBACK=<false|true>
-```
-The default configuration loads the bootrom.
-> NOTE: this loading flow does not support C-extension yet.
-
 ## Directory Structure
 This tree is structured as follows:
-``` bash
+```
 ├── ips                             # Xilinx IPs directory
 │   ├── common                      # Common IPs (both hpc and embedded)
 │   │   ├── tcl                     # Common IP flow scripts
@@ -44,20 +43,22 @@ This tree is structured as follows:
 │   │       └── config.tcl          # Script setting IP properties
 |   ├── embedded                    # Embedded IPs
 |   └── hpc                         # HPC IPs
-├── Makefile                        # Make file for Xilinx flow
+├── make                            # Included Makefiles
+├── Makefile                        # Top Make file for Xilinx flow
 ├── README.md                       # This file
 ├── rtl                             # RTL sources
+├── scripts                         # Utilty scripts
 ├── sim                             # Xilinx-specific simulation
 └── synth                           # Xilinx-specific synthesis
     ├── constraints                 # Constraint files for Xilinx FPGA designs
-    └── tcl                         # FPGA-synthesis TCL scripts
+    └── tcl                         # Synthesis-related TCL scripts
 ```
 
-## IPs flow
+## IPs Flow
 The system features both Xilinx-provided and custom IPs.
 
 ### Add and Configure a Xilinx IP
-IPs are characterized by being configuration-specific (hpc or embedded) or common:
+IPs are characterized by being profile-specific (hpc or embedded) or common:
 * `ips/common/`
 * `ips/embedded/`
 * `ips/hpc/`
@@ -68,14 +69,13 @@ The name of the directory will be the name of your IP in the design. In the dire
 
 (Re-)configure the IP by:
 1. Editing the property keys and values in `config.tcl`;
-2. Running make `<ip_name>`
+2. Running `make ips/<ip_name>.xci`
 > NOTE: Vivado versions must match between IP build and IP import during system build.
 
-### Prepare IP Simulation
-tbd
-
 ## Custom IPs
-TBD
+Custom IPs are built alongside Xilinx IPs.
+
+For further info on custom IPs see [related documentation](../units/README.md).
 
 ## In-system Debug Probing with Xilinx ILAs
 This environment supports the automatic insertion of Internal Logic Analyzer (ILA) probes, ([PG172](https://docs.amd.com/v/u/en-US/pg172-ila) ).
@@ -86,6 +86,9 @@ To add probe on a net, you should mark it as `MARK_DEBUG=1` or `TRUE`, in one of
 * Mark it in the [hw/xilinx/synth/tcl/mark_debug_nets.tcl](hw/xilinx/synth/tcl/mark_debug_nets.tcl) script, e.g. `set_property MARK_DEBUG true [get_nets ...]`
 
 ### Notes on Using ILAs
-1. Using the ILA core adds a couple of minutes to the flow to synthesize.
-2. Max 1023 nets can be probed in the current setup.
-3. Adding many probes might complicate the design and make it more difficult to build.
+1. Using the ILA core adds a few minutes to the synthesis flow.
+2. Max 1023 nets can be probed in the current single-ILA setup.
+3. Adding many probes might complicate the design and make it more difficult to route.
+
+## Running Software
+To load and run software on the platform, check the [related documentation](doc/PROGRAM_LOADING.md).
