@@ -6,8 +6,8 @@ RISC-V soft-SoC extensible plaftorm for Xilinx FPGAs from University of Naples F
 This project was verified on Ubuntu 22.04 and the following tools version:
 | Tool            | Verified version |
 |-----------------|------------------|
-| Vivado          | 2023.2*-2024.2   |
->\* `CORE_MICROBLAZEV` is supported only in Vivado >= 2024.2
+| Vivado          | 2024.2           |
+> This is just because `CORE_MICROBLAZEV` is supported only in Vivado >= 2024.2.
 
 ## SoC Profiles
 The SoC comes in two flavors, `hpc` and `embedded` profiles, and support for multiple boards.
