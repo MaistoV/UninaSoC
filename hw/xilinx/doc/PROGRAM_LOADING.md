@@ -40,4 +40,4 @@ Once the binary is loaded, enable the system using `vio` reset target:
 ``` bash
 make vio_resetn
 ```
-**Warning**: vio_resetn is currently bugged, this will be addressed in issue #23
+**Warning**: this option works only if `VIO_RESETN_DEFAULT = 0` in `configs/<profile>/config_main_bus.csv`

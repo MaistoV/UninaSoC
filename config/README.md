@@ -32,6 +32,7 @@ The following table details the supported properties.
 | Name  | Description | Values | Default
 |-|-|-|-|
 | CORE_SELECTOR         | Select target RV core (**only for main_bus**)             | CORE_PICORV32, CORE_CV32E40P, CORE_MICROBLAZEV            | None (**mandatory value**)
+| VIO_RESETN_DEFAULT    | Select value for VIO resetn (**only for main_bus**)       | [0,1]                                                     | 1
 | PROTOCOL              | AXI PROTOCOL                                              | (AXI4, AXI4LITE, AXI3)                                    | AXI4
 | CONNECTIVITY_MODE     | Crossbar Interconnection                                  | Shared-Address, Multiple-Data(SAMD), Shared-Address/Shared-Data(SASD)                | SAMD
 | ADDR_WIDTH            | AXI Address Width                                         | (12..64) for AXI4 and AXI3, (1..64) for AXI4LITE          | 32
