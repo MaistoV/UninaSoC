@@ -90,7 +90,7 @@ Finer-grained documentation and insights to control the building flow, can be fo
 1. [Configuration flow](config/README.md): re-configure UninaSoC.
 2. Hardware build:
    - [Hardware units](hw/units/README.md): prepare external custom IPs.
-   - [Xilinx FPGA](hw/xilinx/README.md): package IPs, build bitstream, and device programming and debug flow.
+   - [Xilinx FPGA](hw/xilinx/README.md): package IPs, build bitstream, program device and debug platform.
 3. [Software build](sw/README.md): build software for UninaSoC.
 4. Simulation (TBD):
    * Unit tests: Verilator
