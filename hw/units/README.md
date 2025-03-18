@@ -1,6 +1,6 @@
 # Custom IP Implementation and Simulation
 
-The source files for the custom IPs used in the SoC are located in this directory. These custom IPs are packaged using the Makefile IPs flow found in the `hw/xilinx directory`. Each IP's build and packaging process directly references the source files in `units/custom_IP_NAME`.
+The source files for the custom IPs used in the SoC are located in this directory. These custom IPs are packaged using the Makefile IPs flow found in the `hw/xilinx` directory. Each IP's build and packaging process directly references the source files in `units/custom_IP_NAME`.
 
 ## Custom Units Integration
 
@@ -23,18 +23,18 @@ Each custom IP, or unit, is represented by two subdirectories: one in `hw/units`
 ```
 
 These two directories must share the same name, both using the `custom_` prefix:
-- The directory in `hw/xilinx/ips`, can simply soft-link to the `ips/common/config.tcl` file.
+- The directory in `hw/xilinx/ips`, only need a `config.tcl` scrtipt, usually simply soft-linking to the `ips/common/config.tcl` file.
 - The directory in `hw/units` must expose:
     1. A `fetch_sources.sh` script.
-    1. A `custom_top_wrapper.sv` RTL source to wrap
+    1. A `custom_top_wrapper.sv` RTL source to wrap all RTL in a single top module.
     1. An  `assets/` directory holding any other file used by the one script or wrapper above, e.g. a configuration file, a static file list, an RTL source, etc.
 
 If the custom IP originates from a remote repository (e.g., a GitHub project), the  `fetch_sources.sh` script should:
-    1. create an `rtl/` directory,
-    1. clone and copy all source files into the `rtl/` directory in a **flattened structure**, and
-    1. remove all temporary files created during this process.
+1. create an `rtl/` directory,
+1. clone and copy all source files into the `rtl/` directory in a **flattened structure**, and
+1. remove all temporary files created during this process.
 
-The `custom_template/` directory contains a template project for custom IPs, including a wrapper module and a script.
+> The `custom_template/` directory contains a template project for custom IPs, including a wrapper module and a script.
 
 With such tree in place, you can fetch rtl sources for all custom IPs with:
 ```
