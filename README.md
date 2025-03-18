@@ -75,14 +75,16 @@ In both HPC and embedded profiles, the SoC architecture and host connection is d
 The host connects to a RISC-V debug module through JTAG and a `Sys Master` AXI master module, allowing for direct control and read-back over the main bus.
 
 ### Profiles:
-UninaSoC supports the following profiles:
-- `embedded`:
+UninaSoC supports the following profiles `embedded` adn `hpc`.
+
+Physical resources depend on the target board and part number. W.r.t. the default supported boards, the platform offers:
+- Profile `embedded` on Nexys-A7-100T:
    - UART: physical peripheral requires a [physical FTDI connection](hw/xilinx/doc/UART_CONNECTION.md)
    - Memory: 8KB BRAM + 128MB DDR (TBD)
    - `Sys Master`: through JTAG Xilinx `hw_server`
-- `hpc`:
+- Profile `hpc` on Alveo U250:
    - UART: virtualized over PCIe.
-   - Memory: 8KB BRAM + 16GB DDR (per channel)
+   - Memory: 8KB BRAM + 16GB DDR (per DDR channel)
    - `Sys Master`: through PCIe BAR addres space.
 
 ## Documentation Index
