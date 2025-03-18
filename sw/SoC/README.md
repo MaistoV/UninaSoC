@@ -4,11 +4,11 @@ This repository contains the software infrastructure needed to build bare-metal 
 All example applications, as well as custom projects, are built upon the `projects/template` project.
 Projects rely on a common set of files in the `common` directory.
 
-* The `startup.s` that implements the very basic initialization operations
+* The `startup.s` that implements the very basic initialization operations.
 * The `UninaSoC.ld`, automatically generated during the configuration flow (see the root [README](../../README.md)).
 * The `Makefile`, that implements all basic targets for building, shared among bare-metal applications.
 
-It is expected that libraries and projects depend at least on the common files, along with a `main.c` file, which users can customize.
+It is expected that libraries and projects depend at least on the common files.
 
 **Notes**
 * For Linux-based configurations, please refer to the appropriate documentation, as this tree does not apply.
@@ -17,37 +17,43 @@ It is expected that libraries and projects depend at least on the common files, 
 ## Build examples
 
 to build the `examples`, run
-```
+``` bash
 make examples
 ```
 The existing examples include:
-- `blinky` - Supported only on the embedded configuration.
-- `echo` and `hello_world` - Supported on both embedded and HPC configurations.
-- `interrupts` - Supported on both embedded and HPC configurations.
+- `blinky` - Blink board leds Supported only on the `embedded` configuration.
+- `echo` - echo server for strings.
+- `hello_world` - basic Hello World on UART.
+- `interrupts` - PLIC reference example.
 
-`echo` and `hello_world` examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library to support `printf()` and `scanf()` on UART.
+Some examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library for `printf()` and `scanf()` on UART.
 
 You can build individual examples or create new projects as described in the following sections.
 Each directory under examples or projects includes a `common/Makefile` that provides baseline commands for building code.
 For instance, let’s explore the `examples/hello_world` example and build it:
-```
+
+These simple steps will produce the `hello_world.bin` and `hello_world.elf` files in the `bin` directory.
+``` bash
 cd examples/hello_world
 make
 ```
-These simple steps will produce the `hello_world.bin` and `hello_world.elf` files in the `bin` directory.
+
 In general, the targets available in the `common/Makefile` are as follows:
-```
+
+Generate `.bin` and `.elf` files in the newly created bin directory.
+``` bash
 make
 ```
-This generates `.bin` and `.elf` files in the newly created bin directory.
-```
+
+This removes all previously generated build files.
+``` bash
 make clean
 ```
-This removes all previously generated build files.
-```
+
+This outputs the binary content of your program.
+``` bash
 make dump
 ```
-This outputs the binary content of your program.
 
 
 ## Create a new project
@@ -69,7 +75,7 @@ To add user-defined code, place source files in the `src` directory and header f
 
 ### User-defined Makefile
 
-The `Makefile` in the project folder is a user-defined Makefile, that imports the common `Makefile`.
+The `Makefile` in the project folder is a user-defined Makefile, that imports the `common/Makefile`.
 In this Makefile the user can customize its project structure, compilation flags alongside toolchain selection and also the external libraries dependencies.
 A user can add new target rules in the user-defined Makefile. However, despite changes inside the user-defined `Makefile`, all targets
 described in **Build examples** ca be applied.
