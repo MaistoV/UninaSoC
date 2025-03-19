@@ -81,8 +81,10 @@ The `config_xilinx` flow also configures the BRAM size of the IP `xlnx_blk_mem_g
 
 > **NOTE**: The xlnx_blk_mem_gen/config.tcl file configures the first BRAM occurrence, hence it uses the index 0. For now, a single BRAM is supported, if multiple BRAMs are declared in the config (CSV) file, the config flow gives an error. Multiple BRAMs would be simple to add in the future.
 
-### VIO resetn configuration
-The `VIO_RESETN_DEFAULT` parameter allows manual CPU reset via the Xilinx VIO using the `make vio_resetn` target. Since negative logic is used, a default value of 0 keeps the core in a reset state when the bitstream is programmed; otherwise, the core is already running. When `VIO_RESETN_DEFAULT = 1` (default), the VIO reset logic cannot be used because the CPU is already running, but debugging with GDB remains possible. Conversely, if `VIO_RESETN_DEFAULT = 0`, the VIO reset logic controls the CPU reset instead of GDB, allowing the user to either connect a debugger or use the VIO to manage the core reset.
+### VIO resetn default
+The `VIO_RESETN_DEFAULT` parameter controls the programming-time value of core reset. 
+- `VIO_RESETN_DEFAULT = 1` (default): VIO resetn is non-active, the CPU starts running at programming-time, allowing debugging with DTM and GDB.
+- `VIO_RESETN_DEFAULT = 0`:  VIO resetn is active, keeping the core in a reset state when the bitstream is programmed.
 
 ### Scripting Architecture
 The directory `scripts/` holds multiple scripts, acting in the following scripting architecture:
