@@ -22,7 +22,7 @@ PBUS_NUM_MI ?= 5
 # RV core
 CORE_SELECTOR ?= CORE_CV32E40P
 
-# VIO reset
+# VIO resetn
 VIO_RESETN_DEFAULT ?= 1
 
 # BRAM size
