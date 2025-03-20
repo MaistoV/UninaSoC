@@ -36,7 +36,7 @@ Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated load
 ``` bash
 make load_binary BIN_PATH=<path-to-bin> BASE_ADDRESS=<value> JTAG_READBACK=<false|true>
 ```
-Once the binary is loaded, manally trigger a CPU reset with:
+Once the binary is loaded, manually trigger a CPU reset with:
 ``` bash
 make vio_resetn
 ```
