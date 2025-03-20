@@ -1,0 +1,49 @@
+# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+# Description: HPC clock wizard. It takes the XDMA axi_aclk (250 MHz) and generates 5 clocks:
+#                  - clk_10  @ 10MHz
+#                  - clk_20  @ 20MHz
+#                  - clk_50  @ 50MHz
+#                  - clk_100 @ 100MHz
+#                  - clk_250 @ 250MHz
+
+create_ip -name clk_wiz -vendor xilinx.com -library ip -version 6.0 -module_name $::env(IP_NAME)
+
+set_property -dict [list \
+    CONFIG.CLKIN1_JITTER_PS {40.0} \
+    CONFIG.CLKOUT1_JITTER {169.738} \
+    CONFIG.CLKOUT1_PHASE_ERROR {85.928} \
+    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {10.000} \
+    CONFIG.CLKOUT2_JITTER {148.005} \
+    CONFIG.CLKOUT2_PHASE_ERROR {85.928} \
+    CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {20.000} \
+    CONFIG.CLKOUT2_USED {true} \
+    CONFIG.CLKOUT3_JITTER {123.073} \
+    CONFIG.CLKOUT3_PHASE_ERROR {85.928} \
+    CONFIG.CLKOUT3_REQUESTED_OUT_FREQ {50.000} \
+    CONFIG.CLKOUT3_USED {true} \
+    CONFIG.CLKOUT4_JITTER {107.111} \
+    CONFIG.CLKOUT4_PHASE_ERROR {85.928} \
+    CONFIG.CLKOUT4_USED {true} \
+    CONFIG.CLKOUT5_JITTER {89.528} \
+    CONFIG.CLKOUT5_PHASE_ERROR {85.928} \
+    CONFIG.CLKOUT5_REQUESTED_OUT_FREQ {250.000} \
+    CONFIG.CLKOUT5_USED {true} \
+    CONFIG.CLK_OUT1_PORT {clk_10} \
+    CONFIG.CLK_OUT2_PORT {clk_20} \
+    CONFIG.CLK_OUT3_PORT {clk_50} \
+    CONFIG.CLK_OUT4_PORT {clk_100} \
+    CONFIG.CLK_OUT5_PORT {clk_250} \
+    CONFIG.MMCM_CLKFBOUT_MULT_F {4.000} \
+    CONFIG.MMCM_CLKIN1_PERIOD {4.000} \
+    CONFIG.MMCM_CLKIN2_PERIOD {10.0} \
+    CONFIG.MMCM_CLKOUT0_DIVIDE_F {100.000} \
+    CONFIG.MMCM_CLKOUT1_DIVIDE {50} \
+    CONFIG.MMCM_CLKOUT2_DIVIDE {20} \
+    CONFIG.MMCM_CLKOUT3_DIVIDE {10} \
+    CONFIG.MMCM_CLKOUT4_DIVIDE {4} \
+    CONFIG.MMCM_DIVCLK_DIVIDE {1} \
+    CONFIG.NUM_OUT_CLKS {5} \
+    CONFIG.PRIM_IN_FREQ {250.000} \
+    CONFIG.RESET_PORT {resetn} \
+    CONFIG.RESET_TYPE {ACTIVE_LOW} \
+] [get_ips $::env(IP_NAME)]
