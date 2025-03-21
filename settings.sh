@@ -11,11 +11,6 @@ if ! command -v vivado &> /dev/null; then
     echo "[Error] Can't find Vivado in PATH!" >&2 ;
 fi
 
-# Check if Questa/ModelSim is in path
-if ! command -v vsim &> /dev/null; then
-    echo "[Warning] Can't find vsim in PATH!" >&2 ;
-fi
-
 #################
 # Configuration #
 #################
@@ -31,12 +26,7 @@ export HW_UNITS_ROOT=${ROOT_DIR}/hw/units
 ###################
 # Unit Simulation #
 ###################
-export GXX=g++
-export VERILATOR=verilator
-export GTKWAVE=gtkwave
-# Verilator paths - Insert here your include path
-export VERILATOR_INC=/usr/share/verilator/include
-export VLTSTD_INC=/usr/share/verilator/include/vltstd/
+# TBD
 
 ##########
 # Xilinx #
@@ -121,14 +111,7 @@ export XILINX_HW_SERVER_HOST=127.0.0.1
 export XILINX_HW_SERVER_PORT=3121
 
 # Simulation
-export XILINX_SIM_ROOT=${XILINX_ROOT}/sim
-export XILINX_SIM_TCL_ROOT=${XILINX_SIM_ROOT}/tcl
-export XILINX_SIM_IP_ROOT=${XILINX_SIM_ROOT}/ips
-
-export XILINX_SIMLIB_PATH=${XILINX_SIM_ROOT}/simlib
-export GCC_PATH=$(dirname $(which gcc))
-export QUESTA_PATH=$(dirname $(which vsim))
-
+# TBD
 
 ############
 # Software #
