@@ -76,18 +76,19 @@ module sys_master
 
     logic axi_aclk;
     logic axi_aresetn;
+    logic locked;
 
     // assign soc_clk_o    = axi_aclk;
-    assign sys_resetn_o = axi_aresetn;
+    assign sys_resetn_o = locked; // axi_aresetn;
 
     `DECLARE_AXI_BUS(xdma_to_dwidth_converter, XDMA_DATA_WIDTH);
     `DECLARE_AXI_BUS(dwidth_converter_to_clock_converter, AXI_DATA_WIDTH);
 
     // Clock Wizard
-    xlnx_clk_wiz clkwiz_u (
+    xlnx_clk_wiz_hpc clkwiz_u (
         .clk_in1  ( axi_aclk     ),
         .resetn   ( axi_aresetn  ),
-        .locked   ( ),
+        .locked   ( locked ),
         .clk_250  ( ),
         .clk_100  ( ),
         .clk_50   ( ),
@@ -272,7 +273,7 @@ module sys_master
         .s_axi_aresetn  ( axi_aresetn ),
 
         .m_axi_aclk     ( soc_clk_o   ),
-        .m_axi_aresetn  ( axi_aresetn ),
+        .m_axi_aresetn  ( locked       ),
 
         .s_axi_awid     ( dwidth_converter_to_clock_converter_axi_awid     ),
         .s_axi_awaddr   ( dwidth_converter_to_clock_converter_axi_awaddr   ),

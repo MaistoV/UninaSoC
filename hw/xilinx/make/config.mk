@@ -14,7 +14,7 @@ ID_WIDTH ?= 2
 
 # Main bus
 NUM_SI ?= 4
-NUM_MI ?= 4
+NUM_MI ?= 5
 # PBUS
 PBUS_NUM_MI ?= 3
 

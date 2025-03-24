@@ -33,7 +33,7 @@ FILE_SIZE=$(stat -c%s "$FILE_NAME");
 
 # Read the entire file in hexadecimal
 # We need the -u flag for the devmem-based read-back check
-hex_file=$(xxd -p -c -u 9999999999 $FILE_NAME);
+hex_file=$(xxd -p -u -c 9999999999 $FILE_NAME);
 
 # Set the transaction size in bytes
 trans_size=8; # Host-side BAR space supports 8-bytes transactions
@@ -103,7 +103,8 @@ then
     for i in $(seq 0 $(($num_trans-1)));
     do
         hex_addr=$(printf "%x" $addr);
-        readback_data=${readback_data}$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)) );
+	tmp_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)));
+        readback_data=${readback_data}${tmp_data:2:$trans_size*2};
         addr=$(($addr+$trans_size));
     done
 
