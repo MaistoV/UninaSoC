@@ -90,9 +90,9 @@ module sys_master
         .resetn   ( axi_aresetn  ),
         .locked   ( locked ),
         .clk_250  ( ),
-        .clk_100  ( ),
+        .clk_100  ( soc_clk_o ),
         .clk_50   ( ),
-        .clk_20   ( soc_clk_o ),
+        .clk_20   ( ),
         .clk_10   ( )
     );
 
