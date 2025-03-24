@@ -49,25 +49,82 @@ module custom_top_wrapper import ibex_pkg::*; # (
 );
 
     ibex_top #(
-        // Ibex small config
-        .RV32E( 1'b0 ),
-        .RV32M( RV32MFast ),
-        .RV32B( RV32BNone ),
-        .RegFile( RegFileFF ),
-        .BranchTargetALU( 0 ),
-        .WritebackStage( 0 ),
-        .ICache( 0 ),
-        .ICacheECC( 0 ),
-        .ICacheScramble( 0 ),
-        .BranchPredictor( 0 ),
-        .DbgTriggerEn( 0 ),
-        .SecureIbex( 0 ),
-        .PMPEnable( 0 ),
-        .PMPGranularity( 0 ),
-        .PMPNumRegions( 4 ),
-        .MHPMCounterNum( 0 ),
-        .MHPMCounterWidth( 40 )
-        // Set Here Dbg
+
+        ///////////////////////
+        // Ibex small config //
+        ///////////////////////
+
+        //.RV32E( 1'b0 ),
+        //.RV32M( RV32MFast ),
+        //.RV32B( RV32BNone ),
+        //.RegFile( ibex_pkg::RegFileFPGA ),
+        //.BranchTargetALU( 0 ),
+        //.WritebackStage( 0 ),
+        //.ICache( 0 ),
+        //.ICacheECC( 0 ),
+        //.ICacheScramble( 0 ),
+        //.BranchPredictor( 0 ),
+        //.DbgTriggerEn( 0 ),
+        //.SecureIbex( 0 ),
+        //.PMPEnable( 0 ),
+        //.PMPGranularity( 0 ),
+        //.PMPNumRegions( 4 ),
+        //.MHPMCounterNum( 0 ),
+        //.MHPMCounterWidth( 40 )
+
+        /////////////////////////////
+        // Ibex Performance config //
+        /////////////////////////////
+
+        //.RV32E                    ( 0 ),
+        //.RV32M                    ( ibex_pkg::RV32MSingleCycle ),
+        //.RV32B                    ( ibex_pkg::RV32BBalanced ),
+        //.RegFile                  ( ibex_pkg::RegFileFPGA ),
+        //.BranchTargetALU          ( 1 ),
+        //.WritebackStage           ( 1 ),
+        //.ICache                   ( 0 ),
+        //.ICacheECC                ( 0 ),
+        //.ICacheScramble           ( 0 ),
+        //.BranchPredictor          ( 0 ),
+        //.DbgTriggerEn             ( 0 ),
+        //.SecureIbex               ( 0 ),
+        //.PMPEnable                ( 1 ),
+        //.PMPGranularity           ( 0 ),
+        //.PMPNumRegions            ( 16 ),
+        //.MHPMCounterNum           ( 0 ),
+        //.MHPMCounterWidth         ( 40 ),
+
+        //////////////////////////////////////
+        // Ibex OpenTitan config (To Test ) //
+        //////////////////////////////////////
+
+        .RV32E                    ( 0 ),
+        .RV32M                    ( ibex_pkg::RV32MSingleCycle ),
+        .RV32B                    ( ibex_pkg::RV32BOTEarlGrey ),
+        .RegFile                  ( ibex_pkg::RegFileFPGA ),
+        .BranchTargetALU          ( 1 ),
+        .WritebackStage           ( 1 ),
+        .ICache                   ( 1 ),
+        .ICacheECC                ( 1 ),
+        .ICacheScramble           ( 1 ),
+        .BranchPredictor          ( 0 ),
+        .DbgTriggerEn             ( 1 ),
+        .SecureIbex               ( 1 ),
+        .PMPEnable                ( 1 ),
+        .PMPGranularity           ( 0 ),
+        .PMPNumRegions            ( 16 ),
+        .MHPMCounterNum           ( 10 ),
+        .MHPMCounterWidth         ( 32 ),
+
+        //////////////////////
+        // Debug Parameters //
+        //////////////////////
+
+        .DmBaseAddr       ( 32'h00010000                     ),
+        .DmAddrMask       ( 32'h00000FFF                     ),
+        .DmHaltAddr       ( 32'h00010800                     ),
+        .DmExceptionAddr  ( 32'h00010808                     )
+        
     ) ibex_u (
         // Clock and Reset
         .clk_i (clk_i),

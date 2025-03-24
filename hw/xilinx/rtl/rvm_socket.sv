@@ -211,9 +211,9 @@ module rvm_socket # (
 
             custom_ibex ibex_core (
                 // Clock and Reset
-                .clk_i      (clk_i),
-                .rst_ni     (core_resetn_internal),
-                .hart_id_i              ( '0 ),
+                .clk_i                  ( clk_i ),
+                .rst_ni                 ( core_resetn_internal ),
+                .hart_id_i              ( hart_id ),
                 // First instruction executed is at 0x0 + 0x80
                 .boot_addr_i            ( boot_addr_i ),
 
