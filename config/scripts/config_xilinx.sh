@@ -1,6 +1,7 @@
 #!/bin/bash
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
 #   Replace config-based content of output file (hw/make/config.mk) based on input MBUS and PBUS configurations.
 #   Target values are parsed and from inputs and updated in output file.
@@ -34,6 +35,7 @@ OUTPUT_MK_FILE=$3
 # Array of target values to parse from input and update in output
 target_values=(
         CORE_SELECTOR
+        VIO_RESETN_DEFAULT
         ADDR_WIDTH
         DATA_WIDTH
         ID_WIDTH

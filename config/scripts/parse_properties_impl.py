@@ -1,6 +1,7 @@
 # Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description: Definitions of the property-specific parsing functions and checking constraint.
 #			  If constraints aren't respected, correct values are used, issuing a warning and ignoring the input.
 
@@ -22,6 +23,16 @@ def parse_CORE_SELECTOR (
 	value = str(property_value)
 	config.CORE_SELECTOR = value
 
+	return config
+
+def parse_VIO_RESETN_DEFAULT (
+		config,
+		property_name : str,
+		property_value: str,
+	):
+
+	value = int(property_value)
+	config.VIO_RESET_ENABLE = value
 	return config
 
 def parse_Interfaces (

@@ -87,6 +87,7 @@ XILINX_VIVADO_ENV ?=                                \
     ADDR_WIDTH=${ADDR_WIDTH}                        \
     ID_WIDTH=${ID_WIDTH}                            \
     CORE_SELECTOR=${CORE_SELECTOR}                  \
+    VIO_RESETN_DEFAULT=${VIO_RESETN_DEFAULT}        \
     NUM_SI=${NUM_SI}                                \
     NUM_MI=${NUM_MI}                                \
     BRAM_DEPTHS="${BRAM_DEPTHS}"                    \

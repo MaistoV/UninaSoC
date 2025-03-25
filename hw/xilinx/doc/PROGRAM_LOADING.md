@@ -36,8 +36,10 @@ Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated load
 ``` bash
 make load_binary BIN_PATH=<path-to-bin> BASE_ADDRESS=<value> JTAG_READBACK=<false|true>
 ```
-Once the binary is loaded, enable the system using `vio` reset target:
+Once the binary is loaded, manually trigger a CPU reset with:
 ``` bash
 make vio_resetn
 ```
-**Warning**: vio_resetn is currently bugged, this will be addressed in issue #23
+The VIO resetn controls the CPU reset instead of GDB, allowing the user to directly manage the core reset.
+**Warning**: this option works only if `VIO_RESETN_DEFAULT = 0` in `configs/<profile>/config_main_bus.csv`
+
