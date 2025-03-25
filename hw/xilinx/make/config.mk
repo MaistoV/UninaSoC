@@ -14,9 +14,9 @@ ID_WIDTH ?= 2
 
 # Main bus
 NUM_SI ?= 4
-NUM_MI ?= 5
+NUM_MI ?= 4
 # PBUS
-PBUS_NUM_MI ?= 3
+PBUS_NUM_MI ?= 5
 
 # RV core
 CORE_SELECTOR ?= CORE_CV32E40P
