@@ -82,8 +82,9 @@ module sys_master
     logic axi_aresetn;
     logic locked;
 
-    // assign soc_clk_o    = axi_aclk;
-    assign sys_resetn_o = locked; // axi_aresetn;
+    // Use locked signal as system reset
+    // NOTE: this is temporary until we introduce a reset generation logic here
+    assign sys_resetn_o = locked;
 
     `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
     `DECLARE_AXI_BUS(axi_dwidth_converter_to_clock_converter, AXI_DATA_WIDTH);
