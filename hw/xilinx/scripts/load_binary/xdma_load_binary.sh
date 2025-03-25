@@ -103,8 +103,8 @@ then
     for i in $(seq 0 $(($num_trans-1)));
     do
         hex_addr=$(printf "%x" $addr);
-	tmp_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)));
-        readback_data=${readback_data}${tmp_data:2:$trans_size*2};
+        tmp_data=$( sudo busybox devmem 0x$hex_addr $(($trans_size*8)));
+        readback_data=${readback_data}${tmp_data:2:$trans_size*2};         # Slice to remove the 'hex prefix' ( 0x )
         addr=$(($addr+$trans_size));
     done
 
