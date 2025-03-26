@@ -54,13 +54,19 @@ module sys_master
     // PCIe interface
     `DEFINE_PCIE_PORTS,
 
-    // Output clk and reset
-    output logic soc_clk_o,
+    // Output clks and reset
+    output logic clk_10_o,
+    output logic clk_20_o,
+    output logic clk_50_o,
+    output logic clk_100_o,
+    output logic clk_250_o,      // HPC ONLY
     output logic sys_resetn_o,
 
     // AXI Master interface
     `DEFINE_AXI_MASTER_PORTS(m)
 );
+
+logic main_clk;
 
 `ifdef HPC
     // ALVEO
@@ -93,12 +99,12 @@ module sys_master
     xlnx_clk_wiz_hpc clkwiz_u (
         .clk_in1  ( axi_aclk     ),
         .resetn   ( axi_aresetn  ),
-        .locked   ( locked ),
-        .clk_250  ( ),
-        .clk_100  ( soc_clk_o ),
-        .clk_50   ( ),
-        .clk_20   ( ),
-        .clk_10   ( )
+        .locked   ( locked       ),
+        .clk_250  ( clk_250_o    ),
+        .clk_100  ( clk_100_o    ),
+        .clk_50   ( clk_50_o     ),
+        .clk_20   ( clk_20_o     ),
+        .clk_10   ( clk_10_o     )
     );
 
     // XDMA Master
@@ -277,7 +283,7 @@ module sys_master
         .s_axi_aclk     ( axi_aclk    ),
         .s_axi_aresetn  ( axi_aresetn ),
 
-        .m_axi_aclk     ( soc_clk_o   ),
+        .m_axi_aclk     ( main_clk     ),
         .m_axi_aresetn  ( locked       ),
 
         .s_axi_awid     ( axi_dwidth_converter_to_clock_converter_axi_awid     ),
@@ -379,15 +385,15 @@ module sys_master
         .clk_in1  ( sys_clock_i  ),
         .resetn   ( sys_resetn_o ),
         .locked   ( ),
-        .clk_100  ( ),
-        .clk_50   ( ),
-        .clk_20   ( soc_clk_o ),
-        .clk_10   ( )
+        .clk_100  ( clk_100_o ),
+        .clk_50   ( clk_50_o  ),
+        .clk_20   ( clk_20_o  ),
+        .clk_10   ( clk_10_o  )
     );
 
     // JTAG2AXI Master
     xlnx_jtag_axi jtag_axi_u (
-        .aclk           ( soc_clk_o       ), // input wire aclk
+        .aclk           ( main_clk        ), // input wire aclk
         .aresetn        ( sys_resetn_o    ), // input wire aresetn
         .m_axi_awid     ( m_axi_awid    ), // output wire [1 : 0] m_axi_awid
         .m_axi_awaddr   ( m_axi_awaddr  ), // output wire [31 : 0] m_axi_awid

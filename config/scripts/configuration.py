@@ -40,4 +40,6 @@ class Configuration:
 		self.WUSER_WIDTH		 : int = 0		# AXI  W User width
 		self.RUSER_WIDTH		 : int = 0		# AXI  R User width
 		self.BUSER_WIDTH		 : int = 0		# AXI  B User width
+		self.MAIN_CLOCK_DOMAIN   : int = 100    # Core + mbus clock domain (the main clock domain)
+		self.CLOCK_DOMAINS       : list = []    # MBUS slaves clock domains
 

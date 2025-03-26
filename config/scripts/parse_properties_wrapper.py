@@ -40,8 +40,10 @@ def parse_property (
 		# Slave Priorities, Slave Thread IDs Width, Slave Single Thread Modes, Slave Base IDs,
 		# Master SECURE Modes, Ranges' Base Address, Ranges' Width Acquisition
 		case "CORE_SELECTOR" | "VIO_RESETN_DEFAULT" | "STRATEGY" | "R_REGISTER" | "PROTOCOL" | "ADDR_WIDTH" | "DATA_WIDTH" | "CONNECTIVITY_MODE" | \
-			"Slave_Priority" | "THREAD_ID_WIDTH" | "SINGLE_THREAD" | "BASE_ID" | "SECURE" | "RANGE_BASE_ADDR" | "RANGE_ADDR_WIDTH" | "RANGE_NAMES" | "MASTER_NAMES":
+			"Slave_Priority" | "THREAD_ID_WIDTH" | "SINGLE_THREAD" | "BASE_ID" | "SECURE" | "RANGE_BASE_ADDR" | "RANGE_ADDR_WIDTH" | "RANGE_NAMES" | "MASTER_NAMES" | \
+			"MAIN_CLOCK_DOMAIN" | "CLOCK_DOMAINS":
 			func_name = base_func_name + property_name
+
 		# ID Width Acquisition
 		case "ID_WIDTH":
 			func_name = base_func_name + "IDWidth_UsersWidth_AddrRanges"

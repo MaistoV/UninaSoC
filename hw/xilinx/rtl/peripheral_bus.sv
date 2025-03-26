@@ -3,27 +3,27 @@
 //              it adds a AXI protocol converter before the axilite crossbar and all the peripherals connected to the axilite crossbar
 //
 //
-//            _______________                  _____________             _______
-//   AXI4    |   AXI Prot    |   AXI Lite     |             |           |       |
-// --------->|   Converter   |--------------->|             |---------->| UART  |
-//           |_______________|                | Pheripheral |           |_______|
-//                                            |    XBAR     |
-//                                            |  (axilite)  |            ___________
-//                                            |             |           |           |
-//                                            |             |---------->| GPIO_out  |
-//                                            |             |           |___________|
-//                                            |             |            ___________
-//                                            |             |           |           |
-//                                            |             |---------->| GPIO_in   |
-//                                            |             |           |___________|
-//                                            |             |            ________
-//                                            |             |           |        |
-//                                            |             |---------->| TIM0   |
-//                                            |             |           |________|
-//                                            |             |            ________
-//                                            |             |           |        |
-//                                            |             |---------->| TIM1   |
-//                                            |_____________|           |________|
+//      _________________            _______________                  _____________             _______
+//     |                 |  AXI4    |   AXI Prot    |   AXI Lite     |             |           |       |
+// --->| Clock Converter |--------->|   Converter   |--------------->|             |---------->| UART  |
+//     |_________________|          |_______________|                | Pheripheral |           |_______|
+//                                                                   |    XBAR     |
+//                                                                   |  (axilite)  |            ___________
+//                                                                   |             |           |           |
+//                                                                   |             |---------->| GPIO_out  |
+//                                                                   |             |           |___________|
+//                                                                   |             |            ___________
+//                                                                   |             |           |           |
+//                                                                   |             |---------->| GPIO_in   |
+//                                                                   |             |           |___________|
+//                                                                   |             |            ________
+//                                                                   |             |           |        |
+//                                                                   |             |---------->| TIM0   |
+//                                                                   |             |           |________|
+//                                                                   |             |            ________
+//                                                                   |             |           |        |
+//                                                                   |             |---------->| TIM1   |
+//                                                                   |_____________|           |________|
 //
 //
 //
@@ -37,7 +37,8 @@ import uninasoc_pkg::*;
 module peripheral_bus #(
     parameter int unsigned    NUM_IRQ       = 4
     )(
-    input logic clock_i,
+    input logic main_clock_i,
+    input logic PBUS_clock_i,
     input logic reset_ni,
 
     // AXI4 Slave interface from the main xbar
@@ -61,7 +62,7 @@ module peripheral_bus #(
     // Buses declaration and concatenation //
     /////////////////////////////////////////
     `include "pbus_buses.svinc"
-
+    `DECLARE_AXI_BUS(clock_conv_to_prot_conv, AXI_DATA_WIDTH)
     ///////////////////////
     // Interrupt Signals //
     ///////////////////////
@@ -78,54 +79,152 @@ module peripheral_bus #(
     assign int_o[PBUS_TIM1_INTERRUPT]   = tim1_int;
     assign int_o[PBUS_UART_INTERRUPT]   = uart_int;
 
+
+    /////////////////////
+    // Clock Converter //
+    /////////////////////
+
+    // TODO `ifdef PBUS_DIFFERENT_CLOCK ???
+
+    xlnx_axi_clock_converter xlnx_axi_clock_converter_u (
+        .s_axi_aclk     ( main_clock_i   ),
+        .s_axi_aresetn  ( reset_ni       ),
+
+        .m_axi_aclk     ( PBUS_clock_i   ),
+        .m_axi_aresetn  ( reset_ni       ),
+
+        // Slave from MBUS
+        .s_axi_awid     ( s_axi_awid     ),
+        .s_axi_awaddr   ( s_axi_awaddr   ),
+        .s_axi_awlen    ( s_axi_awlen    ),
+        .s_axi_awsize   ( s_axi_awsize   ),
+        .s_axi_awburst  ( s_axi_awburst  ),
+        .s_axi_awlock   ( s_axi_awlock   ),
+        .s_axi_awcache  ( s_axi_awcache  ),
+        .s_axi_awprot   ( s_axi_awprot   ),
+        .s_axi_awqos    ( s_axi_awqos    ),
+        .s_axi_awvalid  ( s_axi_awvalid  ),
+        .s_axi_awready  ( s_axi_awready  ),
+        .s_axi_awregion ( s_axi_awregion ),
+        .s_axi_wdata    ( s_axi_wdata    ),
+        .s_axi_wstrb    ( s_axi_wstrb    ),
+        .s_axi_wlast    ( s_axi_wlast    ),
+        .s_axi_wvalid   ( s_axi_wvalid   ),
+        .s_axi_wready   ( s_axi_wready   ),
+        .s_axi_bid      ( s_axi_bid      ),
+        .s_axi_bresp    ( s_axi_bresp    ),
+        .s_axi_bvalid   ( s_axi_bvalid   ),
+        .s_axi_bready   ( s_axi_bready   ),
+        .s_axi_arid     ( s_axi_arid     ),
+        .s_axi_araddr   ( s_axi_araddr   ),
+        .s_axi_arlen    ( s_axi_arlen    ),
+        .s_axi_arsize   ( s_axi_arsize   ),
+        .s_axi_arburst  ( s_axi_arburst  ),
+        .s_axi_arlock   ( s_axi_arlock   ),
+        .s_axi_arregion ( s_axi_arregion ),
+        .s_axi_arcache  ( s_axi_arcache  ),
+        .s_axi_arprot   ( s_axi_arprot   ),
+        .s_axi_arqos    ( s_axi_arqos    ),
+        .s_axi_arvalid  ( s_axi_arvalid  ),
+        .s_axi_arready  ( s_axi_arready  ),
+        .s_axi_rid      ( s_axi_rid      ),
+        .s_axi_rdata    ( s_axi_rdata    ),
+        .s_axi_rresp    ( s_axi_rresp    ),
+        .s_axi_rlast    ( s_axi_rlast    ),
+        .s_axi_rvalid   ( s_axi_rvalid   ),
+        .s_axi_rready   ( s_axi_rready   ),
+
+
+        // Master to protocol converter
+        .m_axi_awid     ( clock_conv_to_prot_conv_axi_awid      ),
+        .m_axi_awaddr   ( clock_conv_to_prot_conv_axi_awaddr    ),
+        .m_axi_awlen    ( clock_conv_to_prot_conv_axi_awlen     ),
+        .m_axi_awsize   ( clock_conv_to_prot_conv_axi_awsize    ),
+        .m_axi_awburst  ( clock_conv_to_prot_conv_axi_awburst   ),
+        .m_axi_awlock   ( clock_conv_to_prot_conv_axi_awlock    ),
+        .m_axi_awcache  ( clock_conv_to_prot_conv_axi_awcache   ),
+        .m_axi_awprot   ( clock_conv_to_prot_conv_axi_awprot    ),
+        .m_axi_awregion ( clock_conv_to_prot_conv_axi_awregion  ),
+        .m_axi_awqos    ( clock_conv_to_prot_conv_axi_awqos     ),
+        .m_axi_awvalid  ( clock_conv_to_prot_conv_axi_awvalid   ),
+        .m_axi_awready  ( clock_conv_to_prot_conv_axi_awready   ),
+        .m_axi_wdata    ( clock_conv_to_prot_conv_axi_wdata     ),
+        .m_axi_wstrb    ( clock_conv_to_prot_conv_axi_wstrb     ),
+        .m_axi_wlast    ( clock_conv_to_prot_conv_axi_wlast     ),
+        .m_axi_wvalid   ( clock_conv_to_prot_conv_axi_wvalid    ),
+        .m_axi_wready   ( clock_conv_to_prot_conv_axi_wready    ),
+        .m_axi_bid      ( clock_conv_to_prot_conv_axi_bid       ),
+        .m_axi_bresp    ( clock_conv_to_prot_conv_axi_bresp     ),
+        .m_axi_bvalid   ( clock_conv_to_prot_conv_axi_bvalid    ),
+        .m_axi_bready   ( clock_conv_to_prot_conv_axi_bready    ),
+        .m_axi_arid     ( clock_conv_to_prot_conv_axi_arid      ),
+        .m_axi_araddr   ( clock_conv_to_prot_conv_axi_araddr    ),
+        .m_axi_arlen    ( clock_conv_to_prot_conv_axi_arlen     ),
+        .m_axi_arsize   ( clock_conv_to_prot_conv_axi_arsize    ),
+        .m_axi_arburst  ( clock_conv_to_prot_conv_axi_arburst   ),
+        .m_axi_arlock   ( clock_conv_to_prot_conv_axi_arlock    ),
+        .m_axi_arcache  ( clock_conv_to_prot_conv_axi_arcache   ),
+        .m_axi_arprot   ( clock_conv_to_prot_conv_axi_arprot    ),
+        .m_axi_arregion ( clock_conv_to_prot_conv_axi_arregion  ),
+        .m_axi_arqos    ( clock_conv_to_prot_conv_axi_arqos     ),
+        .m_axi_arvalid  ( clock_conv_to_prot_conv_axi_arvalid   ),
+        .m_axi_arready  ( clock_conv_to_prot_conv_axi_arready   ),
+        .m_axi_rid      ( clock_conv_to_prot_conv_axi_rid       ),
+        .m_axi_rdata    ( clock_conv_to_prot_conv_axi_rdata     ),
+        .m_axi_rresp    ( clock_conv_to_prot_conv_axi_rresp     ),
+        .m_axi_rlast    ( clock_conv_to_prot_conv_axi_rlast     ),
+        .m_axi_rvalid   ( clock_conv_to_prot_conv_axi_rvalid    ),
+        .m_axi_rready   ( clock_conv_to_prot_conv_axi_rready    )
+    );
+
     /////////////////////
     // AXI-lite Master //
     /////////////////////
 
     // AXI4 to AXI4-Lite protocol converter
     xlnx_axi4_to_axilite_converter axi4_to_axilite_u (
-        .aclk           ( clock_i                   ), // input wire s_axi_aclk
+        .aclk           ( PBUS_clock_i              ), // input wire s_axi_aclk
         .aresetn        ( reset_ni                  ), // input wire s_axi_aresetn
-        // AXI4 slave port (from main xbar)
-        .s_axi_awid     ( s_axi_awid     ),            // input wire [1 : 0] s_axi_awid
-        .s_axi_awaddr   ( s_axi_awaddr   ),            // input wire [31 : 0] s_axi_awaddr
-        .s_axi_awlen    ( s_axi_awlen    ),            // input wire [7 : 0] s_axi_awlen
-        .s_axi_awsize   ( s_axi_awsize   ),            // input wire [2 : 0] s_axi_awsize
-        .s_axi_awburst  ( s_axi_awburst  ),            // input wire [1 : 0] s_axi_awburst
-        .s_axi_awlock   ( s_axi_awlock   ),            // input wire [0 : 0] s_axi_awlock
-        .s_axi_awcache  ( s_axi_awcache  ),            // input wire [3 : 0] s_axi_awcache
-        .s_axi_awprot   ( s_axi_awprot   ),            // input wire [2 : 0] s_axi_awprot
-        .s_axi_awregion ( s_axi_awregion ),            // input wire [3 : 0] s_axi_awregion
-        .s_axi_awqos    ( s_axi_awqos    ),            // input wire [3 : 0] s_axi_awqos
-        .s_axi_awvalid  ( s_axi_awvalid  ),            // input wire s_axi_awvalid
-        .s_axi_awready  ( s_axi_awready  ),            // output wire s_axi_awready
-        .s_axi_wdata    ( s_axi_wdata    ),            // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb    ( s_axi_wstrb    ),            // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wlast    ( s_axi_wlast    ),            // input wire s_axi_wlast
-        .s_axi_wvalid   ( s_axi_wvalid   ),            // input wire s_axi_wvalid
-        .s_axi_wready   ( s_axi_wready   ),            // output wire s_axi_wready
-        .s_axi_bid      ( s_axi_bid      ),            // output wire [1 : 0] s_axi_bid
-        .s_axi_bresp    ( s_axi_bresp    ),            // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid   ( s_axi_bvalid   ),            // output wire s_axi_bvalid
-        .s_axi_bready   ( s_axi_bready   ),            // input wire s_axi_bready
-        .s_axi_arid     ( s_axi_arid     ),            // input wire [1 : 0] s_axi_arid
-        .s_axi_araddr   ( s_axi_araddr   ),            // input wire [31 : 0] s_axi_araddr
-        .s_axi_arlen    ( s_axi_arlen    ),            // input wire [7 : 0] s_axi_arlen
-        .s_axi_arsize   ( s_axi_arsize   ),            // input wire [2 : 0] s_axi_arsize
-        .s_axi_arburst  ( s_axi_arburst  ),            // input wire [1 : 0] s_axi_arburst
-        .s_axi_arlock   ( s_axi_arlock   ),            // input wire [0 : 0] s_axi_arlock
-        .s_axi_arcache  ( s_axi_arcache  ),            // input wire [3 : 0] s_axi_arcache
-        .s_axi_arprot   ( s_axi_arprot   ),            // input wire [2 : 0] s_axi_arprot
-        .s_axi_arregion ( s_axi_arregion ),            // input wire [3 : 0] s_axi_arregion
-        .s_axi_arqos    ( s_axi_arqos    ),            // input wire [3 : 0] s_axi_arqos
-        .s_axi_arvalid  ( s_axi_arvalid  ),            // input wire s_axi_arvalid
-        .s_axi_arready  ( s_axi_arready  ),            // output wire s_axi_arready
-        .s_axi_rid      ( s_axi_rid      ),            // output wire [1 : 0] s_axi_rid
-        .s_axi_rdata    ( s_axi_rdata    ),            // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp    ( s_axi_rresp    ),            // output wire [1 : 0] s_axi_rresp
-        .s_axi_rlast    ( s_axi_rlast    ),            // output wire s_axi_rlast
-        .s_axi_rvalid   ( s_axi_rvalid   ),            // output wire s_axi_rvalid
-        .s_axi_rready   ( s_axi_rready   ),            // input wire s_axi_rready
+        // AXI4 slave port (from main clock converter)
+        .s_axi_awid     ( clock_conv_to_prot_conv_axi_awid     ),            // input wire [1 : 0] s_axi_awid
+        .s_axi_awaddr   ( clock_conv_to_prot_conv_axi_awaddr   ),            // input wire [31 : 0] s_axi_awaddr
+        .s_axi_awlen    ( clock_conv_to_prot_conv_axi_awlen    ),            // input wire [7 : 0] s_axi_awlen
+        .s_axi_awsize   ( clock_conv_to_prot_conv_axi_awsize   ),            // input wire [2 : 0] s_axi_awsize
+        .s_axi_awburst  ( clock_conv_to_prot_conv_axi_awburst  ),            // input wire [1 : 0] s_axi_awburst
+        .s_axi_awlock   ( clock_conv_to_prot_conv_axi_awlock   ),            // input wire [0 : 0] s_axi_awlock
+        .s_axi_awcache  ( clock_conv_to_prot_conv_axi_awcache  ),            // input wire [3 : 0] s_axi_awcache
+        .s_axi_awprot   ( clock_conv_to_prot_conv_axi_awprot   ),            // input wire [2 : 0] s_axi_awprot
+        .s_axi_awregion ( clock_conv_to_prot_conv_axi_awregion ),            // input wire [3 : 0] s_axi_awregion
+        .s_axi_awqos    ( clock_conv_to_prot_conv_axi_awqos    ),            // input wire [3 : 0] s_axi_awqos
+        .s_axi_awvalid  ( clock_conv_to_prot_conv_axi_awvalid  ),            // input wire s_axi_awvalid
+        .s_axi_awready  ( clock_conv_to_prot_conv_axi_awready  ),            // output wire s_axi_awready
+        .s_axi_wdata    ( clock_conv_to_prot_conv_axi_wdata    ),            // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb    ( clock_conv_to_prot_conv_axi_wstrb    ),            // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wlast    ( clock_conv_to_prot_conv_axi_wlast    ),            // input wire s_axi_wlast
+        .s_axi_wvalid   ( clock_conv_to_prot_conv_axi_wvalid   ),            // input wire s_axi_wvalid
+        .s_axi_wready   ( clock_conv_to_prot_conv_axi_wready   ),            // output wire s_axi_wready
+        .s_axi_bid      ( clock_conv_to_prot_conv_axi_bid      ),            // output wire [1 : 0] s_axi_bid
+        .s_axi_bresp    ( clock_conv_to_prot_conv_axi_bresp    ),            // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid   ( clock_conv_to_prot_conv_axi_bvalid   ),            // output wire s_axi_bvalid
+        .s_axi_bready   ( clock_conv_to_prot_conv_axi_bready   ),            // input wire s_axi_bready
+        .s_axi_arid     ( clock_conv_to_prot_conv_axi_arid     ),            // input wire [1 : 0] s_axi_arid
+        .s_axi_araddr   ( clock_conv_to_prot_conv_axi_araddr   ),            // input wire [31 : 0] s_axi_araddr
+        .s_axi_arlen    ( clock_conv_to_prot_conv_axi_arlen    ),            // input wire [7 : 0] s_axi_arlen
+        .s_axi_arsize   ( clock_conv_to_prot_conv_axi_arsize   ),            // input wire [2 : 0] s_axi_arsize
+        .s_axi_arburst  ( clock_conv_to_prot_conv_axi_arburst  ),            // input wire [1 : 0] s_axi_arburst
+        .s_axi_arlock   ( clock_conv_to_prot_conv_axi_arlock   ),            // input wire [0 : 0] s_axi_arlock
+        .s_axi_arcache  ( clock_conv_to_prot_conv_axi_arcache  ),            // input wire [3 : 0] s_axi_arcache
+        .s_axi_arprot   ( clock_conv_to_prot_conv_axi_arprot   ),            // input wire [2 : 0] s_axi_arprot
+        .s_axi_arregion ( clock_conv_to_prot_conv_axi_arregion ),            // input wire [3 : 0] s_axi_arregion
+        .s_axi_arqos    ( clock_conv_to_prot_conv_axi_arqos    ),            // input wire [3 : 0] s_axi_arqos
+        .s_axi_arvalid  ( clock_conv_to_prot_conv_axi_arvalid  ),            // input wire s_axi_arvalid
+        .s_axi_arready  ( clock_conv_to_prot_conv_axi_arready  ),            // output wire s_axi_arready
+        .s_axi_rid      ( clock_conv_to_prot_conv_axi_rid      ),            // output wire [1 : 0] s_axi_rid
+        .s_axi_rdata    ( clock_conv_to_prot_conv_axi_rdata    ),            // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp    ( clock_conv_to_prot_conv_axi_rresp    ),            // output wire [1 : 0] s_axi_rresp
+        .s_axi_rlast    ( clock_conv_to_prot_conv_axi_rlast    ),            // output wire s_axi_rlast
+        .s_axi_rvalid   ( clock_conv_to_prot_conv_axi_rvalid   ),            // output wire s_axi_rvalid
+        .s_axi_rready   ( clock_conv_to_prot_conv_axi_rready   ),            // input wire s_axi_rready
         // Master port (to AXI Lite crossbar)
         .m_axi_awaddr   ( PROT_CONV_to_PBUS_axilite_awaddr  ), // output wire [31 : 0] m_axi_awaddr
         .m_axi_awprot   ( PROT_CONV_to_PBUS_axilite_awprot  ), // output wire [2 : 0] m_axi_awprot
@@ -150,7 +249,7 @@ module peripheral_bus #(
 
     // AXI Lite crossbar
     xlnx_peripheral_crossbar peripheral_xbar_u (
-        .aclk           ( clock_i  ),
+        .aclk           ( PBUS_clock_i  ),
         .aresetn        ( reset_ni ),
 
         .s_axi_awaddr   ( PBUS_masters_axilite_awaddr   ),
@@ -201,7 +300,7 @@ module peripheral_bus #(
 
     // AXI4 Lite UART
     axilite_uart axilite_uart_u (
-        .clock_i        ( clock_i                   ), // input wire s_axi_aclk
+        .clock_i        ( PBUS_clock_i              ), // input wire s_axi_aclk
         .reset_ni       ( reset_ni                  ), // input wire s_axi_aresetn
         .int_core_o     ( uart_int                  ), // Output interrupt
         .int_xdma_o     (                           ), // TBD
@@ -237,7 +336,7 @@ module peripheral_bus #(
     // AXI4 Lite Timers
 
     xlnx_axilite_timer tim0_u (
-        .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
+        .s_axi_aclk     ( PBUS_clock_i              ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_TIM0_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_TIM0_axilite_awvalid       ), // input wire s_axi_awvalid
@@ -267,7 +366,7 @@ module peripheral_bus #(
     );
 
     xlnx_axilite_timer tim1_u (
-        .s_axi_aclk     ( clock_i                   ), // input wire s_axi_aclk
+        .s_axi_aclk     ( PBUS_clock_i              ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_TIM1_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_TIM1_axilite_awvalid       ), // input wire s_axi_awvalid
@@ -300,7 +399,7 @@ module peripheral_bus #(
 
     // GPIO OUT instance
     xlnx_axi_gpio_out gpio_out_u (
-        .s_axi_aclk     ( clock_i                               ), // input wire s_axi_aclk
+        .s_axi_aclk     ( PBUS_clock_i                          ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                              ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_GPIO_out_axilite_awaddr [8:0] ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_GPIO_out_axilite_awvalid      ), // input wire s_axi_awvalid
@@ -324,7 +423,7 @@ module peripheral_bus #(
 
     // GPIO IN instance
     xlnx_axi_gpio_in gpio_in_u (
-        .s_axi_aclk     ( clock_i                       ), // input wire s_axi_aclk
+        .s_axi_aclk     ( PBUS_clock_i                  ), // input wire s_axi_aclk
         .s_axi_aresetn  ( reset_ni                      ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_GPIO_in_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_GPIO_in_axilite_awvalid       ), // input wire s_axi_awvalid
