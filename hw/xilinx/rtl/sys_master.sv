@@ -67,6 +67,8 @@ module sys_master
 );
 
 logic main_clk;
+// Main clock assignment
+`include "sys_master_clk_assignments.svinc"
 
 `ifdef HPC
     // ALVEO

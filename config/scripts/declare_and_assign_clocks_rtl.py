@@ -43,7 +43,6 @@ def declare_and_assign_clocks(config : configuration.Configuration) -> None:
     for i in range(len(config.CLOCK_DOMAINS)):
         # Exclude DDR because it has its own clock we do not need to re-declare it
         if config.RANGE_NAMES[i] != "DDR":
-            print(config.CLOCK_DOMAINS[i])
             file.write(f"logic {config.RANGE_NAMES[i]}_clk;\n")
             file.write(f"assign {config.RANGE_NAMES[i]}_clk = clk_{config.CLOCK_DOMAINS[i]};\n")
 
