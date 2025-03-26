@@ -98,5 +98,38 @@ done
 # Replace in target file
 sed -E -i "s/${bram_size_name}.?\?=.+/${bram_size_name} \?= ${bram_size_list}/g" ${OUTPUT_MK_FILE};
 
+#################
+# CLOCK DOMAINS #
+#################
+
+# The clock domains identifier in the config.mk
+clock_domains_name=CLOCK_DOMAINS
+
+# Get the main clock domain
+main_clock_domain=$(grep "MAIN_CLOCK_DOMAIN" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}');
+
+# Get all clock domains
+clock_domains=$(grep "CLOCK_DOMAINS" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}');
+
+# Get all slave names as list (not string)
+slaves=($(grep "RANGE_NAMES" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}'));
+
+# Clock domains different from the main domain (litterally new clock domains)
+clock_domains_list=MAIN_CLOCK_DOMAIN
+
+let cnt=0
+# For each clock domain check if the clock domain is equal to the main clock domain
+for clock_domain in ${clock_domains[*]}; do
+
+    if [[ $clock_domain != $main_clock_domain ]]; then
+        slave_clock_domain=${slaves[$cnt]}_CLOCK_DOMAIN
+        clock_domains_list="$clock_domains_list $slave_clock_domain";
+    fi
+    ((cnt++))
+done
+
+# Replace in target file
+sed -E -i "s/${clock_domains_name}.?\?=.+/${clock_domains_name} \?= ${clock_domains_list}/g" ${OUTPUT_MK_FILE};
+
 # Done
 echo "[CONFIG_XILINX] Output file is at ${OUTPUT_MK_FILE}"

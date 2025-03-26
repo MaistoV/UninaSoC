@@ -25,6 +25,15 @@ lappend verilog_defines NUM_MI=$::env(NUM_MI)
 lappend verilog_defines PBUS_NUM_MI=$::env(PBUS_NUM_MI)
 # Core selection
 lappend verilog_defines CORE_SELECTOR=$::env(CORE_SELECTOR)
+# TODO Bram depths (try to split this in the more than one bram configuration)
+lappend verilog_defines BRAM_DEPTHS=$::env(BRAM_DEPTHS)
+# Clock domains
+set clock_domains [split $::env(CLOCK_DOMAINS) "\n"]
+foreach clock_domain $clock_domains {
+    lappend verilog_defines $clock_domain=$clock_domain
+}
+
+puts $verilog_defines
 
 # Set property to list
 set_property verilog_define $verilog_defines [current_fileset]
