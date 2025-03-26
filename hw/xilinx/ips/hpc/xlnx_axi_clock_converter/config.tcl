@@ -1,5 +1,5 @@
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-# Description: AXI Clock Converter - Needed to link the AXI crossbar (in general the entire SoC 250 MHz) to the DDR MIG (300 MHz)
+# Description: AXI Clock Converter - Needed to do clock-domain crossing
 
 create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name $::env(IP_NAME)
 

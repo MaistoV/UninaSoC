@@ -1,7 +1,34 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: Sys master - Instantiates the right masetr AXI based on the SoC Configuration and gives the clk and rst to the soc
+// Description: Sys master - Instantiates the right masetr AXI based on the SoC profile and gives the clk and rst to the soc
 //              EMBEDDED -> Jtag2Axi
 //              HPC      -> XDMA
+//
+//
+//----------------------------------------------------------- EMBEDDED -----------------------------------------------------------------------------
+//
+//              ______________               __________
+// sys_clock   |              | soc_clock   |          |   data
+// ----------->| Clock Wizard |------------>| Jtag2Axi |------------------------------------------------------------------------------->
+//             |______________|     |       |__________|
+//                                  |                      soc_clock [10, 20, 50, 100 (MHz)]
+//                                  |-------------------------------------------------------------------------------------------------->
+//
+//
+//-------------------------------------------------------------- HPC -------------------------------------------------------------------------------
+//
+//                                                                    _____________                      ____________
+// pcie_refclk_p   _____________       ______  data [64b]            |             | data[DATA_WIDTH]   |            | data[DATA_WIDTH]
+// -------------->|             |     |      |---------------------->| Dwidth Conv |------------------->| Clock Conv |------------------>
+// pcie_refclk_n  | IBUFDS GTE4 |---->| XDMA |                  |--->|_____________|    |-------------->|____________|<----|
+//                |             |     |      |                  |                       |                ______________    |
+// -------------->|_____________|     |      | axi_aclk[250MHz] |                       |               |              |   | soc_clock [10, 20, 50, 100, 250 (MHz)]
+//                                    |      |--------------------------------------------------------->| Clock Wizard |----------------->
+//                                    |______|                                                          |______________|
+//
+//
+//
+//
+//
 
 
 // Import packages
@@ -53,11 +80,26 @@ module sys_master
 
     logic axi_aclk;
     logic axi_aresetn;
+    logic locked;
 
-    assign soc_clk_o    = axi_aclk;
-    assign sys_resetn_o = axi_aresetn;
+    // Use locked signal as system reset
+    // NOTE: this is temporary until we introduce a reset generation logic here
+    assign sys_resetn_o = locked;
 
     `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
+    `DECLARE_AXI_BUS(axi_dwidth_converter_to_clock_converter, AXI_DATA_WIDTH);
+
+    // Clock Wizard
+    xlnx_clk_wiz_hpc clkwiz_u (
+        .clk_in1  ( axi_aclk     ),
+        .resetn   ( axi_aresetn  ),
+        .locked   ( locked ),
+        .clk_250  ( ),
+        .clk_100  ( soc_clk_o ),
+        .clk_50   ( ),
+        .clk_20   ( ),
+        .clk_10   ( )
+    );
 
     // XDMA Master
     xlnx_xdma xlnx_xdma_u (
@@ -186,44 +228,139 @@ module sys_master
         .s_axi_arregion ( 0   ),
 
 
+        // Master to clock_converter
+        // .m_axi_awid     ( dwidth_converter_to_clock_converter_axi_awid    ),
+        .m_axi_awaddr   ( axi_dwidth_converter_to_clock_converter_axi_awaddr  ),
+        .m_axi_awlen    ( axi_dwidth_converter_to_clock_converter_axi_awlen   ),
+        .m_axi_awsize   ( axi_dwidth_converter_to_clock_converter_axi_awsize  ),
+        .m_axi_awburst  ( axi_dwidth_converter_to_clock_converter_axi_awburst ),
+        .m_axi_awlock   ( axi_dwidth_converter_to_clock_converter_axi_awlock  ),
+        .m_axi_awcache  ( axi_dwidth_converter_to_clock_converter_axi_awcache ),
+        .m_axi_awprot   ( axi_dwidth_converter_to_clock_converter_axi_awprot  ),
+        .m_axi_awqos    ( axi_dwidth_converter_to_clock_converter_axi_awqos   ),
+        .m_axi_awvalid  ( axi_dwidth_converter_to_clock_converter_axi_awvalid ),
+        .m_axi_awready  ( axi_dwidth_converter_to_clock_converter_axi_awready ),
+        .m_axi_wdata    ( axi_dwidth_converter_to_clock_converter_axi_wdata   ),
+        .m_axi_wstrb    ( axi_dwidth_converter_to_clock_converter_axi_wstrb   ),
+        .m_axi_wlast    ( axi_dwidth_converter_to_clock_converter_axi_wlast   ),
+        .m_axi_wvalid   ( axi_dwidth_converter_to_clock_converter_axi_wvalid  ),
+        .m_axi_wready   ( axi_dwidth_converter_to_clock_converter_axi_wready  ),
+        // .m_axi_bid      ( axi_dwidth_converter_to_clock_converter_axi_bid     ),
+        .m_axi_bresp    ( axi_dwidth_converter_to_clock_converter_axi_bresp   ),
+        .m_axi_bvalid   ( axi_dwidth_converter_to_clock_converter_axi_bvalid  ),
+        .m_axi_bready   ( axi_dwidth_converter_to_clock_converter_axi_bready  ),
+        // .m_axi_arid     ( axi_dwidth_converter_to_clock_converter_axi_arid    ),
+        .m_axi_araddr   ( axi_dwidth_converter_to_clock_converter_axi_araddr  ),
+        .m_axi_arlen    ( axi_dwidth_converter_to_clock_converter_axi_arlen   ),
+        .m_axi_arsize   ( axi_dwidth_converter_to_clock_converter_axi_arsize  ),
+        .m_axi_arburst  ( axi_dwidth_converter_to_clock_converter_axi_arburst ),
+        .m_axi_arlock   ( axi_dwidth_converter_to_clock_converter_axi_arlock  ),
+        .m_axi_arcache  ( axi_dwidth_converter_to_clock_converter_axi_arcache ),
+        .m_axi_arprot   ( axi_dwidth_converter_to_clock_converter_axi_arprot  ),
+        .m_axi_arqos    ( axi_dwidth_converter_to_clock_converter_axi_arqos   ),
+        .m_axi_arvalid  ( axi_dwidth_converter_to_clock_converter_axi_arvalid ),
+        .m_axi_arready  ( axi_dwidth_converter_to_clock_converter_axi_arready ),
+        // .m_axi_rid      ( axi_dwidth_converter_to_clock_converter_axi_rid     ),
+        .m_axi_rdata    ( axi_dwidth_converter_to_clock_converter_axi_rdata   ),
+        .m_axi_rresp    ( axi_dwidth_converter_to_clock_converter_axi_rresp   ),
+        .m_axi_rlast    ( axi_dwidth_converter_to_clock_converter_axi_rlast   ),
+        .m_axi_rvalid   ( axi_dwidth_converter_to_clock_converter_axi_rvalid  ),
+        .m_axi_rready   ( axi_dwidth_converter_to_clock_converter_axi_rready  )
+    );
+
+    assign axi_dwidth_converter_to_clock_converter_axi_awid = '0;
+    assign axi_dwidth_converter_to_clock_converter_axi_arid = '0;
+    assign axi_dwidth_converter_to_clock_converter_axi_awregion = '0;
+    assign axi_dwidth_converter_to_clock_converter_axi_arregion = '0;
+
+    xlnx_axi_clock_converter xlnx_axi_clock_converter_u (
+        .s_axi_aclk     ( axi_aclk    ),
+        .s_axi_aresetn  ( axi_aresetn ),
+
+        .m_axi_aclk     ( soc_clk_o   ),
+        .m_axi_aresetn  ( locked       ),
+
+        .s_axi_awid     ( axi_dwidth_converter_to_clock_converter_axi_awid     ),
+        .s_axi_awaddr   ( axi_dwidth_converter_to_clock_converter_axi_awaddr   ),
+        .s_axi_awlen    ( axi_dwidth_converter_to_clock_converter_axi_awlen    ),
+        .s_axi_awsize   ( axi_dwidth_converter_to_clock_converter_axi_awsize   ),
+        .s_axi_awburst  ( axi_dwidth_converter_to_clock_converter_axi_awburst  ),
+        .s_axi_awlock   ( axi_dwidth_converter_to_clock_converter_axi_awlock   ),
+        .s_axi_awcache  ( axi_dwidth_converter_to_clock_converter_axi_awcache  ),
+        .s_axi_awprot   ( axi_dwidth_converter_to_clock_converter_axi_awprot   ),
+        .s_axi_awqos    ( axi_dwidth_converter_to_clock_converter_axi_awqos    ),
+        .s_axi_awvalid  ( axi_dwidth_converter_to_clock_converter_axi_awvalid  ),
+        .s_axi_awready  ( axi_dwidth_converter_to_clock_converter_axi_awready  ),
+        .s_axi_awregion ( axi_dwidth_converter_to_clock_converter_axi_awregion ),
+        .s_axi_wdata    ( axi_dwidth_converter_to_clock_converter_axi_wdata    ),
+        .s_axi_wstrb    ( axi_dwidth_converter_to_clock_converter_axi_wstrb    ),
+        .s_axi_wlast    ( axi_dwidth_converter_to_clock_converter_axi_wlast    ),
+        .s_axi_wvalid   ( axi_dwidth_converter_to_clock_converter_axi_wvalid   ),
+        .s_axi_wready   ( axi_dwidth_converter_to_clock_converter_axi_wready   ),
+        .s_axi_bid      ( axi_dwidth_converter_to_clock_converter_axi_bid      ),
+        .s_axi_bresp    ( axi_dwidth_converter_to_clock_converter_axi_bresp    ),
+        .s_axi_bvalid   ( axi_dwidth_converter_to_clock_converter_axi_bvalid   ),
+        .s_axi_bready   ( axi_dwidth_converter_to_clock_converter_axi_bready   ),
+        .s_axi_arid     ( axi_dwidth_converter_to_clock_converter_axi_arid     ),
+        .s_axi_araddr   ( axi_dwidth_converter_to_clock_converter_axi_araddr   ),
+        .s_axi_arlen    ( axi_dwidth_converter_to_clock_converter_axi_arlen    ),
+        .s_axi_arsize   ( axi_dwidth_converter_to_clock_converter_axi_arsize   ),
+        .s_axi_arburst  ( axi_dwidth_converter_to_clock_converter_axi_arburst  ),
+        .s_axi_arlock   ( axi_dwidth_converter_to_clock_converter_axi_arlock   ),
+        .s_axi_arregion ( axi_dwidth_converter_to_clock_converter_axi_arregion ),
+        .s_axi_arcache  ( axi_dwidth_converter_to_clock_converter_axi_arcache  ),
+        .s_axi_arprot   ( axi_dwidth_converter_to_clock_converter_axi_arprot   ),
+        .s_axi_arqos    ( axi_dwidth_converter_to_clock_converter_axi_arqos    ),
+        .s_axi_arvalid  ( axi_dwidth_converter_to_clock_converter_axi_arvalid  ),
+        .s_axi_arready  ( axi_dwidth_converter_to_clock_converter_axi_arready  ),
+        .s_axi_rid      ( axi_dwidth_converter_to_clock_converter_axi_rid      ),
+        .s_axi_rdata    ( axi_dwidth_converter_to_clock_converter_axi_rdata    ),
+        .s_axi_rresp    ( axi_dwidth_converter_to_clock_converter_axi_rresp    ),
+        .s_axi_rlast    ( axi_dwidth_converter_to_clock_converter_axi_rlast    ),
+        .s_axi_rvalid   ( axi_dwidth_converter_to_clock_converter_axi_rvalid   ),
+        .s_axi_rready   ( axi_dwidth_converter_to_clock_converter_axi_rready   ),
+
+
         // Master to output port
-        // .m_axi_awid     ( m_axi_awid    ),
-        .m_axi_awaddr   ( m_axi_awaddr  ),
-        .m_axi_awlen    ( m_axi_awlen   ),
-        .m_axi_awsize   ( m_axi_awsize  ),
-        .m_axi_awburst  ( m_axi_awburst ),
-        .m_axi_awlock   ( m_axi_awlock  ),
-        .m_axi_awcache  ( m_axi_awcache ),
-        .m_axi_awprot   ( m_axi_awprot  ),
-        .m_axi_awqos    ( m_axi_awqos   ),
-        .m_axi_awvalid  ( m_axi_awvalid ),
-        .m_axi_awready  ( m_axi_awready ),
-        .m_axi_wdata    ( m_axi_wdata   ),
-        .m_axi_wstrb    ( m_axi_wstrb   ),
-        .m_axi_wlast    ( m_axi_wlast   ),
-        .m_axi_wvalid   ( m_axi_wvalid  ),
-        .m_axi_wready   ( m_axi_wready  ),
-        // .m_axi_bid      ( m_axi_bid     ),
-        .m_axi_bresp    ( m_axi_bresp   ),
-        .m_axi_bvalid   ( m_axi_bvalid  ),
-        .m_axi_bready   ( m_axi_bready  ),
-        // .m_axi_arid     ( m_axi_arid    ),
-        .m_axi_araddr   ( m_axi_araddr  ),
-        .m_axi_arlen    ( m_axi_arlen   ),
-        .m_axi_arsize   ( m_axi_arsize  ),
-        .m_axi_arburst  ( m_axi_arburst ),
-        .m_axi_arlock   ( m_axi_arlock  ),
-        .m_axi_arcache  ( m_axi_arcache ),
-        .m_axi_arprot   ( m_axi_arprot  ),
-        .m_axi_arqos    ( m_axi_arqos   ),
-        .m_axi_arvalid  ( m_axi_arvalid ),
-        .m_axi_arready  ( m_axi_arready ),
-        // .m_axi_rid      ( m_axi_rid     ),
-        .m_axi_rdata    ( m_axi_rdata   ),
-        .m_axi_rresp    ( m_axi_rresp   ),
-        .m_axi_rlast    ( m_axi_rlast   ),
-        .m_axi_rvalid   ( m_axi_rvalid  ),
-        .m_axi_rready   ( m_axi_rready  )
+        .m_axi_awid     ( m_axi_awid      ),
+        .m_axi_awaddr   ( m_axi_awaddr    ),
+        .m_axi_awlen    ( m_axi_awlen     ),
+        .m_axi_awsize   ( m_axi_awsize    ),
+        .m_axi_awburst  ( m_axi_awburst   ),
+        .m_axi_awlock   ( m_axi_awlock    ),
+        .m_axi_awcache  ( m_axi_awcache   ),
+        .m_axi_awprot   ( m_axi_awprot    ),
+        .m_axi_awregion ( m_axi_awregion  ),
+        .m_axi_awqos    ( m_axi_awqos     ),
+        .m_axi_awvalid  ( m_axi_awvalid   ),
+        .m_axi_awready  ( m_axi_awready   ),
+        .m_axi_wdata    ( m_axi_wdata     ),
+        .m_axi_wstrb    ( m_axi_wstrb     ),
+        .m_axi_wlast    ( m_axi_wlast     ),
+        .m_axi_wvalid   ( m_axi_wvalid    ),
+        .m_axi_wready   ( m_axi_wready    ),
+        .m_axi_bid      ( m_axi_bid       ),
+        .m_axi_bresp    ( m_axi_bresp     ),
+        .m_axi_bvalid   ( m_axi_bvalid    ),
+        .m_axi_bready   ( m_axi_bready    ),
+        .m_axi_arid     ( m_axi_arid      ),
+        .m_axi_araddr   ( m_axi_araddr    ),
+        .m_axi_arlen    ( m_axi_arlen     ),
+        .m_axi_arsize   ( m_axi_arsize    ),
+        .m_axi_arburst  ( m_axi_arburst   ),
+        .m_axi_arlock   ( m_axi_arlock    ),
+        .m_axi_arcache  ( m_axi_arcache   ),
+        .m_axi_arprot   ( m_axi_arprot    ),
+        .m_axi_arregion ( m_axi_arregion  ),
+        .m_axi_arqos    ( m_axi_arqos     ),
+        .m_axi_arvalid  ( m_axi_arvalid   ),
+        .m_axi_arready  ( m_axi_arready   ),
+        .m_axi_rid      ( m_axi_rid       ),
+        .m_axi_rdata    ( m_axi_rdata     ),
+        .m_axi_rresp    ( m_axi_rresp     ),
+        .m_axi_rlast    ( m_axi_rlast     ),
+        .m_axi_rvalid   ( m_axi_rvalid    ),
+        .m_axi_rready   ( m_axi_rready    )
     );
 
 `elsif  EMBEDDED
