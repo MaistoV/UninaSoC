@@ -143,7 +143,7 @@ module uninasoc (
 
     // Axi Crossbar
     xlnx_main_crossbar main_xbar_u (
-        .aclk           ( main_clk                   ), // input
+        .aclk           ( main_clk                  ), // input
         .aresetn        ( sys_resetn                ), // input
         .s_axi_awid     ( MBUS_masters_axi_awid     ), // input
         .s_axi_awaddr   ( MBUS_masters_axi_awaddr   ), // input
@@ -299,7 +299,7 @@ module uninasoc (
         .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
         .CORE_SELECTOR ( CORE_SELECTOR  )
     ) rvm_socket_u (
-        .clk_i          ( main_clk    ),
+        .clk_i          ( main_clk   ),
         .rst_ni         ( sys_resetn ),
         .core_resetn_i  ( vio_resetn ),
         .bootaddr_i     ( '0         ),
@@ -478,7 +478,7 @@ module uninasoc (
     xlnx_blk_mem_gen main_memory_u (
         .rsta_busy      ( /* open */                ), // output wire rsta_busy
         .rstb_busy      ( /* open */                ), // output wire rstb_busy
-        .s_aclk         ( main_clk                   ), // input wire s_aclk
+        .s_aclk         ( main_clk                  ), // input wire s_aclk
         .s_aresetn      ( sys_resetn                ), // input wire s_aresetn
         .s_axi_awid     ( MBUS_to_BRAM_axi_awid     ), // input wire [3 : 0] s_axi_awid
         .s_axi_awaddr   ( MBUS_to_BRAM_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
@@ -536,7 +536,7 @@ module uninasoc (
 
 
     custom_rv_plic custom_rv_plic_u (
-        .clk_i          ( main_clk                       ), // input wire s_axi_aclk
+        .clk_i          ( main_clk                      ), // input wire s_axi_aclk
         .rst_ni         ( sys_resetn                    ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
@@ -648,7 +648,7 @@ module uninasoc (
 
     // DDR4 Channel 0
     ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
-        .clock_i              ( main_clk           ),
+        .clock_i              ( main_clk          ),
         .reset_ni             ( sys_resetn        ),
 
         // DDR4 differential clock
