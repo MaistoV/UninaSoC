@@ -81,8 +81,8 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of ADDR_WIDTH in {config_file_name}")
         return False
     if config.BUS_NAME == "MBUS":
-        if config.NUM_MI != len(config.CLOCK_DOMAINS):
-            print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of CLOCK_DOMAINS in {config_file_name}")
+        if config.NUM_MI != len(config.RANGE_CLOCK_DOMAINS):
+            print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of RANGE_CLOCK_DOMAINS in {config_file_name}")
             return False
 
     # Check the number of masters and relative master names
@@ -133,20 +133,20 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
             print_error(f"The clock domain {clok_domain}MHz is not supported")
             return False
         # Check valid clock domains
-        for i in range(len(config.CLOCK_DOMAINS)):
+        for i in range(len(config.RANGE_CLOCK_DOMAINS)):
             # Check if the clock frequency is valid
-            if config.CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
-                print_error(f"The clock domain {config.CLOCK_DOMAINS[i]}MHz is not supported")
+            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
+                print_error(f"The clock domain {config.RANGE_CLOCK_DOMAINS[i]}MHz is not supported")
                 return False
             # Check if all the main_clock_domain slaves have the same frequency as MAIN_CLOCK_DOMAIN
             if config.RANGE_NAMES[i] in MAIN_CLOCK_DOMAIN_SLAVES:
-                if config.CLOCK_DOMAINS[i] != config.MAIN_CLOCK_DOMAIN:
-                    print_error(f"The {config.RANGE_NAMES[i]} frequency {config.CLOCK_DOMAINS[i]} must be the same as MAIN_CLOCK_DOMAIN {config.MAIN_CLOCK_DOMAIN}")
+                if config.RANGE_CLOCK_DOMAINS[i] != config.MAIN_CLOCK_DOMAIN:
+                    print_error(f"The {config.RANGE_NAMES[i]} frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same as MAIN_CLOCK_DOMAIN {config.MAIN_CLOCK_DOMAIN}")
                     return False
             # Check if the DDR has the right frequency
             if config.RANGE_NAMES[i] == "DDR":
-                if config.CLOCK_DOMAINS[i] != DDR_FREQUENCY:
-                    print_error(f"The DDR frequency {config.CLOCK_DOMAINS[i]} must be the same of DDR board clock {DDR_FREQUENCY}")
+                if config.RANGE_CLOCK_DOMAINS[i] != DDR_FREQUENCY:
+                    print_error(f"The DDR frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same of DDR board clock {DDR_FREQUENCY}")
                     return False
 
     # Check the presence of multiple BRAMs, for now a single occurrence of BRAM is supported

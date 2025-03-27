@@ -106,13 +106,13 @@ sed -E -i "s/${bram_size_name}.?\?=.+/${bram_size_name} \?= ${bram_size_list}/g"
 main_clock_freq_name=MAIN_CLOCK_FREQ_MHZ
 
 # The clock domains identifier in the config.mk
-clock_domains_name=CLOCK_DOMAINS
+clock_domains_name=RANGE_CLOCK_DOMAINS
 
 # Get the main clock domain
 main_clock_domain=$(grep "MAIN_CLOCK_DOMAIN" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}');
 
 # Get all clock domains
-clock_domains=$(grep "CLOCK_DOMAINS" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}');
+clock_domains=$(grep "RANGE_CLOCK_DOMAINS" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}');
 
 # Get all slave names as list (not string)
 slaves=($(grep "RANGE_NAMES" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}'));
