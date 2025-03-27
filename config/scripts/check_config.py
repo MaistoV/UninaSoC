@@ -134,8 +134,8 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
             return False
         # Check valid clock domains
         for i in range(len(config.RANGE_CLOCK_DOMAINS)):
-            # Check if the clock frequency is valid
-            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
+            # Check if the clock frequency is valid (DDR has its own clock domain)
+            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG] and config.RANGE_NAMES[i] != "DDR":
                 print_error(f"The clock domain {config.RANGE_CLOCK_DOMAINS[i]}MHz is not supported")
                 return False
             # Check if all the main_clock_domain slaves have the same frequency as MAIN_CLOCK_DOMAIN
