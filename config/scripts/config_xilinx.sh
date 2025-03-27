@@ -102,6 +102,9 @@ sed -E -i "s/${bram_size_name}.?\?=.+/${bram_size_name} \?= ${bram_size_list}/g"
 # CLOCK DOMAINS #
 #################
 
+# The main clock frequency identifier in the config.mk
+main_clock_freq_name=MAIN_CLOCK_FREQ_MHZ
+
 # The clock domains identifier in the config.mk
 clock_domains_name=CLOCK_DOMAINS
 
@@ -129,6 +132,7 @@ for clock_domain in ${clock_domains[*]}; do
 done
 
 # Replace in target file
+sed -E -i "s/${main_clock_freq_name}.?\?=.+/${main_clock_freq_name} \?= ${main_clock_domain}/g" ${OUTPUT_MK_FILE};
 sed -E -i "s/${clock_domains_name}.?\?=.+/${clock_domains_name} \?= ${clock_domains_list}/g" ${OUTPUT_MK_FILE};
 
 # Done

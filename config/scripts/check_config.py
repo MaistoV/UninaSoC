@@ -44,7 +44,9 @@ SUPPORTED_CLOCK_DOMAINS = {
     "hpc"      : SUPPORTED_CLOCK_DOMAINS_HPC
 }
 # These slaves reside statically in the MAIN_CLOCK_DOMAIN
-MAIN_CLOCK_DOMAIN_SLAVES = ["BRAM", "DM_mem", "PLIC", "DDR"]
+MAIN_CLOCK_DOMAIN_SLAVES = ["BRAM", "DM_mem", "PLIC"]
+# The DDR clock must have the same frequency of the DDR board clock
+DDR_FREQUENCY = 300
 
 #############################
 # Check intra configuration #
@@ -140,6 +142,11 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
             if config.RANGE_NAMES[i] in MAIN_CLOCK_DOMAIN_SLAVES:
                 if config.CLOCK_DOMAINS[i] != config.MAIN_CLOCK_DOMAIN:
                     print_error(f"The {config.RANGE_NAMES[i]} frequency {config.CLOCK_DOMAINS[i]} must be the same as MAIN_CLOCK_DOMAIN {config.MAIN_CLOCK_DOMAIN}")
+                    return False
+            # Check if the DDR has the right frequency
+            if config.RANGE_NAMES[i] == "DDR":
+                if config.CLOCK_DOMAINS[i] != DDR_FREQUENCY:
+                    print_error(f"The DDR frequency {config.CLOCK_DOMAINS[i]} must be the same of DDR board clock {DDR_FREQUENCY}")
                     return False
 
     # Check the presence of multiple BRAMs, for now a single occurrence of BRAM is supported

@@ -91,6 +91,7 @@ XILINX_VIVADO_ENV ?=                                \
     NUM_SI=${NUM_SI}                                \
     NUM_MI=${NUM_MI}                                \
     BRAM_DEPTHS="${BRAM_DEPTHS}"                    \
+    MAIN_CLOCK_FREQ_MHZ=${MAIN_CLOCK_FREQ_MHZ}      \
     CLOCK_DOMAINS="${CLOCK_DOMAINS}"                \
     PBUS_NUM_MI=${PBUS_NUM_MI}                      \
     XILINX_ILA=${XILINX_ILA}                        \

@@ -1,6 +1,0 @@
-// This file is auto-generated with declare_and_assign_clocks_rtl.py
-
-/////////////////////////////////////////
-// Clocks declaration and assignments  //
-/////////////////////////////////////////
-assign main_clk = clk_20_o;

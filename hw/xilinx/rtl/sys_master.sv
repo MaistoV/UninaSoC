@@ -68,7 +68,24 @@ module sys_master
 
 logic main_clk;
 // Main clock assignment
-`include "sys_master_clk_assignments.svinc"
+generate
+    if ( `MAIN_CLOCK_FREQ_MHZ == 10 ) begin
+        assign main_clk = clk_10_o;
+    end
+    else if ( `MAIN_CLOCK_FREQ_MHZ == 20 ) begin
+        assign main_clk = clk_20_o;
+    end
+    else if ( `MAIN_CLOCK_FREQ_MHZ == 50 ) begin
+        assign main_clk = clk_50_o;
+    end
+    else if ( `MAIN_CLOCK_FREQ_MHZ == 100 ) begin
+        assign main_clk = clk_100_o;
+    end
+    else if ( `MAIN_CLOCK_FREQ_MHZ == 250 ) begin
+        assign main_clk = clk_250_o;
+    end
+endgenerate
+
 
 `ifdef HPC
     // ALVEO
