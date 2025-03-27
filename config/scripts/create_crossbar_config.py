@@ -1,6 +1,7 @@
 #!/bin/python3.10
 # Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
 #   Generate an AXI Crossbar tcl configuration file.
 # Note:
@@ -26,16 +27,21 @@ import configuration
 # Parse args #
 ##############
 
-# CSV configuration file path
-config_file_name = 'config/configs/embedded/config_main_bus.csv'
-# config_file_name = 'config/axi_memory_map/configs/PoC_config.csv'
+# CSV system configuration file path
+sys_config_file_name = 'config/configs/common/config_system.csv'
 if len(sys.argv) >= 2:
-	config_file_name = sys.argv[1]
+	sys_config_file_name = sys.argv[1]
+
+# CSV bus configuration file path
+bus_config_file_name = 'config/configs/embedded/config_main_bus.csv'
+# bus_config_file_name = 'config/axi_memory_map/configs/PoC_config.csv'
+if len(sys.argv) >= 3:
+	bus_config_file_name = sys.argv[2]
 
 # Target TCL file
 config_tcl_file_name = 'hw/xilinx/ips/common/xlnx_axi_crossbar/config.tcl'
-if len(sys.argv) >= 3:
-	config_tcl_file_name = sys.argv[2]
+if len(sys.argv) >= 4:
+	config_tcl_file_name = sys.argv[3]
 
 ###############
 # Environment #
@@ -61,11 +67,26 @@ def compose_index ( index_int : int ):
 # Init configuration
 config = configuration.Configuration()
 
-###############
-# Read config #
-###############
+# Assign config bus name
+if "main_bus" in bus_config_file_name:
+    config.BUS_NAME = "MBUS"
+elif "peripheral_bus" in bus_config_file_name:
+    config.BUS_NAME = "PBUS"
+
+###################
+# Read Sys config #
+###################
+
+config_df = pd.read_csv(sys_config_file_name, sep=",")
+
+for index, row in config_df.iterrows():
+	config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
+
+###################
+# Read Bus config #
+###################
 # Read CSV file
-config_df = pd.read_csv(config_file_name, sep=",")
+config_df = pd.read_csv(bus_config_file_name, sep=",")
 
 ########################
 # Update configuration #

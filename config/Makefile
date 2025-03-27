@@ -5,6 +5,9 @@ PYTHON ?= python3.10 # Requires >= 3.10
 CONFIG_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
 			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
 
+# csv for system-level configuration
+SYSTEM_CSV ?= ${CONFIG_ROOT}/configs/common/config_system.csv 
+
 all: config_main_bus config_peripheral_bus config_ld config_xilinx
 
 config_main_bus:
@@ -13,6 +16,7 @@ config_%_bus: CONFIG_CSV = ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_$*_bus.cs
 config_%_bus: OUTPUT_TCL_FILE = ${XILINX_ROOT}/ips/common/xlnx_$*_crossbar/config.tcl
 config_%_bus: config_check
 	${PYTHON} ${CONFIG_ROOT}/scripts/create_crossbar_config.py \
+		${SYSTEM_CSV} \
 		${CONFIG_CSV} \
 		${OUTPUT_TCL_FILE}
 	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE}"
@@ -28,10 +32,10 @@ config_ld:
 
 
 config_check:
-	${PYTHON} ${CONFIG_ROOT}/scripts/check_config.py ${CONFIG_CSVS}
+	${PYTHON} ${CONFIG_ROOT}/scripts/check_config.py ${SYSTEM_CSV} ${CONFIG_CSVS}
 
 # Update config in Makefile
 OUTPUT_MK_FILE ?= ${XILINX_ROOT}/make/config.mk
 config_xilinx:
-	${CONFIG_ROOT}/scripts/config_xilinx.sh ${CONFIG_CSVS} ${OUTPUT_MK_FILE}
+	${CONFIG_ROOT}/scripts/config_xilinx.sh ${SYSTEM_CSV} ${CONFIG_CSVS} ${OUTPUT_MK_FILE}
 
