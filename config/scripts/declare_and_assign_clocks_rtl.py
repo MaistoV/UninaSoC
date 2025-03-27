@@ -28,7 +28,7 @@ RTL_FILES                = {
     "SYS_MASTER" : f"{os.environ.get('XILINX_ROOT')}/rtl/sys_master_clk_assignments.svinc",
 }
 
-# Clocks declaretions and assignments
+# Clocks declarations and assignments
 def declare_and_assign_clocks(config : configuration.Configuration) -> None:
     # Assign in the sys_master the main clock domain
     file = open(RTL_FILES["SYS_MASTER"], "w")
