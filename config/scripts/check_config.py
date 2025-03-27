@@ -36,7 +36,6 @@ VALID_PROTOCOLS = ["AXI4", "AXI4LITE"]
 MIN_AXI4_ADDR_WIDTH = 12
 MIN_AXI4LITE_ADDR_WIDTH = 1
 SOC_CONFIG = os.getenv("SOC_CONFIG", "embedded")
-# TODO: Remember that DDR has its own clock and since it is static we can pass a fake clock domain in the CSV (for example 100)
 # NOTE: These frequencies depend on the clock_wizard configuration (config.tcl)
 SUPPORTED_CLOCK_DOMAINS_EMBEDDED = [10, 20, 50, 100]
 SUPPORTED_CLOCK_DOMAINS_HPC      = [10, 20, 50, 100, 250]
