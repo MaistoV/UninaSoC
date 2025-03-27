@@ -122,7 +122,7 @@ let cnt=0
 for clock_domain in ${clock_domains[*]}; do
 
     if [[ $clock_domain != $main_clock_domain ]]; then
-        slave_clock_domain=${slaves[$cnt]}_CLOCK_DOMAIN
+        slave_clock_domain=${slaves[$cnt]}_HAS_CLOCK_DOMAIN
         clock_domains_list="$clock_domains_list $slave_clock_domain";
     fi
     ((cnt++))

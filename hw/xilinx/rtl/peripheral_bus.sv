@@ -84,8 +84,8 @@ module peripheral_bus #(
     // Clock Converter //
     /////////////////////
 
-    // If the PBUS clock domain is defined (the pbus has a clock different than main clock)
-    `ifdef PBUS_CLOCK_DOMAIN
+    // If the PBUS has a clock domain (the pbus has a clock different than main clock)
+    `ifdef PBUS_HAS_CLOCK_DOMAIN
         xlnx_axi_clock_converter xlnx_axi_clock_converter_u (
             .s_axi_aclk     ( main_clock_i   ),
             .s_axi_aresetn  ( reset_ni       ),

@@ -85,7 +85,7 @@ The `config_xilinx` flow also configures the BRAM size of the IP `xlnx_blk_mem_g
 
 ### Clock domains
 The configuration flow gives the possibility to specify clock domains.
-The `MAIN_CLOCK_DOMAIN` is the closk domain of the core and the main bus (`MBUS`). All the slaves attached to the `MBUS` can have their own clock domain. If a slave has a domain different from the `MAIN_CLOCK_DOMAIN`, it needs a `xlnx_axi_clock_converter` to cross the clock domains. In this case the configuration flow will set the `<SLAVE_NAME>_CLOCK_DOMAIN` (i.e. `PBUS_CLOCK_DOMAIN`) variable which informs that the slave is under its own clock domain.
+The `MAIN_CLOCK_DOMAIN` is the closk domain of the core and the main bus (`MBUS`). All the slaves attached to the `MBUS` can have their own clock domain. If a slave has a domain different from the `MAIN_CLOCK_DOMAIN`, it needs a `xlnx_axi_clock_converter` to cross the clock domains. In this case the configuration flow will set the `<SLAVE_NAME>_HAS_CLOCK_DOMAIN` (i.e. `PBUS_HAS_CLOCK_DOMAIN`) variable which informs that the slave has its own clock domain.
 
 ### VIO resetn default
 The `VIO_RESETN_DEFAULT` parameter controls the programming-time value of core reset.
