@@ -135,7 +135,7 @@ module uninasoc (
     // Virtual I/O
 
     xlnx_vio vio_inst (
-      .clk        ( main_clk         ),
+      .clk        ( main_clk        ),
       .probe_out0 ( vio_resetn      ),
       .probe_out1 (                 ),
       .probe_in0  ( sys_resetn      )
