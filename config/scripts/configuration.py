@@ -7,7 +7,7 @@
 class Configuration:
 	def __init__(self):
 		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
-		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_MICROBLAZEV"]
+		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_MICROBLAZEV", "CORE_VEER"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.VIO_RESETN_DEFAULT	 : int = 1      # Reset using Xilinx VIO
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used

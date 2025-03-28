@@ -5,8 +5,15 @@
 
 # Add files to project
 import_files -norecurse -fileset [current_fileset] $src_file_list
-update_compile_order -fileset sources_1
+
+# Add global includes (if any)
+foreach file $global_include_files {
+    set_property is_global_include true [get_files $file]
+}
+
+# Set top
 set_property top ${top_module} [current_fileset]
+update_compile_order -fileset sources_1
 
 # Suppress: WARNING: [IP_Flow 19-3833] Unreferenced file from the top module is not packaged: <...>.
 set_msg_config -id {[IP_Flow 19-3833]} -suppress

@@ -1,0 +1,6 @@
+# FuseSoC installation
+fusesoc.conf
+fusesoc_libraries/
+
+# Temporary build
+build/

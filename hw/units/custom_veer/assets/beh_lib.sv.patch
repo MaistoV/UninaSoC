@@ -1,0 +1,13 @@
+diff --git a/./rtl/beh_lib.sv b/./build/veerwolf_0.7.5/nexys_a7-vivado/src/chipsalliance.org_cores_VeeR_EH1_1.9/design/lib/beh_lib.sv
+index 31567d6..c46bbf5 100644
+--- a/./rtl/beh_lib.sv
++++ b/./build/veerwolf_0.7.5/nexys_a7-vivado/src/chipsalliance.org_cores_VeeR_EH1_1.9/design/lib/beh_lib.sv
+@@ -138,6 +138,8 @@ module rvdffsc_fpga #( parameter WIDTH=1 )
+ 
+ endmodule
+ 
++// Patch: Vivado fails to globally include this
++`include "common_defines.vh"
+ 
+ module `TEC_RV_ICG
+   (
