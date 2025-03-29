@@ -96,19 +96,19 @@ module uninasoc (
 
     // CLOCKS
     logic main_clk;
-    logic clk_10;
-    logic clk_20;
-    logic clk_50;
-    logic clk_100;
-    logic clk_250;      // HPC ONLY
+    logic clk_10MHz;
+    logic clk_20MHz;
+    logic clk_50MHz;
+    logic clk_100MHz;
+    logic clk_250MHz;      // HPC ONLY
 
     // RESETS
     logic main_rstn;
-    logic rstn_10;
-    logic rstn_20;
-    logic rstn_50;
-    logic rstn_100;
-    logic rstn_250;     // HPC ONLY
+    logic rstn_10MHz;
+    logic rstn_20MHz;
+    logic rstn_50MHz;
+    logic rstn_100MHz;
+    logic rstn_250MHz;     // HPC ONLY
 
     // VIO Signals
     logic vio_resetn;
@@ -249,18 +249,18 @@ module uninasoc (
         .pci_exp_txp_o(pci_exp_txp_o),
 
         // Output clocks
-        .clk_10_o(clk_10),
-        .clk_20_o(clk_20),
-        .clk_50_o(clk_50),
-        .clk_100_o(clk_100),
-        .clk_250_o(clk_250),      // HPC ONLY
+        .clk_10MHz_o(clk_10MHz),
+        .clk_20MHz_o(clk_20MHz),
+        .clk_50MHz_o(clk_50MHz),
+        .clk_100MHz_o(clk_100MHz),
+        .clk_250MHz_o(clk_250MHz),      // HPC ONLY
 
         // Output resets
-        .rstn_10_o(rst_10),
-        .rstn_20_o(rst_20),
-        .rstn_50_o(rst_50),
-        .rstn_100_o(rstn_100),
-        .rstn_250_o(rstn_250),      // HPC ONLY
+        .rstn_10MHz_o(rstn_10MHz),
+        .rstn_20MHz_o(rstn_20MHz),
+        .rstn_50MHz_o(rstn_50MHz),
+        .rstn_100MHz_o(rstn_100MHz),
+        .rstn_250MHz_o(rstn_250MHz),      // HPC ONLY
 
         // AXI Master
         .m_axi_awid     ( SYS_MASTER_to_MBUS_axi_awid     ),

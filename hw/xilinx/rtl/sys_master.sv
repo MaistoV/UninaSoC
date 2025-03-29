@@ -55,18 +55,18 @@ module sys_master
     `DEFINE_PCIE_PORTS,
 
     // Output clks
-    output logic clk_10_o,
-    output logic clk_20_o,
-    output logic clk_50_o,
-    output logic clk_100_o,
-    output logic clk_250_o,      // HPC ONLY
+    output logic clk_10MHz_o,
+    output logic clk_20MHz_o,
+    output logic clk_50MHz_o,
+    output logic clk_100MHz_o,
+    output logic clk_250MHz_o,      // HPC ONLY
 
     // Output rsts for each clock domain (sync to the respective clock)
-    output logic rstn_10_o,
-    output logic rstn_20_o,
-    output logic rstn_50_o,
-    output logic rstn_100_o,
-    output logic rstn_250_o,      // HPC ONLY
+    output logic rstn_10MHz_o,
+    output logic rstn_20MHz_o,
+    output logic rstn_50MHz_o,
+    output logic rstn_100MHz_o,
+    output logic rstn_250MHz_o,      // HPC ONLY
 
     // AXI Master interface
     `DEFINE_AXI_MASTER_PORTS(m)
@@ -80,61 +80,78 @@ logic locked;
 generate
     case (`MAIN_CLOCK_FREQ_MHZ)
         10 : begin
-            assign main_clk  = clk_10_o;
-            assign main_rstn = rstn_10_o;
+            assign main_clk  = clk_10MHz_o;
+            assign main_rstn = rstn_10MHz_o;
         end
         20 : begin
-            assign main_clk  = clk_20_o;
-            assign main_rstn = rstn_20_o;
+            assign main_clk  = clk_20MHz_o;
+            assign main_rstn = rstn_20MHz_o;
         end
         50 : begin
-            assign main_clk  = clk_50_o;
-            assign main_rstn = rstn_50_o;
+            assign main_clk  = clk_50MHz_o;
+            assign main_rstn = rstn_50MHz_o;
         end
         100 : begin
-            assign main_clk  = clk_100_o;
-            assign main_rstn = rstn_100_o;
+            assign main_clk  = clk_100MHz_o;
+            assign main_rstn = rstn_100MHz_o;
         end
         250 : begin // HPC only
-            assign main_clk  = clk_250_o;
-            assign main_rstn = rstn_250_o;
+            assign main_clk  = clk_250MHz_o;
+            assign main_rstn = rstn_250MHz_o;
         end
         default : begin
-            assign main_clk  = clk_20_o;
-            assign main_rstn = rstn_20_o;
+            assign main_clk  = clk_20MHz_o;
+            assign main_rstn = rstn_20MHz_o;
         end
     endcase
 endgenerate
 
 // Resets synchronizers
-xpm_cdc_async_rst xpm_cdc_async_rst_10 (
-    .src_arst  ( locked    ),
-    .dest_clk  ( clk_10_o  ),
-    .dest_arst ( rstn_10_o )
+// Use locked signal as resets generator
+// NOTE: this is temporary until we introduce a reset generation logic here
+xpm_cdc_async_rst #(
+    .DEST_SYNC_FF(4),    // Use 4 sync registers
+    .RST_ACTIVE_HIGH(0)  // Use active low reset
+) xpm_cdc_async_rst_10 (
+    .src_arst  ( locked       ),
+    .dest_clk  ( clk_10MHz_o  ),
+    .dest_arst ( rstn_10MHz_o )
 );
 
-xpm_cdc_async_rst xpm_cdc_async_rst_20 (
-    .src_arst  ( locked    ),
-    .dest_clk  ( clk_20_o  ),
-    .dest_arst ( rstn_20_o )
+xpm_cdc_async_rst #(
+    .DEST_SYNC_FF(4),    // Use 4 sync registers
+    .RST_ACTIVE_HIGH(0)  // Use active low reset
+) xpm_cdc_async_rst_20 (
+    .src_arst  ( locked       ),
+    .dest_clk  ( clk_20MHz_o  ),
+    .dest_arst ( rstn_20MHz_o )
 );
 
-xpm_cdc_async_rst xpm_cdc_async_rst_50 (
-    .src_arst  ( locked    ),
-    .dest_clk  ( clk_50_o  ),
-    .dest_arst ( rstn_50_o )
+xpm_cdc_async_rst #(
+    .DEST_SYNC_FF(4),    // Use 4 sync registers
+    .RST_ACTIVE_HIGH(0)  // Use active low reset
+) xpm_cdc_async_rst_50 (
+    .src_arst  ( locked       ),
+    .dest_clk  ( clk_50MHz_o  ),
+    .dest_arst ( rstn_50MHz_o )
 );
 
-xpm_cdc_async_rst xpm_cdc_async_rst_100 (
-    .src_arst  ( locked     ),
-    .dest_clk  ( clk_100_o  ),
-    .dest_arst ( rstn_100_o )
+xpm_cdc_async_rst #(
+    .DEST_SYNC_FF(4),    // Use 4 sync registers
+    .RST_ACTIVE_HIGH(0)  // Use active low reset
+) xpm_cdc_async_rst_100 (
+    .src_arst  ( locked        ),
+    .dest_clk  ( clk_100MHz_o  ),
+    .dest_arst ( rstn_100MHz_o )
 );
 
-xpm_cdc_async_rst xpm_cdc_async_rst_250 (
-    .src_arst  ( locked     ),
-    .dest_clk  ( clk_250_o  ),
-    .dest_arst ( rstn_250_o )
+xpm_cdc_async_rst #(
+    .DEST_SYNC_FF(4),    // Use 4 sync registers
+    .RST_ACTIVE_HIGH(0)  // Use active low reset
+) xpm_cdc_async_rst_250 (
+    .src_arst  ( locked        ),
+    .dest_clk  ( clk_250MHz_o  ),
+    .dest_arst ( rstn_250MHz_o )
 );
 
 `ifdef HPC
@@ -156,10 +173,6 @@ xpm_cdc_async_rst xpm_cdc_async_rst_250 (
     logic axi_aclk;
     logic axi_aresetn;
 
-    // Use locked signal as system reset
-    // NOTE: this is temporary until we introduce a reset generation logic here
-    // assign sys_resetn_o = locked;
-
     `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
     `DECLARE_AXI_BUS(axi_dwidth_converter_to_clock_converter, AXI_DATA_WIDTH);
 
@@ -168,11 +181,11 @@ xpm_cdc_async_rst xpm_cdc_async_rst_250 (
         .clk_in1  ( axi_aclk     ),
         .resetn   ( axi_aresetn  ),
         .locked   ( locked       ),
-        .clk_250  ( clk_250_o    ),
-        .clk_100  ( clk_100_o    ),
-        .clk_50   ( clk_50_o     ),
-        .clk_20   ( clk_20_o     ),
-        .clk_10   ( clk_10_o     )
+        .clk_250  ( clk_250MHz_o ),
+        .clk_100  ( clk_100MHz_o ),
+        .clk_50   ( clk_50MHz_o  ),
+        .clk_20   ( clk_20MHz_o  ),
+        .clk_10   ( clk_10MHz_o  )
     );
 
     // XDMA Master
@@ -444,7 +457,6 @@ xpm_cdc_async_rst xpm_cdc_async_rst_250 (
     assign pci_exp_txn_o = '0;
     assign pci_exp_txp_o = '0;
 
-    // assign sys_resetn_o = ~sys_reset_i;
     assign m_axi_awregion = '0;
     assign m_axi_arregion = '0;
 
@@ -452,11 +464,11 @@ xpm_cdc_async_rst xpm_cdc_async_rst_250 (
     xlnx_clk_wiz clkwiz_u (
         .clk_in1  ( sys_clock_i  ),
         .resetn   ( ~sys_reset_i ),
-        .locked   ( locked    ),
-        .clk_100  ( clk_100_o ),
-        .clk_50   ( clk_50_o  ),
-        .clk_20   ( clk_20_o  ),
-        .clk_10   ( clk_10_o  )
+        .locked   ( locked       ),
+        .clk_100  ( clk_100MHz_o ),
+        .clk_50   ( clk_50MHz_o  ),
+        .clk_20   ( clk_20MHz_o  ),
+        .clk_10   ( clk_10MHz_o  )
     );
 
     // JTAG2AXI Master
