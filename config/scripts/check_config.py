@@ -25,6 +25,8 @@
 ####################
 # Parse args
 import sys
+# Get env
+import os
 # Sub-scripts
 import configuration
 from utils import *
@@ -33,6 +35,18 @@ from utils import *
 VALID_PROTOCOLS = ["AXI4", "AXI4LITE"]
 MIN_AXI4_ADDR_WIDTH = 12
 MIN_AXI4LITE_ADDR_WIDTH = 1
+SOC_CONFIG = os.getenv("SOC_CONFIG", "embedded")
+# NOTE: These frequencies depend on the clock_wizard configuration (config.tcl)
+SUPPORTED_CLOCK_DOMAINS_EMBEDDED = [10, 20, 50, 100]
+SUPPORTED_CLOCK_DOMAINS_HPC      = [10, 20, 50, 100, 250]
+SUPPORTED_CLOCK_DOMAINS = {
+    "embedded" : SUPPORTED_CLOCK_DOMAINS_EMBEDDED,
+    "hpc"      : SUPPORTED_CLOCK_DOMAINS_HPC
+}
+# These slaves reside statically in the MAIN_CLOCK_DOMAIN
+MAIN_CLOCK_DOMAIN_SLAVES = ["BRAM", "DM_mem", "PLIC"]
+# The DDR clock must have the same frequency of the DDR board clock
+DDR_FREQUENCY = 300
 
 #############################
 # Check intra configuration #
@@ -40,13 +54,13 @@ MIN_AXI4LITE_ADDR_WIDTH = 1
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
 
     # Only main but can select a core
-    if ( config.BUS_NAME == "MBUS" ):
+    if config.BUS_NAME == "MBUS":
         # Supported cores
         if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
             print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
             return False
     # If a non-main bus config wants to select a core
-    elif ( config.CORE_SELECTOR != "" ) :
+    elif config.CORE_SELECTOR != "":
         print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in main bus")
         return False
 
@@ -55,17 +69,21 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         print_error(f"Invalid protocol in {config_file_name}")
         return False
 
-    # Check the number of slaves and relative data (range names, addresses, and address widths)
+    # Check the number of slaves and relative data (range names, addresses, address widths, and clock domains)
     if config.NUM_MI != len(config.RANGE_NAMES):
-        print_error(f"The NUM_MI does not match RANGE_NAMES in {config_file_name}")
+        print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of RANGE_NAMES in {config_file_name}")
         return False
     if config.NUM_MI != len(config.BASE_ADDR):
         print_info(config.BASE_ADDR)
-        print_error(f"The NUM_MI does not match BASE_ADDR in {config_file_name}")
+        print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of BASE_ADDR in {config_file_name}")
         return False
     if config.NUM_MI != len(config.RANGE_ADDR_WIDTH):
-        print_error(f"The NUM_MI does not match ADDR_WIDTH in {config_file_name}")
+        print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of ADDR_WIDTH in {config_file_name}")
         return False
+    if config.BUS_NAME == "MBUS":
+        if config.NUM_MI != len(config.RANGE_CLOCK_DOMAINS):
+            print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of RANGE_CLOCK_DOMAINS in {config_file_name}")
+            return False
 
     # Check the number of masters and relative master names
     if config.NUM_SI != len(config.MASTER_NAMES):
@@ -108,6 +126,28 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
                     return False
         base_addresses.append(base_address)
         end_addresses.append(end_address)
+
+    # Check valid main clock domain
+    if config.BUS_NAME == "MBUS":
+        if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
+            print_error(f"The clock domain {clok_domain}MHz is not supported")
+            return False
+        # Check valid clock domains
+        for i in range(len(config.RANGE_CLOCK_DOMAINS)):
+            # Check if the clock frequency is valid (DDR has its own clock domain)
+            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG] and config.RANGE_NAMES[i] != "DDR":
+                print_error(f"The clock domain {config.RANGE_CLOCK_DOMAINS[i]}MHz is not supported")
+                return False
+            # Check if all the main_clock_domain slaves have the same frequency as MAIN_CLOCK_DOMAIN
+            if config.RANGE_NAMES[i] in MAIN_CLOCK_DOMAIN_SLAVES:
+                if config.RANGE_CLOCK_DOMAINS[i] != config.MAIN_CLOCK_DOMAIN:
+                    print_error(f"The {config.RANGE_NAMES[i]} frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same as MAIN_CLOCK_DOMAIN {config.MAIN_CLOCK_DOMAIN}")
+                    return False
+            # Check if the DDR has the right frequency
+            if config.RANGE_NAMES[i] == "DDR":
+                if config.RANGE_CLOCK_DOMAINS[i] != DDR_FREQUENCY:
+                    print_error(f"The DDR frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same of DDR board clock {DDR_FREQUENCY}")
+                    return False
 
     # Check the presence of multiple BRAMs, for now a single occurrence of BRAM is supported
     # Assume BRAM as prefix for any BRAM declaration

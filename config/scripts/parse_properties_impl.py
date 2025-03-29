@@ -625,3 +625,20 @@ def parse_MASTER_NAMES(
 	values = property_value.split()
 	config.MASTER_NAMES = values.copy()
 	return config
+
+def parse_MAIN_CLOCK_DOMAIN(
+	config,
+	property_name : str,
+	property_value: str,
+):
+	config.MAIN_CLOCK_DOMAIN = int(property_value)
+	return config
+
+def parse_RANGE_CLOCK_DOMAINS(
+	config,
+	property_name : str,
+	property_value: str,
+):
+	values = [int(prop) for prop in property_value.split()]
+	config.RANGE_CLOCK_DOMAINS = values.copy()
+	return config
