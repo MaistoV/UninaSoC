@@ -27,7 +27,7 @@ lappend verilog_defines PBUS_NUM_MI=$::env(PBUS_NUM_MI)
 lappend verilog_defines CORE_SELECTOR=$::env(CORE_SELECTOR)
 # Clock domains
 lappend verilog_defines MAIN_CLOCK_FREQ_MHZ=$::env(MAIN_CLOCK_FREQ_MHZ)
-set clock_domains [split $::env(RANGE_CLOCK_DOMAINS) "\n"]
+set clock_domains [split $::env(RANGE_CLOCK_DOMAINS) " "]
 foreach clock_domain $clock_domains {
     lappend verilog_defines $clock_domain=$clock_domain
 }

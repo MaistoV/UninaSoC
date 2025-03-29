@@ -33,11 +33,14 @@ def declare_and_assign_clocks(config : configuration.Configuration) -> None:
     file = open(RTL_FILES["UNINASOC"], "w")
     file.write(FILE_HEADER)
     file.write(f"assign main_clk = clk_{config.MAIN_CLOCK_DOMAIN};\n")
+    file.write(f"assign main_rstn = rstn_{config.MAIN_CLOCK_DOMAIN};\n")
     for i in range(len(config.RANGE_CLOCK_DOMAINS)):
         # Exclude the DDR from this since it has its own clock
         if config.RANGE_NAMES[i] != "DDR":
             file.write(f"logic {config.RANGE_NAMES[i]}_clk;\n")
             file.write(f"assign {config.RANGE_NAMES[i]}_clk = clk_{config.RANGE_CLOCK_DOMAINS[i]};\n")
+            file.write(f"logic {config.RANGE_NAMES[i]}_rstn;\n")
+            file.write(f"assign {config.RANGE_NAMES[i]}_rstn = rstn_{config.RANGE_CLOCK_DOMAINS[i]};\n")
 
     file.close()
 

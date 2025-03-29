@@ -39,8 +39,9 @@ module peripheral_bus #(
     parameter int unsigned    NUM_IRQ       = 4
     )(
     input logic main_clock_i,
+    input logic main_reset_ni,
     input logic PBUS_clock_i,
-    input logic reset_ni,
+    input logic PBUS_reset_ni,
 
     // AXI4 Slave interface from the main xbar
     `DEFINE_AXI_SLAVE_PORTS(s),
@@ -89,10 +90,10 @@ module peripheral_bus #(
     `ifdef PBUS_HAS_CLOCK_DOMAIN
         xlnx_axi_clock_converter xlnx_axi_clock_converter_u (
             .s_axi_aclk     ( main_clock_i   ),
-            .s_axi_aresetn  ( reset_ni       ),
+            .s_axi_aresetn  ( main_reset_ni  ),
 
             .m_axi_aclk     ( PBUS_clock_i   ),
-            .m_axi_aresetn  ( reset_ni       ),
+            .m_axi_aresetn  ( PBUS_reset_ni  ),
 
             // Slave from MBUS
             .s_axi_awid     ( s_axi_awid     ),
@@ -188,7 +189,7 @@ module peripheral_bus #(
     // AXI4 to AXI4-Lite protocol converter
     xlnx_axi4_to_axilite_converter axi4_to_axilite_u (
         .aclk           ( PBUS_clock_i              ), // input wire s_axi_aclk
-        .aresetn        ( reset_ni                  ), // input wire s_axi_aresetn
+        .aresetn        ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         // AXI4 slave port (from main clock converter)
         .s_axi_awid     ( to_prot_conv_axi_awid     ),            // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr   ( to_prot_conv_axi_awaddr   ),            // input wire [31 : 0] s_axi_awaddr
@@ -254,7 +255,7 @@ module peripheral_bus #(
     // AXI Lite crossbar
     xlnx_peripheral_crossbar peripheral_xbar_u (
         .aclk           ( PBUS_clock_i  ),
-        .aresetn        ( reset_ni ),
+        .aresetn        ( PBUS_reset_ni ),
 
         .s_axi_awaddr   ( PBUS_masters_axilite_awaddr   ),
         .s_axi_awprot   ( PBUS_masters_axilite_awprot   ),
@@ -305,7 +306,7 @@ module peripheral_bus #(
     // AXI4 Lite UART
     axilite_uart axilite_uart_u (
         .clock_i        ( PBUS_clock_i              ), // input wire s_axi_aclk
-        .reset_ni       ( reset_ni                  ), // input wire s_axi_aresetn
+        .reset_ni       ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         .int_core_o     ( uart_int                  ), // Output interrupt
         .int_xdma_o     (                           ), // TBD
         .int_ack_i      ( '0                        ), // TBD
@@ -341,7 +342,7 @@ module peripheral_bus #(
 
     xlnx_axilite_timer tim0_u (
         .s_axi_aclk     ( PBUS_clock_i              ), // input wire s_axi_aclk
-        .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
+        .s_axi_aresetn  ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_TIM0_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_TIM0_axilite_awvalid       ), // input wire s_axi_awvalid
         .s_axi_awready  ( PBUS_to_TIM0_axilite_awready       ), // output wire s_axi_awready
@@ -371,7 +372,7 @@ module peripheral_bus #(
 
     xlnx_axilite_timer tim1_u (
         .s_axi_aclk     ( PBUS_clock_i              ), // input wire s_axi_aclk
-        .s_axi_aresetn  ( reset_ni                  ), // input wire s_axi_aresetn
+        .s_axi_aresetn  ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_TIM1_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_TIM1_axilite_awvalid       ), // input wire s_axi_awvalid
         .s_axi_awready  ( PBUS_to_TIM1_axilite_awready       ), // output wire s_axi_awready
@@ -404,7 +405,7 @@ module peripheral_bus #(
     // GPIO OUT instance
     xlnx_axi_gpio_out gpio_out_u (
         .s_axi_aclk     ( PBUS_clock_i                          ), // input wire s_axi_aclk
-        .s_axi_aresetn  ( reset_ni                              ), // input wire s_axi_aresetn
+        .s_axi_aresetn  ( PBUS_reset_ni                         ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_GPIO_out_axilite_awaddr [8:0] ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_GPIO_out_axilite_awvalid      ), // input wire s_axi_awvalid
         .s_axi_awready  ( PBUS_to_GPIO_out_axilite_awready      ), // output wire s_axi_awready
@@ -428,7 +429,7 @@ module peripheral_bus #(
     // GPIO IN instance
     xlnx_axi_gpio_in gpio_in_u (
         .s_axi_aclk     ( PBUS_clock_i                  ), // input wire s_axi_aclk
-        .s_axi_aresetn  ( reset_ni                      ), // input wire s_axi_aresetn
+        .s_axi_aresetn  ( PBUS_reset_ni                 ), // input wire s_axi_aresetn
         .s_axi_awaddr   ( PBUS_to_GPIO_in_axilite_awaddr [8:0]  ), // input wire [8 : 0] s_axi_awaddr
         .s_axi_awvalid  ( PBUS_to_GPIO_in_axilite_awvalid       ), // input wire s_axi_awvalid
         .s_axi_awready  ( PBUS_to_GPIO_in_axilite_awready       ), // output wire s_axi_awready

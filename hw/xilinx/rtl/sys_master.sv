@@ -54,31 +54,88 @@ module sys_master
     // PCIe interface
     `DEFINE_PCIE_PORTS,
 
-    // Output clks and reset
+    // Output clks
     output logic clk_10_o,
     output logic clk_20_o,
     output logic clk_50_o,
     output logic clk_100_o,
     output logic clk_250_o,      // HPC ONLY
-    output logic sys_resetn_o,
+
+    // Output rsts for each clock domain (sync to the respective clock)
+    output logic rstn_10_o,
+    output logic rstn_20_o,
+    output logic rstn_50_o,
+    output logic rstn_100_o,
+    output logic rstn_250_o,      // HPC ONLY
 
     // AXI Master interface
     `DEFINE_AXI_MASTER_PORTS(m)
 );
 
+// Main clock and main reset
 logic main_clk;
-// Main clock assignment
+logic main_rstn;
+logic locked;
+// Main clock and reset assignment
 generate
     case (`MAIN_CLOCK_FREQ_MHZ)
-        10       : assign main_clk = clk_10_o;
-        20       : assign main_clk = clk_20_o;
-        50       : assign main_clk = clk_50_o;
-        100      : assign main_clk = clk_100_o;
-        250      : assign main_clk = clk_250_o;
-        default  : assign main_clk = clk_20_o;
+        10 : begin
+            assign main_clk  = clk_10_o;
+            assign main_rstn = rstn_10_o;
+        end
+        20 : begin
+            assign main_clk  = clk_20_o;
+            assign main_rstn = rstn_20_o;
+        end
+        50 : begin
+            assign main_clk  = clk_50_o;
+            assign main_rstn = rstn_50_o;
+        end
+        100 : begin
+            assign main_clk  = clk_100_o;
+            assign main_rstn = rstn_100_o;
+        end
+        250 : begin // HPC only
+            assign main_clk  = clk_250_o;
+            assign main_rstn = rstn_250_o;
+        end
+        default : begin
+            assign main_clk  = clk_20_o;
+            assign main_rstn = rstn_20_o;
+        end
     endcase
 endgenerate
 
+// Resets synchronizers
+xpm_cdc_async_rst xpm_cdc_async_rst_10 (
+    .src_arst  ( locked    ),
+    .dest_clk  ( clk_10_o  ),
+    .dest_arst ( rstn_10_o )
+);
+
+xpm_cdc_async_rst xpm_cdc_async_rst_20 (
+    .src_arst  ( locked    ),
+    .dest_clk  ( clk_20_o  ),
+    .dest_arst ( rstn_20_o )
+);
+
+xpm_cdc_async_rst xpm_cdc_async_rst_50 (
+    .src_arst  ( locked    ),
+    .dest_clk  ( clk_50_o  ),
+    .dest_arst ( rstn_50_o )
+);
+
+xpm_cdc_async_rst xpm_cdc_async_rst_100 (
+    .src_arst  ( locked     ),
+    .dest_clk  ( clk_100_o  ),
+    .dest_arst ( rstn_100_o )
+);
+
+xpm_cdc_async_rst xpm_cdc_async_rst_250 (
+    .src_arst  ( locked     ),
+    .dest_clk  ( clk_250_o  ),
+    .dest_arst ( rstn_250_o )
+);
 
 `ifdef HPC
     // ALVEO
@@ -98,11 +155,10 @@ endgenerate
 
     logic axi_aclk;
     logic axi_aresetn;
-    logic locked;
 
     // Use locked signal as system reset
     // NOTE: this is temporary until we introduce a reset generation logic here
-    assign sys_resetn_o = locked;
+    // assign sys_resetn_o = locked;
 
     `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
     `DECLARE_AXI_BUS(axi_dwidth_converter_to_clock_converter, AXI_DATA_WIDTH);
@@ -295,8 +351,8 @@ endgenerate
         .s_axi_aclk     ( axi_aclk    ),
         .s_axi_aresetn  ( axi_aresetn ),
 
-        .m_axi_aclk     ( main_clk     ),
-        .m_axi_aresetn  ( locked       ),
+        .m_axi_aclk     ( main_clk    ),
+        .m_axi_aresetn  ( main_rstn   ),
 
         .s_axi_awid     ( axi_dwidth_converter_to_clock_converter_axi_awid     ),
         .s_axi_awaddr   ( axi_dwidth_converter_to_clock_converter_axi_awaddr   ),
@@ -388,15 +444,15 @@ endgenerate
     assign pci_exp_txn_o = '0;
     assign pci_exp_txp_o = '0;
 
-    assign sys_resetn_o = ~sys_reset_i;
+    // assign sys_resetn_o = ~sys_reset_i;
     assign m_axi_awregion = '0;
     assign m_axi_arregion = '0;
 
     // PLL
     xlnx_clk_wiz clkwiz_u (
         .clk_in1  ( sys_clock_i  ),
-        .resetn   ( sys_resetn_o ),
-        .locked   ( ),
+        .resetn   ( ~sys_reset_i ),
+        .locked   ( locked    ),
         .clk_100  ( clk_100_o ),
         .clk_50   ( clk_50_o  ),
         .clk_20   ( clk_20_o  ),
@@ -405,8 +461,8 @@ endgenerate
 
     // JTAG2AXI Master
     xlnx_jtag_axi jtag_axi_u (
-        .aclk           ( main_clk        ), // input wire aclk
-        .aresetn        ( sys_resetn_o    ), // input wire aresetn
+        .aclk           ( main_clk      ), // input wire aclk
+        .aresetn        ( main_rstn     ), // input wire aresetn
         .m_axi_awid     ( m_axi_awid    ), // output wire [1 : 0] m_axi_awid
         .m_axi_awaddr   ( m_axi_awaddr  ), // output wire [31 : 0] m_axi_awid
         .m_axi_awlen    ( m_axi_awlen   ), // output wire [7 : 0] m_axi_awlen

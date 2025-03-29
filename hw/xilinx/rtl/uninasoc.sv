@@ -94,16 +94,21 @@ module uninasoc (
     // Local Signals //
     //////////////////
 
-    // Reset negative
-    logic sys_resetn;
-    logic vio_debug_resetn;
-    // clkwiz -> all
+    // CLOCKS
     logic main_clk;
     logic clk_10;
     logic clk_20;
     logic clk_50;
     logic clk_100;
     logic clk_250;      // HPC ONLY
+
+    // RESETS
+    logic main_rstn;
+    logic rstn_10;
+    logic rstn_20;
+    logic rstn_50;
+    logic rstn_100;
+    logic rstn_250;     // HPC ONLY
 
     // VIO Signals
     logic vio_resetn;
@@ -138,13 +143,13 @@ module uninasoc (
       .clk        ( main_clk        ),
       .probe_out0 ( vio_resetn      ),
       .probe_out1 (                 ),
-      .probe_in0  ( sys_resetn      )
+      .probe_in0  ( main_rstn       )
     );
 
     // Axi Crossbar
     xlnx_main_crossbar main_xbar_u (
         .aclk           ( main_clk                  ), // input
-        .aresetn        ( sys_resetn                ), // input
+        .aresetn        ( main_rstn                 ), // input
         .s_axi_awid     ( MBUS_masters_axi_awid     ), // input
         .s_axi_awaddr   ( MBUS_masters_axi_awaddr   ), // input
         .s_axi_awlen    ( MBUS_masters_axi_awlen    ), // input
@@ -243,13 +248,19 @@ module uninasoc (
         .pci_exp_txn_o(pci_exp_txn_o),
         .pci_exp_txp_o(pci_exp_txp_o),
 
-        // Output clock
+        // Output clocks
         .clk_10_o(clk_10),
         .clk_20_o(clk_20),
         .clk_50_o(clk_50),
         .clk_100_o(clk_100),
         .clk_250_o(clk_250),      // HPC ONLY
-        .sys_resetn_o(sys_resetn),
+
+        // Output resets
+        .rstn_10_o(rst_10),
+        .rstn_20_o(rst_20),
+        .rstn_50_o(rst_50),
+        .rstn_100_o(rstn_100),
+        .rstn_250_o(rstn_250),      // HPC ONLY
 
         // AXI Master
         .m_axi_awid     ( SYS_MASTER_to_MBUS_axi_awid     ),
@@ -300,7 +311,7 @@ module uninasoc (
         .CORE_SELECTOR ( CORE_SELECTOR  )
     ) rvm_socket_u (
         .clk_i          ( main_clk   ),
-        .rst_ni         ( sys_resetn ),
+        .rst_ni         ( main_rstn  ),
         .core_resetn_i  ( vio_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( rvm_socket_interrupt_line ),
@@ -479,7 +490,7 @@ module uninasoc (
         .rsta_busy      ( /* open */                ), // output wire rsta_busy
         .rstb_busy      ( /* open */                ), // output wire rstb_busy
         .s_aclk         ( main_clk                  ), // input wire s_aclk
-        .s_aresetn      ( sys_resetn                ), // input wire s_aresetn
+        .s_aresetn      ( main_rstn                 ), // input wire s_aresetn
         .s_axi_awid     ( MBUS_to_BRAM_axi_awid     ), // input wire [3 : 0] s_axi_awid
         .s_axi_awaddr   ( MBUS_to_BRAM_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
         .s_axi_awlen    ( MBUS_to_BRAM_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
@@ -537,7 +548,7 @@ module uninasoc (
 
     custom_rv_plic custom_rv_plic_u (
         .clk_i          ( main_clk                      ), // input wire s_axi_aclk
-        .rst_ni         ( sys_resetn                    ), // input wire s_axi_aresetn
+        .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
         .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)
@@ -591,8 +602,9 @@ module uninasoc (
     peripheral_bus peripheral_bus_u (
 
         .main_clock_i   ( main_clk    ),
+        .main_reset_ni  ( main_rstn   ),
         .PBUS_clock_i   ( PBUS_clk    ),
-        .reset_ni       ( sys_resetn  ),
+        .PBUS_reset_ni  ( PBUS_rstn   ),
 
         // EMBEDDED ONLY
         .uart_rx_i      ( uart_rx_i      ),
@@ -649,7 +661,7 @@ module uninasoc (
     // DDR4 Channel 0
     ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
         .clock_i              ( main_clk          ),
-        .reset_ni             ( sys_resetn        ),
+        .reset_ni             ( main_rstn         ),
 
         // DDR4 differential clock
         .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
