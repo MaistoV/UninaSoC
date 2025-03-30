@@ -102,12 +102,6 @@ sed -E -i "s/${bram_size_name}.?\?=.+/${bram_size_name} \?= ${bram_size_list}/g"
 # CLOCK DOMAINS #
 #################
 
-# The main clock frequency identifier in the config.mk
-main_clock_freq_name=MAIN_CLOCK_FREQ_MHZ
-
-# The clock domains identifier in the config.mk
-clock_domains_name=RANGE_CLOCK_DOMAINS
-
 # Get the main clock domain
 main_clock_domain=$(grep "MAIN_CLOCK_DOMAIN" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}');
 
@@ -128,12 +122,28 @@ for clock_domain in ${clock_domains[*]}; do
         slave_clock_domain=${slaves[$cnt]}_HAS_CLOCK_DOMAIN
         clock_domains_list="$clock_domains_list $slave_clock_domain";
     fi
+
+    # Save PBUS clock domain for UART sythesis
+    if [[ "${slaves[$cnt]}" == "PBUS" ]]; then
+        PBUS_CLOCK_FREQ_MHZ=$clock_domain
+        echo PBUS_CLOCK_FREQ_MHZ=$PBUS_CLOCK_FREQ_MHZ
+    fi
+
     ((cnt++))
 done
 
-# Replace in target file
-sed -E -i "s/${main_clock_freq_name}.?\?=.+/${main_clock_freq_name} \?= ${main_clock_domain}/g" ${OUTPUT_MK_FILE};
-sed -E -i "s/${clock_domains_name}.?\?=.+/${clock_domains_name} \?= ${clock_domains_list}/g" ${OUTPUT_MK_FILE};
+# Replace in target MK file
+sed -E -i "s/MAIN_CLOCK_FREQ_MHZ.?\?=.+/MAIN_CLOCK_FREQ_MHZ \?= ${main_clock_domain}/g" ${OUTPUT_MK_FILE};
+sed -E -i "s/RANGE_CLOCK_DOMAINS.?\?=.+/RANGE_CLOCK_DOMAINS \?= ${clock_domains_list}/g" ${OUTPUT_MK_FILE};
+# Replace in AXI Lite UART
+# NOTE: this will trigger the rebuild of the IP
+AXI_UARTLITE_CONFIG=${XILINX_IPS_ROOT}/embedded/xlnx_axi_uartlite/config.tcl
+sed -E -i "s/CONFIG.C_S_AXI_ACLK_FREQ_HZ ?\{[[:digit:]]+\}/CONFIG.C_S_AXI_ACLK_FREQ_HZ {${PBUS_CLOCK_FREQ_MHZ}000000}/g" ${AXI_UARTLITE_CONFIG};
+
+# Info print
+echo "[CONFIG_XILINX] Updating MAIN_CLOCK_FREQ_MHZ = ${main_clock_domain} "
+echo "[CONFIG_XILINX] Updating RANGE_CLOCK_DOMAINS = ${clock_domains_list} "
+echo "[CONFIG_XILINX] Updating PBUS_CLOCK_FREQ_MHZ = ${PBUS_CLOCK_FREQ_MHZ}000000 "
 
 # Done
 echo "[CONFIG_XILINX] Output file is at ${OUTPUT_MK_FILE}"
