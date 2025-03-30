@@ -157,7 +157,7 @@ module custom_top_wrapper import ibex_pkg::*; # (
         .ram_cfg_i              ( '0 ),
 
         .hart_id_i              ( hart_id_i ),
-        // First instruction executed is at 0x0 + 0x80
+        // First instruction executed is going to be at boot_addr_i + 0x80 (i.e. right after the vector table)
         .boot_addr_i            ( boot_addr_i ),
 
         // Instruction memory interface
