@@ -92,6 +92,8 @@ for slave in ${slaves[*]}; do
         bram_size=$(( (1 << $range_width )/8 ))
         bram_size_list="$bram_size_list $bram_size"
     fi
+
+    # Increment counter
     ((cnt++))
 done
 
@@ -129,6 +131,7 @@ for clock_domain in ${clock_domains[*]}; do
         echo PBUS_CLOCK_FREQ_MHZ=$PBUS_CLOCK_FREQ_MHZ
     fi
 
+    # Increment counter
     ((cnt++))
 done
 
