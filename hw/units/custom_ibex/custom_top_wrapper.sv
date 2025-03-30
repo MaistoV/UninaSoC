@@ -9,9 +9,12 @@
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
 
+/////////////////////////
+// Ibex Configurations //
+/////////////////////////
 //`define IBEX_LIGHTWEIGHT
 `define IBEX_PERFORMANCE
-//`define IBEX_OPENTITAN
+//`define IBEX_OPENTITAN // Does not support debugger
 
 module custom_top_wrapper import ibex_pkg::*; # (
 
@@ -113,6 +116,7 @@ module custom_top_wrapper import ibex_pkg::*; # (
         ///////////////////////////
         // Ibex OpenTitan config //
         ///////////////////////////
+        // NOTE: Currently, this config does not support Debug Transport Module
 
         .RV32E              ( 0 ),
         .RV32M              ( ibex_pkg::RV32MSingleCycle ),
