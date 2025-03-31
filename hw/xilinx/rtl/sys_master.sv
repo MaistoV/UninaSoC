@@ -100,8 +100,7 @@ generate
             assign main_rstn = rstn_250MHz_o;
         end
         default : begin
-            assign main_clk  = clk_20MHz_o;
-            assign main_rstn = rstn_20MHz_o;
+            $fatal(1, "The given clock domain frequency (%d MHz) is not supported", `MAIN_CLOCK_FREQ_MHZ);
         end
     endcase
 endgenerate
