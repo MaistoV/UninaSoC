@@ -203,6 +203,52 @@ module rvm_socket # (
             );
 
         end
+        else if (CORE_SELECTOR == CORE_IBEX) begin : core_ibex
+
+            //////////////////////
+            //      Ibex        //
+            //////////////////////
+
+            custom_ibex ibex_core (
+                // Clock and Reset
+                .clk_i                  ( clk_i ),
+                .rst_ni                 ( core_resetn_internal ),
+                .hart_id_i              ( hart_id ),
+                // First instruction executed is going to be at boot_addr_i + 0x80 (i.e. right after the vector table)
+                .boot_addr_i            ( boot_addr_i ),
+
+                // Instruction memory interface
+                .instr_mem_req          ( core_instr_mem_req        ),
+                .instr_mem_gnt          ( core_instr_mem_gnt        ),
+                .instr_mem_valid        ( core_instr_mem_valid      ),
+                .instr_mem_addr         ( core_instr_mem_addr       ),
+                .instr_mem_be           ( core_instr_mem_be         ),
+                .instr_mem_we           ( core_instr_mem_we         ),
+                .instr_mem_wdata        ( core_instr_mem_wdata      ),
+                .instr_mem_rdata        ( core_instr_mem_rdata      ),
+                .instr_mem_error        ( core_instr_mem_error      ), // Although unused
+
+                // Data memory interface
+                .data_mem_req           ( core_data_mem_req         ),
+                .data_mem_valid         ( core_data_mem_valid       ),
+                .data_mem_gnt           ( core_data_mem_gnt         ),
+                .data_mem_we            ( core_data_mem_we          ),
+                .data_mem_be            ( core_data_mem_be          ),
+                .data_mem_addr          ( core_data_mem_addr        ),
+                .data_mem_wdata         ( core_data_mem_wdata       ),
+                .data_mem_rdata         ( core_data_mem_rdata       ),
+                .data_mem_error         ( core_data_mem_error       ), // Although unused
+
+                .irq_software_i         ( irq_i[CORE_SW_INTERRUPT] ),
+                .irq_timer_i            ( irq_i[CORE_TIM_INTERRUPT] ),
+                .irq_external_i         ( irq_i[CORE_EXT_INTERRUPT] ),
+                .irq_fast_i             ( '0 ), 
+                .irq_nm_i               ( '0 ),
+
+                .debug_req_i            ( debug_req_core )
+
+            );
+        end
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
 
             // Tie-off unused signals
@@ -569,7 +615,7 @@ module rvm_socket # (
 
     // This is only for PULP cores, that share a common debug module
     // Other cores are required to instatiate their own DM
-    if ( CORE_SELECTOR inside {CORE_CV32E40P} ) begin : dm_gen
+    if ( CORE_SELECTOR inside {CORE_CV32E40P, CORE_IBEX} ) begin : dm_gen
 
         //  BSCANE2 tap
         (* keep_hierarchy = "yes" *)  // DEBUG
