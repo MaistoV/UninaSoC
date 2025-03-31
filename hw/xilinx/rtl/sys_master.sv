@@ -72,86 +72,99 @@ module sys_master
     `DEFINE_AXI_MASTER_PORTS(m)
 );
 
-// Main clock and main reset
-logic main_clk;
-logic main_rstn;
-logic locked;
-// Main clock and reset assignment
-generate
-    case (`MAIN_CLOCK_FREQ_MHZ)
-        10 : begin
-            assign main_clk  = clk_10MHz_o;
-            assign main_rstn = rstn_10MHz_o;
-        end
-        20 : begin
-            assign main_clk  = clk_20MHz_o;
-            assign main_rstn = rstn_20MHz_o;
-        end
-        50 : begin
-            assign main_clk  = clk_50MHz_o;
-            assign main_rstn = rstn_50MHz_o;
-        end
-        100 : begin
-            assign main_clk  = clk_100MHz_o;
-            assign main_rstn = rstn_100MHz_o;
-        end
-        250 : begin // HPC only
-            assign main_clk  = clk_250MHz_o;
-            assign main_rstn = rstn_250MHz_o;
-        end
-        default : begin
-            $fatal(1, "The given clock domain frequency (%d MHz) is not supported", `MAIN_CLOCK_FREQ_MHZ);
-        end
-    endcase
-endgenerate
+    ////////////////////////////////////
+    // Main clock and reset selection //
+    ////////////////////////////////////
+    
+    // Main clock and main reset
+    logic main_clk;
+    logic main_rstn;
+    logic locked;
+    
+    // Main clock and reset assignment
+    generate
+        case (`MAIN_CLOCK_FREQ_MHZ)
+            10 : begin
+                assign main_clk  = clk_10MHz_o;
+                assign main_rstn = rstn_10MHz_o;
+            end
+            20 : begin
+                assign main_clk  = clk_20MHz_o;
+                assign main_rstn = rstn_20MHz_o;
+            end
+            50 : begin
+                assign main_clk  = clk_50MHz_o;
+                assign main_rstn = rstn_50MHz_o;
+            end
+            100 : begin
+                assign main_clk  = clk_100MHz_o;
+                assign main_rstn = rstn_100MHz_o;
+            end
+            250 : begin // HPC only
+                assign main_clk  = clk_250MHz_o;
+                assign main_rstn = rstn_250MHz_o;
+            end
+            default : begin
+                $fatal(1, "The given clock domain frequency (%d MHz) is not supported", `MAIN_CLOCK_FREQ_MHZ);
+            end
+        endcase
+    endgenerate
+    
+    //////////////////////////
+    // Resets synchronizers //
+    //////////////////////////
+    // Use locked signal as resets generator
+    // NOTE: this is temporary until we introduce a reset generation logic here
+    
+    // Reset sync for 10 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_10MHz_u (
+        .src_arst  ( locked       ),
+        .dest_clk  ( clk_10MHz_o  ),
+        .dest_arst ( rstn_10MHz_o )
+    );
+    
+    // Reset sync for 20 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_20MHz_u (
+        .src_arst  ( locked       ),
+        .dest_clk  ( clk_20MHz_o  ),
+        .dest_arst ( rstn_20MHz_o )
+    );
+    
+    // Reset sync for 50 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_50MHz_u (
+        .src_arst  ( locked       ),
+        .dest_clk  ( clk_50MHz_o  ),
+        .dest_arst ( rstn_50MHz_o )
+    );
+    
+    // Reset sync for 100 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_100MHz_u (
+        .src_arst  ( locked        ),
+        .dest_clk  ( clk_100MHz_o  ),
+        .dest_arst ( rstn_100MHz_o )
+    );
 
-// Resets synchronizers
-// Use locked signal as resets generator
-// NOTE: this is temporary until we introduce a reset generation logic here
-xpm_cdc_async_rst #(
-    .DEST_SYNC_FF(4),    // Use 4 sync registers
-    .RST_ACTIVE_HIGH(0)  // Use active low reset
-) xpm_cdc_async_rst_10 (
-    .src_arst  ( locked       ),
-    .dest_clk  ( clk_10MHz_o  ),
-    .dest_arst ( rstn_10MHz_o )
-);
-
-xpm_cdc_async_rst #(
-    .DEST_SYNC_FF(4),    // Use 4 sync registers
-    .RST_ACTIVE_HIGH(0)  // Use active low reset
-) xpm_cdc_async_rst_20 (
-    .src_arst  ( locked       ),
-    .dest_clk  ( clk_20MHz_o  ),
-    .dest_arst ( rstn_20MHz_o )
-);
-
-xpm_cdc_async_rst #(
-    .DEST_SYNC_FF(4),    // Use 4 sync registers
-    .RST_ACTIVE_HIGH(0)  // Use active low reset
-) xpm_cdc_async_rst_50 (
-    .src_arst  ( locked       ),
-    .dest_clk  ( clk_50MHz_o  ),
-    .dest_arst ( rstn_50MHz_o )
-);
-
-xpm_cdc_async_rst #(
-    .DEST_SYNC_FF(4),    // Use 4 sync registers
-    .RST_ACTIVE_HIGH(0)  // Use active low reset
-) xpm_cdc_async_rst_100 (
-    .src_arst  ( locked        ),
-    .dest_clk  ( clk_100MHz_o  ),
-    .dest_arst ( rstn_100MHz_o )
-);
-
-xpm_cdc_async_rst #(
-    .DEST_SYNC_FF(4),    // Use 4 sync registers
-    .RST_ACTIVE_HIGH(0)  // Use active low reset
-) xpm_cdc_async_rst_250 (
-    .src_arst  ( locked        ),
-    .dest_clk  ( clk_250MHz_o  ),
-    .dest_arst ( rstn_250MHz_o )
-);
+    // Reset sync for 250M Hz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_250MHz_u (
+        .src_arst  ( locked        ),
+        .dest_clk  ( clk_250MHz_o  ),
+        .dest_arst ( rstn_250MHz_o )
+    );
 
 `ifdef HPC
     // ALVEO
