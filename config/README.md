@@ -12,6 +12,8 @@ This tree has been verified with the following tools and versions
 The input configuration files are CSV files. These files are under the configs directory structured as follows:
 ``` bash
 configs
+├── common                           # Config files shared between hpc and embedded
+│   ├── config_system.csv            # System-level configurations
 ├── embedded                         # Config files for embedded
 │   ├── config_main_bus.csv          # Main bus config file
 │   └── config_peripheral_bus.csv    # Peripheral bus config file
@@ -20,23 +22,31 @@ configs
     └── config_peripheral_bus.csv    # Peripheral bus config file
 ```
 
-Each file is the configuration for a specific bus. For now only main bus and peripheral bus are supported, **but file names must match those above**.
+A configuration file can either refer to system-level options or to a specific bus. For now only main bus and peripheral bus are supported, **but file names must match those above**.
 
 In each file, each row of the file holds a property name and value pair.
 Some properties are array, with elements separated by a white space " " character.
 
 The following table details the supported properties.
 
-> **IMPORTANT NOTE**: the address range of a bus (child) that is a slave of another bus (parent), in its configuration (.csv) file, must be an absolute address range, this means that if the child bus is mapped in the parent bus at the address 0x1000 to 0x1FFF, then the peripherals in the child bus must be in the address range 0x1000 to 0x1FFFE
+### System Configuration
+
+> **IMPORTANT NOTE**: XLEN parameter will only affect main bus sizes. Other buses (such as the peripheral bus) will have a hardcoded DATA_WIDTH and ADDRESS_WIDTH value.
 
 | Name  | Description | Values | Default
 |-|-|-|-|
 | CORE_SELECTOR         | Select target RV core (**only for main_bus**)             | CORE_PICORV32, CORE_CV32E40P, CORE_IBEX, CORE_MICROBLAZEV | None (**mandatory value**)
 | VIO_RESETN_DEFAULT    | Select value for VIO resetn (**only for main_bus**)       | [0,1]                                                     | 1
+| XLEN                  | Defines Bus DATA_WIDTH, ADDRESS_WIDTH and Toolchain version | [32,64]                                                 | 32
+
+### Bus Configuration
+
+> **IMPORTANT NOTE**: the address range of a bus (child) that is a slave of another bus (parent), in its configuration (.csv) file, must be an absolute address range, this means that if the child bus is mapped in the parent bus at the address 0x1000 to 0x1FFF, then the peripherals in the child bus must be in the address range 0x1000 to 0x1FFFE
+
+| Name  | Description | Values | Default
+|-|-|-|-|
 | PROTOCOL              | AXI PROTOCOL                                              | (AXI4, AXI4LITE, AXI3)                                    | AXI4
 | CONNECTIVITY_MODE     | Crossbar Interconnection                                  | Shared-Address, Multiple-Data(SAMD), Shared-Address/Shared-Data(SASD)                | SAMD
-| ADDR_WIDTH            | AXI Address Width                                         | (12..64) for AXI4 and AXI3, (1..64) for AXI4LITE          | 32
-| DATA_WIDTH            | AXI Data Width                                            | (32, 64, 128, 256, 512, 1024) for AXI4 and AXI3, (32, 64) for AXI4LITE | 32
 | ID_WIDTH              | AXI ID Width                                              | (4..32)                                                   | 4
 | NUM_MI                | Number of Master Interfaces (number of slaves)            | (0..16)                                                   | 2
 | NUM_SI                | Number of Slave Interfaces (number of masters)            | (0..16)                                                   | 1
@@ -76,6 +86,7 @@ $ make config_main_bus          # Generates main bus config
 $ make config_peripheral_bus    # Generates peripheral bus config
 $ make config_ld                # Generates linker script
 $ make config_xilinx            # Update xilinx config
+$ make config_sw                # Update software config
 ```
 
 ### BRAM size configuration
@@ -99,6 +110,7 @@ The directory `scripts/` holds multiple scripts, acting in the following scripti
 
 The multiple scripts generate outputs from common inputs:
 1. The Xilinx-related environment configuration in [`config.mk`](../hw/xilinx/make/config.mk) is handled by [`config_xilinx.sh`](scripts/config_xilinx.sh).
+1. The software-related environment (including toolchain and compilation flags) configuration in [`config.mk`](../sw/SoC/common/config.mk) is handled by [`config_sw.sh`](scripts/config_sw.sh).
 1. [Linker script](../sw/SoC/common/UninaSoC.ld) generation is handled solely by [`create_linker_script.py`](scripts/create_linker_script.py) source.
 1. Configuration TCL files (for [MBUS](../hw/xilinx/ips/common/xlnx_main_crossbar/config.tcl) and [PBUS](../hw/xilinx/ips/common/xlnx_peripheral_crossbar/config.tcl)) for the platform crossbars are generated with [`create_crossbar_config.py`](scripts/create_crossbar_config.py) as master script.
 

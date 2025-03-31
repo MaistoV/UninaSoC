@@ -1,6 +1,7 @@
 # Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description: Declaration of wrapper class for configuration properties with their default values (if any). Lists are just initialized as empty.
 
 # Wrapper class for configuration properties
@@ -10,6 +11,7 @@ class Configuration:
 		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.VIO_RESETN_DEFAULT	 : int = 1      # Reset using Xilinx VIO
+		self.XLEN				 : int = 32		# System-level len (only applicable to MBUS) 
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
 		self.ADDR_WIDTH			 : int = 32 	# Address Width

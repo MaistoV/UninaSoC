@@ -22,7 +22,7 @@
 //                                                    |          |                   |________________|         | peripheral
 //   _________              ____________              |          |                    ________________          | interrupts
 //  |         |            |            |             |          |                   |                |         |
-//  |   vio   |----------->| rvm_socket |------------>|          |------------------>|      PLIC      |<--------|
+//  |   vio   |----------->| rv_socket  |------------>|          |------------------>|      PLIC      |<--------|
 //  |_________|            |____________|             |          |                   |________________|
 //                                ^                   |          |                            |
 //                                |                   |__________|                            |
@@ -114,7 +114,7 @@ module uninasoc (
     logic vio_resetn;
 
     // Socket interrupts
-    logic [31:0] rvm_socket_interrupt_line;
+    logic [31:0] rv_socket_interrupt_line;
 
     // Peripheral bus interrupts
     logic [peripherals_interrupts_num-1:0] pbus_int_line;
@@ -305,98 +305,98 @@ module uninasoc (
     );
 
     // RVM Socket
-    rvm_socket # (
+    rv_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
         .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
         .CORE_SELECTOR ( CORE_SELECTOR  )
-    ) rvm_socket_u (
+    ) rv_socket_u (
         .clk_i          ( main_clk   ),
         .rst_ni         ( main_rstn  ),
         .core_resetn_i  ( vio_resetn ),
         .bootaddr_i     ( '0         ),
-        .irq_i          ( rvm_socket_interrupt_line ),
+        .irq_i          ( rv_socket_interrupt_line ),
 
         // Instruction AXI Port
-        .rvm_socket_instr_axi_awid      ( RVM_SOCKET_INSTR_to_MBUS_axi_awid     ),
-        .rvm_socket_instr_axi_awaddr    ( RVM_SOCKET_INSTR_to_MBUS_axi_awaddr   ),
-        .rvm_socket_instr_axi_awlen     ( RVM_SOCKET_INSTR_to_MBUS_axi_awlen    ),
-        .rvm_socket_instr_axi_awsize    ( RVM_SOCKET_INSTR_to_MBUS_axi_awsize   ),
-        .rvm_socket_instr_axi_awburst   ( RVM_SOCKET_INSTR_to_MBUS_axi_awburst  ),
-        .rvm_socket_instr_axi_awlock    ( RVM_SOCKET_INSTR_to_MBUS_axi_awlock   ),
-        .rvm_socket_instr_axi_awcache   ( RVM_SOCKET_INSTR_to_MBUS_axi_awcache  ),
-        .rvm_socket_instr_axi_awprot    ( RVM_SOCKET_INSTR_to_MBUS_axi_awprot   ),
-        .rvm_socket_instr_axi_awqos     ( RVM_SOCKET_INSTR_to_MBUS_axi_awqos    ),
-        .rvm_socket_instr_axi_awvalid   ( RVM_SOCKET_INSTR_to_MBUS_axi_awvalid  ),
-        .rvm_socket_instr_axi_awready   ( RVM_SOCKET_INSTR_to_MBUS_axi_awready  ),
-        .rvm_socket_instr_axi_awregion  ( RVM_SOCKET_INSTR_to_MBUS_axi_awregion ),
-        .rvm_socket_instr_axi_wdata     ( RVM_SOCKET_INSTR_to_MBUS_axi_wdata    ),
-        .rvm_socket_instr_axi_wstrb     ( RVM_SOCKET_INSTR_to_MBUS_axi_wstrb    ),
-        .rvm_socket_instr_axi_wlast     ( RVM_SOCKET_INSTR_to_MBUS_axi_wlast    ),
-        .rvm_socket_instr_axi_wvalid    ( RVM_SOCKET_INSTR_to_MBUS_axi_wvalid   ),
-        .rvm_socket_instr_axi_wready    ( RVM_SOCKET_INSTR_to_MBUS_axi_wready   ),
-        .rvm_socket_instr_axi_bid       ( RVM_SOCKET_INSTR_to_MBUS_axi_bid      ),
-        .rvm_socket_instr_axi_bresp     ( RVM_SOCKET_INSTR_to_MBUS_axi_bresp    ),
-        .rvm_socket_instr_axi_bvalid    ( RVM_SOCKET_INSTR_to_MBUS_axi_bvalid   ),
-        .rvm_socket_instr_axi_bready    ( RVM_SOCKET_INSTR_to_MBUS_axi_bready   ),
-        .rvm_socket_instr_axi_arid      ( RVM_SOCKET_INSTR_to_MBUS_axi_arid     ),
-        .rvm_socket_instr_axi_araddr    ( RVM_SOCKET_INSTR_to_MBUS_axi_araddr   ),
-        .rvm_socket_instr_axi_arlen     ( RVM_SOCKET_INSTR_to_MBUS_axi_arlen    ),
-        .rvm_socket_instr_axi_arsize    ( RVM_SOCKET_INSTR_to_MBUS_axi_arsize   ),
-        .rvm_socket_instr_axi_arburst   ( RVM_SOCKET_INSTR_to_MBUS_axi_arburst  ),
-        .rvm_socket_instr_axi_arlock    ( RVM_SOCKET_INSTR_to_MBUS_axi_arlock   ),
-        .rvm_socket_instr_axi_arcache   ( RVM_SOCKET_INSTR_to_MBUS_axi_arcache  ),
-        .rvm_socket_instr_axi_arprot    ( RVM_SOCKET_INSTR_to_MBUS_axi_arprot   ),
-        .rvm_socket_instr_axi_arqos     ( RVM_SOCKET_INSTR_to_MBUS_axi_arqos    ),
-        .rvm_socket_instr_axi_arvalid   ( RVM_SOCKET_INSTR_to_MBUS_axi_arvalid  ),
-        .rvm_socket_instr_axi_arready   ( RVM_SOCKET_INSTR_to_MBUS_axi_arready  ),
-        .rvm_socket_instr_axi_arregion  ( RVM_SOCKET_INSTR_to_MBUS_axi_arregion ),
-        .rvm_socket_instr_axi_rid       ( RVM_SOCKET_INSTR_to_MBUS_axi_rid      ),
-        .rvm_socket_instr_axi_rdata     ( RVM_SOCKET_INSTR_to_MBUS_axi_rdata    ),
-        .rvm_socket_instr_axi_rresp     ( RVM_SOCKET_INSTR_to_MBUS_axi_rresp    ),
-        .rvm_socket_instr_axi_rlast     ( RVM_SOCKET_INSTR_to_MBUS_axi_rlast    ),
-        .rvm_socket_instr_axi_rvalid    ( RVM_SOCKET_INSTR_to_MBUS_axi_rvalid   ),
-        .rvm_socket_instr_axi_rready    ( RVM_SOCKET_INSTR_to_MBUS_axi_rready   ),
+        .rv_socket_instr_axi_awid      ( RV_SOCKET_INSTR_to_MBUS_axi_awid     ),
+        .rv_socket_instr_axi_awaddr    ( RV_SOCKET_INSTR_to_MBUS_axi_awaddr   ),
+        .rv_socket_instr_axi_awlen     ( RV_SOCKET_INSTR_to_MBUS_axi_awlen    ),
+        .rv_socket_instr_axi_awsize    ( RV_SOCKET_INSTR_to_MBUS_axi_awsize   ),
+        .rv_socket_instr_axi_awburst   ( RV_SOCKET_INSTR_to_MBUS_axi_awburst  ),
+        .rv_socket_instr_axi_awlock    ( RV_SOCKET_INSTR_to_MBUS_axi_awlock   ),
+        .rv_socket_instr_axi_awcache   ( RV_SOCKET_INSTR_to_MBUS_axi_awcache  ),
+        .rv_socket_instr_axi_awprot    ( RV_SOCKET_INSTR_to_MBUS_axi_awprot   ),
+        .rv_socket_instr_axi_awqos     ( RV_SOCKET_INSTR_to_MBUS_axi_awqos    ),
+        .rv_socket_instr_axi_awvalid   ( RV_SOCKET_INSTR_to_MBUS_axi_awvalid  ),
+        .rv_socket_instr_axi_awready   ( RV_SOCKET_INSTR_to_MBUS_axi_awready  ),
+        .rv_socket_instr_axi_awregion  ( RV_SOCKET_INSTR_to_MBUS_axi_awregion ),
+        .rv_socket_instr_axi_wdata     ( RV_SOCKET_INSTR_to_MBUS_axi_wdata    ),
+        .rv_socket_instr_axi_wstrb     ( RV_SOCKET_INSTR_to_MBUS_axi_wstrb    ),
+        .rv_socket_instr_axi_wlast     ( RV_SOCKET_INSTR_to_MBUS_axi_wlast    ),
+        .rv_socket_instr_axi_wvalid    ( RV_SOCKET_INSTR_to_MBUS_axi_wvalid   ),
+        .rv_socket_instr_axi_wready    ( RV_SOCKET_INSTR_to_MBUS_axi_wready   ),
+        .rv_socket_instr_axi_bid       ( RV_SOCKET_INSTR_to_MBUS_axi_bid      ),
+        .rv_socket_instr_axi_bresp     ( RV_SOCKET_INSTR_to_MBUS_axi_bresp    ),
+        .rv_socket_instr_axi_bvalid    ( RV_SOCKET_INSTR_to_MBUS_axi_bvalid   ),
+        .rv_socket_instr_axi_bready    ( RV_SOCKET_INSTR_to_MBUS_axi_bready   ),
+        .rv_socket_instr_axi_arid      ( RV_SOCKET_INSTR_to_MBUS_axi_arid     ),
+        .rv_socket_instr_axi_araddr    ( RV_SOCKET_INSTR_to_MBUS_axi_araddr   ),
+        .rv_socket_instr_axi_arlen     ( RV_SOCKET_INSTR_to_MBUS_axi_arlen    ),
+        .rv_socket_instr_axi_arsize    ( RV_SOCKET_INSTR_to_MBUS_axi_arsize   ),
+        .rv_socket_instr_axi_arburst   ( RV_SOCKET_INSTR_to_MBUS_axi_arburst  ),
+        .rv_socket_instr_axi_arlock    ( RV_SOCKET_INSTR_to_MBUS_axi_arlock   ),
+        .rv_socket_instr_axi_arcache   ( RV_SOCKET_INSTR_to_MBUS_axi_arcache  ),
+        .rv_socket_instr_axi_arprot    ( RV_SOCKET_INSTR_to_MBUS_axi_arprot   ),
+        .rv_socket_instr_axi_arqos     ( RV_SOCKET_INSTR_to_MBUS_axi_arqos    ),
+        .rv_socket_instr_axi_arvalid   ( RV_SOCKET_INSTR_to_MBUS_axi_arvalid  ),
+        .rv_socket_instr_axi_arready   ( RV_SOCKET_INSTR_to_MBUS_axi_arready  ),
+        .rv_socket_instr_axi_arregion  ( RV_SOCKET_INSTR_to_MBUS_axi_arregion ),
+        .rv_socket_instr_axi_rid       ( RV_SOCKET_INSTR_to_MBUS_axi_rid      ),
+        .rv_socket_instr_axi_rdata     ( RV_SOCKET_INSTR_to_MBUS_axi_rdata    ),
+        .rv_socket_instr_axi_rresp     ( RV_SOCKET_INSTR_to_MBUS_axi_rresp    ),
+        .rv_socket_instr_axi_rlast     ( RV_SOCKET_INSTR_to_MBUS_axi_rlast    ),
+        .rv_socket_instr_axi_rvalid    ( RV_SOCKET_INSTR_to_MBUS_axi_rvalid   ),
+        .rv_socket_instr_axi_rready    ( RV_SOCKET_INSTR_to_MBUS_axi_rready   ),
 
         // Data AXI Port
-        .rvm_socket_data_axi_awid      ( RVM_SOCKET_DATA_to_MBUS_axi_awid     ),
-        .rvm_socket_data_axi_awaddr    ( RVM_SOCKET_DATA_to_MBUS_axi_awaddr   ),
-        .rvm_socket_data_axi_awlen     ( RVM_SOCKET_DATA_to_MBUS_axi_awlen    ),
-        .rvm_socket_data_axi_awsize    ( RVM_SOCKET_DATA_to_MBUS_axi_awsize   ),
-        .rvm_socket_data_axi_awburst   ( RVM_SOCKET_DATA_to_MBUS_axi_awburst  ),
-        .rvm_socket_data_axi_awlock    ( RVM_SOCKET_DATA_to_MBUS_axi_awlock   ),
-        .rvm_socket_data_axi_awcache   ( RVM_SOCKET_DATA_to_MBUS_axi_awcache  ),
-        .rvm_socket_data_axi_awprot    ( RVM_SOCKET_DATA_to_MBUS_axi_awprot   ),
-        .rvm_socket_data_axi_awqos     ( RVM_SOCKET_DATA_to_MBUS_axi_awqos    ),
-        .rvm_socket_data_axi_awvalid   ( RVM_SOCKET_DATA_to_MBUS_axi_awvalid  ),
-        .rvm_socket_data_axi_awready   ( RVM_SOCKET_DATA_to_MBUS_axi_awready  ),
-        .rvm_socket_data_axi_awregion  ( RVM_SOCKET_DATA_to_MBUS_axi_awregion ),
-        .rvm_socket_data_axi_wdata     ( RVM_SOCKET_DATA_to_MBUS_axi_wdata    ),
-        .rvm_socket_data_axi_wstrb     ( RVM_SOCKET_DATA_to_MBUS_axi_wstrb    ),
-        .rvm_socket_data_axi_wlast     ( RVM_SOCKET_DATA_to_MBUS_axi_wlast    ),
-        .rvm_socket_data_axi_wvalid    ( RVM_SOCKET_DATA_to_MBUS_axi_wvalid   ),
-        .rvm_socket_data_axi_wready    ( RVM_SOCKET_DATA_to_MBUS_axi_wready   ),
-        .rvm_socket_data_axi_bid       ( RVM_SOCKET_DATA_to_MBUS_axi_bid      ),
-        .rvm_socket_data_axi_bresp     ( RVM_SOCKET_DATA_to_MBUS_axi_bresp    ),
-        .rvm_socket_data_axi_bvalid    ( RVM_SOCKET_DATA_to_MBUS_axi_bvalid   ),
-        .rvm_socket_data_axi_bready    ( RVM_SOCKET_DATA_to_MBUS_axi_bready   ),
-        .rvm_socket_data_axi_arid      ( RVM_SOCKET_DATA_to_MBUS_axi_arid     ),
-        .rvm_socket_data_axi_araddr    ( RVM_SOCKET_DATA_to_MBUS_axi_araddr   ),
-        .rvm_socket_data_axi_arlen     ( RVM_SOCKET_DATA_to_MBUS_axi_arlen    ),
-        .rvm_socket_data_axi_arsize    ( RVM_SOCKET_DATA_to_MBUS_axi_arsize   ),
-        .rvm_socket_data_axi_arburst   ( RVM_SOCKET_DATA_to_MBUS_axi_arburst  ),
-        .rvm_socket_data_axi_arlock    ( RVM_SOCKET_DATA_to_MBUS_axi_arlock   ),
-        .rvm_socket_data_axi_arcache   ( RVM_SOCKET_DATA_to_MBUS_axi_arcache  ),
-        .rvm_socket_data_axi_arprot    ( RVM_SOCKET_DATA_to_MBUS_axi_arprot   ),
-        .rvm_socket_data_axi_arqos     ( RVM_SOCKET_DATA_to_MBUS_axi_arqos    ),
-        .rvm_socket_data_axi_arvalid   ( RVM_SOCKET_DATA_to_MBUS_axi_arvalid  ),
-        .rvm_socket_data_axi_arready   ( RVM_SOCKET_DATA_to_MBUS_axi_arready  ),
-        .rvm_socket_data_axi_arregion  ( RVM_SOCKET_DATA_to_MBUS_axi_arregion ),
-        .rvm_socket_data_axi_rid       ( RVM_SOCKET_DATA_to_MBUS_axi_rid      ),
-        .rvm_socket_data_axi_rdata     ( RVM_SOCKET_DATA_to_MBUS_axi_rdata    ),
-        .rvm_socket_data_axi_rresp     ( RVM_SOCKET_DATA_to_MBUS_axi_rresp    ),
-        .rvm_socket_data_axi_rlast     ( RVM_SOCKET_DATA_to_MBUS_axi_rlast    ),
-        .rvm_socket_data_axi_rvalid    ( RVM_SOCKET_DATA_to_MBUS_axi_rvalid   ),
-        .rvm_socket_data_axi_rready    ( RVM_SOCKET_DATA_to_MBUS_axi_rready   ),
+        .rv_socket_data_axi_awid      ( RV_SOCKET_DATA_to_MBUS_axi_awid     ),
+        .rv_socket_data_axi_awaddr    ( RV_SOCKET_DATA_to_MBUS_axi_awaddr   ),
+        .rv_socket_data_axi_awlen     ( RV_SOCKET_DATA_to_MBUS_axi_awlen    ),
+        .rv_socket_data_axi_awsize    ( RV_SOCKET_DATA_to_MBUS_axi_awsize   ),
+        .rv_socket_data_axi_awburst   ( RV_SOCKET_DATA_to_MBUS_axi_awburst  ),
+        .rv_socket_data_axi_awlock    ( RV_SOCKET_DATA_to_MBUS_axi_awlock   ),
+        .rv_socket_data_axi_awcache   ( RV_SOCKET_DATA_to_MBUS_axi_awcache  ),
+        .rv_socket_data_axi_awprot    ( RV_SOCKET_DATA_to_MBUS_axi_awprot   ),
+        .rv_socket_data_axi_awqos     ( RV_SOCKET_DATA_to_MBUS_axi_awqos    ),
+        .rv_socket_data_axi_awvalid   ( RV_SOCKET_DATA_to_MBUS_axi_awvalid  ),
+        .rv_socket_data_axi_awready   ( RV_SOCKET_DATA_to_MBUS_axi_awready  ),
+        .rv_socket_data_axi_awregion  ( RV_SOCKET_DATA_to_MBUS_axi_awregion ),
+        .rv_socket_data_axi_wdata     ( RV_SOCKET_DATA_to_MBUS_axi_wdata    ),
+        .rv_socket_data_axi_wstrb     ( RV_SOCKET_DATA_to_MBUS_axi_wstrb    ),
+        .rv_socket_data_axi_wlast     ( RV_SOCKET_DATA_to_MBUS_axi_wlast    ),
+        .rv_socket_data_axi_wvalid    ( RV_SOCKET_DATA_to_MBUS_axi_wvalid   ),
+        .rv_socket_data_axi_wready    ( RV_SOCKET_DATA_to_MBUS_axi_wready   ),
+        .rv_socket_data_axi_bid       ( RV_SOCKET_DATA_to_MBUS_axi_bid      ),
+        .rv_socket_data_axi_bresp     ( RV_SOCKET_DATA_to_MBUS_axi_bresp    ),
+        .rv_socket_data_axi_bvalid    ( RV_SOCKET_DATA_to_MBUS_axi_bvalid   ),
+        .rv_socket_data_axi_bready    ( RV_SOCKET_DATA_to_MBUS_axi_bready   ),
+        .rv_socket_data_axi_arid      ( RV_SOCKET_DATA_to_MBUS_axi_arid     ),
+        .rv_socket_data_axi_araddr    ( RV_SOCKET_DATA_to_MBUS_axi_araddr   ),
+        .rv_socket_data_axi_arlen     ( RV_SOCKET_DATA_to_MBUS_axi_arlen    ),
+        .rv_socket_data_axi_arsize    ( RV_SOCKET_DATA_to_MBUS_axi_arsize   ),
+        .rv_socket_data_axi_arburst   ( RV_SOCKET_DATA_to_MBUS_axi_arburst  ),
+        .rv_socket_data_axi_arlock    ( RV_SOCKET_DATA_to_MBUS_axi_arlock   ),
+        .rv_socket_data_axi_arcache   ( RV_SOCKET_DATA_to_MBUS_axi_arcache  ),
+        .rv_socket_data_axi_arprot    ( RV_SOCKET_DATA_to_MBUS_axi_arprot   ),
+        .rv_socket_data_axi_arqos     ( RV_SOCKET_DATA_to_MBUS_axi_arqos    ),
+        .rv_socket_data_axi_arvalid   ( RV_SOCKET_DATA_to_MBUS_axi_arvalid  ),
+        .rv_socket_data_axi_arready   ( RV_SOCKET_DATA_to_MBUS_axi_arready  ),
+        .rv_socket_data_axi_arregion  ( RV_SOCKET_DATA_to_MBUS_axi_arregion ),
+        .rv_socket_data_axi_rid       ( RV_SOCKET_DATA_to_MBUS_axi_rid      ),
+        .rv_socket_data_axi_rdata     ( RV_SOCKET_DATA_to_MBUS_axi_rdata    ),
+        .rv_socket_data_axi_rresp     ( RV_SOCKET_DATA_to_MBUS_axi_rresp    ),
+        .rv_socket_data_axi_rlast     ( RV_SOCKET_DATA_to_MBUS_axi_rlast    ),
+        .rv_socket_data_axi_rvalid    ( RV_SOCKET_DATA_to_MBUS_axi_rvalid   ),
+        .rv_socket_data_axi_rready    ( RV_SOCKET_DATA_to_MBUS_axi_rready   ),
 
         // Debug AXI master
         .dbg_master_axi_awid       ( DBG_MASTER_to_MBUS_axi_awid     ),
@@ -530,7 +530,7 @@ module uninasoc (
 
         // Default non-assigned lines
         plic_int_line = '0;
-        rvm_socket_interrupt_line = '0;
+        rv_socket_interrupt_line = '0;
 
         // Mapping PLIC input interrupts (only from pbus at the moment)
         // Mapping is static (refer to uninasoc_pkg.sv)
@@ -541,7 +541,7 @@ module uninasoc (
         plic_int_line[PLIC_UART_INTERRUPT]      = pbus_int_line[PBUS_UART_INTERRUPT];
 
         // Map system-interrupts pins to socket interrupts
-        rvm_socket_interrupt_line[CORE_EXT_INTERRUPT] = plic_int_irq_o;
+        rv_socket_interrupt_line[CORE_EXT_INTERRUPT] = plic_int_irq_o;
 
     end : system_interrupts
 
