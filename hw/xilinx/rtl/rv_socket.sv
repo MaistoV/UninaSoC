@@ -719,4 +719,4 @@ module rv_socket # (
 
     end : dm_not_gen
 
-endmodule : rvm_socket
+endmodule : rv_socket
