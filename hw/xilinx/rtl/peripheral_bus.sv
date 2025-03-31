@@ -1,8 +1,8 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Description: This module is the module wrapping the entire peripheral bus
-//              it adds a AXI protocol converter before the axilite crossbar and all the peripherals connected to the axilite crossbar
-//              NOTE: It would be more efficient to have the Clock Converter after the AXI Prot Converter.
-//                    To keep things simple (since, for now, we do not have the AXI Lite Clock Converter) we leave it as follows.
+// Description: This module is the module wrapping the entire peripheral bus.
+//              It adds a AXI protocol converter before the axilite crossbar and all the peripherals connected to the axilite crossbar
+// NOTE: Although, it would be more efficient to have the Clock Converter after the AXI Prot Converter,
+//       we keep things simple (since, for now, we do not have the AXI Lite Clock Converter) we leave it as follows.
 //
 //      _________________            _______________                  _____________             _______
 //     |                 |  AXI4    |   AXI Prot    |   AXI Lite     |             |           |       |
@@ -65,6 +65,7 @@ module peripheral_bus #(
     /////////////////////////////////////////
     `include "pbus_buses.svinc"
     `DECLARE_AXI_BUS(to_prot_conv, AXI_DATA_WIDTH)
+    
     ///////////////////////
     // Interrupt Signals //
     ///////////////////////
