@@ -42,6 +42,8 @@ The following table details the supported properties.
 | NUM_SI                | Number of Slave Interfaces (number of masters)            | (0..16)                                                   | 1
 | MASTER_NAMES          | Names of masters connected to the bus                     | [NUM_SI] Strings | N/A
 | RANGE_NAMES           | Names of slave memory ranges                                               | [NUM_MI] Strings                                          | N/A
+| MAIN_CLOCK_DOMAIN     | Clock domain of the core + MBUS                           | (10, 20, 50, 100) for embedded. (10, 20, 50, 100, 250) for hpc | None
+| RANGE_CLOCK_DOMAINS         | Clock domains of the slaves (RANGE_NAMES) of the MBUS | [NUM_MI] (10, 20, 50, 100, 250 hpc only)| Note: the BRAM, DM_mem, PLIC clock domain must be the same as MAIN_CLOCK_DOMAIN, while the DDR clock domain must have the same frequency of the DDR board clock (i.e. 300MHz)
 | ADDR_RANGES           | Number of ranges for master interfaces                    | (1..16)                                                   | 1
 | BASE_ADDR             | The Base Addresses for each range of each Master          | [NUM_MI*ADDR_RANGES] 64 bits hex                          | 0x100000 for the first range of every Master, otherwise is 0xffffffffffffffff [not used], it must be lesser or equal of Global ADDR_WIDTH
 | RANGE_ADDR_WIDTH      | Number of bytes covered by each range of each Master      | [NUM_MI*ADDR_RANGES] (12..64) for AXI4 and AXI3, (1..64) for AXI4LITE | 12 for the first range of every Master, otherwise is 0 [not used]
@@ -81,8 +83,12 @@ The `config_xilinx` flow also configures the BRAM size of the IP `xlnx_blk_mem_g
 
 > **NOTE**: The xlnx_blk_mem_gen/config.tcl file configures the first BRAM occurrence, hence it uses the index 0. For now, a single BRAM is supported, if multiple BRAMs are declared in the config (CSV) file, the config flow gives an error. Multiple BRAMs would be simple to add in the future.
 
+### Clock domains
+The configuration flow gives the possibility to specify clock domains.
+The `MAIN_CLOCK_DOMAIN` is the closk domain of the core and the main bus (`MBUS`). All the slaves attached to the `MBUS` can have their own clock domain. If a slave has a domain different from the `MAIN_CLOCK_DOMAIN`, it needs a `xlnx_axi_clock_converter` to cross the clock domains. In this case the configuration flow will set the `<SLAVE_NAME>_HAS_CLOCK_DOMAIN` (i.e. `PBUS_HAS_CLOCK_DOMAIN`) variable which informs that the slave has its own clock domain.
+
 ### VIO resetn default
-The `VIO_RESETN_DEFAULT` parameter controls the programming-time value of core reset. 
+The `VIO_RESETN_DEFAULT` parameter controls the programming-time value of core reset.
 - `VIO_RESETN_DEFAULT = 1` (default): VIO resetn is non-active, the CPU starts running at programming-time, allowing debugging with DTM and GDB.
 - `VIO_RESETN_DEFAULT = 0`:  VIO resetn is active, keeping the core in a reset state when the bitstream is programmed.
 

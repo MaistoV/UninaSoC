@@ -25,6 +25,15 @@ lappend verilog_defines NUM_MI=$::env(NUM_MI)
 lappend verilog_defines PBUS_NUM_MI=$::env(PBUS_NUM_MI)
 # Core selection
 lappend verilog_defines CORE_SELECTOR=$::env(CORE_SELECTOR)
+# Clock domains
+lappend verilog_defines MAIN_CLOCK_FREQ_MHZ=$::env(MAIN_CLOCK_FREQ_MHZ)
+set clock_domain_list [split $::env(RANGE_CLOCK_DOMAINS) " "]
+foreach clock_domain $clock_domain_list {
+    lappend verilog_defines $clock_domain=$clock_domain
+}
+
+# Info
+puts "\[INFO\] Verilog defines: $verilog_defines"
 
 # Set property to list
 set_property verilog_define $verilog_defines [current_fileset]

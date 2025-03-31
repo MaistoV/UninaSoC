@@ -17,6 +17,7 @@ config_%_bus: config_check
 		${OUTPUT_TCL_FILE}
 	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE}"
 	${PYTHON} ${CONFIG_ROOT}/scripts/declare_and_concat_buses_rtl.py ${CONFIG_CSV}
+	${PYTHON} ${CONFIG_ROOT}/scripts/declare_and_assign_clocks_rtl.py ${CONFIG_CSV}
 
 
 OUTPUT_LD_FILE ?= ${SW_ROOT}/SoC/common/UninaSoC.ld

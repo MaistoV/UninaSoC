@@ -54,13 +54,117 @@ module sys_master
     // PCIe interface
     `DEFINE_PCIE_PORTS,
 
-    // Output clk and reset
-    output logic soc_clk_o,
-    output logic sys_resetn_o,
+    // Output clks
+    output logic clk_10MHz_o,
+    output logic clk_20MHz_o,
+    output logic clk_50MHz_o,
+    output logic clk_100MHz_o,
+    output logic clk_250MHz_o,      // HPC ONLY
+
+    // Output rsts for each clock domain (sync to the respective clock)
+    output logic rstn_10MHz_o,
+    output logic rstn_20MHz_o,
+    output logic rstn_50MHz_o,
+    output logic rstn_100MHz_o,
+    output logic rstn_250MHz_o,      // HPC ONLY
 
     // AXI Master interface
     `DEFINE_AXI_MASTER_PORTS(m)
 );
+
+    ////////////////////////////////////
+    // Main clock and reset selection //
+    ////////////////////////////////////
+    
+    // Main clock and main reset
+    logic main_clk;
+    logic main_rstn;
+    logic locked;
+    
+    // Main clock and reset assignment
+    generate
+        case (`MAIN_CLOCK_FREQ_MHZ)
+            10 : begin
+                assign main_clk  = clk_10MHz_o;
+                assign main_rstn = rstn_10MHz_o;
+            end
+            20 : begin
+                assign main_clk  = clk_20MHz_o;
+                assign main_rstn = rstn_20MHz_o;
+            end
+            50 : begin
+                assign main_clk  = clk_50MHz_o;
+                assign main_rstn = rstn_50MHz_o;
+            end
+            100 : begin
+                assign main_clk  = clk_100MHz_o;
+                assign main_rstn = rstn_100MHz_o;
+            end
+            250 : begin // HPC only
+                assign main_clk  = clk_250MHz_o;
+                assign main_rstn = rstn_250MHz_o;
+            end
+            default : begin
+                $fatal(1, "The given clock domain frequency (%d MHz) is not supported", `MAIN_CLOCK_FREQ_MHZ);
+            end
+        endcase
+    endgenerate
+    
+    //////////////////////////
+    // Resets synchronizers //
+    //////////////////////////
+    // Use locked signal as resets generator
+    // NOTE: this is temporary until we introduce a reset generation logic here
+    
+    // Reset sync for 10 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_10MHz_u (
+        .src_arst  ( locked       ),
+        .dest_clk  ( clk_10MHz_o  ),
+        .dest_arst ( rstn_10MHz_o )
+    );
+    
+    // Reset sync for 20 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_20MHz_u (
+        .src_arst  ( locked       ),
+        .dest_clk  ( clk_20MHz_o  ),
+        .dest_arst ( rstn_20MHz_o )
+    );
+    
+    // Reset sync for 50 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_50MHz_u (
+        .src_arst  ( locked       ),
+        .dest_clk  ( clk_50MHz_o  ),
+        .dest_arst ( rstn_50MHz_o )
+    );
+    
+    // Reset sync for 100 MHz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_100MHz_u (
+        .src_arst  ( locked        ),
+        .dest_clk  ( clk_100MHz_o  ),
+        .dest_arst ( rstn_100MHz_o )
+    );
+
+    // Reset sync for 250M Hz clock
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
+        .RST_ACTIVE_HIGH ( 0 )  // Use active low reset
+    ) xpm_cdc_async_rst_250MHz_u (
+        .src_arst  ( locked        ),
+        .dest_clk  ( clk_250MHz_o  ),
+        .dest_arst ( rstn_250MHz_o )
+    );
 
 `ifdef HPC
     // ALVEO
@@ -80,11 +184,6 @@ module sys_master
 
     logic axi_aclk;
     logic axi_aresetn;
-    logic locked;
-
-    // Use locked signal as system reset
-    // NOTE: this is temporary until we introduce a reset generation logic here
-    assign sys_resetn_o = locked;
 
     `DECLARE_AXI_BUS(xdma_to_axi_dwidth_converter, XDMA_DATA_WIDTH);
     `DECLARE_AXI_BUS(axi_dwidth_converter_to_clock_converter, AXI_DATA_WIDTH);
@@ -93,12 +192,12 @@ module sys_master
     xlnx_clk_wiz_hpc clkwiz_u (
         .clk_in1  ( axi_aclk     ),
         .resetn   ( axi_aresetn  ),
-        .locked   ( locked ),
-        .clk_250  ( ),
-        .clk_100  ( soc_clk_o ),
-        .clk_50   ( ),
-        .clk_20   ( ),
-        .clk_10   ( )
+        .locked   ( locked       ),
+        .clk_250  ( clk_250MHz_o ),
+        .clk_100  ( clk_100MHz_o ),
+        .clk_50   ( clk_50MHz_o  ),
+        .clk_20   ( clk_20MHz_o  ),
+        .clk_10   ( clk_10MHz_o  )
     );
 
     // XDMA Master
@@ -277,8 +376,8 @@ module sys_master
         .s_axi_aclk     ( axi_aclk    ),
         .s_axi_aresetn  ( axi_aresetn ),
 
-        .m_axi_aclk     ( soc_clk_o   ),
-        .m_axi_aresetn  ( locked       ),
+        .m_axi_aclk     ( main_clk    ),
+        .m_axi_aresetn  ( main_rstn   ),
 
         .s_axi_awid     ( axi_dwidth_converter_to_clock_converter_axi_awid     ),
         .s_axi_awaddr   ( axi_dwidth_converter_to_clock_converter_axi_awaddr   ),
@@ -370,25 +469,24 @@ module sys_master
     assign pci_exp_txn_o = '0;
     assign pci_exp_txp_o = '0;
 
-    assign sys_resetn_o = ~sys_reset_i;
     assign m_axi_awregion = '0;
     assign m_axi_arregion = '0;
 
     // PLL
     xlnx_clk_wiz clkwiz_u (
         .clk_in1  ( sys_clock_i  ),
-        .resetn   ( sys_resetn_o ),
-        .locked   ( ),
-        .clk_100  ( ),
-        .clk_50   ( ),
-        .clk_20   ( soc_clk_o ),
-        .clk_10   ( )
+        .resetn   ( ~sys_reset_i ),
+        .locked   ( locked       ),
+        .clk_100  ( clk_100MHz_o ),
+        .clk_50   ( clk_50MHz_o  ),
+        .clk_20   ( clk_20MHz_o  ),
+        .clk_10   ( clk_10MHz_o  )
     );
 
     // JTAG2AXI Master
     xlnx_jtag_axi jtag_axi_u (
-        .aclk           ( soc_clk_o       ), // input wire aclk
-        .aresetn        ( sys_resetn_o    ), // input wire aresetn
+        .aclk           ( main_clk      ), // input wire aclk
+        .aresetn        ( main_rstn     ), // input wire aresetn
         .m_axi_awid     ( m_axi_awid    ), // output wire [1 : 0] m_axi_awid
         .m_axi_awaddr   ( m_axi_awaddr  ), // output wire [31 : 0] m_axi_awid
         .m_axi_awlen    ( m_axi_awlen   ), // output wire [7 : 0] m_axi_awlen

@@ -94,11 +94,21 @@ module uninasoc (
     // Local Signals //
     //////////////////
 
-    // Reset negative
-    logic sys_resetn;
-    logic vio_debug_resetn;
-    // clkwiz -> all
-    logic soc_clk;
+    // CLOCKS
+    logic main_clk;
+    logic clk_10MHz;
+    logic clk_20MHz;
+    logic clk_50MHz;
+    logic clk_100MHz;
+    logic clk_250MHz;      // HPC ONLY
+
+    // RESETS
+    logic main_rstn;
+    logic rstn_10MHz;
+    logic rstn_20MHz;
+    logic rstn_50MHz;
+    logic rstn_100MHz;
+    logic rstn_250MHz;     // HPC ONLY
 
     // VIO Signals
     logic vio_resetn;
@@ -115,6 +125,11 @@ module uninasoc (
     `include "mbus_buses.svinc"
 
     ///////////////////////
+    // Clock assignments //
+    ///////////////////////
+    `include "uninasoc_clk_assignments.svinc"
+
+    ///////////////////////
     // Local assignments //
     ///////////////////////
 
@@ -125,16 +140,16 @@ module uninasoc (
     // Virtual I/O
 
     xlnx_vio vio_inst (
-      .clk        ( soc_clk         ),
+      .clk        ( main_clk        ),
       .probe_out0 ( vio_resetn      ),
       .probe_out1 (                 ),
-      .probe_in0  ( sys_resetn      )
+      .probe_in0  ( main_rstn       )
     );
 
     // Axi Crossbar
     xlnx_main_crossbar main_xbar_u (
-        .aclk           ( soc_clk                   ), // input
-        .aresetn        ( sys_resetn                ), // input
+        .aclk           ( main_clk                  ), // input
+        .aresetn        ( main_rstn                 ), // input
         .s_axi_awid     ( MBUS_masters_axi_awid     ), // input
         .s_axi_awaddr   ( MBUS_masters_axi_awaddr   ), // input
         .s_axi_awlen    ( MBUS_masters_axi_awlen    ), // input
@@ -233,9 +248,19 @@ module uninasoc (
         .pci_exp_txn_o(pci_exp_txn_o),
         .pci_exp_txp_o(pci_exp_txp_o),
 
-        // Output clock
-        .soc_clk_o(soc_clk),
-        .sys_resetn_o(sys_resetn),
+        // Output clocks
+        .clk_10MHz_o(clk_10MHz),
+        .clk_20MHz_o(clk_20MHz),
+        .clk_50MHz_o(clk_50MHz),
+        .clk_100MHz_o(clk_100MHz),
+        .clk_250MHz_o(clk_250MHz),      // HPC ONLY
+
+        // Output resets
+        .rstn_10MHz_o(rstn_10MHz),
+        .rstn_20MHz_o(rstn_20MHz),
+        .rstn_50MHz_o(rstn_50MHz),
+        .rstn_100MHz_o(rstn_100MHz),
+        .rstn_250MHz_o(rstn_250MHz),      // HPC ONLY
 
         // AXI Master
         .m_axi_awid     ( SYS_MASTER_to_MBUS_axi_awid     ),
@@ -285,8 +310,8 @@ module uninasoc (
         .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
         .CORE_SELECTOR ( CORE_SELECTOR  )
     ) rvm_socket_u (
-        .clk_i          ( soc_clk    ),
-        .rst_ni         ( sys_resetn ),
+        .clk_i          ( main_clk   ),
+        .rst_ni         ( main_rstn  ),
         .core_resetn_i  ( vio_resetn ),
         .bootaddr_i     ( '0         ),
         .irq_i          ( rvm_socket_interrupt_line ),
@@ -464,8 +489,8 @@ module uninasoc (
     xlnx_blk_mem_gen main_memory_u (
         .rsta_busy      ( /* open */                ), // output wire rsta_busy
         .rstb_busy      ( /* open */                ), // output wire rstb_busy
-        .s_aclk         ( soc_clk                   ), // input wire s_aclk
-        .s_aresetn      ( sys_resetn                ), // input wire s_aresetn
+        .s_aclk         ( main_clk                  ), // input wire s_aclk
+        .s_aresetn      ( main_rstn                 ), // input wire s_aresetn
         .s_axi_awid     ( MBUS_to_BRAM_axi_awid     ), // input wire [3 : 0] s_axi_awid
         .s_axi_awaddr   ( MBUS_to_BRAM_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
         .s_axi_awlen    ( MBUS_to_BRAM_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
@@ -522,8 +547,8 @@ module uninasoc (
 
 
     custom_rv_plic custom_rv_plic_u (
-        .clk_i          ( soc_clk                       ), // input wire s_axi_aclk
-        .rst_ni         ( sys_resetn                    ), // input wire s_axi_aresetn
+        .clk_i          ( main_clk                      ), // input wire s_axi_aclk
+        .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
         .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)
@@ -576,8 +601,10 @@ module uninasoc (
 
     peripheral_bus peripheral_bus_u (
 
-        .clock_i        ( soc_clk     ),
-        .reset_ni       ( sys_resetn  ),
+        .main_clock_i   ( main_clk    ),
+        .main_reset_ni  ( main_rstn   ),
+        .PBUS_clock_i   ( PBUS_clk    ),
+        .PBUS_reset_ni  ( PBUS_rstn   ),
 
         // EMBEDDED ONLY
         .uart_rx_i      ( uart_rx_i      ),
@@ -633,8 +660,8 @@ module uninasoc (
 
     // DDR4 Channel 0
     ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
-        .clock_i              ( soc_clk           ),
-        .reset_ni             ( sys_resetn        ),
+        .clock_i              ( main_clk          ),
+        .reset_ni             ( main_rstn         ),
 
         // DDR4 differential clock
         .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
