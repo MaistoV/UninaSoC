@@ -37,23 +37,7 @@ if [[ "$xlen_value" == "32" || "$xlen_value" == "64" ]]; then
 
     export XLEN=$xlen_value
 
-    echo "[CONFIG_SW] Setting XLEN to ${XLEN} "
-
-    # riscv32-unknown-elf toolchain
-    #rv_prefix="riscv32-unknown-elf-"
-    #dflag="-g"
-    #cflags="-march=rv32imac_zicsr_zifencei -mabi=ilp32 -O0 \$(DFLAG) -c"
-    #ldflags="\$(LIB_OBJ_LIST) -nostdlib -T\$(LD_SCRIPT)"
-#
-    #echo "[CONFIG_SW] Setting toolchain to ${rv_prefix} "
-    #echo "[CONFIG_SW] DFLAG = ${dflag} "
-    #echo "[CONFIG_SW] CLFAGS = ${cflags} "
-    #echo "[CONFIG_SW] LDFLAGS = ${ldflags} "
-#
-    #sed -E -i "s/RV_PREFIX.?\?=.+/RV_PREFIX \?= ${rv_prefix}/g" ${OUTPUT_MK_FILE};
-    #sed -E -i "s/DFLAG.?\?=.+/DFLAG \?= ${dflag}/g" ${OUTPUT_MK_FILE};
-    #sed -E -i "s/CFLAGS.?\?=.+/CFLAGS \?= ${cflags}/g" ${OUTPUT_MK_FILE};
-    #sed -E -i "s/LDFLAGS.?\?=.+/LDFLAGS \?= ${ldflags}/g" ${OUTPUT_MK_FILE};
+    echo "[CONFIG_SW] Setting XLEN to ${XLEN}"
     
 else
     echo  "[CONFIG_SW][ERROR] Invalid XLEN=$xlen_value value; no toolchain is supported for this XLEN value";
