@@ -14,10 +14,14 @@ sudo make install
 ```
 > NOTE: If simulation support is required, add `--enable-jtag_vpi` flag from `configure`
 
-## jimtcl prerequisite
-RISC-V OpenOCD requires the [`jimtcl`](https://github.com/msteveb/jimtcl) library. 
+## Prerequisites
+RISC-V OpenOCD requires:
+* the [`jimtcl`](https://github.com/msteveb/jimtcl) library.
+* libusb 1.x
 
-You can build it from source with:
+### jimtcl 
+
+You can build `jimtcl` it from source with:
 ``` bash
 git clone https://github.com/msteveb/jimtcl -b 0.83
 cd jimtcl
@@ -27,3 +31,9 @@ sudo make install
 ```
 
 > After installation, make sure `jimtcl` is in your library include path.
+
+### libusb 1.x
+For Ubuntu, install with
+``` bash
+sudo apt-get install libusb-1.0-0-dev
+```
