@@ -8,7 +8,7 @@ CONFIG_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
 # csv for system-level configuration
 SYSTEM_CSV ?= ${CONFIG_ROOT}/configs/common/config_system.csv 
 
-all: config_main_bus config_peripheral_bus config_ld config_xilinx config_sw
+all: config_main_bus config_peripheral_bus config_ld config_sw config_xilinx
 
 config_main_bus:
 config_peripheral_bus:

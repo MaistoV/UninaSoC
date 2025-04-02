@@ -38,7 +38,6 @@ OUTPUT_MK_FILE=$4
 sys_target_values=(
         CORE_SELECTOR
         VIO_RESETN_DEFAULT
-        XLEN
     )
 
 bus_target_values=(
@@ -55,15 +54,8 @@ for target in ${sys_target_values[*]}; do
     # Info print
     echo "[CONFIG_XILINX] Updating ${target} = ${target_value} "
 
-    # Check for XLEN
-    if [[ "$target" == "XLEN" ]]; then
-        # Replace ADDR_WIDTH and DATA_WIDTH according to XLEN
-        sed -E -i "s/ADDR_WIDTH.?\?=.+/ADDR_WIDTH \?= ${target_value}/g" ${OUTPUT_MK_FILE};
-        sed -E -i "s/DATA_WIDTH.?\?=.+/DATA_WIDTH \?= ${target_value}/g" ${OUTPUT_MK_FILE};
-    else 
-        # Replace in target file
-        sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
-    fi
+    # Replace in target file
+    sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
     
 done
 
