@@ -55,7 +55,7 @@ DDR_FREQUENCY = 300
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
 
     # Core is selected in the SYS configuration file
-    if ( config.BUS_NAME == "SYS" ):
+    if config.BUS_NAME == "SYS":
         # Supported cores
         if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
             print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
@@ -63,7 +63,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         # Only check to perform on the system config
         return True
     # If a non-system config wants to select a core
-    elif ( config.CORE_SELECTOR != "" ) :
+    elif config.CORE_SELECTOR != "":
         print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in system config")
         return False
 
