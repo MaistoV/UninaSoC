@@ -11,7 +11,7 @@ For both flows, the default application loaded is `sw/SoC/examples/blinky`
 ## Load an ELF file
 
 To load a .elf file, a backend that supports the target platform and CPU is required. Currently, we support two backends:
-[OpenOCD](OPENOCD_INSTALLATION.md) and XSDB (coming with Vivado). Both connect to port 3004, which is used for RISC-V 32-bit (64-bit support is not yet available).
+[OpenOCD](../../../sw/doc/OPENOCD_INSTALLATION.md) and XSDB (coming with Vivado). Both connect to port 3004, which is used for RISC-V 32-bit (64-bit support is not yet available).
 For loading, we primarily use the GDB debugger, though XSDB is also a viable option.
 
 If `CORE_SELECTOR` is set to `CORE_MICROBLAZE`, the .elf file can be loaded into memory and executed using:
@@ -29,7 +29,7 @@ make debug_run ELF_PATH=<path-to-elf>
 
 ## Load a binary file
 
-Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated loading infrastructure (e.g. `CORE_PICORV32`), memory can also be programmed with a flat binary using _Xilinx jtag2axi_ or _Xilinx DMA_ IPs, both integrated into our `rtl/sys_master` component. This binary loading process is straightforward, as it directly writes bytes into memory. 
+Since not all CPUs supported by `CORE_SELECTOR` have a backend or dedicated loading infrastructure (e.g. `CORE_PICORV32`), memory can also be programmed with a flat binary using _Xilinx jtag2axi_ or _Xilinx DMA_ IPs, both integrated into our `rtl/sys_master` component. This binary loading process is straightforward, as it directly writes bytes into memory.
 
 > NOTE: This loading flow writes a flat binary image, including zero-padding between memory sections. Therefore, during linking, you might need to keep an eye for this.
 
