@@ -1,13 +1,13 @@
 # Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
 # 	It assigns the correct toolchain size depending on XLEN config parameter.
-#	XLEN is defined in `config/scripts/config_sw.sh`
-#	In the future, flags and toolchain will be selected using the same configuration flow.
+#	XLEN is overwritten by `config/scripts/config_sw.sh`
 
 #############
 # Toolchain #
 #############
 
+XLEN ?= 32
 RV_PREFIX ?= riscv${XLEN}-unknown-elf-
 
 CC          = $(RV_PREFIX)gcc

@@ -38,6 +38,7 @@ OUTPUT_MK_FILE=$4
 sys_target_values=(
         CORE_SELECTOR
         VIO_RESETN_DEFAULT
+        XLEN
     )
 
 bus_target_values=(

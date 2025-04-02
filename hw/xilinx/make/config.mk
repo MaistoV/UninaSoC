@@ -9,6 +9,7 @@
 ##########
 
 # AXI
+XLEN ?= 32
 ADDR_WIDTH ?= ${XLEN}
 DATA_WIDTH ?= ${XLEN}
 ID_WIDTH ?= 2
