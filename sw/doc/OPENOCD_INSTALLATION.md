@@ -21,7 +21,7 @@ RISC-V OpenOCD requires:
 
 ### jimtcl 
 
-You can build `jimtcl` it from source with:
+You can build `jimtcl` from source with:
 ``` bash
 git clone https://github.com/msteveb/jimtcl -b 0.83
 cd jimtcl
@@ -33,7 +33,7 @@ sudo make install
 > After installation, make sure `jimtcl` is in your library include path.
 
 ### libusb 1.x
-For Ubuntu, install with
+For Ubuntu, install with:
 ``` bash
 sudo apt-get install libusb-1.0-0-dev
 ```
