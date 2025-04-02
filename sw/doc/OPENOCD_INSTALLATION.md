@@ -13,3 +13,17 @@ make
 sudo make install
 ```
 > NOTE: If simulation support is required, add `--enable-jtag_vpi` flag from `configure`
+
+## jimtcl prerequisite
+RISC-V OpenOCD requires the [`jimtcl`](https://github.com/msteveb/jimtcl) library. 
+
+You can build it from source with:
+``` bash
+git clone https://github.com/msteveb/jimtcl -b 0.83
+cd jimtcl
+./configure
+make
+sudo make install
+```
+
+> After installation, make sure `jimtcl` is in your library include path.
