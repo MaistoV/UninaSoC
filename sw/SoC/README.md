@@ -12,7 +12,7 @@ It is expected that libraries and projects depend at least on the common files.
 
 **Notes**
 * For Linux-based configurations, please refer to the appropriate documentation, as this tree does not apply.
-* We assume that the RISC-V toolchain is in your PATH.
+* We assume that the RISC-V toolchain, selected with the config flow (XLEN parameter), is in your PATH.
 
 ## Build examples
 

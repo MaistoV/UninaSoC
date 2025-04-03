@@ -106,48 +106,30 @@ def parse_PROTOCOL (
 		logging.warning("PROTOCOL invalid. Using default value (AXI4).")
 	return config
 
-def parse_ADDR_WIDTH (
+def parse_XLEN (
 		config,
 		property_name : str,
 		property_value: str,
-	):
-	# Reads the Address Widdth applied to all Interfaces
-	# [AXI4 ; AXI3] => the range of possible values is (12..64)
-	# AXI4LITE => the range of possible values is (1..64)
-	# 32 is the default value in every scenario
-	# If the value is missing or is incorrect in the csv file,  default value is used
+):
+	# XLEN property will set bus DATA_WIDTH and ADDR_WIDTH
 	value = int(property_value)
-	if ((config.PROTOCOL == "AXI4LITE") and (value in range(1, 65))):
-		config.ADDR_WIDTH = value
-	elif (((config.PROTOCOL == "AXI4") or (config.PROTOCOL == "AXI3")) and (value in range(12, 65))):
-		config.ADDR_WIDTH = value
-	else:
-		logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
-	return config
+	data_width = 32
+	addr_width = 32
 
-def parse_DATA_WIDTH (
-		config,
-		property_name : str,
-		property_value: str,
-	):
-	# Reads the Address Widdth applied to all Interfaces
-	# [AXI4 ; AXI3] => the range of possible values is {32 ,  64 ,  128 ,  256 ,  512 ,  1024}
-	# AXI4LITE => the range of possible values is {32 ,  64}
-	# 32 is the default value in every scenario
-	# If the value is missing or is incorrect in the csv file,  default value is used
-	value = int(property_value)
-	DATA_WIDTH_Found = False
-	Base_Data = 32
-	while ((DATA_WIDTH_Found == False) and (Base_Data <= 1024)):
-		if (value == Base_Data):
-			DATA_WIDTH_Found = True
-		Base_Data = Base_Data * 2
-	if ((config.PROTOCOL == "AXI4LITE") and ((value == 32) or (value == 64))):
-		config.DATA_WIDTH = value
-	elif (((config.PROTOCOL == "AXI4") or (config.PROTOCOL == "AXI3")) and (DATA_WIDTH_Found == True)):
-		config.DATA_WIDTH = value
+	if (value in {32, 64}):
+		config.XLEN = value
 	else:
-		logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
+		logging.warning("Invalid XLEN value, please select either 32 or 64")
+
+	# Select BUS-related parameters
+	if config.BUS_NAME == "MBUS":
+		data_width = int(config.XLEN)
+		addr_width = int(config.XLEN)
+
+	# Set BUS-related parameters
+	config.set_ADDR_WIDTH(addr_width)
+	config.set_DATA_WIDTH(data_width)
+	
 	return config
 
 def parse_IDWidth_UsersWidth_AddrRanges (

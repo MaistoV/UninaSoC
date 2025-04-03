@@ -6,15 +6,16 @@
 #   Replace config-based content of output file (hw/make/config.mk) based on input MBUS and PBUS configurations.
 #   Target values are parsed and from inputs and updated in output file.
 # Args:
-#   $1: MBUS Source CSV config
-#   $2: PBUS Target MK file
-#   $3: Target MK file
+#   $1: System CSV config
+#   $2: MBUS Source CSV config
+#   $3: PBUS Source CSV config
+#   $4: Target MK file
 
 ##############
 # Parse args #
 ##############
 
-EXPECTED_ARGC=3;
+EXPECTED_ARGC=4;
 ARGC=$#;
 
 # Check argc
@@ -24,29 +25,43 @@ if [ $ARGC -ne $EXPECTED_ARGC ]; then
 fi
 
 # Read args
-CONFIG_MAIN_CSV=$1
-CONFIG_PBUS_CSV=$2
-OUTPUT_MK_FILE=$3
+CONFIG_SYS_CSV=$1
+CONFIG_MAIN_CSV=$2
+CONFIG_PBUS_CSV=$3
+OUTPUT_MK_FILE=$4
 
 ##########
 # Script #
 ##########
 
-# Array of target values to parse from input and update in output
-target_values=(
+# Arrays of target values to parse from input and update in output
+sys_target_values=(
         CORE_SELECTOR
         VIO_RESETN_DEFAULT
-        ADDR_WIDTH
-        DATA_WIDTH
+        XLEN
+    )
+
+bus_target_values=(
         ID_WIDTH
         NUM_SI
         NUM_MI
         PBUS_NUM_MI
     )
 
-# Loop over targets
-for target in ${target_values[*]}; do
+# Loop over system targets
+for target in ${sys_target_values[*]}; do
+    # Search in the system_config.csv
+    target_value=$(grep "${target}" ${CONFIG_SYS_CSV} | grep -v RANGE | awk -F "," '{print $2}');
+    # Info print
+    echo "[CONFIG_XILINX] Updating ${target} = ${target_value} "
 
+    # Replace in target file
+    sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
+    
+done
+
+# Loop over bus targets
+for target in ${bus_target_values[*]}; do
     # Special case for PBUS
     # Assume a prexif
     if [[ "$target" == "PBUS_"* ]]; then

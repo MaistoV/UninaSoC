@@ -1,7 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 // Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
-// Description: Wrapper module for a RVM core
+// Description: Wrapper module for RISC-V CPUs and Debuggers
 
 // Import packages
 import uninasoc_pkg::*;
@@ -10,8 +10,8 @@ import uninasoc_pkg::*;
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
 
-module rvm_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, // TODO: Change default only for development, while waiting for the core selection flow
+module rv_socket # (
+    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, 
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
     parameter int unsigned    NUM_IRQ       = 32
@@ -719,4 +719,4 @@ module rvm_socket # (
 
     end : dm_not_gen
 
-endmodule : rvm_socket
+endmodule : rv_socket

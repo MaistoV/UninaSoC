@@ -51,14 +51,10 @@ endif
 # Toolchain #
 #############
 
-RV_PREFIX     = riscv32-unknown-elf-
-CC             = $(RV_PREFIX)gcc
-LD             = $(RV_PREFIX)ld
-OBJDUMP     = $(RV_PREFIX)objdump
-OBJCOPY     = $(RV_PREFIX)objcopy
+include $(SW_ROOT)/SoC/common/config.mk
 
-DFLAG        = -g
-CFLAGS         = -march=rv32imac_zicsr_zifencei -mabi=ilp32 -O0 $(MACRO_LIST) $(DFLAG) -c
-LDFLAGS     = $(LIB_OBJ_LIST) -nostdlib -T$(LD_SCRIPT)
+###########
+# Targets #
+###########
 
 include $(SW_ROOT)/SoC/common/Makefile

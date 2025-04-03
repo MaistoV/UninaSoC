@@ -9,8 +9,9 @@
 ##########
 
 # AXI
-ADDR_WIDTH ?= 32
-DATA_WIDTH ?= 32
+XLEN ?= 32
+ADDR_WIDTH ?= ${XLEN}
+DATA_WIDTH ?= ${XLEN}
 ID_WIDTH ?= 2
 
 # Main bus

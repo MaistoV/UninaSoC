@@ -1,6 +1,7 @@
 #!/bin/python3.10
 # Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 # Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
 #   Check the validity of the CSV configurations
 #   The checks are split in two part: 1) intra configuration checks and 2) inter configuration checks
@@ -53,15 +54,17 @@ DDR_FREQUENCY = 300
 #############################
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
 
-    # Only main but can select a core
-    if config.BUS_NAME == "MBUS":
+    # Core is selected in the SYS configuration file
+    if config.BUS_NAME == "SYS":
         # Supported cores
         if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
             print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
             return False
-    # If a non-main bus config wants to select a core
+        # Only check to perform on the system config
+        return True
+    # If a non-system config wants to select a core
     elif config.CORE_SELECTOR != "":
-        print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in main bus")
+        print_error(f"Can't set CORE_SELECTOR core in {config_file_name} , but only in system config")
         return False
 
     # Check if the protocol is valid
@@ -168,8 +171,14 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
 #############################
 # Check configuration validity between parent and child buses
 def check_inter_config(configs : list) -> bool:
+
     # For each Configuration
     for config in configs:
+
+        # If the config is the System one, skip checks (not a bus)
+        if config.BUS_NAME == "SYS":
+            continue
+
         # For each master of the current Configuration
         for i in range(config.NUM_MI):
             # If a master is a bus (is in the BUS_NAMES dict)
@@ -193,17 +202,16 @@ def check_inter_config(configs : list) -> bool:
                             return False
     return True
 
-
 ##############
 # Parse args #
 ##############
 def parse_args(argv : list) -> list:
     print_info("Parsing arguments...")
     # CSV configuration file path
-    config_file_names = ['configs/embedded/config_main_bus.csv', 'configs/embedded/config_peripheral_bus.csv']
-    if len(sys.argv) >= 3:
-        # Get the array of bus names from the second arg to the last but one
-        config_file_names = sys.argv[1:3]
+    config_file_names = ['configs/common/config_system.csv', 'configs/embedded/config_main_bus.csv', 'configs/embedded/config_peripheral_bus.csv']
+    if len(sys.argv) >= 4:
+        # Get the array of bus/system names from the second arg to the last but one
+        config_file_names = sys.argv[1:4]
     print_info("Parsing done!")
     return config_file_names
 

@@ -36,10 +36,10 @@ def parse_property (
 		# SI and MI Number Acquisition
 		case "NUM_SI" | "NUM_MI":
 			func_name = base_func_name + "Interfaces"
-		# CORE_SELECTOR, STRATEGY, R_REGISTER, PROTOCOL, Address and Data Widths, Connectivity Mode Acquisition,
+		# CORE_SELECTOR, STRATEGY, R_REGISTER, PROTOCOL, XLEN, Connectivity Mode Acquisition,
 		# Slave Priorities, Slave Thread IDs Width, Slave Single Thread Modes, Slave Base IDs,
 		# Master SECURE Modes, Ranges' Base Address, Ranges' Width Acquisition
-		case "CORE_SELECTOR" | "VIO_RESETN_DEFAULT" | "STRATEGY" | "R_REGISTER" | "PROTOCOL" | "ADDR_WIDTH" | "DATA_WIDTH" | "CONNECTIVITY_MODE" | \
+		case "CORE_SELECTOR" | "VIO_RESETN_DEFAULT" | "XLEN" | "STRATEGY" | "R_REGISTER" | "PROTOCOL" | "CONNECTIVITY_MODE" | \
 			"Slave_Priority" | "THREAD_ID_WIDTH" | "SINGLE_THREAD" | "BASE_ID" | "SECURE" | "RANGE_BASE_ADDR" | "RANGE_ADDR_WIDTH" | "RANGE_NAMES" | "MASTER_NAMES" | \
 			"MAIN_CLOCK_DOMAIN" | "RANGE_CLOCK_DOMAINS":
 			func_name = base_func_name + property_name

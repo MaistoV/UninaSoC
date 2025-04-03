@@ -11,7 +11,7 @@ set src_file_list [ list \
     $::env(XILINX_ROOT)/rtl/pbus_buses.svinc                 \
     $::env(XILINX_ROOT)/rtl/uninasoc_clk_assignments.svinc   \
     $::env(XILINX_ROOT)/rtl/sys_master.sv                    \
-    $::env(XILINX_ROOT)/rtl/rvm_socket.sv                    \
+    $::env(XILINX_ROOT)/rtl/rv_socket.sv                     \
     $::env(XILINX_ROOT)/rtl/virtual_uart.sv                  \
     $::env(XILINX_ROOT)/rtl/axilite_uart.sv                  \
     $::env(XILINX_ROOT)/rtl/peripheral_bus.sv                \
