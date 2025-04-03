@@ -113,23 +113,19 @@ def parse_XLEN (
 ):
 	# XLEN property will set bus DATA_WIDTH and ADDR_WIDTH
 	value = int(property_value)
-	data_width = 32
-	addr_width = 32
+	config.XLEN = value
 
-	if (value in {32, 64}):
-		config.XLEN = value
-	else:
+	if (value not in [32, 64]):
 		logging.warning("Invalid XLEN value, please select either 32 or 64")
 
 	# Select BUS-related parameters
-	if config.BUS_NAME == "MBUS":
-		data_width = int(config.XLEN)
-		addr_width = int(config.XLEN)
+	data_width = int(config.XLEN)
+	addr_width = int(config.XLEN)
 
 	# Set BUS-related parameters
 	config.set_ADDR_WIDTH(addr_width)
 	config.set_DATA_WIDTH(data_width)
-	
+
 	return config
 
 def parse_IDWidth_UsersWidth_AddrRanges (

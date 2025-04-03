@@ -79,7 +79,7 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
 
     # If is master
     if is_master:
-        if config.BUS_NAME == "PBUS":
+        if config.CONFIG_NAME == "PBUS":
             bus_cnt_str    = "1"                               # The width of the bus array in case of PBUS (1 since the PBUS has just a master)
             concat_prefix  = CONCAT_AXILITE_MASTER_BUS_PREFIX  # The concatenation prefix in case of a PBUS
             declare_prefix = DECLARE_AXILITE_BUS_ARRAY_PREFIX  # The declaration prefix in case of a PBUS
@@ -91,7 +91,7 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
 
     # If is slave
     else:
-        if config.BUS_NAME == "PBUS":
+        if config.CONFIG_NAME == "PBUS":
             bus_cnt_str    = "PBUS_NUM_MI"                     # The width of the bus array in case of PBUS
             concat_prefix  = CONCAT_AXILITE_SLAVE_BUS_PREFIX   # The concatenation prefix in case of a PBUS
             declare_prefix = DECLARE_AXILITE_BUS_ARRAY_PREFIX  # The declaration prefix in case of a PBUS
@@ -109,9 +109,9 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
 
 
     # Declare an AXI4/AXILITE BUS ARRAY master/slave
-    lines.append(f"{declare_prefix}{config.BUS_NAME}{suffix}, {bus_cnt_str}{BASE_SUFFIX}")
+    lines.append(f"{declare_prefix}{config.CONFIG_NAME}{suffix}, {bus_cnt_str}{BASE_SUFFIX}")
     # Concatenate all master/slave buses with the declared AXI4/AXILITE BUS ARRAY
-    lines.append(f"{concat_prefix}{len(buses)}({config.BUS_NAME}{suffix}{buses_string}{BASE_SUFFIX}")
+    lines.append(f"{concat_prefix}{len(buses)}({config.CONFIG_NAME}{suffix}{buses_string}{BASE_SUFFIX}")
 
 
 
@@ -132,12 +132,12 @@ def declare_buses(lines : list, is_master : bool, config : configuration.Configu
     for i in range(buses_cnt):
         if is_master:
             # If is master the bus declaration is: MASTER_NAME_to_BUS_NAME
-            buses.append(f"{config.MASTER_NAMES[i]}_to_{config.BUS_NAME}")
+            buses.append(f"{config.MASTER_NAMES[i]}_to_{config.CONFIG_NAME}")
         else:
             # If not is master the bus declaration is: BUS_NAME_to_SLAVE_NAME
-            buses.append(f"{config.BUS_NAME}_to_{config.RANGE_NAMES[i]}")
+            buses.append(f"{config.CONFIG_NAME}_to_{config.RANGE_NAMES[i]}")
 
-        if config.BUS_NAME == "PBUS":
+        if config.CONFIG_NAME == "PBUS":
             # If the bus is PBUS declare an AXILITE bus using the last created bus name
             lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{BASE_SUFFIX}")
         else:
@@ -183,6 +183,6 @@ if __name__ == "__main__":
     configs = read_config(config_file_names)
 
     for config in configs:
-        file = open(RTL_FILES[config.BUS_NAME], "w")
+        file = open(RTL_FILES[config.CONFIG_NAME], "w")
         declare_and_concat_buses(file, config)
         file.close()

@@ -52,5 +52,5 @@ if __name__ == "__main__":
     config_file_names = sys.argv[1:]
     configs = read_config(config_file_names)
     for config in configs:
-        if config.BUS_NAME == "MBUS":
+        if config.CONFIG_NAME == "MBUS":
             declare_and_assign_clocks(config)

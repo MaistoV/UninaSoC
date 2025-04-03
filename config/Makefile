@@ -6,7 +6,7 @@ CONFIG_BUS_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
 			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
 
 # csv for system-level configuration
-CONFIG_SYSTEM_CSV ?= ${CONFIG_ROOT}/configs/common/config_system.csv 
+CONFIG_SYSTEM_CSV ?= ${CONFIG_ROOT}/configs/common/config_system.csv
 
 all: config_main_bus config_peripheral_bus config_ld config_sw config_xilinx
 
@@ -25,7 +25,7 @@ config_%_bus: config_check
 
 
 OUTPUT_LD_FILE ?= ${SW_ROOT}/SoC/common/UninaSoC.ld
-config_ld:
+config_ld: config_check
 	${PYTHON} ${CONFIG_ROOT}/scripts/create_linker_script.py \
 		${CONFIG_BUS_CSVS} \
 		${OUTPUT_LD_FILE}
@@ -41,6 +41,6 @@ OUTPUT_SW_MK_FILE ?= $(SW_ROOT)/SoC/common/config.mk
 config_xilinx:
 	${CONFIG_ROOT}/scripts/config_xilinx.sh ${CONFIG_SYSTEM_CSV} ${CONFIG_BUS_CSVS} ${OUTPUT_XILINX_MK_FILE}
 
-config_sw:
+config_sw: config_check
 	${CONFIG_ROOT}/scripts/config_sw.sh ${CONFIG_SYSTEM_CSV} ${OUTPUT_SW_MK_FILE}
 

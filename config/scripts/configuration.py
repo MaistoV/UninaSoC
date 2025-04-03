@@ -10,11 +10,11 @@ import logging
 # Wrapper class for configuration properties
 class Configuration:
 	def __init__(self):
-		self.BUS_NAME            : str = "MBUS" # The name of the bus, used in check sanity
+		self.CONFIG_NAME         : str = "MBUS" # The name of the bus, used in check sanity
 		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.VIO_RESETN_DEFAULT	 : int = 1      # Reset using Xilinx VIO
-		self.XLEN				 : int = 32		# System-level len (only applicable to MBUS) 
+		self.XLEN                : int = 32		# System-level len (only applicable to MBUS)
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
 		self.ADDR_WIDTH			 : int = 32 	# Address Width
@@ -52,7 +52,7 @@ class Configuration:
 	# Setters #
 	###########
 	# When XLEN parameter is parsed, ADDR_WIDTH and DATA_WIDTH are assigned accordingly
-	
+
 	def set_ADDR_WIDTH (self, value: int):
 		# Reads the Address Widdth applied to all Interfaces
 		# [AXI4 ; AXI3] => the range of possible values is (12..64)
@@ -84,5 +84,5 @@ class Configuration:
 			self.DATA_WIDTH = value
 		else:
 			logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
-		
+
 

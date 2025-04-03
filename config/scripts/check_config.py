@@ -55,10 +55,13 @@ DDR_FREQUENCY = 300
 def check_intra_config(config : configuration.Configuration, config_file_name: str) -> bool:
 
     # Core is selected in the SYS configuration file
-    if config.BUS_NAME == "SYS":
+    if config.CONFIG_NAME == "SYS":
         # Supported cores
-        if (config.CORE_SELECTOR not in config.SUPPORTED_CORES):
+        if config.CORE_SELECTOR not in config.SUPPORTED_CORES:
             print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
+            return False
+        if config.XLEN not in [32, 64]:
+            print_error(f"Invalid XLEN={config.XLEN} value")
             return False
         # Only check to perform on the system config
         return True
@@ -83,7 +86,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
     if config.NUM_MI != len(config.RANGE_ADDR_WIDTH):
         print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of ADDR_WIDTH in {config_file_name}")
         return False
-    if config.BUS_NAME == "MBUS":
+    if config.CONFIG_NAME == "MBUS":
         if config.NUM_MI != len(config.RANGE_CLOCK_DOMAINS):
             print_error(f"The NUM_MI value {config.NUM_MI} does not match the number of RANGE_CLOCK_DOMAINS in {config_file_name}")
             return False
@@ -131,7 +134,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         end_addresses.append(end_address)
 
     # Check valid main clock domain
-    if config.BUS_NAME == "MBUS":
+    if config.CONFIG_NAME == "MBUS":
         if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
             print_error(f"The clock domain {clok_domain}MHz is not supported")
             return False
@@ -176,16 +179,16 @@ def check_inter_config(configs : list) -> bool:
     for config in configs:
 
         # If the config is the System one, skip checks (not a bus)
-        if config.BUS_NAME == "SYS":
+        if config.CONFIG_NAME == "SYS":
             continue
 
         # For each master of the current Configuration
         for i in range(config.NUM_MI):
-            # If a master is a bus (is in the BUS_NAMES dict)
-            if config.RANGE_NAMES[i] in BUS_NAMES.values():
+            # If a master is a bus (is in the CONFIG_NAME dict)
+            if config.RANGE_NAMES[i] in CONFIG_NAMES.values():
                 # Find the child bus configuration
                 for child_config in configs:
-                    if child_config.BUS_NAME == config.RANGE_NAMES[i]:
+                    if child_config.CONFIG_NAME == config.RANGE_NAMES[i]:
                         # Compute the base and the end address of the parent bus
                         parent_base_address = int(config.BASE_ADDR[i], 16)
                         parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[i]-1))
@@ -198,7 +201,7 @@ def check_inter_config(configs : list) -> bool:
                         # Do the checks
                         # Check if the address space of the child is containted in the address space of the parent
                         if child_base_address < parent_base_address or child_end_address > parent_end_address:
-                            print_error(f"Address of {child_config.BUS_NAME} is not properly contained in {config.BUS_NAME}")
+                            print_error(f"Address of {child_config.CONFIG_NAME} is not properly contained in {config.CONFIG_NAME}")
                             return False
     return True
 
@@ -228,9 +231,8 @@ if __name__ == "__main__":
     print_info(f"Starting checking {len(configs)} config...")
     print_info("Checking intra config validity")
     for i in range(len(configs)):
-        print_info(f"Checking {configs[i].BUS_NAME} config...")
+        print_info(f"Checking {configs[i].CONFIG_NAME} config...")
         status = check_intra_config(configs[i], config_file_names[i])
-
         # This check failed
         if status == False:
             exit(1)

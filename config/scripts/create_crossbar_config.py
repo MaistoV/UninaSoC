@@ -69,9 +69,9 @@ config = configuration.Configuration()
 
 # Assign config bus name
 if "main_bus" in bus_config_file_name:
-    config.BUS_NAME = "MBUS"
+    config.CONFIG_NAME = "MBUS"
 elif "peripheral_bus" in bus_config_file_name:
-    config.BUS_NAME = "PBUS"
+    config.CONFIG_NAME = "PBUS"
 
 ###################
 # Read Sys config #

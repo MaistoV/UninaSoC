@@ -21,7 +21,7 @@ ARGC=$#;
 # Check argc
 if [ $ARGC -ne $EXPECTED_ARGC ]; then
     echo  "[CONFIG_XILINX][ERROR] Invalid number of arguments, please check the inputs and try again";
-    return 1;
+    exit 1;
 fi
 
 # Read args
@@ -57,7 +57,7 @@ for target in ${sys_target_values[*]}; do
 
     # Replace in target file
     sed -E -i "s/${target}.?\?=.+/${target} \?= ${target_value}/g" ${OUTPUT_MK_FILE};
-    
+
 done
 
 # Loop over bus targets
@@ -143,7 +143,6 @@ for clock_domain in ${clock_domains[*]}; do
     # Save PBUS clock domain for UART sythesis
     if [[ "${slaves[$cnt]}" == "PBUS" ]]; then
         PBUS_CLOCK_FREQ_MHZ=$clock_domain
-        echo PBUS_CLOCK_FREQ_MHZ=$PBUS_CLOCK_FREQ_MHZ
     fi
 
     # Increment counter

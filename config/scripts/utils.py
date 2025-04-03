@@ -12,9 +12,10 @@ import configuration
 import parse_properties_wrapper
 
 # Name of buses
-BUS_NAMES                = {
+CONFIG_NAMES                = {
     "config_main_bus.csv"       : "MBUS",
-    "config_peripheral_bus.csv" : "PBUS"
+    "config_peripheral_bus.csv" : "PBUS",
+    "config_system.csv"         : "SYS"
 }
 
 
@@ -35,7 +36,7 @@ def read_config(config_file_names : list) -> list:
 
         # Naming the actual bus
         end_name = name.split("/")[-1]
-        config.BUS_NAME = BUS_NAMES[end_name]
+        config.CONFIG_NAME = CONFIG_NAMES[end_name]
         # Append the config to the list
         configs.append(config)
 
