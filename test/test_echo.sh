@@ -21,17 +21,20 @@ OPENOCD_SCRIPT=${XILINX_SCRIPT_ROOT}/load_binary/openocd.cfg
 echo -e "${NC}Launching OpenOCD${NC}"
 ${OPENOCD} -f ${OPENOCD_SCRIPT} > /dev/null 2>&1 & OPENOCD_PID=$!
 
+# String to send to the SoC
+string_to_send="Test test echo echo"
+
 # Launch the UART host application (screen for embedded, virtual_uart for hpc)
 echo -e "${NC}Launching uart host application"
 # SoC profile embedded
 if [ "${SOC_CONFIG}" == "embedded" ]; then
     PHYSICAL_UART_BAUD_RATE=9600
     # TODO: test this
-    screen /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A5069RR4-if00-port0 $PHYSICAL_UART_BAUD_RATE > ./tmp.txt 2>&1 & UART_PID=$!
+    screen /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A5069RR4-if00-port0 $PHYSICAL_UART_BAUD_RATE < <(echo "$string_to_send") > ./tmp.txt 2>&1 & UART_PID=$!
 # SoC profile hpc
 elif [ "${SOC_CONFIG}" == "hpc" ]; then
     VIRTUAL_UART_BASE_ADDR=0x82020000
-    sudo ${SW_HOST_ROOT}/virtual_uart/bin/virtual_uart $VIRTUAL_UART_BASE_ADDR > ./tmp.txt 2>&1 & UART_PID=$!
+    sudo ${SW_HOST_ROOT}/virtual_uart/bin/virtual_uart $VIRTUAL_UART_BASE_ADDR < <(echo "$string_to_send") > ./tmp.txt 2>&1 & UART_PID=$!
 else
     echo -e "${RED}[ERROR] The provided SoC profile (${SOC_CONFIG}) is not supported${NC}"
     exit 1
@@ -39,9 +42,10 @@ fi
 
 # Launch GDB and run the SoC application
 echo -e "${NC}Launching GDB"
-FILE=${SW_SOC_ROOT}/examples/hello_world/bin/hello_world.elf
+FILE=${SW_SOC_ROOT}/examples/echo/bin/echo.elf
 BACKEND_PORT=3004
 $(${XILINX_SCRIPT_ROOT}/load_binary/run_gdb.sh $FILE $BACKEND_PORT < <(echo "run")) > /dev/null 2>&1 & GDB_PID=$!
+
 
 # Wait for the application to write the expected output
 sleep 5
@@ -64,15 +68,17 @@ wait $OPENOCD_PID 2>/dev/null
 # Check the output
 echo -e "${NC}Checking the output${NC}"
 
-output=$(cat ./tmp.txt)
-expected_output="Hello World!"$'\n'$'\r'
-
+# Read the output from tmp by replacing the \r with \0 (if not doing this each lines of the file overwrites the others while reading)
+output=$(tr '\r' '\0' < ./tmp.txt)
+# Set expected output
+expected_output="Please enter a string"$'\n'"Your string is"$'\n'"$string_to_send"$'\n'"Please enter a string"
+# Remove the tmp file
 rm ./tmp.txt
 
-if [[ "$output" == $expected_output ]]; then
-    echo -e "${GREEN}[SUCCESS] Hello World test passed${NC}"
+if [[ "$output" == "$expected_output" ]]; then
+    echo -e "${GREEN}[SUCCESS] Echo test passed${NC}"
     exit 0
 else
-   echo -e "${RED}[ERROR] Hello World test failed${NC}"
+   echo -e "${RED}[ERROR] Echo test failed${NC}"
    exit 1
 fi

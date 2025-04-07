@@ -10,12 +10,18 @@
 MAX_VIVADO_INSTANCES ?= 6 # This should be safe for a 16-cores CPU
 
 
-all: hello_world
+all: echo hello_world
+
+# TEST: Echo
+echo: build_hardware build_software
+	@echo "[TEST] testing the echo example application..."
+	@bash ${TEST_ROOT}/test_echo.sh
+	@echo "[TEST] testing the echo example application passed!"
 
 # TEST: Hello world
 hello_world: build_hardware build_software
 	@echo "[TEST] testing the hello_world example application..."
-	@bash ${TEST_ROOT}/test_hello_world.sh"
+	@bash ${TEST_ROOT}/test_hello_world.sh
 	@echo "[TEST] testing the hello_world example application passed!"
 
 # TEST: Flash the bitsream
