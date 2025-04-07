@@ -15,7 +15,7 @@ all: hello_world
 # TEST: Hello world
 hello_world: build_hardware build_software
 	@echo "[TEST] testing the hello_world example application..."
-	@bash -c "source ${TEST_ROOT}/test_hello_world.sh"
+	@bash ${TEST_ROOT}/test_hello_world.sh"
 	@echo "[TEST] testing the hello_world example application passed!"
 
 # TEST: Flash the bitsream
@@ -49,5 +49,5 @@ clean:
 	${MAKE} -C ${SW_ROOT} clean
 
 
-.PHONY: clean build_hardware program_bitstream config build_software units
+.PHONY: clean build_hardware program_bitstream config build_software units hello_world
 
