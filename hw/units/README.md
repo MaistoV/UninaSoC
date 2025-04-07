@@ -14,12 +14,12 @@ Each custom IP, or unit, is represented by two subdirectories: one in `hw/units`
 |       └── fetch_sources.sh
 └── xilinx
     ├── doc
-    ├── ips
-    ├── common
-    │   └── custom_<IP name>
-    |       └── config.tcl -> ../tcl/custom_config.tcl
-    ├── embedded
-    └── hpc
+    └── ips
+        ├── common
+        │   └── custom_<IP name>
+        |       └── config.tcl -> ../tcl/custom_config.tcl
+        ├── embedded
+        └── hpc
 ```
 
 These two directories must share the same name, both using the `custom_` prefix:
