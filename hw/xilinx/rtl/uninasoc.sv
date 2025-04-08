@@ -481,6 +481,292 @@ module uninasoc (
         .dbg_slave_axi_rready      ( MBUS_to_DM_mem_axi_rready   )
     );
 
+    // HLS_DOTPROD_CONTROL AXI-lite
+    `DECLARE_AXILITE_BUS(HLS_GEMM_CONTROL);
+
+    // AXI converter for HLS_DOTPROD_CONTROL
+    xlnx_axi4_to_axilite_converter xlnx_axi4_to_axilite_converter_hls_u (
+        .aclk               ( soc_clk                                    ), // input wire aclk
+        .aresetn            ( sys_resetn                                 ), // input wire aresetn
+        .s_axi_awid         ( MBUS_to_HLS_GEMM_CONTROL_axi_awid      ), // input wire [1 : 0] s_axi_awid
+        .s_axi_awaddr       ( MBUS_to_HLS_GEMM_CONTROL_axi_awaddr    ), // input wire [31 : 0] s_axi_awaddr
+        .s_axi_awlen        ( MBUS_to_HLS_GEMM_CONTROL_axi_awlen     ), // input wire [7 : 0] s_axi_awlen
+        .s_axi_awsize       ( MBUS_to_HLS_GEMM_CONTROL_axi_awsize    ), // input wire [2 : 0] s_axi_awsize
+        .s_axi_awburst      ( MBUS_to_HLS_GEMM_CONTROL_axi_awburst   ), // input wire [1 : 0] s_axi_awburst
+        .s_axi_awlock       ( MBUS_to_HLS_GEMM_CONTROL_axi_awlock    ), // input wire [0 : 0] s_axi_awlock
+        .s_axi_awcache      ( MBUS_to_HLS_GEMM_CONTROL_axi_awcache   ), // input wire [3 : 0] s_axi_awcache
+        .s_axi_awprot       ( MBUS_to_HLS_GEMM_CONTROL_axi_awprot    ), // input wire [2 : 0] s_axi_awprot
+        .s_axi_awregion     ( MBUS_to_HLS_GEMM_CONTROL_axi_awregion  ), // input wire [3 : 0] s_axi_awregion
+        .s_axi_awqos        ( MBUS_to_HLS_GEMM_CONTROL_axi_awqos     ), // input wire [3 : 0] s_axi_awqos
+        .s_axi_awvalid      ( MBUS_to_HLS_GEMM_CONTROL_axi_awvalid   ), // input wire s_axi_awvalid
+        .s_axi_awready      ( MBUS_to_HLS_GEMM_CONTROL_axi_awready   ), // output wire s_axi_awready
+        .s_axi_wdata        ( MBUS_to_HLS_GEMM_CONTROL_axi_wdata     ), // input wire [31 : 0] s_axi_wdata
+        .s_axi_wstrb        ( MBUS_to_HLS_GEMM_CONTROL_axi_wstrb     ), // input wire [3 : 0] s_axi_wstrb
+        .s_axi_wlast        ( MBUS_to_HLS_GEMM_CONTROL_axi_wlast     ), // input wire s_axi_wlast
+        .s_axi_wvalid       ( MBUS_to_HLS_GEMM_CONTROL_axi_wvalid    ), // input wire s_axi_wvalid
+        .s_axi_wready       ( MBUS_to_HLS_GEMM_CONTROL_axi_wready    ), // output wire s_axi_wready
+        .s_axi_bid          ( MBUS_to_HLS_GEMM_CONTROL_axi_bid       ), // output wire [1 : 0] s_axi_bid
+        .s_axi_bresp        ( MBUS_to_HLS_GEMM_CONTROL_axi_bresp     ), // output wire [1 : 0] s_axi_bresp
+        .s_axi_bvalid       ( MBUS_to_HLS_GEMM_CONTROL_axi_bvalid    ), // output wire s_axi_bvalid
+        .s_axi_bready       ( MBUS_to_HLS_GEMM_CONTROL_axi_bready    ), // input wire s_axi_bready
+        .s_axi_arid         ( MBUS_to_HLS_GEMM_CONTROL_axi_arid      ), // input wire [1 : 0] s_axi_arid
+        .s_axi_araddr       ( MBUS_to_HLS_GEMM_CONTROL_axi_araddr    ), // input wire [31 : 0] s_axi_araddr
+        .s_axi_arlen        ( MBUS_to_HLS_GEMM_CONTROL_axi_arlen     ), // input wire [7 : 0] s_axi_arlen
+        .s_axi_arsize       ( MBUS_to_HLS_GEMM_CONTROL_axi_arsize    ), // input wire [2 : 0] s_axi_arsize
+        .s_axi_arburst      ( MBUS_to_HLS_GEMM_CONTROL_axi_arburst   ), // input wire [1 : 0] s_axi_arburst
+        .s_axi_arlock       ( MBUS_to_HLS_GEMM_CONTROL_axi_arlock    ), // input wire [0 : 0] s_axi_arlock
+        .s_axi_arcache      ( MBUS_to_HLS_GEMM_CONTROL_axi_arcache   ), // input wire [3 : 0] s_axi_arcache
+        .s_axi_arprot       ( MBUS_to_HLS_GEMM_CONTROL_axi_arprot    ), // input wire [2 : 0] s_axi_arprot
+        .s_axi_arregion     ( MBUS_to_HLS_GEMM_CONTROL_axi_arregion  ), // input wire [3 : 0] s_axi_arregion
+        .s_axi_arqos        ( MBUS_to_HLS_GEMM_CONTROL_axi_arqos     ), // input wire [3 : 0] s_axi_arqos
+        .s_axi_arvalid      ( MBUS_to_HLS_GEMM_CONTROL_axi_arvalid   ), // input wire s_axi_arvalid
+        .s_axi_arready      ( MBUS_to_HLS_GEMM_CONTROL_axi_arready   ), // output wire s_axi_arready
+        .s_axi_rid          ( MBUS_to_HLS_GEMM_CONTROL_axi_rid       ), // output wire [1 : 0] s_axi_rid
+        .s_axi_rdata        ( MBUS_to_HLS_GEMM_CONTROL_axi_rdata     ), // output wire [31 : 0] s_axi_rdata
+        .s_axi_rresp        ( MBUS_to_HLS_GEMM_CONTROL_axi_rresp     ), // output wire [1 : 0] s_axi_rresp
+        .s_axi_rlast        ( MBUS_to_HLS_GEMM_CONTROL_axi_rlast     ), // output wire s_axi_rlast
+        .s_axi_rvalid       ( MBUS_to_HLS_GEMM_CONTROL_axi_rvalid    ), // output wire s_axi_rvalid
+        .s_axi_rready       ( MBUS_to_HLS_GEMM_CONTROL_axi_rready    ), // input wire s_axi_rready
+        .m_axi_awaddr       ( HLS_GEMM_CONTROL_axilite_awaddr        ), // output wire [31 : 0] m_axi_awaddr
+        .m_axi_awprot       ( HLS_GEMM_CONTROL_axilite_awprot        ), // output wire [2 : 0] m_axi_awprot
+        .m_axi_awvalid      ( HLS_GEMM_CONTROL_axilite_awvalid       ), // output wire m_axi_awvalid
+        .m_axi_awready      ( HLS_GEMM_CONTROL_axilite_awready       ), // input wire m_axi_awready
+        .m_axi_wdata        ( HLS_GEMM_CONTROL_axilite_wdata         ), // output wire [31 : 0] m_axi_wdata
+        .m_axi_wstrb        ( HLS_GEMM_CONTROL_axilite_wstrb         ), // output wire [3 : 0] m_axi_wstrb
+        .m_axi_wvalid       ( HLS_GEMM_CONTROL_axilite_wvalid        ), // output wire m_axi_wvalid
+        .m_axi_wready       ( HLS_GEMM_CONTROL_axilite_wready        ), // input wire m_axi_wready
+        .m_axi_bresp        ( HLS_GEMM_CONTROL_axilite_bresp         ), // input wire [1 : 0] m_axi_bresp
+        .m_axi_bvalid       ( HLS_GEMM_CONTROL_axilite_bvalid        ), // input wire m_axi_bvalid
+        .m_axi_bready       ( HLS_GEMM_CONTROL_axilite_bready        ), // output wire m_axi_bready
+        .m_axi_araddr       ( HLS_GEMM_CONTROL_axilite_araddr        ), // output wire [31 : 0] m_axi_araddr
+        .m_axi_arprot       ( HLS_GEMM_CONTROL_axilite_arprot        ), // output wire [2 : 0] m_axi_arprot
+        .m_axi_arvalid      ( HLS_GEMM_CONTROL_axilite_arvalid       ), // output wire m_axi_arvalid
+        .m_axi_arready      ( HLS_GEMM_CONTROL_axilite_arready       ), // input wire m_axi_arready
+        .m_axi_rdata        ( HLS_GEMM_CONTROL_axilite_rdata         ), // input wire [31 : 0] m_axi_rdata
+        .m_axi_rresp        ( HLS_GEMM_CONTROL_axilite_rresp         ), // input wire [1 : 0] m_axi_rresp
+        .m_axi_rvalid       ( HLS_GEMM_CONTROL_axilite_rvalid        ), // input wire m_axi_rvalid
+        .m_axi_rready       ( HLS_GEMM_CONTROL_axilite_rready        )  // output wire m_axi_rready
+    );
+
+    localparam string CUSTOM_HLS_GEMM_VERSION = "v1.0"; // 3 AXI MASTER INTERFACES
+    // localparam string CUSTOM_HLS_GEMM_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
+    if ( CUSTOM_HLS_GEMM_VERSION == "v1.0") begin : gen_hls_gemm_v1_0
+        // HLS core
+        custom_hls_gemm_v1_0 custom_hls_gemm_u (
+            .clk_i                      ( soc_clk                                       ), // input wire clk_i
+            .rst_ni                     ( sys_resetn                                    ), // input wire rst_ni
+            .interrupt_o                ( interrupt_o                                   ), // output wire interrupt_o
+            .gmem0_axi_awid             ( HLS_GEMM_gmem0_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
+            .gmem0_axi_awaddr           ( HLS_GEMM_gmem0_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
+            .gmem0_axi_awlen            ( HLS_GEMM_gmem0_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
+            .gmem0_axi_awsize           ( HLS_GEMM_gmem0_to_MBUS_axi_awsize         ), // output wire [2 : 0] gmem0_axi_awsize
+            .gmem0_axi_awburst          ( HLS_GEMM_gmem0_to_MBUS_axi_awburst        ), // output wire [1 : 0] gmem0_axi_awburst
+            .gmem0_axi_awlock           ( HLS_GEMM_gmem0_to_MBUS_axi_awlock         ), // output wire gmem0_axi_awlock
+            .gmem0_axi_awcache          ( HLS_GEMM_gmem0_to_MBUS_axi_awcache        ), // output wire [3 : 0] gmem0_axi_awcache
+            .gmem0_axi_awprot           ( HLS_GEMM_gmem0_to_MBUS_axi_awprot         ), // output wire [2 : 0] gmem0_axi_awprot
+            .gmem0_axi_awqos            ( HLS_GEMM_gmem0_to_MBUS_axi_awqos          ), // output wire [3 : 0] gmem0_axi_awqos
+            .gmem0_axi_awvalid          ( HLS_GEMM_gmem0_to_MBUS_axi_awvalid        ), // output wire gmem0_axi_awvalid
+            .gmem0_axi_awready          ( HLS_GEMM_gmem0_to_MBUS_axi_awready        ), // input wire gmem0_axi_awready
+            .gmem0_axi_awregion         ( HLS_GEMM_gmem0_to_MBUS_axi_awregion       ), // output wire [3 : 0] gmem0_axi_awregion
+            .gmem0_axi_wdata            ( HLS_GEMM_gmem0_to_MBUS_axi_wdata          ), // output wire [31 : 0] gmem0_axi_wdata
+            .gmem0_axi_wstrb            ( HLS_GEMM_gmem0_to_MBUS_axi_wstrb          ), // output wire [3 : 0] gmem0_axi_wstrb
+            .gmem0_axi_wlast            ( HLS_GEMM_gmem0_to_MBUS_axi_wlast          ), // output wire gmem0_axi_wlast
+            .gmem0_axi_wvalid           ( HLS_GEMM_gmem0_to_MBUS_axi_wvalid         ), // output wire gmem0_axi_wvalid
+            .gmem0_axi_wready           ( HLS_GEMM_gmem0_to_MBUS_axi_wready         ), // input wire gmem0_axi_wready
+            .gmem0_axi_bid              ( HLS_GEMM_gmem0_to_MBUS_axi_bid            ), // input wire [1 : 0] gmem0_axi_bid
+            .gmem0_axi_bresp            ( HLS_GEMM_gmem0_to_MBUS_axi_bresp          ), // input wire [1 : 0] gmem0_axi_bresp
+            .gmem0_axi_bvalid           ( HLS_GEMM_gmem0_to_MBUS_axi_bvalid         ), // input wire gmem0_axi_bvalid
+            .gmem0_axi_bready           ( HLS_GEMM_gmem0_to_MBUS_axi_bready         ), // output wire gmem0_axi_bready
+            .gmem0_axi_araddr           ( HLS_GEMM_gmem0_to_MBUS_axi_araddr         ), // output wire [31 : 0] gmem0_axi_araddr
+            .gmem0_axi_arlen            ( HLS_GEMM_gmem0_to_MBUS_axi_arlen          ), // output wire [7 : 0] gmem0_axi_arlen
+            .gmem0_axi_arsize           ( HLS_GEMM_gmem0_to_MBUS_axi_arsize         ), // output wire [2 : 0] gmem0_axi_arsize
+            .gmem0_axi_arburst          ( HLS_GEMM_gmem0_to_MBUS_axi_arburst        ), // output wire [1 : 0] gmem0_axi_arburst
+            .gmem0_axi_arlock           ( HLS_GEMM_gmem0_to_MBUS_axi_arlock         ), // output wire gmem0_axi_arlock
+            .gmem0_axi_arcache          ( HLS_GEMM_gmem0_to_MBUS_axi_arcache        ), // output wire [3 : 0] gmem0_axi_arcache
+            .gmem0_axi_arprot           ( HLS_GEMM_gmem0_to_MBUS_axi_arprot         ), // output wire [2 : 0] gmem0_axi_arprot
+            .gmem0_axi_arqos            ( HLS_GEMM_gmem0_to_MBUS_axi_arqos          ), // output wire [3 : 0] gmem0_axi_arqos
+            .gmem0_axi_arvalid          ( HLS_GEMM_gmem0_to_MBUS_axi_arvalid        ), // output wire gmem0_axi_arvalid
+            .gmem0_axi_arready          ( HLS_GEMM_gmem0_to_MBUS_axi_arready        ), // input wire gmem0_axi_arready
+            .gmem0_axi_arid             ( HLS_GEMM_gmem0_to_MBUS_axi_arid           ), // output wire [1 : 0] gmem0_axi_arid
+            .gmem0_axi_arregion         ( HLS_GEMM_gmem0_to_MBUS_axi_arregion       ), // output wire [3 : 0] gmem0_axi_arregion
+            .gmem0_axi_rid              ( HLS_GEMM_gmem0_to_MBUS_axi_rid            ), // input wire [1 : 0] gmem0_axi_rid
+            .gmem0_axi_rdata            ( HLS_GEMM_gmem0_to_MBUS_axi_rdata          ), // input wire [31 : 0] gmem0_axi_rdata
+            .gmem0_axi_rresp            ( HLS_GEMM_gmem0_to_MBUS_axi_rresp          ), // input wire [1 : 0] gmem0_axi_rresp
+            .gmem0_axi_rlast            ( HLS_GEMM_gmem0_to_MBUS_axi_rlast          ), // input wire gmem0_axi_rlast
+            .gmem0_axi_rvalid           ( HLS_GEMM_gmem0_to_MBUS_axi_rvalid         ), // input wire gmem0_axi_rvalid
+            .gmem0_axi_rready           ( HLS_GEMM_gmem0_to_MBUS_axi_rready         ), // output wire gmem0_axi_rready
+            .gmem1_axi_awid             ( HLS_GEMM_gmem1_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem1_axi_awid
+            .gmem1_axi_awaddr           ( HLS_GEMM_gmem1_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem1_axi_awaddr
+            .gmem1_axi_awlen            ( HLS_GEMM_gmem1_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem1_axi_awlen
+            .gmem1_axi_awsize           ( HLS_GEMM_gmem1_to_MBUS_axi_awsize         ), // output wire [2 : 0] gmem1_axi_awsize
+            .gmem1_axi_awburst          ( HLS_GEMM_gmem1_to_MBUS_axi_awburst        ), // output wire [1 : 0] gmem1_axi_awburst
+            .gmem1_axi_awlock           ( HLS_GEMM_gmem1_to_MBUS_axi_awlock         ), // output wire gmem1_axi_awlock
+            .gmem1_axi_awcache          ( HLS_GEMM_gmem1_to_MBUS_axi_awcache        ), // output wire [3 : 0] gmem1_axi_awcache
+            .gmem1_axi_awprot           ( HLS_GEMM_gmem1_to_MBUS_axi_awprot         ), // output wire [2 : 0] gmem1_axi_awprot
+            .gmem1_axi_awqos            ( HLS_GEMM_gmem1_to_MBUS_axi_awqos          ), // output wire [3 : 0] gmem1_axi_awqos
+            .gmem1_axi_awvalid          ( HLS_GEMM_gmem1_to_MBUS_axi_awvalid        ), // output wire gmem1_axi_awvalid
+            .gmem1_axi_awready          ( HLS_GEMM_gmem1_to_MBUS_axi_awready        ), // input wire gmem1_axi_awready
+            .gmem1_axi_awregion         ( HLS_GEMM_gmem1_to_MBUS_axi_awregion       ), // output wire [3 : 0] gmem1_axi_awregion
+            .gmem1_axi_wdata            ( HLS_GEMM_gmem1_to_MBUS_axi_wdata          ), // output wire [31 : 0] gmem1_axi_wdata
+            .gmem1_axi_wstrb            ( HLS_GEMM_gmem1_to_MBUS_axi_wstrb          ), // output wire [3 : 0] gmem1_axi_wstrb
+            .gmem1_axi_wlast            ( HLS_GEMM_gmem1_to_MBUS_axi_wlast          ), // output wire gmem1_axi_wlast
+            .gmem1_axi_wvalid           ( HLS_GEMM_gmem1_to_MBUS_axi_wvalid         ), // output wire gmem1_axi_wvalid
+            .gmem1_axi_wready           ( HLS_GEMM_gmem1_to_MBUS_axi_wready         ), // input wire gmem1_axi_wready
+            .gmem1_axi_bid              ( HLS_GEMM_gmem1_to_MBUS_axi_bid            ), // input wire [1 : 0] gmem1_axi_bid
+            .gmem1_axi_bresp            ( HLS_GEMM_gmem1_to_MBUS_axi_bresp          ), // input wire [1 : 0] gmem1_axi_bresp
+            .gmem1_axi_bvalid           ( HLS_GEMM_gmem1_to_MBUS_axi_bvalid         ), // input wire gmem1_axi_bvalid
+            .gmem1_axi_bready           ( HLS_GEMM_gmem1_to_MBUS_axi_bready         ), // output wire gmem1_axi_bready
+            .gmem1_axi_araddr           ( HLS_GEMM_gmem1_to_MBUS_axi_araddr         ), // output wire [31 : 0] gmem1_axi_araddr
+            .gmem1_axi_arlen            ( HLS_GEMM_gmem1_to_MBUS_axi_arlen          ), // output wire [7 : 0] gmem1_axi_arlen
+            .gmem1_axi_arsize           ( HLS_GEMM_gmem1_to_MBUS_axi_arsize         ), // output wire [2 : 0] gmem1_axi_arsize
+            .gmem1_axi_arburst          ( HLS_GEMM_gmem1_to_MBUS_axi_arburst        ), // output wire [1 : 0] gmem1_axi_arburst
+            .gmem1_axi_arlock           ( HLS_GEMM_gmem1_to_MBUS_axi_arlock         ), // output wire gmem1_axi_arlock
+            .gmem1_axi_arcache          ( HLS_GEMM_gmem1_to_MBUS_axi_arcache        ), // output wire [3 : 0] gmem1_axi_arcache
+            .gmem1_axi_arprot           ( HLS_GEMM_gmem1_to_MBUS_axi_arprot         ), // output wire [2 : 0] gmem1_axi_arprot
+            .gmem1_axi_arqos            ( HLS_GEMM_gmem1_to_MBUS_axi_arqos          ), // output wire [3 : 0] gmem1_axi_arqos
+            .gmem1_axi_arvalid          ( HLS_GEMM_gmem1_to_MBUS_axi_arvalid        ), // output wire gmem1_axi_arvalid
+            .gmem1_axi_arready          ( HLS_GEMM_gmem1_to_MBUS_axi_arready        ), // input wire gmem1_axi_arready
+            .gmem1_axi_arid             ( HLS_GEMM_gmem1_to_MBUS_axi_arid           ), // output wire [1 : 0] gmem1_axi_arid
+            .gmem1_axi_arregion         ( HLS_GEMM_gmem1_to_MBUS_axi_arregion       ), // output wire [3 : 0] gmem1_axi_arregion
+            .gmem1_axi_rid              ( HLS_GEMM_gmem1_to_MBUS_axi_rid            ), // input wire [1 : 0] gmem1_axi_rid
+            .gmem1_axi_rdata            ( HLS_GEMM_gmem1_to_MBUS_axi_rdata          ), // input wire [31 : 0] gmem1_axi_rdata
+            .gmem1_axi_rresp            ( HLS_GEMM_gmem1_to_MBUS_axi_rresp          ), // input wire [1 : 0] gmem1_axi_rresp
+            .gmem1_axi_rlast            ( HLS_GEMM_gmem1_to_MBUS_axi_rlast          ), // input wire gmem1_axi_rlast
+            .gmem1_axi_rvalid           ( HLS_GEMM_gmem1_to_MBUS_axi_rvalid         ), // input wire gmem1_axi_rvalid
+            .gmem1_axi_rready           ( HLS_GEMM_gmem1_to_MBUS_axi_rready         ), // output wire gmem1_axi_rready
+            .gmem2_axi_awid             ( HLS_GEMM_gmem2_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem2_axi_awid
+            .gmem2_axi_awaddr           ( HLS_GEMM_gmem2_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem2_axi_awaddr
+            .gmem2_axi_awlen            ( HLS_GEMM_gmem2_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem2_axi_awlen
+            .gmem2_axi_awsize           ( HLS_GEMM_gmem2_to_MBUS_axi_awsize         ), // output wire [2 : 0] gmem2_axi_awsize
+            .gmem2_axi_awburst          ( HLS_GEMM_gmem2_to_MBUS_axi_awburst        ), // output wire [1 : 0] gmem2_axi_awburst
+            .gmem2_axi_awlock           ( HLS_GEMM_gmem2_to_MBUS_axi_awlock         ), // output wire gmem2_axi_awlock
+            .gmem2_axi_awcache          ( HLS_GEMM_gmem2_to_MBUS_axi_awcache        ), // output wire [3 : 0] gmem2_axi_awcache
+            .gmem2_axi_awprot           ( HLS_GEMM_gmem2_to_MBUS_axi_awprot         ), // output wire [2 : 0] gmem2_axi_awprot
+            .gmem2_axi_awqos            ( HLS_GEMM_gmem2_to_MBUS_axi_awqos          ), // output wire [3 : 0] gmem2_axi_awqos
+            .gmem2_axi_awvalid          ( HLS_GEMM_gmem2_to_MBUS_axi_awvalid        ), // output wire gmem2_axi_awvalid
+            .gmem2_axi_awready          ( HLS_GEMM_gmem2_to_MBUS_axi_awready        ), // input wire gmem2_axi_awready
+            .gmem2_axi_awregion         ( HLS_GEMM_gmem2_to_MBUS_axi_awregion       ), // output wire [3 : 0] gmem2_axi_awregion
+            .gmem2_axi_wdata            ( HLS_GEMM_gmem2_to_MBUS_axi_wdata          ), // output wire [31 : 0] gmem2_axi_wdata
+            .gmem2_axi_wstrb            ( HLS_GEMM_gmem2_to_MBUS_axi_wstrb          ), // output wire [3 : 0] gmem2_axi_wstrb
+            .gmem2_axi_wlast            ( HLS_GEMM_gmem2_to_MBUS_axi_wlast          ), // output wire gmem2_axi_wlast
+            .gmem2_axi_wvalid           ( HLS_GEMM_gmem2_to_MBUS_axi_wvalid         ), // output wire gmem2_axi_wvalid
+            .gmem2_axi_wready           ( HLS_GEMM_gmem2_to_MBUS_axi_wready         ), // input wire gmem2_axi_wready
+            .gmem2_axi_bid              ( HLS_GEMM_gmem2_to_MBUS_axi_bid            ), // input wire [1 : 0] gmem2_axi_bid
+            .gmem2_axi_bresp            ( HLS_GEMM_gmem2_to_MBUS_axi_bresp          ), // input wire [1 : 0] gmem2_axi_bresp
+            .gmem2_axi_bvalid           ( HLS_GEMM_gmem2_to_MBUS_axi_bvalid         ), // input wire gmem2_axi_bvalid
+            .gmem2_axi_bready           ( HLS_GEMM_gmem2_to_MBUS_axi_bready         ), // output wire gmem2_axi_bready
+            .gmem2_axi_araddr           ( HLS_GEMM_gmem2_to_MBUS_axi_araddr         ), // output wire [31 : 0] gmem2_axi_araddr
+            .gmem2_axi_arlen            ( HLS_GEMM_gmem2_to_MBUS_axi_arlen          ), // output wire [7 : 0] gmem2_axi_arlen
+            .gmem2_axi_arsize           ( HLS_GEMM_gmem2_to_MBUS_axi_arsize         ), // output wire [2 : 0] gmem2_axi_arsize
+            .gmem2_axi_arburst          ( HLS_GEMM_gmem2_to_MBUS_axi_arburst        ), // output wire [1 : 0] gmem2_axi_arburst
+            .gmem2_axi_arlock           ( HLS_GEMM_gmem2_to_MBUS_axi_arlock         ), // output wire gmem2_axi_arlock
+            .gmem2_axi_arcache          ( HLS_GEMM_gmem2_to_MBUS_axi_arcache        ), // output wire [3 : 0] gmem2_axi_arcache
+            .gmem2_axi_arprot           ( HLS_GEMM_gmem2_to_MBUS_axi_arprot         ), // output wire [2 : 0] gmem2_axi_arprot
+            .gmem2_axi_arqos            ( HLS_GEMM_gmem2_to_MBUS_axi_arqos          ), // output wire [3 : 0] gmem2_axi_arqos
+            .gmem2_axi_arvalid          ( HLS_GEMM_gmem2_to_MBUS_axi_arvalid        ), // output wire gmem2_axi_arvalid
+            .gmem2_axi_arready          ( HLS_GEMM_gmem2_to_MBUS_axi_arready        ), // input wire gmem2_axi_arready
+            .gmem2_axi_arid             ( HLS_GEMM_gmem2_to_MBUS_axi_arid           ), // output wire [1 : 0] gmem2_axi_arid
+            .gmem2_axi_arregion         ( HLS_GEMM_gmem2_to_MBUS_axi_arregion       ), // output wire [3 : 0] gmem2_axi_arregion
+            .gmem2_axi_rid              ( HLS_GEMM_gmem2_to_MBUS_axi_rid            ), // input wire [1 : 0] gmem2_axi_rid
+            .gmem2_axi_rdata            ( HLS_GEMM_gmem2_to_MBUS_axi_rdata          ), // input wire [31 : 0] gmem2_axi_rdata
+            .gmem2_axi_rresp            ( HLS_GEMM_gmem2_to_MBUS_axi_rresp          ), // input wire [1 : 0] gmem2_axi_rresp
+            .gmem2_axi_rlast            ( HLS_GEMM_gmem2_to_MBUS_axi_rlast          ), // input wire gmem2_axi_rlast
+            .gmem2_axi_rvalid           ( HLS_GEMM_gmem2_to_MBUS_axi_rvalid         ), // input wire gmem2_axi_rvalid
+            .gmem2_axi_rready           ( HLS_GEMM_gmem2_to_MBUS_axi_rready         ), // output wire gmem2_axi_rready
+            .control_axilite_awaddr     ( HLS_GEMM_CONTROL_axilite_awaddr           ), // input wire [31 : 0] control_axilite_awaddr
+            .control_axilite_awprot     ( HLS_GEMM_CONTROL_axilite_awprot           ), // input wire [2 : 0] control_axilite_awprot
+            .control_axilite_awvalid    ( HLS_GEMM_CONTROL_axilite_awvalid          ), // input wire control_axilite_awvalid
+            .control_axilite_awready    ( HLS_GEMM_CONTROL_axilite_awready          ), // output wire control_axilite_awready
+            .control_axilite_wdata      ( HLS_GEMM_CONTROL_axilite_wdata            ), // input wire [31 : 0] control_axilite_wdata
+            .control_axilite_wstrb      ( HLS_GEMM_CONTROL_axilite_wstrb            ), // input wire [3 : 0] control_axilite_wstrb
+            .control_axilite_wvalid     ( HLS_GEMM_CONTROL_axilite_wvalid           ), // input wire control_axilite_wvalid
+            .control_axilite_wready     ( HLS_GEMM_CONTROL_axilite_wready           ), // output wire control_axilite_wready
+            .control_axilite_bresp      ( HLS_GEMM_CONTROL_axilite_bresp            ), // output wire [1 : 0] control_axilite_bresp
+            .control_axilite_bvalid     ( HLS_GEMM_CONTROL_axilite_bvalid           ), // output wire control_axilite_bvalid
+            .control_axilite_bready     ( HLS_GEMM_CONTROL_axilite_bready           ), // input wire control_axilite_bready
+            .control_axilite_araddr     ( HLS_GEMM_CONTROL_axilite_araddr           ), // input wire [31 : 0] control_axilite_araddr
+            .control_axilite_arprot     ( HLS_GEMM_CONTROL_axilite_arprot           ), // input wire [2 : 0] control_axilite_arprot
+            .control_axilite_arvalid    ( HLS_GEMM_CONTROL_axilite_arvalid          ), // input wire control_axilite_arvalid
+            .control_axilite_arready    ( HLS_GEMM_CONTROL_axilite_arready          ), // output wire control_axilite_arready
+            .control_axilite_rdata      ( HLS_GEMM_CONTROL_axilite_rdata            ), // output wire [31 : 0] control_axilite_rdata
+            .control_axilite_rresp      ( HLS_GEMM_CONTROL_axilite_rresp            ), // output wire [1 : 0] control_axilite_rresp
+            .control_axilite_rvalid     ( HLS_GEMM_CONTROL_axilite_rvalid           ), // output wire control_axilite_rvalid
+            .control_axilite_rready     ( HLS_GEMM_CONTROL_axilite_rready           )  // input wire control_axilite_rready
+        );
+    end : gen_hls_gemm_v1_0
+    else if ( CUSTOM_HLS_GEMM_VERSION == "v1.1" ) begin : gen_hls_gemm_v1_1
+
+        custom_hls_gemm_v1_1 custom_hls_gemm_v1_1_u (
+            .clk_i                      ( soc_clk                                       ), // input wire clk_i
+            .rst_ni                     ( sys_resetn                                    ), // input wire rst_ni
+            .interrupt_o                ( interrupt_o                                   ), // output wire interrupt_o
+            .gmem0_axi_awid             ( HLS_GEMM_gmem0_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
+            .gmem0_axi_awaddr           ( HLS_GEMM_gmem0_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
+            .gmem0_axi_awlen            ( HLS_GEMM_gmem0_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
+            .gmem0_axi_awsize           ( HLS_GEMM_gmem0_to_MBUS_axi_awsize         ), // output wire [2 : 0] gmem0_axi_awsize
+            .gmem0_axi_awburst          ( HLS_GEMM_gmem0_to_MBUS_axi_awburst        ), // output wire [1 : 0] gmem0_axi_awburst
+            .gmem0_axi_awlock           ( HLS_GEMM_gmem0_to_MBUS_axi_awlock         ), // output wire gmem0_axi_awlock
+            .gmem0_axi_awcache          ( HLS_GEMM_gmem0_to_MBUS_axi_awcache        ), // output wire [3 : 0] gmem0_axi_awcache
+            .gmem0_axi_awprot           ( HLS_GEMM_gmem0_to_MBUS_axi_awprot         ), // output wire [2 : 0] gmem0_axi_awprot
+            .gmem0_axi_awqos            ( HLS_GEMM_gmem0_to_MBUS_axi_awqos          ), // output wire [3 : 0] gmem0_axi_awqos
+            .gmem0_axi_awvalid          ( HLS_GEMM_gmem0_to_MBUS_axi_awvalid        ), // output wire gmem0_axi_awvalid
+            .gmem0_axi_awready          ( HLS_GEMM_gmem0_to_MBUS_axi_awready        ), // input wire gmem0_axi_awready
+            .gmem0_axi_awregion         ( HLS_GEMM_gmem0_to_MBUS_axi_awregion       ), // output wire [3 : 0] gmem0_axi_awregion
+            .gmem0_axi_wdata            ( HLS_GEMM_gmem0_to_MBUS_axi_wdata          ), // output wire [31 : 0] gmem0_axi_wdata
+            .gmem0_axi_wstrb            ( HLS_GEMM_gmem0_to_MBUS_axi_wstrb          ), // output wire [3 : 0] gmem0_axi_wstrb
+            .gmem0_axi_wlast            ( HLS_GEMM_gmem0_to_MBUS_axi_wlast          ), // output wire gmem0_axi_wlast
+            .gmem0_axi_wvalid           ( HLS_GEMM_gmem0_to_MBUS_axi_wvalid         ), // output wire gmem0_axi_wvalid
+            .gmem0_axi_wready           ( HLS_GEMM_gmem0_to_MBUS_axi_wready         ), // input wire gmem0_axi_wready
+            .gmem0_axi_bid              ( HLS_GEMM_gmem0_to_MBUS_axi_bid            ), // input wire [1 : 0] gmem0_axi_bid
+            .gmem0_axi_bresp            ( HLS_GEMM_gmem0_to_MBUS_axi_bresp          ), // input wire [1 : 0] gmem0_axi_bresp
+            .gmem0_axi_bvalid           ( HLS_GEMM_gmem0_to_MBUS_axi_bvalid         ), // input wire gmem0_axi_bvalid
+            .gmem0_axi_bready           ( HLS_GEMM_gmem0_to_MBUS_axi_bready         ), // output wire gmem0_axi_bready
+            .gmem0_axi_araddr           ( HLS_GEMM_gmem0_to_MBUS_axi_araddr         ), // output wire [31 : 0] gmem0_axi_araddr
+            .gmem0_axi_arlen            ( HLS_GEMM_gmem0_to_MBUS_axi_arlen          ), // output wire [7 : 0] gmem0_axi_arlen
+            .gmem0_axi_arsize           ( HLS_GEMM_gmem0_to_MBUS_axi_arsize         ), // output wire [2 : 0] gmem0_axi_arsize
+            .gmem0_axi_arburst          ( HLS_GEMM_gmem0_to_MBUS_axi_arburst        ), // output wire [1 : 0] gmem0_axi_arburst
+            .gmem0_axi_arlock           ( HLS_GEMM_gmem0_to_MBUS_axi_arlock         ), // output wire gmem0_axi_arlock
+            .gmem0_axi_arcache          ( HLS_GEMM_gmem0_to_MBUS_axi_arcache        ), // output wire [3 : 0] gmem0_axi_arcache
+            .gmem0_axi_arprot           ( HLS_GEMM_gmem0_to_MBUS_axi_arprot         ), // output wire [2 : 0] gmem0_axi_arprot
+            .gmem0_axi_arqos            ( HLS_GEMM_gmem0_to_MBUS_axi_arqos          ), // output wire [3 : 0] gmem0_axi_arqos
+            .gmem0_axi_arvalid          ( HLS_GEMM_gmem0_to_MBUS_axi_arvalid        ), // output wire gmem0_axi_arvalid
+            .gmem0_axi_arready          ( HLS_GEMM_gmem0_to_MBUS_axi_arready        ), // input wire gmem0_axi_arready
+            .gmem0_axi_arid             ( HLS_GEMM_gmem0_to_MBUS_axi_arid           ), // output wire [1 : 0] gmem0_axi_arid
+            .gmem0_axi_arregion         ( HLS_GEMM_gmem0_to_MBUS_axi_arregion       ), // output wire [3 : 0] gmem0_axi_arregion
+            .gmem0_axi_rid              ( HLS_GEMM_gmem0_to_MBUS_axi_rid            ), // input wire [1 : 0] gmem0_axi_rid
+            .gmem0_axi_rdata            ( HLS_GEMM_gmem0_to_MBUS_axi_rdata          ), // input wire [31 : 0] gmem0_axi_rdata
+            .gmem0_axi_rresp            ( HLS_GEMM_gmem0_to_MBUS_axi_rresp          ), // input wire [1 : 0] gmem0_axi_rresp
+            .gmem0_axi_rlast            ( HLS_GEMM_gmem0_to_MBUS_axi_rlast          ), // input wire gmem0_axi_rlast
+            .gmem0_axi_rvalid           ( HLS_GEMM_gmem0_to_MBUS_axi_rvalid         ), // input wire gmem0_axi_rvalid
+            .gmem0_axi_rready           ( HLS_GEMM_gmem0_to_MBUS_axi_rready         ), // output wire gmem0_axi_rready
+            .control_axilite_awaddr     ( HLS_GEMM_CONTROL_axilite_awaddr           ), // input wire [31 : 0] control_axilite_awaddr
+            .control_axilite_awprot     ( HLS_GEMM_CONTROL_axilite_awprot           ), // input wire [2 : 0] control_axilite_awprot
+            .control_axilite_awvalid    ( HLS_GEMM_CONTROL_axilite_awvalid          ), // input wire control_axilite_awvalid
+            .control_axilite_awready    ( HLS_GEMM_CONTROL_axilite_awready          ), // output wire control_axilite_awready
+            .control_axilite_wdata      ( HLS_GEMM_CONTROL_axilite_wdata            ), // input wire [31 : 0] control_axilite_wdata
+            .control_axilite_wstrb      ( HLS_GEMM_CONTROL_axilite_wstrb            ), // input wire [3 : 0] control_axilite_wstrb
+            .control_axilite_wvalid     ( HLS_GEMM_CONTROL_axilite_wvalid           ), // input wire control_axilite_wvalid
+            .control_axilite_wready     ( HLS_GEMM_CONTROL_axilite_wready           ), // output wire control_axilite_wready
+            .control_axilite_bresp      ( HLS_GEMM_CONTROL_axilite_bresp            ), // output wire [1 : 0] control_axilite_bresp
+            .control_axilite_bvalid     ( HLS_GEMM_CONTROL_axilite_bvalid           ), // output wire control_axilite_bvalid
+            .control_axilite_bready     ( HLS_GEMM_CONTROL_axilite_bready           ), // input wire control_axilite_bready
+            .control_axilite_araddr     ( HLS_GEMM_CONTROL_axilite_araddr           ), // input wire [31 : 0] control_axilite_araddr
+            .control_axilite_arprot     ( HLS_GEMM_CONTROL_axilite_arprot           ), // input wire [2 : 0] control_axilite_arprot
+            .control_axilite_arvalid    ( HLS_GEMM_CONTROL_axilite_arvalid          ), // input wire control_axilite_arvalid
+            .control_axilite_arready    ( HLS_GEMM_CONTROL_axilite_arready          ), // output wire control_axilite_arready
+            .control_axilite_rdata      ( HLS_GEMM_CONTROL_axilite_rdata            ), // output wire [31 : 0] control_axilite_rdata
+            .control_axilite_rresp      ( HLS_GEMM_CONTROL_axilite_rresp            ), // output wire [1 : 0] control_axilite_rresp
+            .control_axilite_rvalid     ( HLS_GEMM_CONTROL_axilite_rvalid           ), // output wire control_axilite_rvalid
+            .control_axilite_rready     ( HLS_GEMM_CONTROL_axilite_rready           )  // input wire control_axilite_rready
+        );
+
+
+        // Sink unused interafces
+        `SINK_AXI_MASTER_INTERFACE(HLS_GEMM_gmem1);
+        `SINK_AXI_MASTER_INTERFACE(HLS_GEMM_gmem2);
+
+    end : gen_hls_gemm_v1_1
+
     ////////////////
     // AXI slaves //
     ////////////////
