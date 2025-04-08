@@ -24,7 +24,7 @@ make openocd_run
 ```
 Once the backend is enabled, load the .elf file using
 ``` bash
-make debug_run ELF_PATH=<path-to-elf>
+make gdb_run ELF_PATH=<path-to-elf>
 ```
 
 ## Load a binary file
