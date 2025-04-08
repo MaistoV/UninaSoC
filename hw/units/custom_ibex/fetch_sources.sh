@@ -37,11 +37,13 @@ while IFS= read -r filename; do
     # Find the file in LOOKUP_DIR
     filepath=$(find "$LOOKUP_DIR" -type f -name "$filename" 2>/dev/null | head -n 1)
 
+    # If found
     if [ -n "$filepath" ]; then
         cp "$filepath" "$RTL_DIR/"
+    # Error
     else
         printf "${RED}[FETCH_SOURCES] Error: $filename not found in $LOOKUP_DIR${NC}\n"
-        return
+        exit 1
     fi
 done < "$FLIST"
 
