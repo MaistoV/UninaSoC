@@ -22,26 +22,28 @@ git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}
 cd ${CLONE_DIR};
 git reset --hard ${GIT_COMMIT}
 
-# setuptools, pip and Python 3.6 is required.
-echo -e "${YELLOW}[FETCH_SOURCES] Checking and installing Python modules ... ${NC}"
-pip3 install --upgrade --user fusesoc
-pip3 install -U -r python-requirements.txt
-fusesoc --cores-root . run --target=lint --setup --build-root ./build/ibex_out lowrisc:ibex:ibex_top
-
-echo -e "${YELLOW}[FETCH_SOURCES] Clone sources to RTL ${NC}"
-find "$PWD/build/ibex_out/src" -type f -name "*.sv" >> ../flist
-find "$PWD/build/ibex_out/src" -type f -name "*.svh" >> ../flist
-cd ..;
-
 # Copy all RTL files into rtl dir
+# We use the flist pre-generated with fusesoc and saved in assets
+cd ..;
+FLIST="$PWD/assets/flist"
+LOOKUP_DIR="$PWD/ibex"
+RTL_DIR="$PWD/rtl"
+
 printf "${YELLOW}[FETCH_SOURCES] Copy all sources into rtl${NC}\n" s
-for rtl_file in $(cat flist) ; do
-    cp $rtl_file rtl
-done;
+while IFS= read -r filename; do
+    # Find the file in LOOKUP_DIR
+    filepath=$(find "$LOOKUP_DIR" -type f -name "$filename" 2>/dev/null | head -n 1)
+
+    if [ -n "$filepath" ]; then
+        cp "$filepath" "$RTL_DIR/"
+    else
+        printf "${RED}[FETCH_SOURCES] Error: $filename not found in $LOOKUP_DIR${NC}\n"
+        return
+    fi
+done < "$FLIST"
 
 # Delete the cloned repo and temporary flist
 printf "${YELLOW}[FETCH_SOURCES] Clean all artifacts${NC}\n"
 sudo rm -r ${CLONE_DIR}
-rm flist
 printf "${GREEN}[FETCH_SOURCES] Completed${NC}\n"
 
