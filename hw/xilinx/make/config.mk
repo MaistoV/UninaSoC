@@ -12,11 +12,11 @@
 XLEN ?= 32
 ADDR_WIDTH ?= ${XLEN}
 DATA_WIDTH ?= ${XLEN}
-ID_WIDTH ?= 2
+ID_WIDTH ?= 3
 
 # Main bus
-NUM_SI ?= 4
-NUM_MI ?= 4
+NUM_SI ?= 7
+NUM_MI ?= 5
 # PBUS
 PBUS_NUM_MI ?= 5
 
