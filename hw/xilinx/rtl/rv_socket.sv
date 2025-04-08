@@ -11,7 +11,7 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rv_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P, 
+    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P,
     parameter int unsigned    DATA_WIDTH    = 32,
     parameter int unsigned    ADDR_WIDTH    = 32,
     parameter int unsigned    NUM_IRQ       = 32
@@ -23,8 +23,8 @@ module rv_socket # (
     input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
 
     // Core
-    `DEFINE_AXI_MASTER_PORTS(rvm_socket_instr),
-    `DEFINE_AXI_MASTER_PORTS(rvm_socket_data),
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_instr),
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_data),
 
     // Debug module
     `DEFINE_AXI_MASTER_PORTS(dbg_master),
@@ -242,7 +242,7 @@ module rv_socket # (
                 .irq_software_i         ( irq_i[CORE_SW_INTERRUPT] ),
                 .irq_timer_i            ( irq_i[CORE_TIM_INTERRUPT] ),
                 .irq_external_i         ( irq_i[CORE_EXT_INTERRUPT] ),
-                .irq_fast_i             ( '0 ), 
+                .irq_fast_i             ( '0 ),
                 .irq_nm_i               ( '0 ),
 
                 .debug_req_i            ( debug_req_core )
@@ -376,8 +376,8 @@ module rv_socket # (
 
 
             // Attach to socket
-            `ASSIGN_AXI_BUS( rvm_socket_data , microblaze_data );
-            `ASSIGN_AXI_BUS( rvm_socket_instr , converter_instr);
+            `ASSIGN_AXI_BUS( rv_socket_data , microblaze_data );
+            `ASSIGN_AXI_BUS( rv_socket_instr , converter_instr);
 
             // Tie-off undriven ID signals
             // ID's are set to zero since they are not present in microblaze, while the crossbar have ID's of size 2.
@@ -487,8 +487,8 @@ module rv_socket # (
     if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : mem_convert
 
         // Connect memory interfaces to socket output memory ports
-        `ASSIGN_AXI_BUS( rvm_socket_instr, core_instr_to_socket_instr );
-        `ASSIGN_AXI_BUS( rvm_socket_data, core_data_to_socket_data );
+        `ASSIGN_AXI_BUS( rv_socket_instr, core_instr_to_socket_instr );
+        `ASSIGN_AXI_BUS( rv_socket_data, core_data_to_socket_data );
 
         // Convert instructions socket (AXI) to core (MEM)
         custom_axi_from_mem axi_from_mem_instr_u (

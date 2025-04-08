@@ -304,7 +304,7 @@ module uninasoc (
         .m_axi_rready   ( SYS_MASTER_to_MBUS_axi_rready   )
     );
 
-    // RVM Socket
+    // RV Socket
     rv_socket # (
         .DATA_WIDTH    ( AXI_DATA_WIDTH ),
         .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),

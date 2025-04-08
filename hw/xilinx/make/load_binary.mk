@@ -49,7 +49,7 @@ XSDB ?= xsdb
 DEBUG_PORT ?= 3004
 
 xsdb_run:
-	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_connect.tcl
+	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_backend.tcl
 
 # Use openOCD as a backed
 OPENOCD ?= openocd
