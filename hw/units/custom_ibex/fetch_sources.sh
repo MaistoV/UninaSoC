@@ -24,6 +24,9 @@ git reset --hard ${GIT_COMMIT}
 
 # Copy all RTL files into rtl dir
 # We use the flist pre-generated with fusesoc and saved in assets
+# the flist is generated using:
+#   fusesoc --cores-root . run --target=lint --setup --build-root ./build/ibex_out lowrisc:ibex:ibex_top
+#   Python version 3.6
 cd ..;
 FLIST="$PWD/assets/flist"
 LOOKUP_DIR="$PWD/ibex"
