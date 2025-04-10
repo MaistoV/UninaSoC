@@ -32,7 +32,7 @@ def parse_VIO_RESETN_DEFAULT (
 	):
 
 	value = int(property_value)
-	config.VIO_RESET_ENABLE = value
+	config.VIO_RESETN_DEFAULT = value
 	return config
 
 def parse_Interfaces (

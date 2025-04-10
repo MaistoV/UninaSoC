@@ -60,10 +60,16 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         if config.CORE_SELECTOR not in config.SUPPORTED_CORES:
             print_error(f"Invalid core {config.CORE_SELECTOR} in {config_file_name}")
             return False
+        # Valid XLEN values
         if config.XLEN not in [32, 64]:
             print_error(f"Invalid XLEN={config.XLEN} value")
             return False
-        # Only check to perform on the system config
+        # VIO_RESETN value
+        if config.CORE_SELECTOR == "CORE_PICORV32" and config.VIO_RESETN_DEFAULT != 0:
+            print_error(f"CORE_PICORV32 only supports VIO_RESETN_DEFAULT = 0! {config.VIO_RESETN_DEFAULT}")
+            return False
+
+        # All check passed
         return True
     # If a non-system config wants to select a core
     elif config.CORE_SELECTOR != "":
