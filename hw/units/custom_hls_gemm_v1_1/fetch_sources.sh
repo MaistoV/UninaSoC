@@ -11,12 +11,7 @@ GIT_TAG=v1.1
 CLONE_DIR=matmul
 COMP_NAME=${CLONE_DIR}
 
-
-printf "\n${GREEN}[FETCH_SOURCES] Starting from directory $(pwd -P)${NC}\n"
 WORK_DIR=$(pwd -P)
-
-printf "\n${GREEN}[FETCH_SOURCES] Fetching with git${NC}\n"
-
 # Creating build/ dir
 mkdir -p rtl
 BUILD="$(pwd -P)/rtl"
@@ -27,12 +22,13 @@ git clone ${GIT_URL} -b ${GIT_TAG} ${CLONE_DIR}
 
 cd ${CLONE_DIR}/hw
 # Synthesizing and copying verilog rtl files
-printf "\n${YELLOW}[FETCH_SOURCES] Starting synthesis${NC}\n"
+printf "\n${YELLOW}[FETCH_SOURCES] Starting c-synthesis for HLS sources${NC}\n"
 make syn
+printf "\n${YELLOW}[FETCH_SOURCES] Copying all sources into rtl${NC}\n"
 cp -r ${COMP_NAME}/hls/syn/verilog/* ${BUILD}
 
 cd ${WORK_DIR}
 # Deleting the cloned repo
 printf "\n${YELLOW}[FETCH_SOURCES] Cleaning all artifacts${NC}\n"
-rm -r ${CLONE_DIR}
+sudo rm -r ${CLONE_DIR}
 printf "\n${GREEN}[FETCH_SOURCES] Completed${NC}\n"
