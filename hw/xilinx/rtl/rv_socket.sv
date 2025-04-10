@@ -85,6 +85,11 @@ module rv_socket # (
             //      PicoRV32        //
             //////////////////////////
 
+            // Tie-off unused signals
+            assign core_instr_mem_wdata = '0;
+            assign core_instr_mem_we    = '0;
+            assign core_instr_mem_be    = '0;
+
             ///////////////////////////////////////////////////////////////////////////
             //  Pico has a custom interrupt handling mechanisms. I am not sure if    //
             //  it is just an alternative to standard risc-v interrupt handling,     //
