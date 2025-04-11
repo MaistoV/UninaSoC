@@ -11,4 +11,4 @@ set_property -dict [list CONFIG.C_NUM_PROBE_OUT       {2}   \
                    ] [get_ips $::env(IP_NAME)]
 
 # Setup VIO_reset value (mapped on probe 0)
-set_property CONFIG.C_PROBE_OUT0_INIT_VAL $::env(VIO_RESETN_DEFAULT)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.C_PROBE_OUT0_INIT_VAL 0x$::env(VIO_RESETN_DEFAULT)     [get_ips $::env(IP_NAME)]
