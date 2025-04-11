@@ -68,6 +68,9 @@ openocd_run:
 gdb_run:
 	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/run_gdb.sh ${ELF_PATH} ${DEBUG_PORT}"
 
+xsdb_run_elf:
+	${XSDB} ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_run_elf.tcl ${ELF_PATH}
+
 ###########
 # PHONIES #
 ###########
