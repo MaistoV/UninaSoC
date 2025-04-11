@@ -122,4 +122,8 @@ export SW_SOC_ROOT=${ROOT_DIR}/sw/SoC
 export BOOTROM_COE=${SW_ROOT}/bootrom.coe
 
 
+###########
+# Testing #
+###########
+export TEST_ROOT=${ROOT_DIR}/test
 
