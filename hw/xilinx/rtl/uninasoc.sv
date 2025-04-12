@@ -773,7 +773,7 @@ module uninasoc (
         `SINK_AXI_MASTER_INTERFACE(HLS_GEMM_gmem2);
 
     end : gen_hls_gemm_v1_1
-    else : gen_no_hl_gemm
+    else begin: gen_no_hl_gemm
         // Just sink the interfaces
         `SINK_AXI_MASTER_INTERFACE(SINK_STUB_to_MBUS)
         `SINK_AXI_SLAVEINTERFACE(MBUS_to_HLS_GEMM_CONTROL)
