@@ -29,6 +29,9 @@ module custom_top_wrapper # (
     //  Bus Array Interfaces  //
     ////////////////////////////
 
+    // AXI Master Interfaces
+    `DEFINE_AXI_MASTER_PORTS(gmem0),
+
     // AXI Slave Interfaces
     `DEFINE_AXILITE_SLAVE_PORTS(control)
 
@@ -56,7 +59,53 @@ module custom_top_wrapper # (
         .s_axi_control_RRESP    ( control_axilite_rresp   ),
         .s_axi_control_BVALID   ( control_axilite_bvalid  ),
         .s_axi_control_BREADY   ( control_axilite_bready  ),
-        .s_axi_control_BRESP    ( control_axilite_bresp   )
+        .s_axi_control_BRESP    ( control_axilite_bresp   ),
+        // AXI master
+        .m_axi_gmem0_AWVALID    ( gmem0_axi_awvalid       ),
+        .m_axi_gmem0_AWREADY    ( gmem0_axi_awready       ),
+        .m_axi_gmem0_AWADDR     ( gmem0_axi_awaddr        ),
+        .m_axi_gmem0_AWID       ( gmem0_axi_awid          ),
+        .m_axi_gmem0_AWLEN      ( gmem0_axi_awlen         ),
+        .m_axi_gmem0_AWSIZE     ( gmem0_axi_awsize        ),
+        .m_axi_gmem0_AWBURST    ( gmem0_axi_awburst       ),
+        .m_axi_gmem0_AWLOCK     ( gmem0_axi_awlock        ),
+        .m_axi_gmem0_AWCACHE    ( gmem0_axi_awcache       ),
+        .m_axi_gmem0_AWPROT     ( gmem0_axi_awprot        ),
+        .m_axi_gmem0_AWQOS      ( gmem0_axi_awqos         ),
+        .m_axi_gmem0_AWREGION   ( gmem0_axi_awregion      ),
+        .m_axi_gmem0_AWUSER     ( gmem0_axi_awuser        ),
+        .m_axi_gmem0_WVALID     ( gmem0_axi_wvalid        ),
+        .m_axi_gmem0_WREADY     ( gmem0_axi_wready        ),
+        .m_axi_gmem0_WDATA      ( gmem0_axi_wdata         ),
+        .m_axi_gmem0_WSTRB      ( gmem0_axi_wstrb         ),
+        .m_axi_gmem0_WLAST      ( gmem0_axi_wlast         ),
+        .m_axi_gmem0_WID        ( gmem0_axi_wid           ),
+        .m_axi_gmem0_WUSER      ( gmem0_axi_wuser         ),
+        .m_axi_gmem0_ARVALID    ( gmem0_axi_arvalid       ),
+        .m_axi_gmem0_ARREADY    ( gmem0_axi_arready       ),
+        .m_axi_gmem0_ARADDR     ( gmem0_axi_araddr        ),
+        .m_axi_gmem0_ARID       ( gmem0_axi_arid          ),
+        .m_axi_gmem0_ARLEN      ( gmem0_axi_arlen         ),
+        .m_axi_gmem0_ARSIZE     ( gmem0_axi_arsize        ),
+        .m_axi_gmem0_ARBURST    ( gmem0_axi_arburst       ),
+        .m_axi_gmem0_ARLOCK     ( gmem0_axi_arlock        ),
+        .m_axi_gmem0_ARCACHE    ( gmem0_axi_arcache       ),
+        .m_axi_gmem0_ARPROT     ( gmem0_axi_arprot        ),
+        .m_axi_gmem0_ARQOS      ( gmem0_axi_arqos         ),
+        .m_axi_gmem0_ARREGION   ( gmem0_axi_arregion      ),
+        .m_axi_gmem0_ARUSER     ( gmem0_axi_aruser        ),
+        .m_axi_gmem0_RVALID     ( gmem0_axi_rvalid        ),
+        .m_axi_gmem0_RREADY     ( gmem0_axi_rready        ),
+        .m_axi_gmem0_RDATA      ( gmem0_axi_rdata         ),
+        .m_axi_gmem0_RLAST      ( gmem0_axi_rlast         ),
+        .m_axi_gmem0_RID        ( gmem0_axi_rid           ),
+        .m_axi_gmem0_RUSER      ( gmem0_axi_ruser         ),
+        .m_axi_gmem0_RRESP      ( gmem0_axi_rresp         ),
+        .m_axi_gmem0_BVALID     ( gmem0_axi_bvalid        ),
+        .m_axi_gmem0_BREADY     ( gmem0_axi_bready        ),
+        .m_axi_gmem0_BRESP      ( gmem0_axi_bresp         ),
+        .m_axi_gmem0_BID        ( gmem0_axi_bid           ),
+        .m_axi_gmem0_BUSER      ( gmem0_axi_buser         )
     );
 
 endmodule : custom_top_wrapper
