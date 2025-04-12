@@ -548,12 +548,14 @@ module uninasoc (
         .m_axi_rready       ( HLS_GEMM_CONTROL_axilite_rready        )  // output wire m_axi_rready
     );
 
+    // localparam string CUSTOM_HLS_GEMM_VERSION = "none"; // Disable
     // localparam string CUSTOM_HLS_GEMM_VERSION = "v1.0"; // 3 AXI MASTER INTERFACES
     localparam string CUSTOM_HLS_GEMM_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
 
-    (* mark_debug = 1 *) logic custom_hls_gemm_interrupt_o;
-
     if ( CUSTOM_HLS_GEMM_VERSION == "v1.0") begin : gen_hls_gemm_v1_0
+        // DEBUG
+        (* mark_debug = 1 *) logic custom_hls_gemm_interrupt_o;
+
         // HLS core
         custom_hls_gemm_v1_0 custom_hls_gemm_u (
             .clk_i                      ( main_clk                                  ), // input wire clk_i
@@ -698,6 +700,8 @@ module uninasoc (
         );
     end : gen_hls_gemm_v1_0
     else if ( CUSTOM_HLS_GEMM_VERSION == "v1.1" ) begin : gen_hls_gemm_v1_1
+        // DEBUG
+        (* mark_debug = 1 *) logic custom_hls_gemm_interrupt_o;
 
         custom_hls_gemm_v1_1 custom_hls_gemm_v1_1_u (
             .clk_i                      ( main_clk                                  ), // input wire clk_i
@@ -769,6 +773,11 @@ module uninasoc (
         `SINK_AXI_MASTER_INTERFACE(HLS_GEMM_gmem2);
 
     end : gen_hls_gemm_v1_1
+    else : gen_no_hl_gemm
+        // Just sink the interfaces
+        `SINK_AXI_MASTER_INTERFACE(SINK_STUB_to_MBUS)
+        `SINK_AXI_SLAVEINTERFACE(MBUS_to_HLS_GEMM_CONTROL)
+    end : gen_no_hl_gemm
 
     ////////////////
     // AXI slaves //
