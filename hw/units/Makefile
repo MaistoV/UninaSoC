@@ -22,6 +22,10 @@ custom_%/rtl:
 		false; \
 	fi
 
+# Selectively remove a single RTL dir
+clean_custom_%:
+	rm -rf ${HW_UNITS_ROOT}/$*/rtl
+
 # Remove all RTL dirs
 clean:
 	rm -rf ${HW_UNITS_ROOT}/*/rtl
