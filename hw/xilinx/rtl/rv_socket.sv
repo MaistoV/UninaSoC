@@ -220,7 +220,7 @@ module rv_socket # (
                 .rst_ni                 ( core_resetn_internal ),
                 .hart_id_i              ( hart_id ),
                 // First instruction executed is going to be at boot_addr_i + 0x80 (i.e. right after the vector table)
-                .boot_addr_i            ( boot_addr_i ),
+                .boot_addr_i            ( bootaddr_i ),
 
                 // Instruction memory interface
                 .instr_mem_req          ( core_instr_mem_req        ),
