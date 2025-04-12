@@ -1,5 +1,6 @@
 # Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: startup code for uninasoc
 
 .section .vector_table, "ax"
@@ -91,11 +92,29 @@ _default_handler:
 _start:
   .global _start
 
+  # Light off led[0]
+  li t0, 0x0
+  li t1, 0x20200 # GPIO data register is at offset 0x0
+  sw t0, (t1)
+
   # jump to main program entry point (argc = argv = 0)
   mv a0, zero
   mv a1, zero
 
   jal ra, main
+
+  # Light on led[0]
+  li t0, 0x1
+  li t1, 0x20200 # GPIO data register is at offset 0x0
+  sw t0, (t1)
+
+  # Wait for interrupt
+_exit_wfi:
+  wfi
+
+  # Spin on exit
+_exit_spin:
+  j _exit_spin
 
 
 
