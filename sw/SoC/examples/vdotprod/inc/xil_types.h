@@ -37,22 +37,22 @@
 /**
  *@cond nocomments
  */
-#ifndef XIL_TYPES_H	/* prevent circular inclusions */
-#define XIL_TYPES_H	/* by using protection macros */
+ #ifndef XIL_TYPES_H	/* prevent circular inclusions */
+ #define XIL_TYPES_H	/* by using protection macros */
 
-#include <stdint.h>
+ #include <stdint.h>
 
-typedef uint64_t UINTPTR;
+ typedef uint32_t UINTPTR;
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
+ typedef uint8_t u8;
+ typedef uint16_t u16;
+ typedef uint32_t u32;
+ typedef uint64_t u64;
 
-#endif	/* end of protection macro */
-/**
- *@endcond
+ #endif	/* end of protection macro */
+ /**
+  *@endcond
+  */
+ /**
+ * @} End of "addtogroup common_types".
  */
-/**
-* @} End of "addtogroup common_types".
-*/
