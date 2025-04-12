@@ -14,7 +14,9 @@ units: $(addsuffix /rtl, ${IP_RTL_LIST})
 
 # Fetch sources for all IPs without local rtl
 custom_%/rtl:
-	cd ${HW_UNITS_ROOT}/custom_$*; source fetch_sources.sh
+	cd ${HW_UNITS_ROOT}/custom_$*; source fetch_sources.sh \
+		&& echo "[UNITS] Sources succesfully fetched at $@" \
+		|| echo "[UNITS] Failed to fetch sources for $@" \; rm -rf $@
 
 # Remove all RTL dirs
 clean:
