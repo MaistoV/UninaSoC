@@ -486,8 +486,8 @@ module uninasoc (
 
     // AXI converter for HLS_DOTPROD_CONTROL
     xlnx_axi4_to_axilite_converter xlnx_axi4_to_axilite_converter_hls_u (
-        .aclk               ( soc_clk                                    ), // input wire aclk
-        .aresetn            ( sys_resetn                                 ), // input wire aresetn
+        .aclk               ( main_clk                               ), // input wire aclk
+        .aresetn            ( main_rstn                              ), // input wire aresetn
         .s_axi_awid         ( MBUS_to_HLS_GEMM_CONTROL_axi_awid      ), // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr       ( MBUS_to_HLS_GEMM_CONTROL_axi_awaddr    ), // input wire [31 : 0] s_axi_awaddr
         .s_axi_awlen        ( MBUS_to_HLS_GEMM_CONTROL_axi_awlen     ), // input wire [7 : 0] s_axi_awlen
@@ -548,14 +548,17 @@ module uninasoc (
         .m_axi_rready       ( HLS_GEMM_CONTROL_axilite_rready        )  // output wire m_axi_rready
     );
 
-    localparam string CUSTOM_HLS_GEMM_VERSION = "v1.0"; // 3 AXI MASTER INTERFACES
-    // localparam string CUSTOM_HLS_GEMM_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
+    // localparam string CUSTOM_HLS_GEMM_VERSION = "v1.0"; // 3 AXI MASTER INTERFACES
+    localparam string CUSTOM_HLS_GEMM_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
+
+    (* mark_debug = 1 *) logic custom_hls_gemm_interrupt_o;
+
     if ( CUSTOM_HLS_GEMM_VERSION == "v1.0") begin : gen_hls_gemm_v1_0
         // HLS core
         custom_hls_gemm_v1_0 custom_hls_gemm_u (
-            .clk_i                      ( soc_clk                                       ), // input wire clk_i
-            .rst_ni                     ( sys_resetn                                    ), // input wire rst_ni
-            .interrupt_o                ( interrupt_o                                   ), // output wire interrupt_o
+            .clk_i                      ( main_clk                                  ), // input wire clk_i
+            .rst_ni                     ( main_rstn                                 ), // input wire rst_ni
+            .interrupt_o                ( custom_hls_gemm_interrupt_o               ), // output wire interrupt_o
             .gmem0_axi_awid             ( HLS_GEMM_gmem0_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
             .gmem0_axi_awaddr           ( HLS_GEMM_gmem0_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
             .gmem0_axi_awlen            ( HLS_GEMM_gmem0_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
@@ -697,9 +700,9 @@ module uninasoc (
     else if ( CUSTOM_HLS_GEMM_VERSION == "v1.1" ) begin : gen_hls_gemm_v1_1
 
         custom_hls_gemm_v1_1 custom_hls_gemm_v1_1_u (
-            .clk_i                      ( soc_clk                                       ), // input wire clk_i
-            .rst_ni                     ( sys_resetn                                    ), // input wire rst_ni
-            .interrupt_o                ( interrupt_o                                   ), // output wire interrupt_o
+            .clk_i                      ( main_clk                                  ), // input wire clk_i
+            .rst_ni                     ( main_rstn                                 ), // input wire rst_ni
+            .interrupt_o                ( custom_hls_gemm_interrupt_o               ), // output wire interrupt_o
             .gmem0_axi_awid             ( HLS_GEMM_gmem0_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
             .gmem0_axi_awaddr           ( HLS_GEMM_gmem0_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
             .gmem0_axi_awlen            ( HLS_GEMM_gmem0_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
