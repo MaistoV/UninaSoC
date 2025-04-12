@@ -29,6 +29,6 @@ cp -r ${COMP_NAME}/hls/syn/verilog/* ${BUILD}
 
 cd ${WORK_DIR}
 # Deleting the cloned repo
-printf "\n${YELLOW}[FETCH_SOURCES] Cleaning all artifacts${NC}\n"
-sudo rm -r ${CLONE_DIR}
+printf "\n${YELLOW}[FETCH_SOURCES] Keeping artifacts for development${NC}\n"
+# sudo rm -r ${CLONE_DIR}
 printf "\n${GREEN}[FETCH_SOURCES] Completed${NC}\n"
