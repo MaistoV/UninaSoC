@@ -485,9 +485,10 @@ module uninasoc (
     `DECLARE_AXILITE_BUS(HLS_CONTROL);
 
     // AXI converter for HLS_DOTPROD_CONTROL
+    // TODO: MBUS_to_HLS_CONTROL and HLS_gmem0_to_MBUS should be syncronized on HLS_CONTROL_clk
     xlnx_axi4_to_axilite_converter xlnx_axi4_to_axilite_converter_hls_u (
-        .aclk               ( main_clk                               ), // input wire aclk
-        .aresetn            ( main_rstn                              ), // input wire aresetn
+        .aclk               ( HLS_CONTROL_clk                   ), // input wire s_aclk
+        .aresetn            ( HLS_CONTROL_rstn                  ), // input wire s_aresetn
         .s_axi_awid         ( MBUS_to_HLS_CONTROL_axi_awid      ), // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr       ( MBUS_to_HLS_CONTROL_axi_awaddr    ), // input wire [31 : 0] s_axi_awaddr
         .s_axi_awlen        ( MBUS_to_HLS_CONTROL_axi_awlen     ), // input wire [7 : 0] s_axi_awlen
@@ -550,8 +551,8 @@ module uninasoc (
 
     // localparam string CUSTOM_HLS_VERSION = "none"; // Disable
     // localparam string CUSTOM_HLS_VERSION = "v1.0"; // 3 AXI MASTER INTERFACES
-    // localparam string CUSTOM_HLS_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
-    localparam string CUSTOM_HLS_VERSION = "vdotprod"; // 1 AXI MASTER INTERFACE
+    localparam string CUSTOM_HLS_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
+    // localparam string CUSTOM_HLS_VERSION = "vdotprod"; // 1 AXI MASTER INTERFACE
 
     // DEBUG
     (* mark_debug = 1 *) logic hls_interrupt_o;
@@ -559,8 +560,8 @@ module uninasoc (
     if ( CUSTOM_HLS_VERSION == "v1.0") begin : gen_hls_gemm_v1_0
         // HLS core instance
         custom_hls_gemm_v1_0 custom_hls_gemm_u (
-            .clk_i                      ( main_clk                             ), // input wire clk_i
-            .rst_ni                     ( main_rstn                            ), // input wire rst_ni
+            .clk_i                      ( HLS_CONTROL_clk                      ), // input wire clk_i
+            .rst_ni                     ( HLS_CONTROL_rstn                     ), // input wire rst_ni
             .interrupt_o                ( hls_interrupt_o                      ), // output wire interrupt_o
             .gmem0_axi_awid             ( HLS_gmem0_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
             .gmem0_axi_awaddr           ( HLS_gmem0_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
@@ -703,8 +704,8 @@ module uninasoc (
     else if ( CUSTOM_HLS_VERSION == "v1.1" ) begin : gen_hls_gemm_v1_1
         // HLS core instance
         custom_hls_gemm_v1_1 custom_hls_gemm_v1_1_u (
-            .clk_i                      ( main_clk                             ), // input wire clk_i
-            .rst_ni                     ( main_rstn                            ), // input wire rst_ni
+            .clk_i                      ( HLS_CONTROL_clk                      ), // input wire clk_i
+            .rst_ni                     ( HLS_CONTROL_rstn                     ), // input wire rst_ni
             .interrupt_o                ( hls_interrupt_o                      ), // output wire interrupt_o
             .gmem0_axi_awid             ( HLS_gmem0_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
             .gmem0_axi_awaddr           ( HLS_gmem0_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
@@ -765,17 +766,12 @@ module uninasoc (
             .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid           ), // output wire control_axilite_rvalid
             .control_axilite_rready     ( HLS_CONTROL_axilite_rready           )  // input wire control_axilite_rready
         );
-
-
-        // Sink unused interafces
-        `SINK_AXI_MASTER_INTERFACE(HLS_gmem1);
-        `SINK_AXI_MASTER_INTERFACE(HLS_gmem2);
     end : gen_hls_gemm_v1_1
     else if ( CUSTOM_HLS_VERSION == "vdotprod" ) begin : gen_hls_vdotprod
         // HLS core instance
         custom_hls_vdotprod custom_hls_vdotprod_u (
-            .clk_i                      ( main_clk                             ), // input wire clk_i
-            .rst_ni                     ( main_rstn                            ), // input wire rst_ni
+            .clk_i                      ( HLS_CONTROL_clk                      ), // input wire clk_i
+            .rst_ni                     ( HLS_CONTROL_rstn                     ), // input wire rst_ni
             .interrupt_o                ( hls_interrupt_o                      ), // output wire interrupt_o
             .gmem0_axi_awid             ( HLS_gmem0_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
             .gmem0_axi_awaddr           ( HLS_gmem0_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
@@ -855,8 +851,8 @@ module uninasoc (
     xlnx_blk_mem_gen main_memory_u (
         .rsta_busy      ( /* open */                ), // output wire rsta_busy
         .rstb_busy      ( /* open */                ), // output wire rstb_busy
-        .s_aclk         ( main_clk                  ), // input wire s_aclk
-        .s_aresetn      ( main_rstn                 ), // input wire s_aresetn
+        .s_aclk         ( BRAM_clk                  ), // input wire s_aclk
+        .s_aresetn      ( BRAM_rstn                 ), // input wire s_aresetn
         .s_axi_awid     ( MBUS_to_BRAM_axi_awid     ), // input wire [3 : 0] s_axi_awid
         .s_axi_awaddr   ( MBUS_to_BRAM_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
         .s_axi_awlen    ( MBUS_to_BRAM_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
@@ -913,8 +909,8 @@ module uninasoc (
 
 
     custom_rv_plic custom_rv_plic_u (
-        .clk_i          ( main_clk                      ), // input wire s_axi_aclk
-        .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn
+        .clk_i          ( PLIC_clk                      ), // input wire s_axi_aclk
+        .rst_ni         ( PLIC_rstn                     ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
         .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)

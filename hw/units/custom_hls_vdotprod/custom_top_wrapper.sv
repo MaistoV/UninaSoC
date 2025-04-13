@@ -38,6 +38,7 @@ module custom_top_wrapper # (
 );
 
     // HLS top
+    (* KEEP_HIERARCHY = "true" *) // DEBUG
     krnl_vdotprod krnl_vdotprod_u (
         .ap_clk     ( clk_i       ),
         .ap_rst_n   ( rst_ni      ),
@@ -73,14 +74,14 @@ module custom_top_wrapper # (
         .m_axi_gmem0_AWPROT     ( gmem0_axi_awprot        ),
         .m_axi_gmem0_AWQOS      ( gmem0_axi_awqos         ),
         .m_axi_gmem0_AWREGION   ( gmem0_axi_awregion      ),
-        .m_axi_gmem0_AWUSER     ( gmem0_axi_awuser        ),
+        .m_axi_gmem0_AWUSER     (                         ), // Open
         .m_axi_gmem0_WVALID     ( gmem0_axi_wvalid        ),
         .m_axi_gmem0_WREADY     ( gmem0_axi_wready        ),
         .m_axi_gmem0_WDATA      ( gmem0_axi_wdata         ),
         .m_axi_gmem0_WSTRB      ( gmem0_axi_wstrb         ),
         .m_axi_gmem0_WLAST      ( gmem0_axi_wlast         ),
         .m_axi_gmem0_WID        ( gmem0_axi_wid           ),
-        .m_axi_gmem0_WUSER      ( gmem0_axi_wuser         ),
+        .m_axi_gmem0_WUSER      (                         ), // Open
         .m_axi_gmem0_ARVALID    ( gmem0_axi_arvalid       ),
         .m_axi_gmem0_ARREADY    ( gmem0_axi_arready       ),
         .m_axi_gmem0_ARADDR     ( gmem0_axi_araddr        ),
@@ -93,19 +94,19 @@ module custom_top_wrapper # (
         .m_axi_gmem0_ARPROT     ( gmem0_axi_arprot        ),
         .m_axi_gmem0_ARQOS      ( gmem0_axi_arqos         ),
         .m_axi_gmem0_ARREGION   ( gmem0_axi_arregion      ),
-        .m_axi_gmem0_ARUSER     ( gmem0_axi_aruser        ),
+        .m_axi_gmem0_ARUSER     (                         ), // Open
         .m_axi_gmem0_RVALID     ( gmem0_axi_rvalid        ),
         .m_axi_gmem0_RREADY     ( gmem0_axi_rready        ),
         .m_axi_gmem0_RDATA      ( gmem0_axi_rdata         ),
         .m_axi_gmem0_RLAST      ( gmem0_axi_rlast         ),
         .m_axi_gmem0_RID        ( gmem0_axi_rid           ),
-        .m_axi_gmem0_RUSER      ( gmem0_axi_ruser         ),
+        .m_axi_gmem0_RUSER      ( '0                      ),
         .m_axi_gmem0_RRESP      ( gmem0_axi_rresp         ),
         .m_axi_gmem0_BVALID     ( gmem0_axi_bvalid        ),
         .m_axi_gmem0_BREADY     ( gmem0_axi_bready        ),
         .m_axi_gmem0_BRESP      ( gmem0_axi_bresp         ),
         .m_axi_gmem0_BID        ( gmem0_axi_bid           ),
-        .m_axi_gmem0_BUSER      ( gmem0_axi_buser         )
+        .m_axi_gmem0_BUSER      ( '0                      )
     );
 
 endmodule : custom_top_wrapper
