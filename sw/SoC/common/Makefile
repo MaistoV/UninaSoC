@@ -22,7 +22,7 @@ MKDIR   = @mkdir -p $(@D)			 # Creates folders if not present
 # Targets #
 ###########
 
-all: bin/$(PROGRAM_NAME).bin
+all: bin/$(PROGRAM_NAME).bin dump
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "\n[OBJ] Creating OBJs from src"
@@ -49,6 +49,7 @@ clean:
 
 .PHONY: all clean
 
-dump:
-	$(OBJDUMP) -D bin/$(PROGRAM_NAME).elf
+dump: bin/$(PROGRAM_NAME).dump
+bin/$(PROGRAM_NAME).dump:
+	$(OBJDUMP) -D bin/$(PROGRAM_NAME).elf > $@
 
