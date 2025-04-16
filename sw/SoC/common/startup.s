@@ -1,6 +1,5 @@
 # Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Description: startup code for uninasoc
 
 .section .vector_table, "ax"

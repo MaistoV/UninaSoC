@@ -1,7 +1,7 @@
-# Author: Stefano Mercogliano     <stefano.mercogliano@unina.it>
+# Author: Vincenzo Merola <vincenzo.merola2@unina.it>
 # Description:
 #   This Makefile defines the project name and paths for the common Makefile.
-#    Optionally, a user can define additional targets here.
+#   Optionally, a user can define additional targets here.
 
 ################
 # Program Name #
@@ -37,14 +37,28 @@ LIB_INC_TINYIO    = -I$(LIB_DIR)/tinyio/inc
 LIB_OBJ_LIST     = $(LIB_OBJ_TINYIO)
 LIB_INC_LIST     = $(LIB_INC_TINYIO)
 
+##########
+# MACROS #
+##########
+
+MACRO_LIST =
+ifeq ($(SOC_CONFIG), embedded)
+MACRO_LIST += -DIS_EMBEDDED
+endif
+
+
 #############
 # Toolchain #
 #############
 
-include $(SW_ROOT)/SoC/common/config.mk
+RV_PREFIX     = riscv32-unknown-elf-
+CC             = $(RV_PREFIX)gcc
+LD             = $(RV_PREFIX)ld
+OBJDUMP     = $(RV_PREFIX)objdump
+OBJCOPY     = $(RV_PREFIX)objcopy
 
-###########
-# Targets #
-###########
+DFLAG        = -g
+CFLAGS         = -march=rv32imac_zicsr_zifencei -mabi=ilp32 -O0 $(MACRO_LIST) $(DFLAG) -c
+LDFLAGS     = $(LIB_OBJ_LIST) -nostdlib -T$(LD_SCRIPT)
 
 include $(SW_ROOT)/SoC/common/Makefile
