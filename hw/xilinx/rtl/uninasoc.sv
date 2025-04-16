@@ -88,6 +88,10 @@ module uninasoc (
     // Local variables //
     /////////////////////
 
+    // SYS_* params are verilog defines. They depend on the config flow (see config.mk)
+    localparam LOCAL_DATA_WIDTH = SYS_DATA_WIDTH;
+    localparam LOCAL_ADDR_WIDTH = SYS_ADDR_WIDTH;
+    localparam LOCAL_ID_WIDTH = SYS_ID_WIDTH;
     localparam peripherals_interrupts_num = 4;
 
     ///////////////////
@@ -232,7 +236,13 @@ module uninasoc (
     // AXI masters //
     /////////////////
 
-    sys_master sys_master_u (
+    sys_master # (
+        
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+
+        ) sys_master_u (
 
         // EMBEDDED ONLY
         .sys_clock_i(sys_clock_i),
@@ -306,9 +316,12 @@ module uninasoc (
 
     // RV Socket
     rv_socket # (
-        .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
-        .CORE_SELECTOR ( CORE_SELECTOR  )
+
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH    ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH    ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH      ),
+        .CORE_SELECTOR      ( CORE_SELECTOR )
+        
     ) rv_socket_u (
         .clk_i          ( main_clk   ),
         .rst_ni         ( main_rstn  ),
@@ -599,7 +612,13 @@ module uninasoc (
     // PERIPHERAL BUS //
     ////////////////////
 
-    peripheral_bus peripheral_bus_u (
+    peripheral_bus # (
+
+        .LOCAL_DATA_WIDTH   ( 32 ),
+        .LOCAL_ADDR_WIDTH   ( 32 ),
+        .LOCAL_ID_WIDTH     ( 2  )
+
+        ) peripheral_bus_u (
 
         .main_clock_i   ( main_clk    ),
         .main_reset_ni  ( main_rstn   ),
@@ -659,7 +678,13 @@ module uninasoc (
 `ifdef HPC
 
     // DDR4 Channel 0
-    ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
+    ddr4_channel_wrapper # (
+
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH    ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH    ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH      )
+
+    ) ddr4_channel_0_wrapper_u (
         .clock_i              ( main_clk          ),
         .reset_ni             ( main_rstn         ),
 
@@ -686,16 +711,16 @@ module uninasoc (
         // AXILITE interface - for ECC status and control - not connected
         .s_ctrl_axilite_awvalid  ( 1'b0  ),
         .s_ctrl_axilite_awready  (       ),
-        .s_ctrl_axilite_awaddr   ( 32'd0 ),
+        .s_ctrl_axilite_awaddr   ( '0    ),
         .s_ctrl_axilite_wvalid   ( 1'b0  ),
         .s_ctrl_axilite_wready   (       ),
-        .s_ctrl_axilite_wdata    ( 32'd0 ),
+        .s_ctrl_axilite_wdata    ( '0    ),
         .s_ctrl_axilite_bvalid   (       ),
         .s_ctrl_axilite_bready   ( 1'b1  ),
         .s_ctrl_axilite_bresp    (       ),
         .s_ctrl_axilite_arvalid  ( 1'b0  ),
         .s_ctrl_axilite_arready  (       ),
-        .s_ctrl_axilite_araddr   ( 31'd0 ),
+        .s_ctrl_axilite_araddr   ( '0    ),
         .s_ctrl_axilite_rvalid   (       ),
         .s_ctrl_axilite_rready   ( 1'b1  ),
         .s_ctrl_axilite_rdata    (       ),

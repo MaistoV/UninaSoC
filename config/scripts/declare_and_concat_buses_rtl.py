@@ -47,7 +47,7 @@ FILE_SLAVE_CONCAT_HEADER = \
 
 # Template strings
 DECLARE_BUS_PREFIX                 = "`DECLARE_AXI_BUS("
-DECLARE_BUS_SUFFIX                 = ", AXI_DATA_WIDTH)\n"
+DECLARE_BUS_SUFFIX                 = ", LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)\n"
 
 DECLARE_AXILITE_BUS_PREFIX         = "`DECLARE_AXILITE_BUS("
 
@@ -109,7 +109,7 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
 
 
     # Declare an AXI4/AXILITE BUS ARRAY master/slave
-    lines.append(f"{declare_prefix}{config.CONFIG_NAME}{suffix}, {bus_cnt_str}{BASE_SUFFIX}")
+    lines.append(f"{declare_prefix}{config.CONFIG_NAME}{suffix}, {bus_cnt_str}{DECLARE_BUS_SUFFIX}")
     # Concatenate all master/slave buses with the declared AXI4/AXILITE BUS ARRAY
     lines.append(f"{concat_prefix}{len(buses)}({config.CONFIG_NAME}{suffix}{buses_string}{BASE_SUFFIX}")
 
@@ -139,7 +139,7 @@ def declare_buses(lines : list, is_master : bool, config : configuration.Configu
 
         if config.CONFIG_NAME == "PBUS":
             # If the bus is PBUS declare an AXILITE bus using the last created bus name
-            lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{BASE_SUFFIX}")
+            lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{DECLARE_BUS_SUFFIX}")
         else:
             # If the bus is not PBUS declare an AXI4 bus using the last created bus name
             lines.append(f"{DECLARE_BUS_PREFIX}{buses[-1]}{DECLARE_BUS_SUFFIX}")

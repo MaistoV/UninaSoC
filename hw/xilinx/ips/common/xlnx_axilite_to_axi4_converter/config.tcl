@@ -8,7 +8,8 @@ set_property -dict  [list	CONFIG.MI_PROTOCOL      {AXI4} \
 							CONFIG.TRANSLATION_MODE {2} \
                     ] [get_ips $::env(IP_NAME)]
 
-# Use envvars out of list
-set_property CONFIG.DATA_WIDTH  $::env(DATA_WIDTH)  [get_ips $::env(IP_NAME)]
-set_property CONFIG.ADDR_WIDTH  $::env(ADDR_WIDTH)  [get_ips $::env(IP_NAME)]
+# Currently it is only used for the microblaze, that is only allowed as a 32-bits master
+set_property CONFIG.DATA_WIDTH  32  [get_ips $::env(IP_NAME)]
+set_property CONFIG.ADDR_WIDTH  32  [get_ips $::env(IP_NAME)]
+set_property CONFIG.ID_WIDTH    2   [get_ips $::env(IP_NAME)]
 

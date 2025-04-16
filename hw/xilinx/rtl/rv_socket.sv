@@ -11,24 +11,25 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rv_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P,
-    parameter int unsigned    DATA_WIDTH    = 32,
-    parameter int unsigned    ADDR_WIDTH    = 32,
-    parameter int unsigned    NUM_IRQ       = 32
+    parameter core_selector_t CORE_SELECTOR     = CORE_CV32E40P,
+    parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
+    parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
+    parameter int unsigned    LOCAL_ID_WIDTH    = 32,
+    parameter int unsigned    NUM_IRQ           = 32
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,        // System-wide reset (also resets core)
     input  logic                            core_resetn_i, // Core-only reset (does not reset DM and other modules)
-    input  logic [AXI_ADDR_WIDTH -1 : 0 ]   bootaddr_i,
-    input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
+    input  logic [LOCAL_ADDR_WIDTH -1 : 0 ] bootaddr_i,
+    input  logic [NUM_IRQ          -1 : 0 ] irq_i,
 
     // Core
-    `DEFINE_AXI_MASTER_PORTS(rv_socket_instr),
-    `DEFINE_AXI_MASTER_PORTS(rv_socket_data),
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
 
     // Debug module
-    `DEFINE_AXI_MASTER_PORTS(dbg_master),
-    `DEFINE_AXI_SLAVE_PORTS(dbg_slave)
+    `DEFINE_AXI_MASTER_PORTS(dbg_master, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
+    `DEFINE_AXI_SLAVE_PORTS(dbg_slave, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 );
 
     //////////////////////////////////////////////////////
@@ -40,12 +41,12 @@ module rv_socket # (
     //////////////////////////////////////////////////////
 
     // Let's assume single core
-    localparam logic [31:0] hart_id = 32'h0;
-    localparam logic [31:0] DEBUG_START   = 32'h10000; // From config
+    localparam logic [LOCAL_DATA_WIDTH-1:0] hart_id = '0;
+    localparam logic [LOCAL_ADDR_WIDTH-1:0] DEBUG_START   = 'h10000; // From config
 
     // From dm_pkg
-    localparam logic [31:0] dm_HaltAddress = 64'h800;
-    localparam logic [31:0] dm_ExceptionAddress = dm_HaltAddress + 16;
+    localparam logic [LOCAL_ADDR_WIDTH-1:0] dm_HaltAddress = 'h800;
+    localparam logic [LOCAL_ADDR_WIDTH-1:0] dm_ExceptionAddress = dm_HaltAddress + 16;
 
     //////////////////////////////////////
     //    ___ _                _        //
@@ -60,12 +61,12 @@ module rv_socket # (
     assign core_resetn_internal = rst_ni & core_resetn_i;
 
     // Declare AXI interfaces for instruction memory port and data memory port
-    `DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
-    `DECLARE_AXI_BUS(core_data_to_socket_data, DATA_WIDTH);
+    `DECLARE_AXI_BUS(core_instr_to_socket_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
+    `DECLARE_AXI_BUS(core_data_to_socket_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
     // Declare MEM ports
-    `DECLARE_MEM_BUS(core_instr, DATA_WIDTH);
-    `DECLARE_MEM_BUS(core_data, DATA_WIDTH);
+    `DECLARE_MEM_BUS(core_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH);
+    `DECLARE_MEM_BUS(core_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH);
 
     // Debug request DM -> RV core
     logic debug_req_core;
@@ -77,6 +78,19 @@ module rv_socket # (
     //    \___\___/_| \___| |_|_\___\__, |_\___/_||_|   //
     //                              |___/               //
     //////////////////////////////////////////////////////
+
+    ////////////////////////////
+    // Core validity checking //
+    ////////////////////////////
+
+    // Check if the selected Core is compatible with the system XLEN
+    if ( LOCAL_DATA_WIDTH == 64 && CORE_SELECTOR inside {CORE_PICORV32,CORE_CV32E40P,CORE_IBEX,CORE_MICROBLAZEV} ||
+         LOCAL_DATA_WIDTH == 32 && CORE_SELECTOR inside {-1} )
+        $error($sformatf("[Socket] Illegal CORE (%0d) for the selected XLEN (%0d)", CORE_SELECTOR, LOCAL_DATA_WIDTH));
+
+    ////////////////////////
+    // Core Instantiation //
+    ////////////////////////
 
     generate
         if (CORE_SELECTOR == CORE_PICORV32) begin: core_picorv32
@@ -279,11 +293,11 @@ module rv_socket # (
 
 
             // Declare AXI interfaces for instruction memory port and data memory port for MicroblazeV
-            `DECLARE_AXI_BUS(microblaze_data,DATA_WIDTH);
-            `DECLARE_AXILITE_BUS(microblaze_instr);
+            `DECLARE_AXI_BUS(microblaze_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
+            `DECLARE_AXILITE_BUS(microblaze_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
             // Declare AXI interface for Protocol Converter
-            `DECLARE_AXI_BUS(converter_instr,DATA_WIDTH);
+            `DECLARE_AXI_BUS(converter_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
             // Microblaze V instance
             xlnx_microblaze_riscv microblazev_u (

@@ -47,9 +47,9 @@ module custom_top_wrapper # (
     ////////////////////////////
 
     // AXI4 Full Master interface from SRAM protocol (mem)
-    `DEFINE_AXI_MASTER_PORTS (m),
+    `DEFINE_AXI_MASTER_PORTS (m, LOCAL_AXI_DATA_WIDTH, LOCAL_AXI_ADDR_WIDTH, LOCAL_AXI_ADDR_WIDTH),
     // Mem interface
-    `DEFINE_MEM_SLAVE_PORTS  (s)
+    `DEFINE_MEM_SLAVE_PORTS  (s, LOCAL_MEM_DATA_WIDTH, LOCAL_MEM_ADDR_WIDTH)
 );
 
     // Define the req_t and resp_t type using typedef.svh macro

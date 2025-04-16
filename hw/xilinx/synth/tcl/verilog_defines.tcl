@@ -17,9 +17,9 @@ if { "$::env(SOC_CONFIG)" == "hpc" } {
 }
 
 # AXI config
-lappend verilog_defines AXI_DATA_WIDTH=$::env(DATA_WIDTH)
-lappend verilog_defines AXI_ADDR_WIDTH=$::env(ADDR_WIDTH)
-lappend verilog_defines AXI_ID_WIDTH=$::env(ID_WIDTH)
+lappend verilog_defines SYS_DATA_WIDTH=$::env(DATA_WIDTH)
+lappend verilog_defines SYS_ADDR_WIDTH=$::env(ADDR_WIDTH)
+lappend verilog_defines SYS_ID_WIDTH=$::env(ID_WIDTH)
 lappend verilog_defines NUM_SI=$::env(NUM_SI)
 lappend verilog_defines NUM_MI=$::env(NUM_MI)
 lappend verilog_defines PBUS_NUM_MI=$::env(PBUS_NUM_MI)

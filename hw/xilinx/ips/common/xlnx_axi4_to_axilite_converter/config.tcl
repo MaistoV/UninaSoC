@@ -9,8 +9,7 @@ set_property -dict [list \
                 CONFIG.TRANSLATION_MODE {2} \
     ] [get_ips $::env(IP_NAME)]
 
-# Use envvars out of list
-set_property CONFIG.DATA_WIDTH  $::env(DATA_WIDTH)  [get_ips $::env(IP_NAME)]
-set_property CONFIG.ADDR_WIDTH  $::env(ADDR_WIDTH)  [get_ips $::env(IP_NAME)]
-set_property CONFIG.ID_WIDTH    $::env(ID_WIDTH)    [get_ips $::env(IP_NAME)]
-
+# Currently this is only used in the PBUS, hence its size is fixed at 32
+set_property CONFIG.DATA_WIDTH  32  [get_ips $::env(IP_NAME)]
+set_property CONFIG.ADDR_WIDTH  32  [get_ips $::env(IP_NAME)]
+set_property CONFIG.ID_WIDTH    2   [get_ips $::env(IP_NAME)]

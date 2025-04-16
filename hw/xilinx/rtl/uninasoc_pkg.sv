@@ -11,6 +11,11 @@ package uninasoc_pkg;
     localparam int unsigned NUM_GPIO_IN  = 16;
     localparam int unsigned NUM_GPIO_OUT = 16;
 
+    // System widths depending on XLEN
+    localparam SYS_DATA_WIDTH = `SYS_DATA_WIDTH;
+    localparam SYS_ADDR_WIDTH = `SYS_ADDR_WIDTH;
+    localparam SYS_ID_WIDTH = `SYS_ID_WIDTH;
+
     ///////////////////////
     // AXI main crossbar //
     ///////////////////////

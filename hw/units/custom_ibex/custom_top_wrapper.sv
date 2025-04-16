@@ -22,6 +22,10 @@ module custom_top_wrapper import ibex_pkg::*; # (
     //  Add here IP-related parameters  //
     //////////////////////////////////////
 
+    // AXI/MEM macros parameter
+    parameter LOCAL_DATA_WIDTH  = 32,   
+    parameter LOCAL_ADDR_WIDTH  = 32,  
+
     // Debug-related Parameters
     parameter unsigned DmBaseAddr = 32'h00010800,
     parameter unsigned DmAddrMask = 32'h00000FFF,
@@ -56,9 +60,9 @@ module custom_top_wrapper import ibex_pkg::*; # (
     ////////////////////////////
 
     // MEM Master Interface Array
-    `DEFINE_MEM_MASTER_PORTS(instr),
+    `DEFINE_MEM_MASTER_PORTS(instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH),
     // MEM Slave Interface Array
-    `DEFINE_MEM_MASTER_PORTS(data)
+    `DEFINE_MEM_MASTER_PORTS(data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH)
 );
 
     ibex_top #(

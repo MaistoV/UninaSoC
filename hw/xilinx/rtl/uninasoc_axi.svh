@@ -19,10 +19,10 @@
 
 // AXI4 bus parameters
 // NOTE: these cannot be macro-based because of Vivado IP packege constraints
-localparam int unsigned AXI_DATA_WIDTH   = 32;
-localparam int unsigned AXI_ADDR_WIDTH   = 32;
-localparam int unsigned AXI_STRB_WIDTH   = 4;
-localparam int unsigned AXI_ID_WIDTH     = 2;
+//localparam int unsigned AXI_DATA_WIDTH   = 32;
+//localparam int unsigned AXI_ADDR_WIDTH   = 32;
+//localparam int unsigned AXI_STRB_WIDTH   = 4;
+//localparam int unsigned AXI_ID_WIDTH     = 2;
 localparam int unsigned AXI_LEN_WIDTH    = 8;
 localparam int unsigned AXI_SIZE_WIDTH   = 3;
 localparam int unsigned AXI_BURST_WIDTH  = 2;
@@ -45,10 +45,10 @@ localparam int unsigned AXI_REGION_WIDTH = 4;
 //////////////////////////////////
 
 // AXI signal types
-typedef logic [AXI_DATA_WIDTH   -1 : 0] axi_data_t;
-typedef logic [AXI_ADDR_WIDTH   -1 : 0] axi_addr_t;
-typedef logic [AXI_STRB_WIDTH   -1 : 0] axi_strb_t;
-typedef logic [AXI_ID_WIDTH     -1 : 0] axi_id_t;
+//typedef logic [AXI_DATA_WIDTH   -1 : 0] axi_data_t;
+//typedef logic [AXI_ADDR_WIDTH   -1 : 0] axi_addr_t;
+//typedef logic [AXI_STRB_WIDTH   -1 : 0] axi_strb_t;
+//typedef logic [AXI_ID_WIDTH     -1 : 0] axi_id_t;
 typedef logic [AXI_LEN_WIDTH    -1 : 0] axi_len_t;
 typedef logic [AXI_SIZE_WIDTH   -1 : 0] axi_size_t;
 typedef logic [AXI_BURST_WIDTH  -1 : 0] axi_burst_t;
@@ -75,10 +75,10 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 ////////////////////////
 
 // Declare AXI bus specifying the DATA_WIDTH
-`define DECLARE_AXI_BUS(bus_name, DATA_WIDTH) \
+`define DECLARE_AXI_BUS(bus_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) \
     // AW channel                                            \
-    axi_id_t                      ``bus_name``_axi_awid;     \
-    axi_addr_t                    ``bus_name``_axi_awaddr;   \
+    logic [ID_WIDTH-1 : 0]        ``bus_name``_axi_awid;     \
+    logic [ADDR_WIDTH-1 : 0]      ``bus_name``_axi_awaddr;   \
     axi_len_t                     ``bus_name``_axi_awlen;    \
     axi_size_t                    ``bus_name``_axi_awsize;   \
     axi_burst_t                   ``bus_name``_axi_awburst;  \
@@ -96,12 +96,12 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     axi_valid_t                   ``bus_name``_axi_wvalid;   \
     axi_ready_t                   ``bus_name``_axi_wready;   \
     // B channel                                             \
-    axi_id_t                      ``bus_name``_axi_bid;      \
+    logic [ID_WIDTH-1 : 0]        ``bus_name``_axi_bid;      \
     axi_resp_t                    ``bus_name``_axi_bresp;    \
     axi_valid_t                   ``bus_name``_axi_bvalid;   \
     axi_ready_t                   ``bus_name``_axi_bready;   \
     // AR channel                                            \
-    axi_addr_t                    ``bus_name``_axi_araddr;   \
+    logic [ADDR_WIDTH-1 : 0]      ``bus_name``_axi_araddr;   \
     axi_len_t                     ``bus_name``_axi_arlen;    \
     axi_size_t                    ``bus_name``_axi_arsize;   \
     axi_burst_t                   ``bus_name``_axi_arburst;  \
@@ -111,10 +111,10 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     axi_qos_t                     ``bus_name``_axi_arqos;    \
     axi_valid_t                   ``bus_name``_axi_arvalid;  \
     axi_ready_t                   ``bus_name``_axi_arready;  \
-    axi_id_t                      ``bus_name``_axi_arid;     \
+    logic [ID_WIDTH-1 : 0]        ``bus_name``_axi_arid;     \
     axi_region_t                  ``bus_name``_axi_arregion; \
     // R channel                                             \
-    axi_id_t                      ``bus_name``_axi_rid;      \
+    logic [ID_WIDTH-1 : 0]        ``bus_name``_axi_rid;      \
     logic [DATA_WIDTH-1 : 0]      ``bus_name``_axi_rdata;    \
     axi_resp_t                    ``bus_name``_axi_rresp;    \
     axi_last_t                    ``bus_name``_axi_rlast;    \
@@ -122,95 +122,94 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     axi_ready_t                   ``bus_name``_axi_rready;
 
 // Single define for whole AXI4-LITE bus
-`define DECLARE_AXILITE_BUS(bus_name) \
+`define DECLARE_AXILITE_BUS(bus_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) \
     // AW channel                               \
-    axi_addr_t  ``bus_name``_axilite_awaddr;    \
-    axi_prot_t  ``bus_name``_axilite_awprot;    \
-    axi_valid_t ``bus_name``_axilite_awvalid;   \
-    axi_ready_t ``bus_name``_axilite_awready;   \
+    logic [ADDR_WIDTH-1 : 0]        ``bus_name``_axilite_awaddr;    \
+    axi_prot_t                      ``bus_name``_axilite_awprot;    \
+    axi_valid_t                     ``bus_name``_axilite_awvalid;   \
+    axi_ready_t                     ``bus_name``_axilite_awready;   \
     // W channel                                \
-    axi_data_t  ``bus_name``_axilite_wdata;     \
-    axi_strb_t  ``bus_name``_axilite_wstrb;     \
-    axi_valid_t ``bus_name``_axilite_wvalid;    \
-    axi_ready_t ``bus_name``_axilite_wready;    \
+    logic [DATA_WIDTH-1 : 0]        ``bus_name``_axilite_wdata;     \
+    logic [(DATA_WIDTH/8)-1 : 0]    ``bus_name``_axilite_wstrb;     \
+    axi_valid_t                     ``bus_name``_axilite_wvalid;    \
+    axi_ready_t                     ``bus_name``_axilite_wready;    \
     // B channel                                \
-    axi_resp_t  ``bus_name``_axilite_bresp;     \
-    axi_valid_t ``bus_name``_axilite_bvalid;    \
-    axi_ready_t ``bus_name``_axilite_bready;    \
+    axi_resp_t                      ``bus_name``_axilite_bresp;     \
+    axi_valid_t                     ``bus_name``_axilite_bvalid;    \
+    axi_ready_t                     ``bus_name``_axilite_bready;    \
     // AR channel                               \
-    axi_addr_t  ``bus_name``_axilite_araddr;    \
-    axi_prot_t  ``bus_name``_axilite_arprot;    \
-    axi_valid_t ``bus_name``_axilite_arvalid;   \
-    axi_ready_t ``bus_name``_axilite_arready;   \
+    logic [ADDR_WIDTH-1 : 0]        ``bus_name``_axilite_araddr;    \
+    axi_prot_t                      ``bus_name``_axilite_arprot;    \
+    axi_valid_t                     ``bus_name``_axilite_arvalid;   \
+    axi_ready_t                     ``bus_name``_axilite_arready;   \
     // R channel                                \
-    axi_data_t  ``bus_name``_axilite_rdata;     \
-    axi_resp_t  ``bus_name``_axilite_rresp;     \
-    axi_valid_t ``bus_name``_axilite_rvalid;    \
-    axi_ready_t ``bus_name``_axilite_rready;
+    axi_resp_t                      ``bus_name``_axilite_rresp;     \
+    axi_valid_t                     ``bus_name``_axilite_rvalid;    \
+    axi_ready_t                     ``bus_name``_axilite_rready;
 
 // Declare AXI array
-`define DECLARE_AXI_BUS_ARRAY(array_name, size) \
-    axi_id_t     [``size`` -1 : 0] ``array_name``_axi_awid     ; \
-    axi_addr_t   [``size`` -1 : 0] ``array_name``_axi_awaddr   ; \
-    axi_len_t    [``size`` -1 : 0] ``array_name``_axi_awlen    ; \
-    axi_size_t   [``size`` -1 : 0] ``array_name``_axi_awsize   ; \
-    axi_burst_t  [``size`` -1 : 0] ``array_name``_axi_awburst  ; \
-    axi_lock_t   [``size`` -1 : 0] ``array_name``_axi_awlock   ; \
-    axi_cache_t  [``size`` -1 : 0] ``array_name``_axi_awcache  ; \
-    axi_prot_t   [``size`` -1 : 0] ``array_name``_axi_awprot   ; \
-    axi_qos_t    [``size`` -1 : 0] ``array_name``_axi_awqos    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axi_awvalid  ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axi_awready  ; \
-    axi_region_t [``size`` -1 : 0] ``array_name``_axi_awregion ; \
-    axi_data_t   [``size`` -1 : 0] ``array_name``_axi_wdata    ; \
-    axi_strb_t   [``size`` -1 : 0] ``array_name``_axi_wstrb    ; \
-    axi_last_t   [``size`` -1 : 0] ``array_name``_axi_wlast    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axi_wvalid   ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axi_wready   ; \
-    axi_id_t     [``size`` -1 : 0] ``array_name``_axi_bid      ; \
-    axi_resp_t   [``size`` -1 : 0] ``array_name``_axi_bresp    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axi_bvalid   ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axi_bready   ; \
-    axi_addr_t   [``size`` -1 : 0] ``array_name``_axi_araddr   ; \
-    axi_len_t    [``size`` -1 : 0] ``array_name``_axi_arlen    ; \
-    axi_size_t   [``size`` -1 : 0] ``array_name``_axi_arsize   ; \
-    axi_burst_t  [``size`` -1 : 0] ``array_name``_axi_arburst  ; \
-    axi_lock_t   [``size`` -1 : 0] ``array_name``_axi_arlock   ; \
-    axi_cache_t  [``size`` -1 : 0] ``array_name``_axi_arcache  ; \
-    axi_prot_t   [``size`` -1 : 0] ``array_name``_axi_arprot   ; \
-    axi_qos_t    [``size`` -1 : 0] ``array_name``_axi_arqos    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axi_arvalid  ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axi_arready  ; \
-    axi_id_t     [``size`` -1 : 0] ``array_name``_axi_arid     ; \
-    axi_region_t [``size`` -1 : 0] ``array_name``_axi_arregion ; \
-    axi_id_t     [``size`` -1 : 0] ``array_name``_axi_rid      ; \
-    axi_data_t   [``size`` -1 : 0] ``array_name``_axi_rdata    ; \
-    axi_resp_t   [``size`` -1 : 0] ``array_name``_axi_rresp    ; \
-    axi_last_t   [``size`` -1 : 0] ``array_name``_axi_rlast    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axi_rvalid   ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axi_rready   ;
+`define DECLARE_AXI_BUS_ARRAY(array_name, size, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) \
+    logic [ID_WIDTH-1 : 0]          [``size`` -1 : 0] ``array_name``_axi_awid     ; \
+    logic [ADDR_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axi_awaddr   ; \
+    axi_len_t                       [``size`` -1 : 0] ``array_name``_axi_awlen    ; \
+    axi_size_t                      [``size`` -1 : 0] ``array_name``_axi_awsize   ; \
+    axi_burst_t                     [``size`` -1 : 0] ``array_name``_axi_awburst  ; \
+    axi_lock_t                      [``size`` -1 : 0] ``array_name``_axi_awlock   ; \
+    axi_cache_t                     [``size`` -1 : 0] ``array_name``_axi_awcache  ; \
+    axi_prot_t                      [``size`` -1 : 0] ``array_name``_axi_awprot   ; \
+    axi_qos_t                       [``size`` -1 : 0] ``array_name``_axi_awqos    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axi_awvalid  ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axi_awready  ; \
+    axi_region_t                    [``size`` -1 : 0] ``array_name``_axi_awregion ; \
+    logic [DATA_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axi_wdata    ; \
+    logic [(DATA_WIDTH/8)-1 : 0]    [``size`` -1 : 0] ``array_name``_axi_wstrb    ; \
+    axi_last_t                      [``size`` -1 : 0] ``array_name``_axi_wlast    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axi_wvalid   ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axi_wready   ; \
+    logic [ID_WIDTH-1 : 0]          [``size`` -1 : 0] ``array_name``_axi_bid      ; \
+    axi_resp_t                      [``size`` -1 : 0] ``array_name``_axi_bresp    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axi_bvalid   ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axi_bready   ; \
+    logic [ADDR_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axi_araddr   ; \
+    axi_len_t                       [``size`` -1 : 0] ``array_name``_axi_arlen    ; \
+    axi_size_t                      [``size`` -1 : 0] ``array_name``_axi_arsize   ; \
+    axi_burst_t                     [``size`` -1 : 0] ``array_name``_axi_arburst  ; \
+    axi_lock_t                      [``size`` -1 : 0] ``array_name``_axi_arlock   ; \
+    axi_cache_t                     [``size`` -1 : 0] ``array_name``_axi_arcache  ; \
+    axi_prot_t                      [``size`` -1 : 0] ``array_name``_axi_arprot   ; \
+    axi_qos_t                       [``size`` -1 : 0] ``array_name``_axi_arqos    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axi_arvalid  ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axi_arready  ; \
+    logic [ID_WIDTH-1 : 0]          [``size`` -1 : 0] ``array_name``_axi_arid     ; \
+    axi_region_t                    [``size`` -1 : 0] ``array_name``_axi_arregion ; \
+    logic [ID_WIDTH-1 : 0]          [``size`` -1 : 0] ``array_name``_axi_rid      ; \
+    logic [DATA_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axi_rdata    ; \
+    axi_resp_t                      [``size`` -1 : 0] ``array_name``_axi_rresp    ; \
+    axi_last_t                      [``size`` -1 : 0] ``array_name``_axi_rlast    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axi_rvalid   ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axi_rready   ;
 
 // Declare AXI4 LITE array
-`define DECLARE_AXILITE_BUS_ARRAY(array_name, size) \
-    axi_addr_t   [``size`` -1 : 0] ``array_name``_axilite_awaddr   ; \
-    axi_prot_t   [``size`` -1 : 0] ``array_name``_axilite_awprot   ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_awvalid  ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_awready  ; \
-    axi_data_t   [``size`` -1 : 0] ``array_name``_axilite_wdata    ; \
-    axi_strb_t   [``size`` -1 : 0] ``array_name``_axilite_wstrb    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_wvalid   ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_wready   ; \
-    axi_resp_t   [``size`` -1 : 0] ``array_name``_axilite_bresp    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_bvalid   ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_bready   ; \
-    axi_addr_t   [``size`` -1 : 0] ``array_name``_axilite_araddr   ; \
-    axi_prot_t   [``size`` -1 : 0] ``array_name``_axilite_arprot   ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_arvalid  ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_arready  ; \
-    axi_data_t   [``size`` -1 : 0] ``array_name``_axilite_rdata    ; \
-    axi_resp_t   [``size`` -1 : 0] ``array_name``_axilite_rresp    ; \
-    axi_valid_t  [``size`` -1 : 0] ``array_name``_axilite_rvalid   ; \
-    axi_ready_t  [``size`` -1 : 0] ``array_name``_axilite_rready   ;
+`define DECLARE_AXILITE_BUS_ARRAY(array_name, size, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH) \
+    logic [ADDR_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axilite_awaddr   ; \
+    axi_prot_t                      [``size`` -1 : 0] ``array_name``_axilite_awprot   ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axilite_awvalid  ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axilite_awready  ; \
+    logic [DATA_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axilite_wdata    ; \
+    logic [(DATA_WIDTH/8)-1 : 0]    [``size`` -1 : 0] ``array_name``_axilite_wstrb    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axilite_wvalid   ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axilite_wready   ; \
+    axi_resp_t                      [``size`` -1 : 0] ``array_name``_axilite_bresp    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axilite_bvalid   ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axilite_bready   ; \
+    logic [ADDR_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axilite_araddr   ; \
+    axi_prot_t                      [``size`` -1 : 0] ``array_name``_axilite_arprot   ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axilite_arvalid  ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axilite_arready  ; \
+    logic [DATA_WIDTH-1 : 0]        [``size`` -1 : 0] ``array_name``_axilite_rdata    ; \
+    axi_resp_t                      [``size`` -1 : 0] ``array_name``_axilite_rresp    ; \
+    axi_valid_t                     [``size`` -1 : 0] ``array_name``_axilite_rvalid   ; \
+    axi_ready_t                     [``size`` -1 : 0] ``array_name``_axilite_rready   ;
 
 ///////////////////////
 //  Bus Assignment   //
@@ -753,209 +752,209 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
 //////////////////
 
 // AXI4 MASTER PORTS
-`define DEFINE_AXI_MASTER_PORTS(master_name)          \
+`define DEFINE_AXI_MASTER_PORTS(master_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)          \
     // AW channel                                     \
-    output axi_id_t     ``master_name``_axi_awid,     \
-    output axi_addr_t   ``master_name``_axi_awaddr,   \
-    output axi_len_t    ``master_name``_axi_awlen,    \
-    output axi_size_t   ``master_name``_axi_awsize,   \
-    output axi_burst_t  ``master_name``_axi_awburst,  \
-    output axi_lock_t   ``master_name``_axi_awlock,   \
-    output axi_cache_t  ``master_name``_axi_awcache,  \
-    output axi_prot_t   ``master_name``_axi_awprot,   \
-    output axi_qos_t    ``master_name``_axi_awqos,    \
-    output axi_valid_t  ``master_name``_axi_awvalid,  \
-    input  axi_ready_t  ``master_name``_axi_awready,  \
-    output axi_region_t ``master_name``_axi_awregion, \
+    output logic [ID_WIDTH-1 : 0]       ``master_name``_axi_awid,     \
+    output logic [ADDR_WIDTH-1 : 0]     ``master_name``_axi_awaddr,   \
+    output axi_len_t                    ``master_name``_axi_awlen,    \
+    output axi_size_t                   ``master_name``_axi_awsize,   \
+    output axi_burst_t                  ``master_name``_axi_awburst,  \
+    output axi_lock_t                   ``master_name``_axi_awlock,   \
+    output axi_cache_t                  ``master_name``_axi_awcache,  \
+    output axi_prot_t                   ``master_name``_axi_awprot,   \
+    output axi_qos_t                    ``master_name``_axi_awqos,    \
+    output axi_valid_t                  ``master_name``_axi_awvalid,  \
+    input  axi_ready_t                  ``master_name``_axi_awready,  \
+    output axi_region_t                 ``master_name``_axi_awregion, \
     // W channel                                      \
-    output axi_data_t   ``master_name``_axi_wdata,    \
-    output axi_strb_t   ``master_name``_axi_wstrb,    \
-    output axi_last_t   ``master_name``_axi_wlast,    \
-    output axi_valid_t  ``master_name``_axi_wvalid,   \
-    input  axi_ready_t  ``master_name``_axi_wready,   \
+    output logic [DATA_WIDTH-1 : 0]     ``master_name``_axi_wdata,    \
+    output logic [(DATA_WIDTH/8)-1 : 0] ``master_name``_axi_wstrb,    \
+    output axi_last_t                   ``master_name``_axi_wlast,    \
+    output axi_valid_t                  ``master_name``_axi_wvalid,   \
+    input  axi_ready_t                  ``master_name``_axi_wready,   \
     // B channel                                      \
-    input  axi_id_t     ``master_name``_axi_bid,      \
-    input  axi_resp_t   ``master_name``_axi_bresp,    \
-    input  axi_valid_t  ``master_name``_axi_bvalid,   \
-    output axi_ready_t  ``master_name``_axi_bready,   \
+    input  logic [ID_WIDTH-1 : 0]       ``master_name``_axi_bid,      \
+    input  axi_resp_t                   ``master_name``_axi_bresp,    \
+    input  axi_valid_t                  ``master_name``_axi_bvalid,   \
+    output axi_ready_t                  ``master_name``_axi_bready,   \
     // AR channel                                     \
-    output axi_addr_t   ``master_name``_axi_araddr,   \
-    output axi_len_t    ``master_name``_axi_arlen,    \
-    output axi_size_t   ``master_name``_axi_arsize,   \
-    output axi_burst_t  ``master_name``_axi_arburst,  \
-    output axi_lock_t   ``master_name``_axi_arlock,   \
-    output axi_cache_t  ``master_name``_axi_arcache,  \
-    output axi_prot_t   ``master_name``_axi_arprot,   \
-    output axi_qos_t    ``master_name``_axi_arqos,    \
-    output axi_valid_t  ``master_name``_axi_arvalid,  \
-    input  axi_ready_t  ``master_name``_axi_arready,  \
-    output axi_id_t     ``master_name``_axi_arid,     \
-    output axi_region_t ``master_name``_axi_arregion, \
+    output logic [ADDR_WIDTH-1 : 0]     ``master_name``_axi_araddr,   \
+    output axi_len_t                    ``master_name``_axi_arlen,    \
+    output axi_size_t                   ``master_name``_axi_arsize,   \
+    output axi_burst_t                  ``master_name``_axi_arburst,  \
+    output axi_lock_t                   ``master_name``_axi_arlock,   \
+    output axi_cache_t                  ``master_name``_axi_arcache,  \
+    output axi_prot_t                   ``master_name``_axi_arprot,   \
+    output axi_qos_t                    ``master_name``_axi_arqos,    \
+    output axi_valid_t                  ``master_name``_axi_arvalid,  \
+    input  axi_ready_t                  ``master_name``_axi_arready,  \
+    output logic [ID_WIDTH-1 : 0]       ``master_name``_axi_arid,     \
+    output axi_region_t                 ``master_name``_axi_arregion, \
     // R channel                                      \
-    input  axi_id_t     ``master_name``_axi_rid,      \
-    input  axi_data_t   ``master_name``_axi_rdata,    \
-    input  axi_resp_t   ``master_name``_axi_rresp,    \
-    input  axi_last_t   ``master_name``_axi_rlast,    \
-    input  axi_valid_t  ``master_name``_axi_rvalid,   \
-    output axi_ready_t  ``master_name``_axi_rready
+    input  logic [ID_WIDTH-1 : 0]       ``master_name``_axi_rid,      \
+    input  logic [DATA_WIDTH-1 : 0]     ``master_name``_axi_rdata,    \
+    input  axi_resp_t                   ``master_name``_axi_rresp,    \
+    input  axi_last_t                   ``master_name``_axi_rlast,    \
+    input  axi_valid_t                  ``master_name``_axi_rvalid,   \
+    output axi_ready_t                  ``master_name``_axi_rready
 
 
 // AXI4 SLAVE PORTS
-`define DEFINE_AXI_SLAVE_PORTS(slave_name)         \
+`define DEFINE_AXI_SLAVE_PORTS(slave_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)         \
   // AW channel                                    \
-  input  axi_id_t     ``slave_name``_axi_awid,     \
-  input  axi_addr_t   ``slave_name``_axi_awaddr,   \
-  input  axi_len_t    ``slave_name``_axi_awlen,    \
-  input  axi_size_t   ``slave_name``_axi_awsize,   \
-  input  axi_burst_t  ``slave_name``_axi_awburst,  \
-  input  axi_lock_t   ``slave_name``_axi_awlock,   \
-  input  axi_cache_t  ``slave_name``_axi_awcache,  \
-  input  axi_prot_t   ``slave_name``_axi_awprot,   \
-  input  axi_qos_t    ``slave_name``_axi_awqos,    \
-  input  axi_valid_t  ``slave_name``_axi_awvalid,  \
-  output axi_ready_t  ``slave_name``_axi_awready,  \
-  input  axi_region_t ``slave_name``_axi_awregion, \
+  input  logic [ID_WIDTH-1 : 0]         ``slave_name``_axi_awid,     \
+  input  logic [ADDR_WIDTH-1 : 0]       ``slave_name``_axi_awaddr,   \
+  input  axi_len_t                      ``slave_name``_axi_awlen,    \
+  input  axi_size_t                     ``slave_name``_axi_awsize,   \
+  input  axi_burst_t                    ``slave_name``_axi_awburst,  \
+  input  axi_lock_t                     ``slave_name``_axi_awlock,   \
+  input  axi_cache_t                    ``slave_name``_axi_awcache,  \
+  input  axi_prot_t                     ``slave_name``_axi_awprot,   \
+  input  axi_qos_t                      ``slave_name``_axi_awqos,    \
+  input  axi_valid_t                    ``slave_name``_axi_awvalid,  \
+  output axi_ready_t                    ``slave_name``_axi_awready,  \
+  input  axi_region_t                   ``slave_name``_axi_awregion, \
   // W channel                                     \
-  input  axi_data_t   ``slave_name``_axi_wdata,    \
-  input  axi_strb_t   ``slave_name``_axi_wstrb,    \
-  input  axi_last_t   ``slave_name``_axi_wlast,    \
-  input  axi_valid_t  ``slave_name``_axi_wvalid,   \
-  output axi_ready_t  ``slave_name``_axi_wready,   \
+  input  logic [DATA_WIDTH-1 : 0]       ``slave_name``_axi_wdata,    \
+  input  logic [(DATA_WIDTH/8)-1 : 0]   ``slave_name``_axi_wstrb,    \
+  input  axi_last_t                     ``slave_name``_axi_wlast,    \
+  input  axi_valid_t                    ``slave_name``_axi_wvalid,   \
+  output axi_ready_t                    ``slave_name``_axi_wready,   \
   // B channel                                     \
-  output axi_id_t     ``slave_name``_axi_bid,      \
-  output axi_resp_t   ``slave_name``_axi_bresp,    \
-  output axi_valid_t  ``slave_name``_axi_bvalid,   \
-  input  axi_ready_t  ``slave_name``_axi_bready,   \
+  output logic [ID_WIDTH-1 : 0]         ``slave_name``_axi_bid,      \
+  output axi_resp_t                     ``slave_name``_axi_bresp,    \
+  output axi_valid_t                    ``slave_name``_axi_bvalid,   \
+  input  axi_ready_t                    ``slave_name``_axi_bready,   \
   // AR channel                                    \
-  input  axi_addr_t   ``slave_name``_axi_araddr,   \
-  input  axi_len_t    ``slave_name``_axi_arlen,    \
-  input  axi_size_t   ``slave_name``_axi_arsize,   \
-  input  axi_burst_t  ``slave_name``_axi_arburst,  \
-  input  axi_lock_t   ``slave_name``_axi_arlock,   \
-  input  axi_cache_t  ``slave_name``_axi_arcache,  \
-  input  axi_prot_t   ``slave_name``_axi_arprot,   \
-  input  axi_qos_t    ``slave_name``_axi_arqos,    \
-  input  axi_valid_t  ``slave_name``_axi_arvalid,  \
-  output axi_ready_t  ``slave_name``_axi_arready,  \
-  input  axi_id_t     ``slave_name``_axi_arid,     \
-  input  axi_region_t ``slave_name``_axi_arregion, \
+  input  logic [ADDR_WIDTH-1 : 0]       ``slave_name``_axi_araddr,   \
+  input  axi_len_t                      ``slave_name``_axi_arlen,    \
+  input  axi_size_t                     ``slave_name``_axi_arsize,   \
+  input  axi_burst_t                    ``slave_name``_axi_arburst,  \
+  input  axi_lock_t                     ``slave_name``_axi_arlock,   \
+  input  axi_cache_t                    ``slave_name``_axi_arcache,  \
+  input  axi_prot_t                     ``slave_name``_axi_arprot,   \
+  input  axi_qos_t                      ``slave_name``_axi_arqos,    \
+  input  axi_valid_t                    ``slave_name``_axi_arvalid,  \
+  output axi_ready_t                    ``slave_name``_axi_arready,  \
+  input  logic [ID_WIDTH-1 : 0]         ``slave_name``_axi_arid,     \
+  input  axi_region_t                   ``slave_name``_axi_arregion, \
   // R channel                                     \
-  output axi_id_t     ``slave_name``_axi_rid,      \
-  output axi_data_t   ``slave_name``_axi_rdata,    \
-  output axi_resp_t   ``slave_name``_axi_rresp,    \
-  output axi_last_t   ``slave_name``_axi_rlast,    \
-  output axi_valid_t  ``slave_name``_axi_rvalid,   \
-  input  axi_ready_t  ``slave_name``_axi_rready
+  output logic [ID_WIDTH-1 : 0]         ``slave_name``_axi_rid,      \
+  output logic [DATA_WIDTH-1 : 0]       ``slave_name``_axi_rdata,    \
+  output axi_resp_t                     ``slave_name``_axi_rresp,    \
+  output axi_last_t                     ``slave_name``_axi_rlast,    \
+  output axi_valid_t                    ``slave_name``_axi_rvalid,   \
+  input  axi_ready_t                    ``slave_name``_axi_rready
 
 // AXI4 LITE MASTER PORTS
-`define DEFINE_AXILITE_MASTER_PORTS(master_name)          \
+`define DEFINE_AXILITE_MASTER_PORTS(master_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)          \
     // AW channel                                        \
-    output axi_addr_t   ``master_name``_axilite_awaddr,   \
-    output axi_prot_t   ``master_name``_axilite_awprot,   \
-    output axi_valid_t  ``master_name``_axilite_awvalid,  \
-    input  axi_ready_t  ``master_name``_axilite_awready,  \
+    output logic [ADDR_WIDTH-1 : 0]     ``master_name``_axilite_awaddr,   \
+    output axi_prot_t                   ``master_name``_axilite_awprot,   \
+    output axi_valid_t                  ``master_name``_axilite_awvalid,  \
+    input  axi_ready_t                  ``master_name``_axilite_awready,  \
     // W channel                                         \
-    output axi_data_t   ``master_name``_axilite_wdata,    \
-    output axi_strb_t   ``master_name``_axilite_wstrb,    \
-    output axi_valid_t  ``master_name``_axilite_wvalid,   \
-    input  axi_ready_t  ``master_name``_axilite_wready,   \
+    output logic [DATA_WIDTH-1 : 0]     ``master_name``_axilite_wdata,    \
+    output logic [(DATA_WIDTH/8)-1 : 0] ``master_name``_axilite_wstrb,    \
+    output axi_valid_t                  ``master_name``_axilite_wvalid,   \
+    input  axi_ready_t                  ``master_name``_axilite_wready,   \
     // B channel                                         \
-    input  axi_resp_t   ``master_name``_axilite_bresp,    \
-    input  axi_valid_t  ``master_name``_axilite_bvalid,   \
-    output axi_ready_t  ``master_name``_axilite_bready,   \
+    input  axi_resp_t                   ``master_name``_axilite_bresp,    \
+    input  axi_valid_t                  ``master_name``_axilite_bvalid,   \
+    output axi_ready_t                  ``master_name``_axilite_bready,   \
     // AR channel                                        \
-    output axi_addr_t   ``master_name``_axilite_araddr,   \
-    output axi_prot_t   ``master_name``_axilite_arprot,   \
-    output axi_valid_t  ``master_name``_axilite_arvalid,  \
-    input  axi_ready_t  ``master_name``_axilite_arready,  \
+    output logic [ADDR_WIDTH-1 : 0]     ``master_name``_axilite_araddr,   \
+    output axi_prot_t                   ``master_name``_axilite_arprot,   \
+    output axi_valid_t                  ``master_name``_axilite_arvalid,  \
+    input  axi_ready_t                  ``master_name``_axilite_arready,  \
     // R channel                                         \
-    input  axi_data_t   ``master_name``_axilite_rdata,    \
-    input  axi_resp_t   ``master_name``_axilite_rresp,    \
-    input  axi_valid_t  ``master_name``_axilite_rvalid,   \
-    output axi_ready_t  ``master_name``_axilite_rready
+    input  logic [DATA_WIDTH-1 : 0]     ``master_name``_axilite_rdata,    \
+    input  axi_resp_t                   ``master_name``_axilite_rresp,    \
+    input  axi_valid_t                  ``master_name``_axilite_rvalid,   \
+    output axi_ready_t                  ``master_name``_axilite_rready
 
 // AXI4 LITE SLAVE PORTS
-`define DEFINE_AXILITE_SLAVE_PORTS(slave_name)           \
+`define DEFINE_AXILITE_SLAVE_PORTS(slave_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)           \
     // AW channel                                        \
-    input  axi_addr_t   ``slave_name``_axilite_awaddr,   \
-    input  axi_prot_t   ``slave_name``_axilite_awprot,   \
-    input  axi_valid_t  ``slave_name``_axilite_awvalid,  \
-    output axi_ready_t  ``slave_name``_axilite_awready,  \
+    input  logic [ADDR_WIDTH-1 : 0]     ``slave_name``_axilite_awaddr,   \
+    input  axi_prot_t                   ``slave_name``_axilite_awprot,   \
+    input  axi_valid_t                  ``slave_name``_axilite_awvalid,  \
+    output axi_ready_t                  ``slave_name``_axilite_awready,  \
     // W channel                                         \
-    input  axi_data_t   ``slave_name``_axilite_wdata,    \
-    input  axi_strb_t   ``slave_name``_axilite_wstrb,    \
-    input  axi_valid_t  ``slave_name``_axilite_wvalid,   \
-    output axi_ready_t  ``slave_name``_axilite_wready,   \
+    input  logic [DATA_WIDTH-1 : 0]     ``slave_name``_axilite_wdata,    \
+    input  logic [(DATA_WIDTH/8)-1 : 0] ``slave_name``_axilite_wstrb,    \
+    input  axi_valid_t                  ``slave_name``_axilite_wvalid,   \
+    output axi_ready_t                  ``slave_name``_axilite_wready,   \
     // B channel                                         \
-    output axi_resp_t   ``slave_name``_axilite_bresp,    \
-    output axi_valid_t  ``slave_name``_axilite_bvalid,   \
-    input  axi_ready_t  ``slave_name``_axilite_bready,   \
+    output axi_resp_t                   ``slave_name``_axilite_bresp,    \
+    output axi_valid_t                  ``slave_name``_axilite_bvalid,   \
+    input  axi_ready_t                  ``slave_name``_axilite_bready,   \
     // AR channel                                        \
-    input  axi_addr_t   ``slave_name``_axilite_araddr,   \
-    input  axi_prot_t   ``slave_name``_axilite_arprot,   \
-    input  axi_valid_t  ``slave_name``_axilite_arvalid,  \
-    output axi_ready_t  ``slave_name``_axilite_arready,  \
+    input  logic [ADDR_WIDTH-1 : 0]     ``slave_name``_axilite_araddr,   \
+    input  axi_prot_t                   ``slave_name``_axilite_arprot,   \
+    input  axi_valid_t                  ``slave_name``_axilite_arvalid,  \
+    output axi_ready_t                  ``slave_name``_axilite_arready,  \
     // R channel                                         \
-    output axi_data_t   ``slave_name``_axilite_rdata,    \
-    output axi_resp_t   ``slave_name``_axilite_rresp,    \
-    output axi_valid_t  ``slave_name``_axilite_rvalid,   \
-    input  axi_ready_t  ``slave_name``_axilite_rready
+    output logic [DATA_WIDTH-1 : 0]     ``slave_name``_axilite_rdata,    \
+    output axi_resp_t                   ``slave_name``_axilite_rresp,    \
+    output axi_valid_t                  ``slave_name``_axilite_rvalid,   \
+    input  axi_ready_t                  ``slave_name``_axilite_rready
 
 
 // AXI4 LITE SLAVE PORTS ARRAY
-`define DEFINE_AXILITE_SLAVE_PORTS_ARRAY(slave_array_name, size)                 \
+`define DEFINE_AXILITE_SLAVE_PORTS_ARRAY(slave_array_name, size, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)                 \
     // AW channel                                                                \
-    input  axi_addr_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_awaddr,   \
-    input  axi_prot_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_awprot,   \
-    input  axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_awvalid,  \
-    output axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_awready,  \
+    input  logic [ADDR_WIDTH-1 : 0]     [``size`` -1 : 0]  ``slave_array_name``_axilite_awaddr,   \
+    input  axi_prot_t                   [``size`` -1 : 0]  ``slave_array_name``_axilite_awprot,   \
+    input  axi_valid_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_awvalid,  \
+    output axi_ready_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_awready,  \
     // W channel                                                                 \
-    input  axi_data_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_wdata,    \
-    input  axi_strb_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_wstrb,    \
-    input  axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_wvalid,   \
-    output axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_wready,   \
+    input  logic [DATA_WIDTH-1 : 0]     [``size`` -1 : 0]  ``slave_array_name``_axilite_wdata,    \
+    input  logic [(DATA_WIDTH/8)-1 : 0] [``size`` -1 : 0]  ``slave_array_name``_axilite_wstrb,    \
+    input  axi_valid_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_wvalid,   \
+    output axi_ready_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_wready,   \
     // B channel                                                                 \
-    output axi_resp_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_bresp,    \
-    output axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_bvalid,   \
-    input  axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_bready,   \
+    output axi_resp_t                   [``size`` -1 : 0]  ``slave_array_name``_axilite_bresp,    \
+    output axi_valid_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_bvalid,   \
+    input  axi_ready_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_bready,   \
     // AR channel                                                                \
-    input  axi_addr_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_araddr,   \
-    input  axi_prot_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_arprot,   \
-    input  axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_arvalid,  \
-    output axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_arready,  \
+    input  logic [ADDR_WIDTH-1 : 0]     [``size`` -1 : 0]  ``slave_array_name``_axilite_araddr,   \
+    input  axi_prot_t                   [``size`` -1 : 0]  ``slave_array_name``_axilite_arprot,   \
+    input  axi_valid_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_arvalid,  \
+    output axi_ready_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_arready,  \
     // R channel                                                                 \
-    output axi_data_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_rdata,    \
-    output axi_resp_t  [``size`` -1 : 0]  ``slave_array_name``_axilite_rresp,    \
-    output axi_valid_t [``size`` -1 : 0]  ``slave_array_name``_axilite_rvalid,   \
-    input  axi_ready_t [``size`` -1 : 0]  ``slave_array_name``_axilite_rready
+    output logic [DATA_WIDTH-1 : 0]     [``size`` -1 : 0]  ``slave_array_name``_axilite_rdata,    \
+    output axi_resp_t                   [``size`` -1 : 0]  ``slave_array_name``_axilite_rresp,    \
+    output axi_valid_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_rvalid,   \
+    input  axi_ready_t                  [``size`` -1 : 0]  ``slave_array_name``_axilite_rready
 
 
 // AXI4 LITE MASTER PORTS ARRAY
-`define DEFINE_AXILITE_MASTER_PORTS_ARRAY(master_array_name, size)                \
+`define DEFINE_AXILITE_MASTER_PORTS_ARRAY(master_array_name, size, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)                \
     // AW channel                                                                 \
-    output axi_addr_t  [``size`` -1 : 0]  ``master_array_name``_axilite_awaddr,   \
-    output axi_prot_t  [``size`` -1 : 0]  ``master_array_name``_axilite_awprot,   \
-    output axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_awvalid,  \
-    input  axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_awready,  \
+    output logic [ADDR_WIDTH-1 : 0]     [``size`` -1 : 0]  ``master_array_name``_axilite_awaddr,   \
+    output axi_prot_t                   [``size`` -1 : 0]  ``master_array_name``_axilite_awprot,   \
+    output axi_valid_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_awvalid,  \
+    input  axi_ready_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_awready,  \
     // W channel                                                                  \
-    output axi_data_t  [``size`` -1 : 0]  ``master_array_name``_axilite_wdata,    \
-    output axi_strb_t  [``size`` -1 : 0]  ``master_array_name``_axilite_wstrb,    \
-    output axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_wvalid,   \
-    input  axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_wready,   \
+    output logic [DATA_WIDTH-1 : 0]     [``size`` -1 : 0]  ``master_array_name``_axilite_wdata,    \
+    output logic [(DATA_WIDTH/8)-1 : 0] [``size`` -1 : 0]  ``master_array_name``_axilite_wstrb,    \
+    output axi_valid_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_wvalid,   \
+    input  axi_ready_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_wready,   \
     // B channel                                                                  \
-    input  axi_resp_t  [``size`` -1 : 0]  ``master_array_name``_axilite_bresp,    \
-    input  axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_bvalid,   \
-    output axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_bready,   \
+    input  axi_resp_t                   [``size`` -1 : 0]  ``master_array_name``_axilite_bresp,    \
+    input  axi_valid_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_bvalid,   \
+    output axi_ready_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_bready,   \
     // AR channel                                                                 \
-    output axi_addr_t  [``size`` -1 : 0]  ``master_array_name``_axilite_araddr,   \
-    output axi_prot_t  [``size`` -1 : 0]  ``master_array_name``_axilite_arprot,   \
-    output axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_arvalid,  \
-    input  axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_arready,  \
+    output logic [ADDR_WIDTH-1 : 0]     [``size`` -1 : 0]  ``master_array_name``_axilite_araddr,   \
+    output axi_prot_t                   [``size`` -1 : 0]  ``master_array_name``_axilite_arprot,   \
+    output axi_valid_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_arvalid,  \
+    input  axi_ready_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_arready,  \
     // R channel                                                                  \
-    input  axi_data_t  [``size`` -1 : 0]  ``master_array_name``_axilite_rdata,    \
-    input  axi_resp_t  [``size`` -1 : 0]  ``master_array_name``_axilite_rresp,    \
-    input  axi_valid_t [``size`` -1 : 0]  ``master_array_name``_axilite_rvalid,   \
-    output axi_ready_t [``size`` -1 : 0]  ``master_array_name``_axilite_rready
+    input  logic [DATA_WIDTH-1 : 0]     [``size`` -1 : 0]  ``master_array_name``_axilite_rdata,    \
+    input  axi_resp_t                   [``size`` -1 : 0]  ``master_array_name``_axilite_rresp,    \
+    input  axi_valid_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_rvalid,   \
+    output axi_ready_t                  [``size`` -1 : 0]  ``master_array_name``_axilite_rready
 
 /////////////////////
 // Sink interfaces //
