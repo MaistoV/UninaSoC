@@ -1,6 +1,9 @@
 # Python products
 *__pycache__
 
+# VScode local
+.vscode
+
 # Prerequisites
 *.d
 # Object files
