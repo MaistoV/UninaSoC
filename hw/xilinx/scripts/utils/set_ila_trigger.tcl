@@ -13,9 +13,19 @@ set_property CONTROL.TRIGGER_CONDITION  OR          [get_hw_ilas]
 set_property CONTROL.TRIGGER_POSITION   4096        [get_hw_ilas]
 
 # Set triggers
-set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_arvalid -of_objects [get_hw_ilas]]
-set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_awvalid -of_objects [get_hw_ilas]]
-set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_wvalid  -of_objects [get_hw_ilas]]
+# Control valids
+# set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes HLS_CONTROL_axilite_arvalid -of_objects [get_hw_ilas]]
+# set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes HLS_CONTROL_axilite_awvalid -of_objects [get_hw_ilas]]
+# set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes HLS_CONTROL_axilite_bvalid  -of_objects [get_hw_ilas]]
+# set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes HLS_CONTROL_axilite_rvalid  -of_objects [get_hw_ilas]]
+# set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes HLS_CONTROL_axilite_wvalid  -of_objects [get_hw_ilas]]
+# Master valids
+# set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes MBUS_masters_axi_wvalid -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7a100t_0] -filter {CELL_NAME=~"ila_u"}]]
+# Interrupt
+set_property TRIGGER_COMPARE_VALUE eq1'bR [get_hw_probes hls_interrupt_o -of_objects [get_hw_ilas -of_objects [get_hw_devices xc7a100t_0] -filter {CELL_NAME=~"ila_u"}]]
+
+# Combine condition
+set_property CONTROL.TRIGGER_CONDITION OR [get_hw_ilas -of_objects [get_hw_devices xc7a100t_0] -filter {CELL_NAME=~"ila_u"}]
 
 ###########
 # Arm ILA #
@@ -25,5 +35,7 @@ set_property TRIGGER_COMPARE_VALUE eq1'b1 [get_hw_probes sys_master_to_xbar_axi_
 display_hw_ila_data [upload_hw_ila_data [get_hw_ilas]]
 
 # Arm ILA
-# puts "\[ILA\] Arming ILA"
-# run_hw_ila [get_hw_ilas]
+puts "\[ILA\] Arming ILA"
+run_hw_ila [get_hw_ilas]
+
+display_hw_ila_data [upload_hw_ila_data [get_hw_ilas]]
