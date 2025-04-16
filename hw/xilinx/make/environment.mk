@@ -79,7 +79,7 @@ XILINX_BITSTREAM ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl
 XILINX_PROBE_LTX ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.ltx
 
 # Whether to use ILA probes (0|1)
-XILINX_ILA ?= 0
+XILINX_ILA ?= 1
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=                                \
