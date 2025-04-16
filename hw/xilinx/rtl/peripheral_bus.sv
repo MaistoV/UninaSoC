@@ -205,8 +205,8 @@ module peripheral_bus #(
     if( SYS_DATA_WIDTH == 64 ) begin: clock_conv_to_dwidth_conv
 
         xlnx_axi_dwidth_64_to_32_converter axi_dwidth_conv_u (
-            .s_axi_aclk     ( ddr_clk      ),
-            .s_axi_aresetn  ( ~ddr_rst     ),
+            .s_axi_aclk     ( PBUS_clock_i      ),
+            .s_axi_aresetn  ( PBUS_reset_ni     ),
 
             // Slave from clock conv
             .s_axi_awid     ( to_dwidth_conv_axi_awid    ),
