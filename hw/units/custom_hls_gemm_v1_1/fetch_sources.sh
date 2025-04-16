@@ -1,4 +1,7 @@
 #!/bin/bash
+# Author: Vincenzo Merola <vincenzo.merola2@unina.it>
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Description: Fetch HLS sources and build Verilog and C standalone drivers
 
 # Colors
 RED='\033[1;31m'
@@ -20,12 +23,8 @@ BUILD="$(pwd -P)/rtl"
 printf "\n${YELLOW}[FETCH_SOURCES] Cloning source repository${NC}\n"
 git clone ${GIT_URL} -b ${GIT_TAG} ${CLONE_DIR}
 
-cd ${CLONE_DIR}/hw
-# Synthesizing and copying verilog rtl files
-printf "\n${YELLOW}[FETCH_SOURCES] Starting c-synthesis for HLS sources${NC}\n"
-make syn
-printf "\n${YELLOW}[FETCH_SOURCES] Copying all sources into rtl${NC}\n"
-cp -r ${COMP_NAME}/hls/syn/verilog/* ${BUILD}
+cd assets
+source rebuild_hls.sh
 
 cd ${WORK_DIR}
 # Deleting the cloned repo
