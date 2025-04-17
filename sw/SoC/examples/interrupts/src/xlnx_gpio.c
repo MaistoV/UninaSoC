@@ -1,3 +1,5 @@
+#ifdef IS_EMBEDDED // TODO: placeholder to HAL
+
 #include "xlnx_gpio.h"
 
 void gpio_in_configure(){
@@ -34,3 +36,5 @@ void gpio_handler() {
     *(gpio_in_addr + 0x120/sizeof(uint32_t)) = 0x1;
 
 }
+
+#endif // IS_EMBEDDED
