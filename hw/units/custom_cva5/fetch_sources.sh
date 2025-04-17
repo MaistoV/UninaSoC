@@ -1,1 +1,15 @@
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Create rtl dir
+
+mkdir rtl
+GIT_URL="https://github.com/openhwgroup/cva5.git"
+GIT_TAG=v0.9  
+CLONE_DIR=cva5
+
+printf "${YELLOW} [FETCH SOURCES] Cloning source repository${NC}\n"
+git clone --branch ${GIT_TAG} --depth 1 ${GIT_URL} ${CLONE_DIR}
 
