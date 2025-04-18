@@ -13,3 +13,18 @@ CLONE_DIR=cva5
 printf "${YELLOW} [FETCH SOURCES] Cloning source repository${NC}\n"
 git clone --branch ${GIT_TAG} --depth 1 ${GIT_URL} ${CLONE_DIR}
 
+# Copia i file sorgenti RTL nella cartella rtl
+printf "${YELLOW} [FETCH SOURCES] Copying RTL source files to rtl/ ${NC}\n"
+
+# Cerca e copia file Verilog/SystemVerilog (senza VHDL)
+find ${CLONE_DIR} -type f \( -name "*.sv" -o -name "*.v" -o -name "*.vh" \) -exec cp {} rtl/ \;
+
+# Pulisce la directory clonata
+printf "${YELLOW} [FETCH SOURCES] Cleaning up temporary directory${NC}\n"
+sudo rm -r ${CLONE_DIR}
+
+# Messaggio finale
+printf "${GREEN} [FETCH SOURCES] Done! RTL files are in rtl/ ${NC}\n"
+
+
+
