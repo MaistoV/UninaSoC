@@ -551,8 +551,8 @@ module uninasoc (
 
     // localparam string CUSTOM_HLS_VERSION = "none"; // Disable
     // localparam string CUSTOM_HLS_VERSION = "v1.0"; // 3 AXI MASTER INTERFACES
-    localparam string CUSTOM_HLS_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
-    // localparam string CUSTOM_HLS_VERSION = "vdotprod"; // 1 AXI MASTER INTERFACE
+    // localparam string CUSTOM_HLS_VERSION = "v1.1"; // 1 AXI MASTER INTERFACE
+    localparam string CUSTOM_HLS_VERSION = "conv_naive"; // 1 AXI MASTER INTERFACE
 
     // DEBUG
     (* mark_debug = 1 *) logic hls_interrupt_o;
@@ -767,9 +767,9 @@ module uninasoc (
             .control_axilite_rready     ( HLS_CONTROL_axilite_rready           )  // input wire control_axilite_rready
         );
     end : gen_hls_gemm_v1_1
-    else if ( CUSTOM_HLS_VERSION == "vdotprod" ) begin : gen_hls_vdotprod
+    else if ( CUSTOM_HLS_VERSION == "conv_naive" ) begin : gen_hls_conv_naive
         // HLS core instance
-        custom_hls_vdotprod custom_hls_vdotprod_u (
+        custom_hls_conv_naive custom_hls_conv_naive_u (
             .clk_i                      ( HLS_CONTROL_clk                      ), // input wire clk_i
             .rst_ni                     ( HLS_CONTROL_rstn                     ), // input wire rst_ni
             .interrupt_o                ( hls_interrupt_o                      ), // output wire interrupt_o
@@ -832,11 +832,7 @@ module uninasoc (
             .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid           ), // output wire control_axilite_rvalid
             .control_axilite_rready     ( HLS_CONTROL_axilite_rready           )  // input wire control_axilite_rready
         );
-
-        // // Sink unused interafces
-        // `SINK_AXI_MASTER_INTERFACE(HLS_gmem1);
-        // `SINK_AXI_MASTER_INTERFACE(HLS_gmem2);
-    end : gen_hls_vdotprod
+    end : gen_hls_conv_naive
     else begin: gen_no_hls_gemm
         // Just sink the interfaces
         `SINK_AXI_MASTER_INTERFACE(SINK_STUB_to_MBUS)
