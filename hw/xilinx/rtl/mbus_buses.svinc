@@ -26,7 +26,7 @@
 // Concatenate AXI master buses //
 //////////////////////////////////
 `DECLARE_AXI_BUS_ARRAY(MBUS_masters, NUM_SI)
-`CONCAT_AXI_MASTERS_ARRAY7(MBUS_masters, HLS_GEMM_gmem2_to_MBUS, HLS_GEMM_gmem1_to_MBUS, HLS_GEMM_gmem0_to_MBUS, DBG_MASTER_to_MBUS, RV_SOCKET_INSTR_to_MBUS, RV_SOCKET_DATA_to_MBUS, SYS_MASTER_to_MBUS)
+`CONCAT_AXI_MASTERS_ARRAY5(MBUS_masters, HLS_gmem0_to_MBUS, DBG_MASTER_to_MBUS, RV_SOCKET_INSTR_to_MBUS, RV_SOCKET_DATA_to_MBUS, SYS_MASTER_to_MBUS)
 
 /////////////////////////////////
 // Concatenate AXI slave buses //
