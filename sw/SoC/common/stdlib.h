@@ -1,3 +1,6 @@
+#ifndef __STDLIB_H_
+#define __STDLIB_H_
+
 // System libraries
 #include <stdint.h>
 #include <stddef.h>
@@ -17,3 +20,5 @@ void * memset (void *dest, register int val, register size_t len)
     *ptr++ = val;
   return dest;
 }
+
+#endif // __STDLIB_H_
