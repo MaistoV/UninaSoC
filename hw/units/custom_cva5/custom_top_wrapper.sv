@@ -10,13 +10,10 @@
 `include "uninasoc_mem.svh"
 
 module custom_top_wrapper # (
-
-    //////////////////////////////////////
-    //  Add here IP-related parameters  //
-    //////////////////////////////////////
-
+    parameter cpu_config_t CONFIG = EXAMPLE_CONFIG
 ) (
-
+    input logic clk,
+    input logic rst,
     ///////////////////////////////////
     //  Add here IP-related signals  //
     ///////////////////////////////////
