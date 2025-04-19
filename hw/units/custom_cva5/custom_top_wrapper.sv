@@ -17,17 +17,17 @@ module custom_top_wrapper # (
     ///////////////////////////////////
     //  Add here IP-related signals  //
     ///////////////////////////////////
+    // Interfaccia AXI master per memoria (es. m_axi)
+    `DEFINE_AXI_MASTER_PORTS(m_axi),
 
+    // Interrupts e timer
+    input logic [63:0] mtime,
+    input interrupt_t s_interrupt,
+    input interrupt_t m_interrupt
     ////////////////////////////
     //  Bus Array Interfaces  //
     ////////////////////////////
 
-    // AXI Master Interface Array (Add here as many master as required)
-    `DEFINE_AXI_MASTER_PORTS(name),
-    // AXI Slave Interface Array
-    `DEFINE_AXI_SLAVE_PORTS(name),
-    // MEM Interface Array
-    `DEFINE_MEM_PORTS(name)
 );
 
 
