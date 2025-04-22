@@ -21,9 +21,6 @@ void dump_conv_naive_csrs () {
     printf( "   ISR         = 0x%04x\n\r", Xil_In32(Xkrnl_ISR       ) );
 }
 
-// Import symbols for peripherals
-extern const volatile uint32_t _peripheral_UART_start;
-
 #define PRINT_LEAP 10000
 int main() {
 
