@@ -9,7 +9,7 @@
 
 // Tensor Dimension Notation
 // Input Batch      N
-#define  N 1
+#define  N 2
 // Output Channel   K
 #define  K 4
 // Input Channel    C
@@ -38,12 +38,15 @@
 #define SIZE_W ( K  *  C  *  R  *  S )
 #define SIZE_O ( N  *  K  * Y1  * X1 )
 
-typedef uint32_t target_type_t;
+typedef uint8_t target_type_t;
 
 void krnl_conv_naive (
                     volatile target_type_t * I,
                     volatile target_type_t * W,
-                    volatile target_type_t * O
+                    volatile target_type_t * O,
+                    uint8_t N_input,
+                    uint8_t C_input,
+                    uint8_t K_input
                 );
 
 

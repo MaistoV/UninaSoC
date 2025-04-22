@@ -17,6 +17,9 @@ extern const volatile uint32_t _peripheral_HLS_CONTROL_start;
 #define Xkrnl_AXI_ADDR_I       (Xkrnl_BASE + XKRNL_CONV_NAIVE_CONTROL_ADDR_I_DATA)
 #define Xkrnl_AXI_ADDR_W       (Xkrnl_BASE + XKRNL_CONV_NAIVE_CONTROL_ADDR_W_DATA)
 #define Xkrnl_AXI_ADDR_O       (Xkrnl_BASE + XKRNL_CONV_NAIVE_CONTROL_ADDR_O_DATA)
+#define Xkrnl_N                (Xkrnl_BASE + XKRNL_CONV_NAIVE_CONTROL_ADDR_N_INPUT_DATA)
+#define Xkrnl_C                (Xkrnl_BASE + XKRNL_CONV_NAIVE_CONTROL_ADDR_C_INPUT_DATA)
+#define Xkrnl_K                (Xkrnl_BASE + XKRNL_CONV_NAIVE_CONTROL_ADDR_K_INPUT_DATA)
 
 #define AP_START                    (0x00000001)
 #define AP_DONE                     (0x00000002)
@@ -82,22 +85,5 @@ extern const volatile uint32_t _peripheral_HLS_CONTROL_start;
 
 #define XKrnl_conv_naive_InterruptGetEnabled() \
     Xil_In32(Xkrnl_IER)
-
-// AXI_MM_ADDR
-#define XKrnl_conv_naive_Get_axi_addr_I() \
-    Xil_In32(Xkrnl_AXI_ADDR_I)
-#define XKrnl_conv_naive_Get_axi_addr_W() \
-    Xil_In32(Xkrnl_AXI_ADDR_W)
-#define XKrnl_conv_naive_Get_axi_addr_O() \
-    Xil_In32(Xkrnl_AXI_ADDR_O)
-
-// NOTE: these might need to be for  uint64_t
-#define XKrnl_conv_naive_Set_axi_addr_I(value) \
-    Xil_Out32(Xkrnl_AXI_ADDR_I, (uint32_t)value)
-#define XKrnl_conv_naive_Set_axi_addr_W(value) \
-    Xil_Out32(Xkrnl_AXI_ADDR_W, (uint32_t)value)
-#define XKrnl_conv_naive_Set_axi_addr_O(value) \
-    Xil_Out32(Xkrnl_AXI_ADDR_O, (uint32_t)value)
-
 
 #endif // __DRIVER_H

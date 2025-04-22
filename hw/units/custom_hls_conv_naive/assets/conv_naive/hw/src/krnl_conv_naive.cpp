@@ -1,13 +1,17 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 // Description: HLS implementation of a CONV2D engine. Naive version.
-#include "krnl_conv_naive.h"
 
-#include <stdio.h>  // For printf
+// Headers
+#include <stdio.h>  // For printf()
+#include "krnl_conv_naive.h"
 
 void krnl_conv_naive (
                     volatile target_type_t * I,
                     volatile target_type_t * W,
-                    volatile target_type_t * O
+                    volatile target_type_t * O,
+                    uint8_t N_input,
+                    uint8_t C_input,
+                    uint8_t K_input
                 ) {
 
     #pragma HLS INTERFACE mode=m_axi depth=SIZE_I bundle=gmem0 port=I
@@ -45,18 +49,21 @@ void krnl_conv_naive (
 //                         O[k][y’][x’] += W[k][c][r][s] * I[c][y’+r][x’+s];
 
     #pragma HLS DATAFLOW
-    for ( uint8_t n = 0; n < N; n++ ) {
-        for ( uint8_t k = 0; k < K; k++ ) {
+    // for ( uint8_t n = 0; n < N; n++ ) {
+    //     for ( uint8_t k = 0; k < K; k++ ) {
+    for ( uint8_t n = 0; n < N_input; n++ ) {
+        for ( uint8_t k = 0; k < K_input; k++ ) {
             for ( uint8_t y1 = 0; y1 < Y1; y1++ ) {
                 for ( uint8_t x1 = 0; x1 < X1; x1++ ) {
                     // Reset accumulator
                     target_type_t accumulator = 0;
                     // Compute
-                    for ( uint8_t c = 0; c < C; c++ ) {
+                    // for ( uint8_t c = 0; c < C; c++ ) {
+                    for ( uint8_t c = 0; c < C_input; c++ ) {
                         for ( uint8_t r = 0; r < R; r++ ) {
                             for ( uint8_t s = 0; s < S; s++ ) {
-                                #define INDEX_W ( ( ( ( k * C ) + c ) * R + r ) * S + s )
-                                #define INDEX_I ( ( ( ( n * C ) + c ) * Y + (y1+r) ) * X + (x1+s) )
+                                #define INDEX_W ( ( ( ( k * C_input ) + c ) * R + r ) * S + s )
+                                #define INDEX_I ( ( ( ( n * C_input ) + c ) * Y + (y1+r) ) * X + (x1+s) )
                                 accumulator += W [INDEX_W] * I [INDEX_I];
                                     // ((target_type_t(*)[C][R][S])W)[k][c][r][s] *
                                     // ((target_type_t(*)[C][Y][X])I)[n][c][y1+r][x1+s];
@@ -64,7 +71,7 @@ void krnl_conv_naive (
                         } // r < R
                     } // c < C
                     // Store result
-                    #define INDEX_O ( ( ( ( n * K ) + k ) * Y1 + y1 ) * X1 + x1 )
+                    #define INDEX_O ( ( ( ( n * K_input ) + k ) * Y1 + y1 ) * X1 + x1 )
                     // ((target_type_t(*)[K][Y1][X1])O)[n][k][y1][x1] = accumulator;
                     O [ INDEX_O ] = accumulator;
                 } // x1 < x1

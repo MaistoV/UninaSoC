@@ -10,6 +10,9 @@
 // TinyIO header
 #include "tinyIO.h"
 
+// Compiler-inferred std lib functions
+#include "stdlib.h"
+
 void uninasoc_init();
 
 // Uart physical address

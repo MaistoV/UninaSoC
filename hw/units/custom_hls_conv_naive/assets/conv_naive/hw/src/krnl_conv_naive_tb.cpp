@@ -2,10 +2,7 @@
 #include <stdio.h> // For printf()
 
 // NOTE: Dirty workaround to Vitis HLS project configuration. Just include the source file here.
-#ifndef __UTILS_C_
-#define __UTILS_C_
-    #include "utils.h"
-#endif // __UTILS_C_
+#include "utils.h"
 
 int main(int argc, const char **argv) {
 
@@ -28,8 +25,15 @@ int main(int argc, const char **argv) {
     krnl_conv_naive(
             (target_type_t*)I,
             (target_type_t*)W,
-            (target_type_t*)O
+            (target_type_t*)O,
+            N, C, K
         );
+
+    // Dump
+    printf("I **********************************:\n\r"); print_tensor((target_type_t*)I,N,C,Y,X);
+    printf("W **********************************:\n\r"); print_tensor((target_type_t*)W,K,C,R,S);
+    printf("expected ***************************:\n\r"); print_tensor((target_type_t*)expected,N,K,Y1,X1);
+    printf("O **********************************:\n\r"); print_tensor((target_type_t*)O,N,K,Y1,X1);
 
 
     // // Check result

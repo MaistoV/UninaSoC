@@ -1,8 +1,22 @@
-#include "krnl_conv_naive.h"
+#ifndef __UTILS_C_
+#define __UTILS_C_
 
 #include <stddef.h>
-#include <stdlib.h> // For rand()
-#include <stdint.h> // For bool
+#include <stdint.h>
+#include "krnl_conv_naive.h"
+
+// Print each field of a control CSR word
+void print_control_csr ( uint32_t csr_read_in ) {
+    // Print fields
+    printf("AP_CTRL = 0x%04x\n\r", csr_read_in);
+    printf("    START       =  0x%x    ", ( csr_read_in & AP_START    ) >> (AP_START_BIT    ));
+    printf("    DONE        =  0x%x\n\r", ( csr_read_in & AP_DONE     ) >> (AP_DONE_BIT     ));
+    printf("    IDLE        =  0x%x    ", ( csr_read_in & AP_IDLE     ) >> (AP_IDLE_BIT     ));
+    printf("    READY       =  0x%x\n\r", ( csr_read_in & AP_READY    ) >> (AP_READY_BIT    ));
+    printf("    CONTINUE    =  0x%x    ", ( csr_read_in & AP_CONTINUE ) >> (AP_CONTINUE_BIT ));
+    printf("    AUTORESTART =  0x%x\n\r", ( csr_read_in & AP_AUTORESTART) >> (AP_AUTORESTART_BIT));
+    printf("    INTERRUPT   =  0x%x\n\r", ( csr_read_in & AP_INTERRUPT) >> (AP_INTERRUPT_BIT));
+}
 
 // Init I and W tensors with random values
 // Init O tensor with constant 0x55555555
@@ -13,42 +27,69 @@ void init_data (
                 ) {
 
     // Init I
-    for ( unsigned int n = 0; n < N; n++ )
-            for ( unsigned int c = 0; c < C; c++ )
-                for ( unsigned int y = 0; y < Y; y++ )
-                    for ( unsigned int x = 0; x < X; x++ )
-                            I[n][c][y][x] = rand();
+    for ( uint32_t n = 0; n < N; n++ )
+            for ( uint32_t c = 0; c < C; c++ )
+                for ( uint32_t y = 0; y < Y; y++ )
+                    for ( uint32_t x = 0; x < X; x++ )
+                            I[n][c][y][x] = (x << 4) + y;
 
     // Init W
-    for ( unsigned int k = 0; k < K; k++ )
-            for ( unsigned int c = 0; c < C; c++ )
-                for ( unsigned int r = 0; r < R; r++ )
-                    for ( unsigned int s = 0; s < S; s++ )
-                            W[k][c][s][r] =  rand();
+    for ( uint32_t k = 0; k < K; k++ )
+            for ( uint32_t c = 0; c < C; c++ )
+                for ( uint32_t r = 0; r < R; r++ )
+                    for ( uint32_t s = 0; s < S; s++ )
+                            W[k][c][s][r] = (s << 4) + r;
 
     // Init O
-    for ( unsigned int n = 0; n < N; n++ )
-            for ( unsigned int k = 0; k < K; k++ )
-                for ( unsigned int y1 = 0; y1 < Y1; y1++ )
-                    for ( unsigned int x1 = 0; x1 < X1; x1++ )
-                            O[n][k][y1][x1] = 0x55555555;
+    for ( uint32_t n = 0; n < N; n++ )
+            for ( uint32_t k = 0; k < K; k++ )
+                for ( uint32_t y1 = 0; y1 < Y1; y1++ )
+                    for ( uint32_t x1 = 0; x1 < X1; x1++ )
+                            O[n][k][y1][x1] = (target_type_t)0x55555555;
+
+}
+
+// Print num_batch x num_chan x num_rows x num_cols tensor
+void print_tensor (
+                    target_type_t * data,
+                    uint32_t        num_batch,
+                    uint32_t        num_chan,
+                    uint32_t        num_rows,
+                    uint32_t        num_cols
+                ) {
+    for ( uint32_t n = 0; n < num_batch; n++ ) {
+        printf("Batch %u \n\r", n);
+        for ( uint32_t ch = 0; ch < num_chan; ch++ ) {
+            printf("\tChannel %u \n\r\t\t", ch);
+            for ( uint32_t r = 0; r < num_rows; r++ ) {
+                for ( uint32_t c = 0; c < num_cols; c++ ) {
+                    printf("0x%02x ", ((target_type_t(*)[num_chan][num_rows][num_cols])data)[n][ch][r][c]);
+                    // #define INDEX ( ( n * num_chan + ch ) * num_rows + r ) * num_cols + c
+                    // printf("0x%02x ", data[INDEX]);
+                }
+                printf("\n\r\t\t");
+            }
+            printf("\n\r");
+        }
+        printf("\n\r");
+    }
 
 }
 
 // Compute expected result
 void compute_expected (
-                    target_type_t I[N][C][ Y][ X],
-                    target_type_t W[K][C][ R][ S],
+                    target_type_t        I[N][C][ Y][ X],
+                    target_type_t        W[K][C][ R][ S],
                     target_type_t expected[N][K][Y1][X1]
                 ) {
 
-    for ( unsigned int n = 0; n < N; n++ ) {
-        for ( unsigned int k = 0; k < K; k++ ) {
-            for ( unsigned int c = 0; c < C; c++ ) {
-                for ( unsigned int y1 = 0; y1 < Y1; y1++ ) {
-                    for ( unsigned int x1 = 0; x1 < X1; x1++ ) {
-                        for ( unsigned int r = 0; r < R; r++ ) {
-                            for ( unsigned int s = 0; s < S; s++ ) {
+    for ( uint32_t n = 0; n < N; n++ ) {
+        for ( uint32_t k = 0; k < K; k++ ) {
+            for ( uint32_t c = 0; c < C; c++ ) {
+                for ( uint32_t y1 = 0; y1 < Y1; y1++ ) {
+                    for ( uint32_t x1 = 0; x1 < X1; x1++ ) {
+                        for ( uint32_t r = 0; r < R; r++ ) {
+                            for ( uint32_t s = 0; s < S; s++ ) {
                                 // O[n][k][y’][x’] += W[n][k][c][r][s] * I[n][c][y’+r][x’+s];
                                 expected[n][k][y1][x1] += W[k][c][r][s] * I[n][c][y1+r][x1+s];
                             } // s < S
@@ -67,12 +108,12 @@ int check_values (
                 ) {
 
     // Compare
-    for ( unsigned int n = 0; n < N; n++ ) {
-        for ( unsigned int k = 0; k < K; k++ ) {
-            for ( unsigned int y1 = 0; y1 < Y1; y1++ ) {
-                for ( unsigned int x1 = 0; x1 < X1; x1++ ) {
+    for ( uint32_t n = 0; n < N; n++ ) {
+        for ( uint32_t k = 0; k < K; k++ ) {
+            for ( uint32_t y1 = 0; y1 < Y1; y1++ ) {
+                for ( uint32_t x1 = 0; x1 < X1; x1++ ) {
                     if ( out[n][k][y1][x1] != expected[n][k][y1][x1] ) {
-                        printf("[ERROR] Failing [%u,%u,%u,%u]: expected 0x%04x != 0x%04x\n",
+                        printf("[ERROR] Failing [%u,%u,%u,%u]: expected 0x%04x != 0x%04x\n\r",
                             n, k, y1, x1,
                             expected[n][k][y1][x1],
                             out     [n][k][y1][x1]
@@ -80,11 +121,12 @@ int check_values (
                         // Return immediately
                         return false;
                     }
-                    printf("[INFO] Check [%u,%u,%u,%u]: expected 0x%04x == 0x%04x\n",
-                            n, k, y1, x1,
-                            expected[n][k][y1][x1],
-                            out     [n][k][y1][x1]
-                    );
+                    // DEBUG
+                    // printf("[INFO] Check [%u,%u,%u,%u]: expected 0x%04x == 0x%04x\n",
+                    //         n, k, y1, x1,
+                    //         expected[n][k][y1][x1],
+                    //         out     [n][k][y1][x1]
+                    // );
 
                 }
             }
@@ -94,3 +136,5 @@ int check_values (
     // No error occurred
     return true;
 }
+
+#endif // __UTILS_C_
