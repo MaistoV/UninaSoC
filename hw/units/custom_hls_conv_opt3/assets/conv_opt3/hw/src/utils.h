@@ -59,7 +59,6 @@ void print_tensor (
         }
         printf("\n\r");
     }
-
 }
 
 // Compute expected result

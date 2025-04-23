@@ -1,9 +1,12 @@
 #!/bin/bash
 # Description: Build and run HLS host code
 
-HLS_COMPONENT=custom_hls_conv_naive
 # HLS_COMPONENT=custom_hls_gemm_v1_0
 # HLS_COMPONENT=custom_hls_gemm_v1_1
+# HLS_COMPONENT=custom_hls_conv_naive
+# HLS_COMPONENT=custom_hls_conv_opt1
+# HLS_COMPONENT=custom_hls_conv_opt2
+HLS_COMPONENT=custom_hls_conv_opt3
 
 # Force re-build
 # make -C config/ config_ld
