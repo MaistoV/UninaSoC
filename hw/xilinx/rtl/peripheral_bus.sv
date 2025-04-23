@@ -99,7 +99,7 @@ module peripheral_bus #(
         axi_clock_converter_wrapper # (
 
         .LOCAL_DATA_WIDTH   (SYS_DATA_WIDTH),
-        .LOCAL_ADDR_WIDTH   (SYS_DATA_WIDTH),
+        .LOCAL_ADDR_WIDTH   (SYS_ADDR_WIDTH),
         .LOCAL_ID_WIDTH     (SYS_ID_WIDTH)
 
         ) axi_clk_conv_u (
@@ -419,7 +419,13 @@ module peripheral_bus #(
     /////////////////////
 
     // AXI4 Lite UART
-    axilite_uart axilite_uart_u (
+    axilite_uart # (
+
+        .LOCAL_DATA_WIDTH   (LOCAL_DATA_WIDTH),
+        .LOCAL_ADDR_WIDTH   (LOCAL_ADDR_WIDTH),
+        .LOCAL_ID_WIDTH     (LOCAL_ID_WIDTH)
+        
+        ) axilite_uart_u (
         .clock_i        ( PBUS_clock_i              ), // input wire s_axi_aclk
         .reset_ni       ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         .int_core_o     ( uart_int                  ), // Output interrupt

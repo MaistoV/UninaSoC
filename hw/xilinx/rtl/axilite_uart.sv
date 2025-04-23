@@ -14,7 +14,7 @@ import uninasoc_pkg::*;
 module axilite_uart # (
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
-    parameter int unsigned    LOCAL_ID_WIDTH    = 32
+    parameter int unsigned    LOCAL_ID_WIDTH    = 2
     ) (
     input logic clock_i,
     input logic reset_ni,

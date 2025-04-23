@@ -14,7 +14,7 @@ module rv_socket # (
     parameter core_selector_t CORE_SELECTOR     = CORE_CV32E40P,
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
-    parameter int unsigned    LOCAL_ID_WIDTH    = 32,
+    parameter int unsigned    LOCAL_ID_WIDTH    = 2,
     parameter int unsigned    NUM_IRQ           = 32
 ) (
     input  logic                            clk_i,
