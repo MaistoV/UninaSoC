@@ -7,7 +7,7 @@
 module axi_clock_converter_wrapper # (
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
-    parameter int unsigned    LOCAL_ID_WIDTH    = 32
+    parameter int unsigned    LOCAL_ID_WIDTH    = 2
     ) (
 
     // Master Interface

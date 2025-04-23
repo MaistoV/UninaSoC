@@ -558,15 +558,18 @@ module uninasoc (
 
     end : system_interrupts
 
+    plic_wrapper #(
 
-    custom_rv_plic custom_rv_plic_u (
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+        
+    ) plic_wrapper_u (
         .clk_i          ( main_clk                      ), // input wire s_axi_aclk
         .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
         .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)
-        .irq_id_o       (                               ), // Unused (non standard signal)
-        .msip_o         (                               ), // Unused (non standard signal)
         .s_axi_awid     ( MBUS_to_PLIC_axi_awid         ), // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr   ( MBUS_to_PLIC_axi_awaddr       ), // input wire [25 : 0] s_axi_awaddr
         .s_axi_awlen    ( MBUS_to_PLIC_axi_awlen        ), // input wire [7 : 0] s_axi_awlen

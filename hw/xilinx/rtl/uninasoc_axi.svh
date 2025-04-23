@@ -19,10 +19,6 @@
 
 // AXI4 bus parameters
 // NOTE: these cannot be macro-based because of Vivado IP packege constraints
-localparam int unsigned AXI_DATA_WIDTH   = 32;
-localparam int unsigned AXI_ADDR_WIDTH   = 32;
-localparam int unsigned AXI_STRB_WIDTH   = 4;
-localparam int unsigned AXI_ID_WIDTH     = 2;
 localparam int unsigned AXI_LEN_WIDTH    = 8;
 localparam int unsigned AXI_SIZE_WIDTH   = 3;
 localparam int unsigned AXI_BURST_WIDTH  = 2;
@@ -45,10 +41,6 @@ localparam int unsigned AXI_REGION_WIDTH = 4;
 //////////////////////////////////
 
 // AXI signal types
-typedef logic [AXI_DATA_WIDTH   -1 : 0] axi_data_t;
-typedef logic [AXI_ADDR_WIDTH   -1 : 0] axi_addr_t;
-typedef logic [AXI_STRB_WIDTH   -1 : 0] axi_strb_t;
-typedef logic [AXI_ID_WIDTH     -1 : 0] axi_id_t;
 typedef logic [AXI_LEN_WIDTH    -1 : 0] axi_len_t;
 typedef logic [AXI_SIZE_WIDTH   -1 : 0] axi_size_t;
 typedef logic [AXI_BURST_WIDTH  -1 : 0] axi_burst_t;
