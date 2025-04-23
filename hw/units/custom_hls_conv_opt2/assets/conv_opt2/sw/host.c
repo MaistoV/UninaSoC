@@ -2,7 +2,7 @@
 // Description: Baremetal host code coe conv_opt1 HLS IP core.
 
 #include "driver.h"
-#include "krnl_conv_opt1.h"
+#include "krnl_conv_opt2.h"
 #include "uninasoc.h"
 #include "measures.h"
 #include "utils.h"

@@ -102,17 +102,6 @@ int main() {
     tinyIO_init((uint32_t)&_peripheral_UART_start);
 
     // Allocate data
-    // - A,B, hls_out    : 3 buffers of DATA_SIZE*DATA_SIZE elements
-    // #define HLS_BUFFER_SIZE ((3*DATA_SIZE*DATA_SIZE))
-    // // Align to read burst address span:
-    // // - must be a power of two
-    // #define HLS_BUFFER_ALIGN (4*DATA_SIZE*DATA_SIZE)
-    // uint32_t HLS_buffer[HLS_BUFFER_SIZE] __attribute__((aligned(HLS_BUFFER_ALIGN)));
-    // // Pointers to arguments
-    // uint32_t* A       = HLS_buffer + A_OFFSET;
-    // uint32_t* B       = HLS_buffer + B_OFFSET;
-    // uint32_t* hls_out = HLS_buffer + hls_out_OFFSET;
-    // uint32_t expected[DATA_SIZE*DATA_SIZE] = {0};
     #define ALIGN (4*DATA_SIZE*DATA_SIZE)
     uint32_t A        [DATA_SIZE*DATA_SIZE] __attribute__((aligned(ALIGN)));
     uint32_t B        [DATA_SIZE*DATA_SIZE] __attribute__((aligned(ALIGN)));
@@ -129,11 +118,11 @@ int main() {
     initialize_data(A, B, hls_out);
 
     // Dump source data
-    printf("A 0x%04x:\n\r", (u32)A); print_matrix(A);
-    printf("B 0x%04x:\n\r", (u32)B); print_matrix(B);
+    printf("A 0x%04x:\n\r", (uint32_t)A); print_matrix(A);
+    printf("B 0x%04x:\n\r", (uint32_t)B); print_matrix(B);
 
     // Compute expected
-    compute_expected(A, B, expected);
+    compute_expected(A, B, (uint32_t*)expected);
 
     printf("[INFO] Waiting for idle...\n\r");
     // Reset counter
@@ -151,7 +140,7 @@ int main() {
             // Print
             print_control_csr(csr_read);
         }
-    } while ( XKrnl_matmul_IsIdle() );
+    } while ( XKrnl_IsIdle() );
 
     ///////////////////////
     // Enable interrupts //
@@ -165,13 +154,13 @@ int main() {
     // Starting the kernel //
     /////////////////////////
     // Writing input/output addresses
-    XKrnl_matmul_Set_axi_addr_A((void*)A);
-    XKrnl_matmul_Set_axi_addr_B((void*)B);
-    XKrnl_matmul_Set_axi_addr_C((void*)hls_out);
+    Xil_Out32(Xkrnl_AXI_ADDR_A, (uint32_t)A);
+    Xil_Out32(Xkrnl_AXI_ADDR_B, (uint32_t)B);
+    Xil_Out32(Xkrnl_AXI_ADDR_C, (uint32_t)hls_out);
     // Enable auto-restart
-    XKrnl_matmul_EnableAutoRestart();
+    XKrnl_EnableAutoRestart();
     // Raising ap_start to start the kernel
-    XKrnl_matmul_Start();
+    XKrnl_Start();
 
     // Dump
     // dump_csrs();
@@ -193,29 +182,29 @@ int main() {
                 // Print
                 print_control_csr(csr_read);
             }
-        } while ( XKrnl_matmul_IsDone() );
+        } while ( XKrnl_IsDone() );
 
         // // Read pending interrupts
-        // printf( "   ISR     = 0x%04x\n\r", XKrnl_matmul_InterruptGetStatus() );
+        // printf( "   ISR     = 0x%04x\n\r", XKrnl_InterruptGetStatus() );
         // // Clear interrupts
-        // XKrnl_matmul_InterruptClear_ap_done();
-        // XKrnl_matmul_InterruptClear_ap_ready();
+        // XKrnl_InterruptClear_ap_done();
+        // XKrnl_InterruptClear_ap_ready();
         // // Read pending interrupts
-        // printf( "   ISR     = 0x%04x\n\r", XKrnl_matmul_InterruptGetStatus() );
+        // printf( "   ISR     = 0x%04x\n\r", XKrnl_InterruptGetStatus() );
 
         // // Write continue
-        // XKrnl_matmul_Continue();
+        // XKrnl_Continue();
 
         // Dump
         printf("hls_out : 0x%04x:\n\r", (uint32_t*)hls_out ); print_matrix(hls_out );
-        printf("expected: 0x%04x:\n\r", (uint32_t*)expected); print_matrix(expected);
+        printf("expected: 0x%04x:\n\r", (uint32_t*)expected); print_matrix((uint32_t*)expected);
         print_control_csr( Xil_In32(Xkrnl_Control) );
         dump_csrs();
 
     // }
 
     // Checking results
-    if ( check_results(expected, hls_out) == 0 ) {
+    if ( check_results((uint32_t*)expected, hls_out) == 0 ) {
         printf("Expected result ok!\n\r");
     }
     else {

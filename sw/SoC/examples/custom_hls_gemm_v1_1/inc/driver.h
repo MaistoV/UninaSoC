@@ -42,10 +42,10 @@ extern const volatile uint32_t _peripheral_HLS_CONTROL_start;
 
 
 // Control
-#define XKrnl_matmul_EnableAutoRestart() \
+#define XKrnl_EnableAutoRestart() \
     Xil_Out32(Xkrnl_Control, AP_AUTORESTART_BIT)
 
-#define XKrnl_matmul_Start() \
+#define XKrnl_Start() \
     Xil_Out32(Xkrnl_Control, (Xil_In32(Xkrnl_Control) & AP_AUTORESTART) | AP_START)
 
 #define XKrnl_IsDone() \
@@ -58,53 +58,36 @@ extern const volatile uint32_t _peripheral_HLS_CONTROL_start;
     Xil_In32(Xkrnl_Control) & AP_READY_BIT
 
 // GIE
-#define XKrnl_matmul_InterruptGlobalEnable() \
+#define XKrnl_InterruptGlobalEnable() \
     Xil_Out32(Xkrnl_GIE, 0x1)
 
-#define XKrnl_matmul_InterruptGlobalDisable() \
+#define XKrnl_InterruptGlobalDisable() \
     Xil_Out32(Xkrnl_GIE, 0x0)
 
 // ISR
-#define XKrnl_matmul_InterruptClear_ap_done() \
+#define XKrnl_InterruptClear_ap_done() \
     Xil_Out32(Xkrnl_ISR, 0x0)
 
-#define XKrnl_matmul_InterruptClear_ap_ready() \
+#define XKrnl_InterruptClear_ap_ready() \
     Xil_Out32(Xkrnl_ISR, 0x1)
 
-#define XKrnl_matmul_InterruptGetStatus() \
+#define XKrnl_InterruptGetStatus() \
     Xil_In32(Xkrnl_ISR)
 
 // IER
-#define XKrnl_matmul_InterruptEnable_ap_done() \
+#define XKrnl_InterruptEnable_ap_done() \
     Xil_Out32(Xkrnl_IER (Xil_In32(Xkrnl_IER)) | 0x1)
 
-#define XKrnl_matmul_InterruptEnable_ap_ready() \
+#define XKrnl_InterruptEnable_ap_ready() \
     Xil_Out32(Xkrnl_IER, (Xil_In32(Xkrnl_IER)) | 0x2)
 
-#define XKrnl_matmul_InterruptDisable_ap_done() \
+#define XKrnl_InterruptDisable_ap_done() \
     Xil_Out32(Xkrnl_IER, (Xil_In32(Xkrnl_IER)) & (~0x1))
 
-#define XKrnl_matmul_InterruptDisable_ap_ready() \
+#define XKrnl_InterruptDisable_ap_ready() \
     Xil_Out32(Xkrnl_IER, (Xil_In32(Xkrnl_IER)) & (~0x2))
 
-#define XKrnl_matmul_InterruptGetEnabled() \
+#define XKrnl_InterruptGetEnabled() \
     Xil_In32(Xkrnl_IER)
-
-// AXI_MM_ADDR
-#define XKrnl_matmul_Get_axi_addr_A() \
-    Xil_In32(Xkrnl_AXI_ADDR_A)
-#define XKrnl_matmul_Get_axi_addr_B() \
-    Xil_In32(Xkrnl_AXI_ADDR_B)
-#define XKrnl_matmul_Get_axi_addr_C() \
-    Xil_In32(Xkrnl_AXI_ADDR_C)
-
-// NOTE: these might need to be for  uint64_t
-#define XKrnl_matmul_Set_axi_addr_A(value) \
-    Xil_Out32(Xkrnl_AXI_ADDR_A, (uint32_t)value)
-#define XKrnl_matmul_Set_axi_addr_B(value) \
-    Xil_Out32(Xkrnl_AXI_ADDR_B, (uint32_t)value)
-#define XKrnl_matmul_Set_axi_addr_C(value) \
-    Xil_Out32(Xkrnl_AXI_ADDR_C, (uint32_t)value)
-
 
 #endif // __DRIVER_H
