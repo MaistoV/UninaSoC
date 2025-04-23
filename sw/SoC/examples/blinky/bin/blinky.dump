@@ -505,8 +505,8 @@ Disassembly of section .debug_line:
  108:	0002                	c.slli64	zero
  10a:	0000                	unimp
  10c:	0300                	addi	s0,sp,384
- 10e:	010c                	addi	a1,sp,128
- 110:	04090203          	lb	tp,64(s2)
+ 10e:	0203010b          	.insn	4, 0x0203010b
+ 112:	0409                	addi	s0,s0,2
  114:	0100                	addi	s0,sp,128
  116:	7c09                	lui	s8,0xfffe2
  118:	0000                	unimp
@@ -515,7 +515,7 @@ Disassembly of section .debug_line:
  11e:	8002                	.insn	2, 0x8002
  120:	0000                	unimp
  122:	0300                	addi	s0,sp,384
- 124:	011a                	slli	sp,sp,0x6
+ 124:	0119                	addi	sp,sp,6
  126:	04090103          	lb	sp,64(s2)
  12a:	0100                	addi	s0,sp,128
  12c:	04090103          	lb	sp,64(s2)
@@ -603,7 +603,9 @@ Disassembly of section .debug_line:
  21e:	2c02                	.insn	2, 0x2c02
  220:	0001                	nop
  222:	0300                	addi	s0,sp,384
- 224:	00df 0301 0901      	.insn	6, 0x0901030100df
+ 224:	00de                	slli	ra,ra,0x17
+ 226:	0301                	addi	t1,t1,0
+ 228:	0901                	addi	s2,s2,0
  22a:	0004                	.insn	2, 0x0004
  22c:	0301                	addi	t1,t1,0
  22e:	0901                	addi	s2,s2,0
@@ -951,12 +953,12 @@ Disassembly of section .comment:
 Disassembly of section .riscv.attributes:
 
 00000000 <.riscv.attributes>:
-   0:	5641                	li	a2,-16
+   0:	4c41                	li	s8,16
    2:	0000                	unimp
    4:	7200                	.insn	2, 0x7200
    6:	7369                	lui	t1,0xffffa
    8:	01007663          	bgeu	zero,a6,14 <_vector_table_start+0x14>
-   c:	004c                	addi	a1,sp,4
+   c:	0042                	c.slli	zero,0x10
    e:	0000                	unimp
   10:	1004                	addi	s1,sp,32
   12:	7205                	lui	tp,0xfffe1
@@ -967,26 +969,23 @@ Disassembly of section .riscv.attributes:
   1c:	326d                	jal	fffff9c6 <_peripheral_PLIC_end+0xf7fff9c6>
   1e:	3070                	.insn	2, 0x3070
   20:	615f 7032 5f31      	.insn	6, 0x5f317032615f
-  26:	3266                	.insn	2, 0x3266
-  28:	3270                	.insn	2, 0x3270
-  2a:	645f 7032 5f32      	.insn	6, 0x5f327032645f
-  30:	30703263          	.insn	4, 0x30703263
-  34:	7a5f 6369 7273      	.insn	6, 0x727363697a5f
-  3a:	7032                	.insn	2, 0x7032
-  3c:	5f30                	lw	a2,120(a4)
-  3e:	697a                	.insn	2, 0x697a
-  40:	6566                	.insn	2, 0x6566
-  42:	636e                	.insn	2, 0x636e
-  44:	6965                	lui	s2,0x19
-  46:	7032                	.insn	2, 0x7032
-  48:	5f30                	lw	a2,120(a4)
-  4a:	6d7a                	.insn	2, 0x6d7a
-  4c:	756d                	lui	a0,0xffffb
-  4e:	316c                	.insn	2, 0x316c
-  50:	3070                	.insn	2, 0x3070
-  52:	0800                	addi	s0,sp,16
-  54:	0a01                	addi	s4,s4,0
-  56:	Address 0x56 is out of bounds.
+  26:	30703263          	.insn	4, 0x30703263
+  2a:	7a5f 6369 7273      	.insn	6, 0x727363697a5f
+  30:	7032                	.insn	2, 0x7032
+  32:	5f30                	lw	a2,120(a4)
+  34:	697a                	.insn	2, 0x697a
+  36:	6566                	.insn	2, 0x6566
+  38:	636e                	.insn	2, 0x636e
+  3a:	6965                	lui	s2,0x19
+  3c:	7032                	.insn	2, 0x7032
+  3e:	5f30                	lw	a2,120(a4)
+  40:	6d7a                	.insn	2, 0x6d7a
+  42:	756d                	lui	a0,0xffffb
+  44:	316c                	.insn	2, 0x316c
+  46:	3070                	.insn	2, 0x3070
+  48:	0800                	addi	s0,sp,16
+  4a:	0a01                	addi	s4,s4,0
+  4c:	Address 0x4c is out of bounds.
 
 
 Disassembly of section .debug_frame:

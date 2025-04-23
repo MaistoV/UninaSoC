@@ -1,5 +1,7 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-// Description: HLS implementation of a CONV2D engine. Naive version.
+// Description:
+//  HLS implementation of a CONV2D engine.
+//  Version naive: No optimization, memory coalescing disabled with "volatile"
 
 // Headers
 #include <stdio.h>  // For printf()

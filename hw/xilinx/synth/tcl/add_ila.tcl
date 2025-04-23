@@ -6,10 +6,11 @@
 # To be sure, we should choose the fastest used clock in the design
 # TODO: make this parametric
 # set clk_net_name sys_master_u/clk_10MHz_o
-set clk_net_name sys_master_u/clk_20MHz_o
+# set clk_net_name sys_master_u/clk_20MHz_o
 # set clk_net_name sys_master_u/clk_50MHz_o
 # set clk_net_name sys_master_u/clk_100MHz_o
 # set clk_net_name sys_master_u/clk_250MHz_o
+set clk_net_name xlnx_axi4_to_axilite_converter_hls_u/aclk
 
 # Get market nets
 set debug_nets [lsort -dictionary [get_nets -hier -filter {MARK_DEBUG == 1}]]

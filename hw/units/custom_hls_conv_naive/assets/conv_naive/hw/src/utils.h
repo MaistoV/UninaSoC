@@ -5,19 +5,6 @@
 #include <stdint.h>
 #include "krnl_conv_naive.h"
 
-// Print each field of a control CSR word
-void print_control_csr ( uint32_t csr_read_in ) {
-    // Print fields
-    printf("AP_CTRL = 0x%04x\n\r", csr_read_in);
-    printf("    START       =  0x%x    ", ( csr_read_in & AP_START    ) >> (AP_START_BIT    ));
-    printf("    DONE        =  0x%x\n\r", ( csr_read_in & AP_DONE     ) >> (AP_DONE_BIT     ));
-    printf("    IDLE        =  0x%x    ", ( csr_read_in & AP_IDLE     ) >> (AP_IDLE_BIT     ));
-    printf("    READY       =  0x%x\n\r", ( csr_read_in & AP_READY    ) >> (AP_READY_BIT    ));
-    printf("    CONTINUE    =  0x%x    ", ( csr_read_in & AP_CONTINUE ) >> (AP_CONTINUE_BIT ));
-    printf("    AUTORESTART =  0x%x\n\r", ( csr_read_in & AP_AUTORESTART) >> (AP_AUTORESTART_BIT));
-    printf("    INTERRUPT   =  0x%x\n\r", ( csr_read_in & AP_INTERRUPT) >> (AP_INTERRUPT_BIT));
-}
-
 // Init I and W tensors with random values
 // Init O tensor with constant 0x55555555
 void init_data (

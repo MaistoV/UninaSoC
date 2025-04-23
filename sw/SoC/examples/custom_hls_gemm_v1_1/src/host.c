@@ -135,7 +135,7 @@ int main() {
     // Compute expected
     compute_expected(A, B, expected);
 
-    printf("Waiting for idle...\n\r");
+    printf("[INFO] Waiting for idle...\n\r");
     // Reset counter
     // print_control_csr(csr_read);
     cnt = 0;
@@ -178,7 +178,7 @@ int main() {
 
     // for ( uint32_t i = 0; i < 1000; i++ ) {
         // Waiting for the kernel to finish (polling the ap_done control bit)
-        printf("Waiting for done...\n\r");
+        printf("[INFO] Waiting for done...\n\r");
         // Reset counter
         cnt = 0;
         do {

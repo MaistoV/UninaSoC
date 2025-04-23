@@ -6197,8 +6197,8 @@ Disassembly of section .debug_line:
      654:	0002                	.insn	2, 0x0002
      656:	0000                	.insn	2, 0x
      658:	0300                	.insn	2, 0x0300
-     65a:	010c                	.insn	2, 0x010c
-     65c:	04090203          	lb	tp,64(s2)
+     65a:	0203010b          	.insn	4, 0x0203010b
+     65e:	0409                	.insn	2, 0x0409
      660:	0100                	.insn	2, 0x0100
      662:	7c09                	.insn	2, 0x7c09
      664:	0000                	.insn	2, 0x
@@ -6207,7 +6207,7 @@ Disassembly of section .debug_line:
      66a:	8002                	.insn	2, 0x8002
      66c:	0000                	.insn	2, 0x
      66e:	0300                	.insn	2, 0x0300
-     670:	011a                	.insn	2, 0x011a
+     670:	0119                	.insn	2, 0x0119
      672:	04090103          	lb	sp,64(s2)
      676:	0100                	.insn	2, 0x0100
      678:	04090103          	lb	sp,64(s2)
@@ -6295,7 +6295,9 @@ Disassembly of section .debug_line:
      76a:	2c02                	.insn	2, 0x2c02
      76c:	0001                	.insn	2, 0x0001
      76e:	0300                	.insn	2, 0x0300
-     770:	00df 0301 0901      	.insn	6, 0x0901030100df
+     770:	00de                	.insn	2, 0x00de
+     772:	0301                	.insn	2, 0x0301
+     774:	0901                	.insn	2, 0x0901
      776:	0004                	.insn	2, 0x0004
      778:	0301                	.insn	2, 0x0301
      77a:	0901                	.insn	2, 0x0901

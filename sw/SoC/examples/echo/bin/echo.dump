@@ -5159,7 +5159,7 @@ Disassembly of section .debug_line:
       de:	0205                	.insn	2, 0x0205
       e0:	0000                	.insn	2, 0x
       e2:	0000                	.insn	2, 0x
-      e4:	03010c03          	lb	s8,48(sp)
+      e4:	03010b03          	lb	s6,48(sp)
       e8:	0902                	.insn	2, 0x0902
       ea:	0004                	.insn	2, 0x0004
       ec:	0901                	.insn	2, 0x0901
@@ -5169,7 +5169,7 @@ Disassembly of section .debug_line:
       f4:	0205                	.insn	2, 0x0205
       f6:	0080                	.insn	2, 0x0080
       f8:	0000                	.insn	2, 0x
-      fa:	03011a03          	lh	s4,48(sp)
+      fa:	03011903          	lh	s2,48(sp)
       fe:	0901                	.insn	2, 0x0901
      100:	0004                	.insn	2, 0x0004
      102:	0301                	.insn	2, 0x0301
@@ -5291,7 +5291,7 @@ Disassembly of section .debug_line:
      1f4:	0205                	.insn	2, 0x0205
      1f6:	012c                	.insn	2, 0x012c
      1f8:	0000                	.insn	2, 0x
-     1fa:	0100df03          	lhu	t5,16(ra)
+     1fa:	0100de03          	lhu	t3,16(ra)
      1fe:	04090103          	lb	sp,64(s2) # 3813476c <_peripheral_PLIC_end+0x3013476c>
      202:	0100                	.insn	2, 0x0100
      204:	08090103          	lb	sp,128(s2)

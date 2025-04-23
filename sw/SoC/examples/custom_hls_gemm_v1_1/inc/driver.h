@@ -48,14 +48,14 @@ extern const volatile uint32_t _peripheral_HLS_CONTROL_start;
 #define XKrnl_matmul_Start() \
     Xil_Out32(Xkrnl_Control, (Xil_In32(Xkrnl_Control) & AP_AUTORESTART) | AP_START)
 
-#define XKrnl_matmul_IsDone() \
-    Xil_In32(Xkrnl_ISR) & AP_DONE_BIT
+#define XKrnl_IsDone() \
+    Xil_In32(Xkrnl_Control) & AP_DONE_BIT
 
-#define XKrnl_matmul_IsIdle() \
-        Xil_In32(Xkrnl_ISR) & AP_IDLE_BIT
+#define XKrnl_IsIdle() \
+    Xil_In32(Xkrnl_Control) & AP_IDLE_BIT
 
-#define XKrnl_matmul_IsReady() \
-            Xil_In32(Xkrnl_ISR) & AP_READY_BIT
+#define XKrnl_IsReady() \
+    Xil_In32(Xkrnl_Control) & AP_READY_BIT
 
 // GIE
 #define XKrnl_matmul_InterruptGlobalEnable() \

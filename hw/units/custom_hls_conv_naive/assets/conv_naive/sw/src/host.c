@@ -21,6 +21,19 @@ void dump_conv_naive_csrs () {
     printf( "   ISR         = 0x%04x\n\r", Xil_In32(Xkrnl_ISR       ) );
 }
 
+// Print each field of a control CSR word
+void print_control_csr ( uint32_t csr_read_in ) {
+    // Print fields
+    printf("AP_CTRL = 0x%04x\n\r", csr_read_in);
+    printf("    START       =  0x%x    ", ( csr_read_in & AP_START    ) >> (AP_START_BIT    ));
+    printf("    DONE        =  0x%x\n\r", ( csr_read_in & AP_DONE     ) >> (AP_DONE_BIT     ));
+    printf("    IDLE        =  0x%x    ", ( csr_read_in & AP_IDLE     ) >> (AP_IDLE_BIT     ));
+    printf("    READY       =  0x%x\n\r", ( csr_read_in & AP_READY    ) >> (AP_READY_BIT    ));
+    printf("    CONTINUE    =  0x%x    ", ( csr_read_in & AP_CONTINUE ) >> (AP_CONTINUE_BIT ));
+    printf("    AUTORESTART =  0x%x\n\r", ( csr_read_in & AP_AUTORESTART) >> (AP_AUTORESTART_BIT));
+    printf("    INTERRUPT   =  0x%x\n\r", ( csr_read_in & AP_INTERRUPT) >> (AP_INTERRUPT_BIT));
+}
+
 #define PRINT_LEAP 10000
 int main() {
 
@@ -51,9 +64,20 @@ int main() {
 
     // Compute expected
     printf("[INFO] Compute expected\n\r");
-    compute_expected(I, W, expected);
+    #define HOST_REPS 1
+    for ( int i = 0; i < HOST_REPS; i++) {
+        uint32_t mcycle_start_host, mcycle_end_host;
+        mcycle_start_host = get_mcycle();
+        compute_expected(I, W, expected);
+        mcycle_end_host = get_mcycle();
+        print_meas(
+                "host",
+                N,
+                mcycle_start_host,
+                mcycle_end_host   );
+    }
 
-    printf("Waiting for idle...\n\r");
+    printf("[INFO] Waiting for idle...\n\r");
     // Reset counter
     cnt = 0;
     // print_control_csr(csr_read);
@@ -69,7 +93,7 @@ int main() {
             // Print
             print_control_csr(csr_read);
         }
-    } while ( XKrnl_conv_naive_IsIdle() );
+    } while ( XKrnl_IsIdle() );
 
     ///////////////////////
     // Enable interrupts //
@@ -95,12 +119,12 @@ int main() {
     Xil_Out32(Xkrnl_K, (uint8_t)K);
 
     // Enable auto-restart
-    XKrnl_conv_naive_EnableAutoRestart();
+    XKrnl_EnableAutoRestart();
     // Raising ap_start to start the kernel
-    XKrnl_conv_naive_Start();
+    XKrnl_Start();
 
     // Waiting for the kernel to finish (polling the ap_done control bit)
-    // printf("Waiting for done...\n\r");
+    // printf("[INFO] Waiting for done...\n\r");
     // Reset counter
     // cnt = 0;
     do {
@@ -115,7 +139,7 @@ int main() {
         //     // Print
         //     print_control_csr(csr_read);
         // }
-    } while ( XKrnl_conv_naive_IsDone() );
+    } while ( XKrnl_IsDone() );
 
     mcycle_end = get_mcycle();
     print_meas(
@@ -125,15 +149,15 @@ int main() {
             mcycle_end   );
 
     // // Read pending interrupts
-    // printf( "   ISR     = 0x%04x\n\r", XKrnl_conv_naive_InterruptGetStatus() );
+    // printf( "   ISR     = 0x%04x\n\r", XKrnl_InterruptGetStatus() );
     // // Clear interrupts
-    // XKrnl_conv_naive_InterruptClear_ap_done();
-    // XKrnl_conv_naive_InterruptClear_ap_ready();
+    // XKrnl_InterruptClear_ap_done();
+    // XKrnl_InterruptClear_ap_ready();
     // // Read pending interrupts
-    // printf( "   ISR     = 0x%04x\n\r", XKrnl_conv_naive_InterruptGetStatus() );
+    // printf( "   ISR     = 0x%04x\n\r", XKrnl_InterruptGetStatus() );
 
     // // Write continue
-    // XKrnl_conv_naive_Continue();
+    // XKrnl_Continue();
 
     // DUMP
     // dump_conv_naive_csrs();

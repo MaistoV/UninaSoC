@@ -9,7 +9,7 @@
 
 // Tensor Dimension Notation
 // Input Batch      N
-#define  N 2
+#define  N 1
 // Output Channel   K
 #define  K 4
 // Input Channel    C
@@ -28,7 +28,7 @@
 #define X1 6
 
 // Tensor               Tensor Index
-// Input Activation     I [n][c][y][s]
+// Input Activation     I [n][c][y][x]
 // Filter Weight        W [k][c][r][s]
 // Partial Sum          P [n][k][c][y’][x’][r][s]
 // Output Activation    O [n][k][y’][x’]

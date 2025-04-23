@@ -38,52 +38,52 @@ extern const volatile uint32_t _peripheral_HLS_CONTROL_start;
 #define AP_INTERRUPT_BIT            (0x00000009)
 
 // Control
-#define XKrnl_conv_naive_EnableAutoRestart() \
+#define XKrnl_EnableAutoRestart() \
     Xil_Out32(Xkrnl_Control, AP_AUTORESTART_BIT)
 
-#define XKrnl_conv_naive_Start() \
+#define XKrnl_Start() \
     Xil_Out32(Xkrnl_Control, (Xil_In32(Xkrnl_Control) & AP_AUTORESTART) | AP_START)
 
-#define XKrnl_conv_naive_IsDone() \
-    Xil_In32(Xkrnl_ISR) & AP_DONE_BIT
+#define XKrnl_IsDone() \
+    Xil_In32(Xkrnl_Control) & AP_DONE_BIT
 
-#define XKrnl_conv_naive_IsIdle() \
-        Xil_In32(Xkrnl_ISR) & AP_IDLE_BIT
+#define XKrnl_IsIdle() \
+    Xil_In32(Xkrnl_Control) & AP_IDLE_BIT
 
-#define XKrnl_conv_naive_IsReady() \
-            Xil_In32(Xkrnl_ISR) & AP_READY_BIT
+#define XKrnl_IsReady() \
+    Xil_In32(Xkrnl_Control) & AP_READY_BIT
 
 // GIE
-#define XKrnl_conv_naive_InterruptGlobalEnable() \
+#define XKrnl_InterruptGlobalEnable() \
     Xil_Out32(Xkrnl_GIE, 0x1)
 
-#define XKrnl_conv_naive_InterruptGlobalDisable() \
+#define XKrnl_InterruptGlobalDisable() \
     Xil_Out32(Xkrnl_GIE, 0x0)
 
 // ISR
-#define XKrnl_conv_naive_InterruptClear_ap_done() \
+#define XKrnl_InterruptClear_ap_done() \
     Xil_Out32(Xkrnl_ISR, 0x0)
 
-#define XKrnl_conv_naive_InterruptClear_ap_ready() \
+#define XKrnl_InterruptClear_ap_ready() \
     Xil_Out32(Xkrnl_ISR, 0x1)
 
-#define XKrnl_conv_naive_InterruptGetStatus() \
+#define XKrnl_InterruptGetStatus() \
     Xil_In32(Xkrnl_ISR)
 
 // IER
-#define XKrnl_conv_naive_InterruptEnable_ap_done() \
+#define XKrnl_InterruptEnable_ap_done() \
     Xil_Out32(Xkrnl_IER (Xil_In32(Xkrnl_IER)) | 0x1)
 
-#define XKrnl_conv_naive_InterruptEnable_ap_ready() \
+#define XKrnl_InterruptEnable_ap_ready() \
     Xil_Out32(Xkrnl_IER, (Xil_In32(Xkrnl_IER)) | 0x2)
 
-#define XKrnl_conv_naive_InterruptDisable_ap_done() \
+#define XKrnl_InterruptDisable_ap_done() \
     Xil_Out32(Xkrnl_IER, (Xil_In32(Xkrnl_IER)) & (~0x1))
 
-#define XKrnl_conv_naive_InterruptDisable_ap_ready() \
+#define XKrnl_InterruptDisable_ap_ready() \
     Xil_Out32(Xkrnl_IER, (Xil_In32(Xkrnl_IER)) & (~0x2))
 
-#define XKrnl_conv_naive_InterruptGetEnabled() \
+#define XKrnl_InterruptGetEnabled() \
     Xil_In32(Xkrnl_IER)
 
 #endif // __DRIVER_H
