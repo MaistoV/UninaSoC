@@ -12,11 +12,11 @@
 module custom_top_wrapper # (
     parameter cpu_config_t CONFIG = EXAMPLE_CONFIG
 ) (
-    input logic clk,
-    input logic rst,
     ///////////////////////////////////
     //  Add here IP-related signals  //
     ///////////////////////////////////
+    input logic clk,
+    input logic rst,
     // Interfaccia AXI master per memoria (es. m_axi)
     `DEFINE_AXI_MASTER_PORTS(m_axi),
 
