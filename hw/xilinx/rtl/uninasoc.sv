@@ -1114,9 +1114,8 @@ module uninasoc (
         );
     end : gen_hls_conv_opt3
     else if ( CUSTOM_HLS_VERSION == "conv_opt4" ) begin : gen_hls_conv_opt4
-        // NOTE: Use IP version opt2, and let CDC make the difference
         // HLS core instance
-        custom_hls_conv_opt2 custom_hls_conv_opt2_u (
+        custom_hls_conv_opt4 custom_hls_conv_opt4_u (
             .clk_i                      ( HLS_CONTROL_clk              ), // input wire clk_i
             .rst_ni                     ( HLS_CONTROL_rstn             ), // input wire rst_ni
             .interrupt_o                ( hls_interrupt_o              ), // output wire interrupt_o

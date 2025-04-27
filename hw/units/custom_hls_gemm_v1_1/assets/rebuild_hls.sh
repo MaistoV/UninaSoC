@@ -23,7 +23,7 @@ COMPONENT_NAME=$(basename ${CLONE_DIR})
 
 # Clean old sources
 printf "\n${YELLOW}[REBUILD_HLS] Cleaning old RTL${NC}\n"
-RTL_DIR=$(realpath ../rtl)
+RTL_DIR=$(realpath ..)/rtl
 rm ${RTL_DIR}*
 mkdir -p ${RTL_DIR}
 

@@ -1,16 +1,18 @@
 # Description: Generate bitsreams for HLS fast prototyping experiments
 
+SOC_CONFIG=hpc
+
 # Setup
-source settings.sh
+source settings.sh ${SOC_CONFIG}
 
 # Target RTL source
 TARGET_UNINASOC_RTL=hw/xilinx/rtl/uninasoc.sv
 
 HLS_CONFIGS=(
-    "conv_naive" # First naive version
-    "conv_opt1"  # Memory coalescing (AXI bursts)
-    "conv_opt2"  # Double buffering
-    "conv_opt3"  # Split r/r/w interfaces
+    # "conv_naive" # First naive version
+    # "conv_opt1"  # Memory coalescing (AXI bursts)
+    # "conv_opt2"  # Double buffering
+    # "conv_opt3"  # Split r/r/w interfaces
     "conv_opt4"  # Frequency scaling
     # "conv_opt5"  # Lower bit-widths (ap_int)
 )
@@ -28,34 +30,31 @@ for config in ${HLS_CONFIGS[*]}; do
     XILINX_ILA=1
 
     # Change config (if necessary)
-    TARGET_CONFIG=config/configs/embedded/config_main_bus.csv
+    TARGET_CONFIG=config/configs/${SOC_CONFIG}/config_main_bus.csv
     if [[ "$config" == "conv_opt3" ]]; then
-        cp config/configs/embedded/config_main_bus_hls_3intf.csv $TARGET_CONFIG
+        cp -v config/configs/${SOC_CONFIG}/config_main_bus_hls_3intf.csv $TARGET_CONFIG
         # Disable ILA
         XILINX_ILA=0
     elif [[ "$config" == "conv_opt4" ]]; then
-        cp config/configs/embedded/config_main_bus_hls_100MHz.csv $TARGET_CONFIG
+        cp -v config/configs/${SOC_CONFIG}/config_main_bus_hls_freq.csv $TARGET_CONFIG
     else
-        cp config/configs/embedded/config_main_bus_base.csv $TARGET_CONFIG
+        cp -v config/configs/${SOC_CONFIG}/config_main_bus_base.csv $TARGET_CONFIG
     fi
 
     # Re-config
     make config
-    # Don't re-build IPs
-    # touch hw/xilinx/ips/xlnx_uart_axilite.xci
-    # touch hw/xilinx/ips/xlnx_main_crossbar.xci
-    # touch hw/xilinx/ips/xlnx_peripheral_crossbar.xci
     # Re-build IPs
     make -C hw/xilinx ips -j 8
     # Re-build bitstream
-    make -C hw/xilinx clean bitstream XILIN_ILA=$XILINX_ILA
+    make -C hw/xilinx clean bitstream XILINX_ILA=$XILINX_ILA
 
     # Backup bitstream
     BUILD_DIR=hw/xilinx/build
-    BACKUP_DIR=hw/xilinx/build_$config
+    BACKUP_DIR=hw/xilinx/build_${SOC_CONFIG}_${config}
     cp -r $BUILD_DIR $BACKUP_DIR
+    sleep 1
 done
 
 
 echo "[BUILD] Done!"
-find hw/xilinx -name uninasoc.bit
+find hw/xilinx -name uninasoc.bit | grep ${SOC_CONFIG}
