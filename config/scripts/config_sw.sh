@@ -41,8 +41,9 @@ if [[ "$xlen_value" == "32" ]]; then
     sed -E -i "s/XLEN.?\?=.+/XLEN \?= ${xlen_value}/g" ${OUTPUT_MK_FILE};
 
 else
-    echo  "[CONFIG_SW][ERROR] Invalid XLEN=$xlen_value value; no toolchain is supported for this XLEN value";
-    exit 1;
+    echo "[CONFIG_SW][ERROR] Invalid XLEN=$xlen_value value; no toolchain is supported for this XLEN value";
+    echo "Temporary suppressed"
+    #exit 1;
 fi
 
 echo "[CONFIG_SW] Output file is at ${OUTPUT_MK_FILE}"

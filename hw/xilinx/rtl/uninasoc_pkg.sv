@@ -38,10 +38,13 @@ package uninasoc_pkg;
     //////////////////////////
 
     typedef enum int unsigned {
+        // 32-bits Cores
         CORE_PICORV32,
         CORE_CV32E40P,
         CORE_IBEX,
-        CORE_MICROBLAZEV
+        CORE_MICROBLAZEV,
+        // 64-bits Cores
+        CORE_CV64A6
     } core_selector_t;
 
     // Select core from macro

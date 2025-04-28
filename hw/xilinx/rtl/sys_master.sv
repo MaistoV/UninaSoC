@@ -7,10 +7,11 @@
 //
 //----------------------------------------------------------- EMBEDDED -----------------------------------------------------------------------------
 //
-//              ______________               __________
-// sys_clock   |              | soc_clock   |          |   data
-// ----------->| Clock Wizard |------------>| Jtag2Axi |------------------------------------------------------------------------------->
-//             |______________|     |       |__________|
+//              ______________               __________                _____________
+// sys_clock   |              | soc_clock   |          |   data [32b] |             | data[DATA_WIDTH]
+// ----------->| Clock Wizard |------------>| Jtag2Axi |--------------| Dwidth Conv |-------------------------------------------------->
+//             |______________|     |       |__________|              |_____________|
+//                                  |                                 
 //                                  |                      soc_clock [10, 20, 50, 100 (MHz)]
 //                                  |-------------------------------------------------------------------------------------------------->
 //
@@ -496,48 +497,145 @@ module sys_master # (
         .clk_10   ( clk_10MHz_o  )
     );
 
+    `DECLARE_AXI_BUS(jtag_to_axi_dwidth_converter, 32, 32, LOCAL_ID_WIDTH);
+
     // JTAG2AXI Master
     xlnx_jtag_axi jtag_axi_u (
         .aclk           ( main_clk      ), // input wire aclk
         .aresetn        ( main_rstn     ), // input wire aresetn
-        .m_axi_awid     ( m_axi_awid    ), // output wire [1 : 0] m_axi_awid
-        .m_axi_awaddr   ( m_axi_awaddr  ), // output wire [31 : 0] m_axi_awid
-        .m_axi_awlen    ( m_axi_awlen   ), // output wire [7 : 0] m_axi_awlen
-        .m_axi_awsize   ( m_axi_awsize  ), // output wire [2 : 0] m_axi_awsize
-        .m_axi_awburst  ( m_axi_awburst ), // output wire [1 : 0] m_axi_awburst
-        .m_axi_awlock   ( m_axi_awlock  ), // output wire m_axi_awlock
-        .m_axi_awcache  ( m_axi_awcache ), // output wire [3 : 0] m_axi_awcache
-        .m_axi_awprot   ( m_axi_awprot  ), // output wire [2 : 0] m_axi_awprot
-        .m_axi_awqos    ( m_axi_awqos   ), // output wire [3 : 0] m_axi_awqos
-        .m_axi_awvalid  ( m_axi_awvalid ), // output wire m_axi_awvalid
-        .m_axi_awready  ( m_axi_awready ), // input wire m_axi_awready
-        .m_axi_wdata    ( m_axi_wdata   ), // output wire [31 : 0] m_axi_wdata
-        .m_axi_wstrb    ( m_axi_wstrb   ), // output wire [3 : 0] m_axi_wstrb
-        .m_axi_wlast    ( m_axi_wlast   ), // output wire m_axi_wlast
-        .m_axi_wvalid   ( m_axi_wvalid  ), // output wire m_axi_wvalid
-        .m_axi_wready   ( m_axi_wready  ), // input wire m_axi_wready
-        .m_axi_bid      ( m_axi_bid     ), // input wire [0 : 0] m_axi_bid
-        .m_axi_bresp    ( m_axi_bresp   ), // input wire [1 : 0] m_axi_bresp
-        .m_axi_bvalid   ( m_axi_bvalid  ), // input wire m_axi_bvalid
-        .m_axi_bready   ( m_axi_bready  ), // output wire m_axi_bready
-        .m_axi_arid     ( m_axi_arid    ), // output wire [0 : 0] m_axi_arid
-        .m_axi_araddr   ( m_axi_araddr  ), // output wire [31 : 0] m_axi_araddr
-        .m_axi_arlen    ( m_axi_arlen   ), // output wire [7 : 0] m_axi_arlen
-        .m_axi_arsize   ( m_axi_arsize  ), // output wire [2 : 0] m_axi_arsize
-        .m_axi_arburst  ( m_axi_arburst ), // output wire [1 : 0] m_axi_arburst
-        .m_axi_arlock   ( m_axi_arlock  ), // output wire m_axi_arlock
-        .m_axi_arcache  ( m_axi_arcache ), // output wire [3 : 0] m_axi_arcache
-        .m_axi_arprot   ( m_axi_arprot  ), // output wire [2 : 0] m_axi_arprot
-        .m_axi_arqos    ( m_axi_arqos   ), // output wire [3 : 0] m_axi_arqos
-        .m_axi_arvalid  ( m_axi_arvalid ), // output wire m_axi_arvalid
-        .m_axi_arready  ( m_axi_arready ), // input wire m_axi_arready
-        .m_axi_rid      ( m_axi_rid     ), // input wire [1 : 0] m_axi_rid
-        .m_axi_rdata    ( m_axi_rdata   ), // input wire [31 : 0] m_axi_rdata
-        .m_axi_rresp    ( m_axi_rresp   ), // input wire [1 : 0] m_axi_rresp
-        .m_axi_rlast    ( m_axi_rlast   ), // input wire m_axi_rlast
-        .m_axi_rvalid   ( m_axi_rvalid  ), // input wire m_axi_rvalid
-        .m_axi_rready   ( m_axi_rready  )  // output wire m_axi_rready
+        .m_axi_awid     ( jtag_to_axi_dwidth_converter_axi_awid    ), // output wire [1 : 0] m_axi_awid
+        .m_axi_awaddr   ( jtag_to_axi_dwidth_converter_axi_awaddr  ), // output wire [31 : 0] m_axi_awid
+        .m_axi_awlen    ( jtag_to_axi_dwidth_converter_axi_awlen   ), // output wire [7 : 0] m_axi_awlen
+        .m_axi_awsize   ( jtag_to_axi_dwidth_converter_axi_awsize  ), // output wire [2 : 0] m_axi_awsize
+        .m_axi_awburst  ( jtag_to_axi_dwidth_converter_axi_awburst ), // output wire [1 : 0] m_axi_awburst
+        .m_axi_awlock   ( jtag_to_axi_dwidth_converter_axi_awlock  ), // output wire m_axi_awlock
+        .m_axi_awcache  ( jtag_to_axi_dwidth_converter_axi_awcache ), // output wire [3 : 0] m_axi_awcache
+        .m_axi_awprot   ( jtag_to_axi_dwidth_converter_axi_awprot  ), // output wire [2 : 0] m_axi_awprot
+        .m_axi_awqos    ( jtag_to_axi_dwidth_converter_axi_awqos   ), // output wire [3 : 0] m_axi_awqos
+        .m_axi_awvalid  ( jtag_to_axi_dwidth_converter_axi_awvalid ), // output wire m_axi_awvalid
+        .m_axi_awready  ( jtag_to_axi_dwidth_converter_axi_awready ), // input wire m_axi_awready
+        .m_axi_wdata    ( jtag_to_axi_dwidth_converter_axi_wdata   ), // output wire [31 : 0] m_axi_wdata
+        .m_axi_wstrb    ( jtag_to_axi_dwidth_converter_axi_wstrb   ), // output wire [3 : 0] m_axi_wstrb
+        .m_axi_wlast    ( jtag_to_axi_dwidth_converter_axi_wlast   ), // output wire m_axi_wlast
+        .m_axi_wvalid   ( jtag_to_axi_dwidth_converter_axi_wvalid  ), // output wire m_axi_wvalid
+        .m_axi_wready   ( jtag_to_axi_dwidth_converter_axi_wready  ), // input wire m_axi_wready
+        .m_axi_bid      ( jtag_to_axi_dwidth_converter_axi_bid     ), // input wire [0 : 0] m_axi_bid
+        .m_axi_bresp    ( jtag_to_axi_dwidth_converter_axi_bresp   ), // input wire [1 : 0] m_axi_bresp
+        .m_axi_bvalid   ( jtag_to_axi_dwidth_converter_axi_bvalid  ), // input wire m_axi_bvalid
+        .m_axi_bready   ( jtag_to_axi_dwidth_converter_axi_bready  ), // output wire m_axi_bready
+        .m_axi_arid     ( jtag_to_axi_dwidth_converter_axi_arid    ), // output wire [0 : 0] m_axi_arid
+        .m_axi_araddr   ( jtag_to_axi_dwidth_converter_axi_araddr  ), // output wire [31 : 0] m_axi_araddr
+        .m_axi_arlen    ( jtag_to_axi_dwidth_converter_axi_arlen   ), // output wire [7 : 0] m_axi_arlen
+        .m_axi_arsize   ( jtag_to_axi_dwidth_converter_axi_arsize  ), // output wire [2 : 0] m_axi_arsize
+        .m_axi_arburst  ( jtag_to_axi_dwidth_converter_axi_arburst ), // output wire [1 : 0] m_axi_arburst
+        .m_axi_arlock   ( jtag_to_axi_dwidth_converter_axi_arlock  ), // output wire m_axi_arlock
+        .m_axi_arcache  ( jtag_to_axi_dwidth_converter_axi_arcache ), // output wire [3 : 0] m_axi_arcache
+        .m_axi_arprot   ( jtag_to_axi_dwidth_converter_axi_arprot  ), // output wire [2 : 0] m_axi_arprot
+        .m_axi_arqos    ( jtag_to_axi_dwidth_converter_axi_arqos   ), // output wire [3 : 0] m_axi_arqos
+        .m_axi_arvalid  ( jtag_to_axi_dwidth_converter_axi_arvalid ), // output wire m_axi_arvalid
+        .m_axi_arready  ( jtag_to_axi_dwidth_converter_axi_arready ), // input wire m_axi_arready
+        .m_axi_rid      ( jtag_to_axi_dwidth_converter_axi_rid     ), // input wire [1 : 0] m_axi_rid
+        .m_axi_rdata    ( jtag_to_axi_dwidth_converter_axi_rdata   ), // input wire [31 : 0] m_axi_rdata
+        .m_axi_rresp    ( jtag_to_axi_dwidth_converter_axi_rresp   ), // input wire [1 : 0] m_axi_rresp
+        .m_axi_rlast    ( jtag_to_axi_dwidth_converter_axi_rlast   ), // input wire m_axi_rlast
+        .m_axi_rvalid   ( jtag_to_axi_dwidth_converter_axi_rvalid  ), // input wire m_axi_rvalid
+        .m_axi_rready   ( jtag_to_axi_dwidth_converter_axi_rready  )  // output wire m_axi_rready
     );
+
+    // In order to comply with the load binary script, we need a 32 to 64 dwidth converter
+    if( SYS_DATA_WIDTH == 64 ) begin: dwidth_converter
+
+        xlnx_axi_dwidth_32_to_64_converter xlnx_axi_dwidth_32_to_64_converter_u (
+            .s_axi_aclk     ( main_clk  ),
+            .s_axi_aresetn  ( main_rstn ),
+
+            // Slave from XDMA
+            .s_axi_awid     ( jtag_to_axi_dwidth_converter_axi_awid    ),
+            .s_axi_awaddr   ( jtag_to_axi_dwidth_converter_axi_awaddr  ),
+            .s_axi_awlen    ( jtag_to_axi_dwidth_converter_axi_awlen   ),
+            .s_axi_awsize   ( jtag_to_axi_dwidth_converter_axi_awsize  ),
+            .s_axi_awburst  ( jtag_to_axi_dwidth_converter_axi_awburst ),
+            .s_axi_awvalid  ( jtag_to_axi_dwidth_converter_axi_awvalid ),
+            .s_axi_awready  ( jtag_to_axi_dwidth_converter_axi_awready ),
+            .s_axi_wdata    ( jtag_to_axi_dwidth_converter_axi_wdata   ),
+            .s_axi_wstrb    ( jtag_to_axi_dwidth_converter_axi_wstrb   ),
+            .s_axi_wlast    ( jtag_to_axi_dwidth_converter_axi_wlast   ),
+            .s_axi_wvalid   ( jtag_to_axi_dwidth_converter_axi_wvalid  ),
+            .s_axi_wready   ( jtag_to_axi_dwidth_converter_axi_wready  ),
+            .s_axi_bid      ( jtag_to_axi_dwidth_converter_axi_bid     ),
+            .s_axi_bresp    ( jtag_to_axi_dwidth_converter_axi_bresp   ),
+            .s_axi_bvalid   ( jtag_to_axi_dwidth_converter_axi_bvalid  ),
+            .s_axi_bready   ( jtag_to_axi_dwidth_converter_axi_bready  ),
+            .s_axi_arid     ( jtag_to_axi_dwidth_converter_axi_arid    ),
+            .s_axi_araddr   ( jtag_to_axi_dwidth_converter_axi_araddr  ),
+            .s_axi_arlen    ( jtag_to_axi_dwidth_converter_axi_arlen   ),
+            .s_axi_arsize   ( jtag_to_axi_dwidth_converter_axi_arsize  ),
+            .s_axi_arburst  ( jtag_to_axi_dwidth_converter_axi_arburst ),
+            .s_axi_arvalid  ( jtag_to_axi_dwidth_converter_axi_arvalid ),
+            .s_axi_arready  ( jtag_to_axi_dwidth_converter_axi_arready ),
+            .s_axi_rid      ( jtag_to_axi_dwidth_converter_axi_rid     ),
+            .s_axi_rdata    ( jtag_to_axi_dwidth_converter_axi_rdata   ),
+            .s_axi_rresp    ( jtag_to_axi_dwidth_converter_axi_rresp   ),
+            .s_axi_rlast    ( jtag_to_axi_dwidth_converter_axi_rlast   ),
+            .s_axi_rvalid   ( jtag_to_axi_dwidth_converter_axi_rvalid  ),
+            .s_axi_rready   ( jtag_to_axi_dwidth_converter_axi_rready  ),
+            .s_axi_awlock   ( jtag_to_axi_dwidth_converter_axi_awlock  ),
+            .s_axi_awcache  ( jtag_to_axi_dwidth_converter_axi_awcache ),
+            .s_axi_awprot   ( jtag_to_axi_dwidth_converter_axi_awprot  ),
+            .s_axi_awqos    ( 0   ),
+            .s_axi_awregion ( 0   ),
+            .s_axi_arlock   ( jtag_to_axi_dwidth_converter_axi_arlock  ),
+            .s_axi_arcache  ( jtag_to_axi_dwidth_converter_axi_arcache ),
+            .s_axi_arprot   ( jtag_to_axi_dwidth_converter_axi_arprot  ),
+            .s_axi_arqos    ( 0   ),
+            .s_axi_arregion ( 0   ),
+
+            // Master to clock_converter
+            .m_axi_awaddr   ( m_axi_awaddr  ),
+            .m_axi_awlen    ( m_axi_awlen   ),
+            .m_axi_awsize   ( m_axi_awsize  ),
+            .m_axi_awburst  ( m_axi_awburst ),
+            .m_axi_awlock   ( m_axi_awlock  ),
+            .m_axi_awcache  ( m_axi_awcache ),
+            .m_axi_awprot   ( m_axi_awprot  ),
+            .m_axi_awqos    ( m_axi_awqos   ),
+            .m_axi_awvalid  ( m_axi_awvalid ),
+            .m_axi_awready  ( m_axi_awready ),
+            .m_axi_wdata    ( m_axi_wdata   ),
+            .m_axi_wstrb    ( m_axi_wstrb   ),
+            .m_axi_wlast    ( m_axi_wlast   ),
+            .m_axi_wvalid   ( m_axi_wvalid  ),
+            .m_axi_wready   ( m_axi_wready  ),
+            .m_axi_bresp    ( m_axi_bresp   ),
+            .m_axi_bvalid   ( m_axi_bvalid  ),
+            .m_axi_bready   ( m_axi_bready  ),
+            .m_axi_araddr   ( m_axi_araddr  ),
+            .m_axi_arlen    ( m_axi_arlen   ),
+            .m_axi_arsize   ( m_axi_arsize  ),
+            .m_axi_arburst  ( m_axi_arburst ),
+            .m_axi_arlock   ( m_axi_arlock  ),
+            .m_axi_arcache  ( m_axi_arcache ),
+            .m_axi_arprot   ( m_axi_arprot  ),
+            .m_axi_arqos    ( m_axi_arqos   ),
+            .m_axi_arvalid  ( m_axi_arvalid ),
+            .m_axi_arready  ( m_axi_arready ),
+            .m_axi_rdata    ( m_axi_rdata   ),
+            .m_axi_rresp    ( m_axi_rresp   ),
+            .m_axi_rlast    ( m_axi_rlast   ),
+            .m_axi_rvalid   ( m_axi_rvalid  ),
+            .m_axi_rready   ( m_axi_rready  )
+        );
+
+        assign m_axi_awid = '0;
+        assign m_axi_arid = '0;
+        assign m_axi_awregion = '0;
+        assign m_axi_arregion = '0;
+
+    end else begin: no_dwidth_conversion
+
+        `ASSIGN_AXI_BUS (m, jtag_to_axi_dwidth_converter);
+
+    end
 
 `endif
 
