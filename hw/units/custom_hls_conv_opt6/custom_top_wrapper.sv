@@ -9,11 +9,60 @@
 `include "uninasoc_mem.svh"
 `include "uninasoc_axi.svh"
 
+// // AXI4 MASTER PORTS
+// `define DEFINE_AXI_MASTER_PORTS_dwidth(master_name, DATA_WIDTH)          \
+//     // AW channel                                     \
+//     output axi_id_t     ``master_name``_axi_awid,     \
+//     output axi_addr_t   ``master_name``_axi_awaddr,   \
+//     output axi_len_t    ``master_name``_axi_awlen,    \
+//     output axi_size_t   ``master_name``_axi_awsize,   \
+//     output axi_burst_t  ``master_name``_axi_awburst,  \
+//     output axi_lock_t   ``master_name``_axi_awlock,   \
+//     output axi_cache_t  ``master_name``_axi_awcache,  \
+//     output axi_prot_t   ``master_name``_axi_awprot,   \
+//     output axi_qos_t    ``master_name``_axi_awqos,    \
+//     output axi_valid_t  ``master_name``_axi_awvalid,  \
+//     input  axi_ready_t  ``master_name``_axi_awready,  \
+//     output axi_region_t ``master_name``_axi_awregion, \
+//     // W channel                                      \
+//     output logic [DATA_WIDTH-1 : 0]      ``master_name``_axi_wdata,    \
+//     output logic [(DATA_WIDTH/8)-1 : 0]  ``master_name``_axi_wstrb,    \
+//     output axi_last_t   ``master_name``_axi_wlast,    \
+//     output axi_valid_t  ``master_name``_axi_wvalid,   \
+//     input  axi_ready_t  ``master_name``_axi_wready,   \
+//     // B channel                                      \
+//     input  axi_id_t     ``master_name``_axi_bid,      \
+//     input  axi_resp_t   ``master_name``_axi_bresp,    \
+//     input  axi_valid_t  ``master_name``_axi_bvalid,   \
+//     output axi_ready_t  ``master_name``_axi_bready,   \
+//     // AR channel                                     \
+//     output axi_addr_t   ``master_name``_axi_araddr,   \
+//     output axi_len_t    ``master_name``_axi_arlen,    \
+//     output axi_size_t   ``master_name``_axi_arsize,   \
+//     output axi_burst_t  ``master_name``_axi_arburst,  \
+//     output axi_lock_t   ``master_name``_axi_arlock,   \
+//     output axi_cache_t  ``master_name``_axi_arcache,  \
+//     output axi_prot_t   ``master_name``_axi_arprot,   \
+//     output axi_qos_t    ``master_name``_axi_arqos,    \
+//     output axi_valid_t  ``master_name``_axi_arvalid,  \
+//     input  axi_ready_t  ``master_name``_axi_arready,  \
+//     output axi_id_t     ``master_name``_axi_arid,     \
+//     output axi_region_t ``master_name``_axi_arregion, \
+//     // R channel                                      \
+//     input  axi_id_t     ``master_name``_axi_rid,      \
+//     input [DATA_WIDTH-1 : 0] ``master_name``_axi_rdata,    \
+//     input  axi_resp_t   ``master_name``_axi_rresp,    \
+//     input  axi_last_t   ``master_name``_axi_rlast,    \
+//     input  axi_valid_t  ``master_name``_axi_rvalid,   \
+//     output axi_ready_t  ``master_name``_axi_rready
+
+
 module custom_top_wrapper # (
 
     //////////////////////////////////////
     //  Add here IP-related parameters  //
     //////////////////////////////////////
+    localparam HBUS_AXI_DATAWIDTH = 512
 
 ) (
 
@@ -30,7 +79,7 @@ module custom_top_wrapper # (
     ////////////////////////////
 
     // AXI Master Interfaces
-    `DEFINE_AXI_MASTER_PORTS(gmem0),
+    `DEFINE_AXI_MASTER_PORTS_dwidth(gmem0, HBUS_AXI_DATAWIDTH),
 
     // AXI Slave Interfaces
     `DEFINE_AXILITE_SLAVE_PORTS(control)

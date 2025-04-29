@@ -1,0 +1,1 @@
+../../../../../hw/units/custom_hls_conv_opt6/assets/conv_opt6/hw/src/krnl_conv_opt6.h

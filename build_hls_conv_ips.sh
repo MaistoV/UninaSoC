@@ -13,8 +13,9 @@ HLS_CONFIGS=(
     # "conv_opt1"  # Memory coalescing (AXI bursts)
     # "conv_opt2"  # Double buffering
     # "conv_opt3"  # Split r/r/w interfaces
-    "conv_opt4"  # Frequency scaling
+    # "conv_opt4"  # Frequency scaling
     # "conv_opt5"  # Lower bit-widths (ap_int)
+    "conv_opt6"  # Wide, single M_AXI for HBUS
 )
 
 # Preliminary builds
@@ -37,6 +38,8 @@ for config in ${HLS_CONFIGS[*]}; do
         XILINX_ILA=0
     elif [[ "$config" == "conv_opt4" ]]; then
         cp -v config/configs/${SOC_CONFIG}/config_main_bus_hls_freq.csv $TARGET_CONFIG
+    elif [[ "$config" == "conv_opt6" ]]; then
+        cp -v config/configs/${SOC_CONFIG}/config_main_bus_hbus.csv $TARGET_CONFIG
     else
         cp -v config/configs/${SOC_CONFIG}/config_main_bus_base.csv $TARGET_CONFIG
     fi

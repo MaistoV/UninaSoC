@@ -7,9 +7,13 @@
 int main(int argc, const char **argv) {
 
     // Pre-allocate tensors
-    target_type_t I       [N][C][ Y][ X];
-    target_type_t W       [K][C][ R][ S];
-    target_type_t O       [N][K][Y1][X1];
+    // target_type_t I       [N][C][ Y][ X];
+    // target_type_t W       [K][C][ R][ S];
+    // target_type_t O       [N][K][Y1][X1];
+    // target_type_t expected[N][K][Y1][X1] = {0};
+    target_type_t I       [N][C][ Y][ X]__attribute__((aligned(sizeof(m_axi_port_type_t))));
+    target_type_t W       [K][C][ R][ S]__attribute__((aligned(sizeof(m_axi_port_type_t))));
+    target_type_t O       [N][K][Y1][X1]__attribute__((aligned(sizeof(m_axi_port_type_t))));
     target_type_t expected[N][K][Y1][X1] = {0};
 
     // Init
@@ -22,19 +26,20 @@ int main(int argc, const char **argv) {
 
     // Call to kernel
     printf("[INFO] Call to kernel\n");
+    // TODO: fix m_axi_port_type_t and taarget_type_t
     krnl_conv_opt6(
-            (target_type_t*)I,
-            (target_type_t*)W,
-            (target_type_t*)O,
+            (m_axi_port_type_t*)I,
+            (m_axi_port_type_t*)W,
+            (m_axi_port_type_t*)O,
             N, C, K
         );
 
     // Dump
-    printf("I **********************************:\n\r"); print_tensor((target_type_t*)I,N,C,Y,X);
-    printf("W **********************************:\n\r"); print_tensor((target_type_t*)W,K,C,R,S);
-    printf("expected ***************************:\n\r"); print_tensor((target_type_t*)expected,N,K,Y1,X1);
-    printf("O **********************************:\n\r"); print_tensor((target_type_t*)O,N,K,Y1,X1);
-    printf("++++++++++++++++++++++++++++++++++ 0x%08lx\n\r",((uint64_t*)I)[0] );
+    // printf("I **********************************:\n\r"); print_tensor((target_type_t*)I,N,C,Y,X);
+    // printf("W **********************************:\n\r"); print_tensor((target_type_t*)W,K,C,R,S);
+    // printf("expected ***************************:\n\r"); print_tensor((target_type_t*)expected,N,K,Y1,X1);
+    // printf("O **********************************:\n\r"); print_tensor((target_type_t*)O,N,K,Y1,X1);
+    // printf("++++++++++++++++++++++++++++++++++ 0x%08lx\n\r",((uint64_t*)I)[0] );
 
     // Check result
     printf("[INFO] Checking results...\n");

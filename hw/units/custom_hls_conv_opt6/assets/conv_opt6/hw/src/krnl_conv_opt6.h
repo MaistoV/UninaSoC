@@ -43,15 +43,15 @@ typedef uint8_t target_type_t;
 #ifdef MOCK_AP_INT
 // typedef uint8_t m_axi_port_type_t; //TBD
 #else
-#define M_AXI_DWIDTH 512
-typedef ap_uint<M_AXI_DWIDTH> m_axi_port_type_t;
+    #define M_AXI_DWIDTH 512
+    typedef ap_uint<M_AXI_DWIDTH> m_axi_port_type_t;
 #endif
 
 
-void krnl_conv_opt4 (
-                    target_type_t * I,
-                    target_type_t * W,
-                    target_type_t * O,
+void krnl_conv_opt6 (
+                    m_axi_port_type_t * I,
+                    m_axi_port_type_t * W,
+                    m_axi_port_type_t * O,
                     uint8_t N_input,
                     uint8_t C_input,
                     uint8_t K_input
