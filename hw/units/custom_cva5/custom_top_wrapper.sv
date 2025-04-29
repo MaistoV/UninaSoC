@@ -3,18 +3,37 @@
 // This module is intended as a top-level wrapper for the code in ./rtl
 // It might support either MEM protocol or AXI protocol, using the
 // uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
+
+// Definizione della struttura delle interruzioni
 typedef struct packed {
     logic software;    // Interruzione software
     logic timer;       // Interruzione timer
     logic external;    // Interruzione esterna
 } interrupt_t;
+
+// Inclusione dei file di configurazione
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
 
+// Wrapper per il modulo top-level
+module custom_top_wrapper (
+    ///////////////////////////////////
+    //  IP-related signals
+    ///////////////////////////////////
+    input logic clk,
+    input logic rst,
 
-module custom_top_wrapper #(
-    parameter cpu_config_t CONFIG = '{
-        //ISA options
+    // AXI Master interface
+    `DEFINE_AXI_MASTER_PORTS(m_axi),
+
+    // Interrupts e timer
+    input logic [63:0] mtime,
+    input interrupt_t s_interrupt,
+    input interrupt_t m_interrupt
+);
+
+    localparam cpu_config_t CONFIG = '{
+        // ISA options
         MODES : M,
         INCLUDE_UNIT : '{
             MUL : 1,
@@ -27,7 +46,7 @@ module custom_top_wrapper #(
         INCLUDE_IFENCE : 0,
         INCLUDE_AMO : 0,
         INCLUDE_CBO : 0,
-        //CSR constants
+        // CSR constants
         CSRS : '{
             MACHINE_IMPLEMENTATION_ID : 0,
             CPU_ID : 0,
@@ -39,7 +58,7 @@ module custom_top_wrapper #(
             INCLUDE_SSTC : 0,
             INCLUDE_SMSTATEEN : 0
         },
-        //Memory Options
+        // Memory Options
         SQ_DEPTH : 4,
         INCLUDE_FORWARDING_TO_STORES : 1,
         AMO_UNIT : '{
@@ -103,38 +122,22 @@ module custom_top_wrapper #(
         },
         INCLUDE_PERIPHERAL_BUS : 1,
         PERIPHERAL_BUS_ADDR : '{
-            L : 32'h60000000,
-            H : 32'h6FFFFFFF
+            L : 32'h00000000,
+            H : 32'hFFFFFFFF
         },
         PERIPHERAL_BUS_TYPE : AXI_BUS,
-        //Branch Predictor Options
+        // Branch Predictor Options
         INCLUDE_BRANCH_PREDICTOR : 1,
         BP : '{
             WAYS : 2,
             ENTRIES : 512,
             RAS_ENTRIES : 8
         },
-        //Writeback Options
+        // Writeback Options
         NUM_WB_GROUPS : 3,
         WB_GROUP : WB_CPU_CONFIG
     };
-) (
-    ///////////////////////////////////
-    //  IP-related signals
-    ///////////////////////////////////
-    input logic clk,
-    input logic rst,
 
-    // AXI Master interface
-    `DEFINE_AXI_MASTER_PORTS(m_axi),
-    
-
-    // Interrupts e timer
-    input logic [63:0] mtime,
-    input interrupt_t s_interrupt,
-    input interrupt_t m_interrupt
-);
-    
     //////////////////////////////
     //  CVA5 Core Instantiation
     //////////////////////////////
@@ -151,7 +154,6 @@ module custom_top_wrapper #(
         .s_interrupt(s_interrupt),
         .m_interrupt(m_interrupt),
 
-    
         // Disabilitare memorie locali
         .instruction_bram(64'b0), // Impostato a zero
         .data_bram(64'b0),        // Impostato a zero
@@ -159,36 +161,35 @@ module custom_top_wrapper #(
         .m_avalon(64'b0),         // Impostato a zero
         .dwishbone(64'b0),        // Impostato a zero
         .iwishbone(64'b0)         // Impostato a zero
-
     );
 
     // AR (Address Read Channel)
-        assign m_axi.arready = m_axi_arready;
-        assign m_axi_arvalid = m_axi.arvalid;
-        assign m_axi_araddr  = m_axi.araddr;
-        
-        // R (Read Data Channel)
-        assign m_axi_rready  = m_axi.rready;
-        assign m_axi.rvalid  = m_axi_rvalid;
-        assign m_axi.rdata   = m_axi_rdata;
-        assign m_axi.rresp   = m_axi_rresp;
-        assign m_axi.rid     = 6'b0; 
-        
-        // AW (Address Write Channel)
-        assign m_axi.awready = m_axi_awready;
-        assign m_axi_awvalid = m_axi.awvalid;
-        assign m_axi_awaddr  = m_axi.awaddr;
-        
-        // W (Write Data Channel)
-        assign m_axi_wready  = m_axi_wready;
-        assign m_axi_wvalid  = m_axi.wvalid;
-        assign m_axi_wdata   = m_axi.wdata;
-        assign m_axi_wstrb   = m_axi.wstrb;
-        
-        // B (Write Response Channel)
-        assign m_axi_bready  = m_axi.bready;
-        assign m_axi.bvalid  = m_axi_bvalid;
-        assign m_axi.bresp   = m_axi_bresp;
-        assign m_axi.bid     = 6'b0; 
+    assign m_axi.arready = m_axi_arready;
+    assign m_axi_arvalid = m_axi.arvalid;
+    assign m_axi_araddr  = m_axi.araddr;
+    
+    // R (Read Data Channel)
+    assign m_axi_rready  = m_axi.rready;
+    assign m_axi.rvalid  = m_axi_rvalid;
+    assign m_axi.rdata   = m_axi_rdata;
+    assign m_axi.rresp   = m_axi_rresp;
+    assign m_axi.rid     = 6'b0; 
+    
+    // AW (Address Write Channel)
+    assign m_axi.awready = m_axi_awready;
+    assign m_axi_awvalid = m_axi.awvalid;
+    assign m_axi_awaddr  = m_axi.awaddr;
+    
+    // W (Write Data Channel)
+    assign m_axi_wready  = m_axi_wready;
+    assign m_axi_wvalid  = m_axi.wvalid;
+    assign m_axi_wdata   = m_axi.wdata;
+    assign m_axi_wstrb   = m_axi.wstrb;
+    
+    // B (Write Response Channel)
+    assign m_axi_bready  = m_axi.bready;
+    assign m_axi.bvalid  = m_axi_bvalid;
+    assign m_axi.bresp   = m_axi_bresp;
+    assign m_axi.bid     = 6'b0;
 
 endmodule : custom_top_wrapper
