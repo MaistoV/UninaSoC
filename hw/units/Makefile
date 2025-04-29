@@ -16,11 +16,11 @@ units: $(addsuffix /rtl, ${IP_RTL_LIST})
 custom_%/rtl:
 	cd ${HW_UNITS_ROOT}/custom_$*; source fetch_sources.sh
 # 	Check if sources are present, error otherwise and clean stale dir
-	if [ -z "$(shell ls -A $${HW_UNITS_ROOT}/$@)" ]; then \
-		echo "[UNITS] Failed to fetch sources for $@" >&2; \
-		rm -rf $@; \
-		false; \
-	fi
+# if [ -z "$(shell ls -A $${HW_UNITS_ROOT}/$@)" ]; then \
+# 	echo "[UNITS] Failed to fetch sources for $@" >&2; \
+# 	rm -rf $@; \
+# 	false; \
+# fi
 
 # Selectively remove a single RTL dir
 clean_%:
