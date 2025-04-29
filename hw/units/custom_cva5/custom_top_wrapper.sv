@@ -3,7 +3,11 @@
 // This module is intended as a top-level wrapper for the code in ./rtl
 // It might support either MEM protocol or AXI protocol, using the
 // uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
-
+typedef struct packed {
+    logic software;    // Interruzione software
+    logic timer;       // Interruzione timer
+    logic external;    // Interruzione esterna
+} interrupt_t;
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
 
@@ -130,12 +134,6 @@ module custom_top_wrapper #(
     input interrupt_t s_interrupt,
     input interrupt_t m_interrupt
 );
-    avalon_interface m_avalon(); 
-    wishbone_interface dwishbone(); 
-    wishbone_interface iwishbone(); 
-    avalon_interface m_avalon(); 
-    wishbone_interface dwishbone(); 
-    wishbone_interface iwishbone(); 
     
     //////////////////////////////
     //  CVA5 Core Instantiation
