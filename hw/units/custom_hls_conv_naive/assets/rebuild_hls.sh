@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 TOP_DIR=$PWD
 
 # This script dir
-WORK_DIR=$( dirname $( realpath ${BASH_SOURCE[0]} ) )
+WORK_DIR=$( dirname $( realpath -se ${BASH_SOURCE[0]} ) )
 cd $WORK_DIR
 # Get the first dir in this path
 HLS_DIR=$(realpath $(find ./ -maxdepth 1 -mindepth 1 -type d))
