@@ -14,6 +14,7 @@ typedef struct packed {
 // Inclusione dei file di configurazione
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
+import cva5_config::*
 
 // Wrapper per il modulo top-level
 module custom_top_wrapper (
