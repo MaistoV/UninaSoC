@@ -171,7 +171,7 @@ module custom_top_wrapper #(
         assign m_axi.rvalid  = m_axi_rvalid;
         assign m_axi.rdata   = m_axi_rdata;
         assign m_axi.rresp   = m_axi_rresp;
-        assign m_axi.rid     = 6'b0; // ID non usato
+        assign m_axi.rid     = 6'b0; 
         
         // AW (Address Write Channel)
         assign m_axi.awready = m_axi_awready;
@@ -188,6 +188,6 @@ module custom_top_wrapper #(
         assign m_axi_bready  = m_axi.bready;
         assign m_axi.bvalid  = m_axi_bvalid;
         assign m_axi.bresp   = m_axi_bresp;
-        assign m_axi.bid     = 6'b0; // ID non usato
+        assign m_axi.bid     = 6'b0; 
 
 endmodule : custom_top_wrapper
