@@ -7,6 +7,7 @@
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
 
+
 module custom_top_wrapper #(
     parameter cpu_config_t CONFIG = '{
         //ISA options
@@ -119,21 +120,23 @@ module custom_top_wrapper #(
     ///////////////////////////////////
     input logic clk,
     input logic rst,
-    local_memory_interface.master instruction_bram,
-    local_memory_interface.master data_bram,
 
     // AXI Master interface
     `DEFINE_AXI_MASTER_PORTS(m_axi),
-    avalon_interface.master m_avalon,
-    wishbone_interface.master dwishbone,
-    wishbone_interface.master iwishbone,
+    
 
     // Interrupts e timer
     input logic [63:0] mtime,
     input interrupt_t s_interrupt,
     input interrupt_t m_interrupt
 );
-
+    avalon_interface m_avalon(); 
+    wishbone_interface dwishbone(); 
+    wishbone_interface iwishbone(); 
+    avalon_interface m_avalon(); 
+    wishbone_interface dwishbone(); 
+    wishbone_interface iwishbone(); 
+    
     //////////////////////////////
     //  CVA5 Core Instantiation
     //////////////////////////////
@@ -146,7 +149,7 @@ module custom_top_wrapper #(
 
         .m_axi(m_axi),
 
-        .mtime(mtime),
+        .mtime(64'b0),
         .s_interrupt(s_interrupt),
         .m_interrupt(m_interrupt),
 
