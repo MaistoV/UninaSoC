@@ -25,16 +25,21 @@ import pandas as pd
 ##############
 
 # CSV configuration file path
-config_file_names = ['config/axi_memory_map/configs/embedded/config_main_bus.csv', 'config/axi_memory_map/configs/embedded/config_peripheral_bus.csv']
-if len(sys.argv) >= 3:
+config_file_names = [
+		'config/axi_memory_map/configs/embedded/config_main_bus.csv',
+		'config/axi_memory_map/configs/embedded/config_peripheral_bus.csv',
+		'config/axi_memory_map/configs/embedded/config_highperformance_bus.csv',
+	]
+
+if len(sys.argv) >= 4:
 	# Get the array of bus names from the second arg to the last but one
-	config_file_names = sys.argv[1:3]
+	config_file_names = sys.argv[1:4]
 
 # Target linker script file
 ld_file_name = 'sw/SoC/common/UninaSoC.ld'
-if len(sys.argv) >= 4:
+if len(sys.argv) >= 5:
 	# Get the linker script name, the last arg
-	ld_file_name = sys.argv[3]
+	ld_file_name = sys.argv[4]
 
 
 ###############
@@ -74,9 +79,9 @@ for config_df in config_dfs:
 BOOT_MEMORY_BLOCK = 0x0
 
 
-# ################
-# # Sanity check #
-# ################
+################
+# Sanity check #
+################
 # For each bus
 for i in range(len(NUM_MI)):
 	assert (NUM_MI[i] == len(RANGE_NAMES[i])) & (NUM_MI[i] == len(RANGE_BASE_ADDR[i]) ) & (NUM_MI[i]  == len(RANGE_ADDR_WIDTH[i])), \

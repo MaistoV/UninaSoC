@@ -12,12 +12,12 @@ import configuration
 import parse_properties_wrapper
 
 # Name of buses
-CONFIG_NAMES                = {
-    "config_main_bus.csv"       : "MBUS",
-    "config_peripheral_bus.csv" : "PBUS",
-    "config_system.csv"         : "SYS"
+CONFIG_NAMES = {
+    "config_main_bus.csv"            : "MBUS",
+    "config_peripheral_bus.csv"      : "PBUS",
+    "config_highperformance_bus.csv" : "HBUS",
+    "config_system.csv"              : "SYS"
 }
-
 
 ###############
 # Read config #
@@ -49,7 +49,7 @@ def read_config(config_file_names : list) -> list:
 ############
 
 # Print/debug stuff
-PRINT_PREFIX = "[CHECK_CONFIG]"
+PRINT_PREFIX = "[CONFIG]"
 PRINT_ERROR_PREFIX = "[ERROR]"
 PRINT_WARNING_PREFIX = "[WARNING]"
 

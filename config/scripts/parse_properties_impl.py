@@ -111,20 +111,26 @@ def parse_XLEN (
 		property_name : str,
 		property_value: str,
 ):
-	# XLEN property will set bus DATA_WIDTH and ADDR_WIDTH
+	# XLEN property will also set MBUS DATA_WIDTH and ADDR_WIDTH
 	value = int(property_value)
 	config.XLEN = value
 
 	if (value not in [32, 64]):
 		logging.warning("Invalid XLEN value, please select either 32 or 64")
 
-	# Select BUS-related parameters
-	data_width = int(config.XLEN)
-	addr_width = int(config.XLEN)
-
 	# Set BUS-related parameters
-	config.set_ADDR_WIDTH(addr_width)
-	config.set_DATA_WIDTH(data_width)
+	if config.CONFIG_NAME == "MBUS":
+		config.set_ADDR_WIDTH(int(config.XLEN))
+		config.set_DATA_WIDTH(int(config.XLEN))
+	elif config.CONFIG_NAME == "PBUS":
+		config.set_ADDR_WIDTH(32)
+		config.set_DATA_WIDTH(32)
+	elif config.CONFIG_NAME == "HBUS":
+		config.set_ADDR_WIDTH(32) # TODO: update for RV64
+		config.set_DATA_WIDTH(512)
+	else:
+		logging.error("Can't read valid config.CONFIG_NAME " + config.CONFIG_NAME)
+
 
 	return config
 

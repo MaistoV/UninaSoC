@@ -23,6 +23,8 @@ lappend verilog_defines AXI_ID_WIDTH=$::env(ID_WIDTH)
 lappend verilog_defines NUM_SI=$::env(NUM_SI)
 lappend verilog_defines NUM_MI=$::env(NUM_MI)
 lappend verilog_defines PBUS_NUM_MI=$::env(PBUS_NUM_MI)
+lappend verilog_defines HBUS_NUM_MI=$::env(HBUS_NUM_MI)
+lappend verilog_defines HBUS_NUM_SI=$::env(HBUS_NUM_SI)
 # Core selection
 lappend verilog_defines CORE_SELECTOR=$::env(CORE_SELECTOR)
 # Clock domains

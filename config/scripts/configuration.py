@@ -10,7 +10,7 @@ import logging
 # Wrapper class for configuration properties
 class Configuration:
 	def __init__(self):
-		self.CONFIG_NAME         : str = "MBUS" # The name of the bus, used in check sanity
+		self.CONFIG_NAME         : str = "" # The name of the bus, used in check sanity
 		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.VIO_RESETN_DEFAULT	 : int = 1      # Reset using Xilinx VIO

@@ -29,6 +29,13 @@ package uninasoc_pkg;
     localparam int unsigned PBUS_NUM_MI = `PBUS_NUM_MI;
 
     //////////////////////////
+    // High-performance bus //
+    //////////////////////////
+    localparam int unsigned HBUS_NUM_SI = `HBUS_NUM_SI;
+    localparam int unsigned HBUS_NUM_MI = `HBUS_NUM_MI;
+
+
+    //////////////////////////
     // Supported Processors //
     //////////////////////////
 

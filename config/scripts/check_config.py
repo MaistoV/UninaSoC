@@ -142,12 +142,14 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
     # Check valid main clock domain
     if config.CONFIG_NAME == "MBUS":
         if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
-            print_error(f"The clock domain {clok_domain}MHz is not supported")
+            print_error(f"The clock domain {clock_domain}MHz is not supported")
             return False
         # Check valid clock domains
         for i in range(len(config.RANGE_CLOCK_DOMAINS)):
             # Check if the clock frequency is valid (DDR has its own clock domain)
-            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG] and config.RANGE_NAMES[i] != "DDR":
+            # NOTE: add HLS_CONTROL as exception
+            # TODO: decide a pregfix for HBUS-attached accelerators here, maybe ACC_* or HBUS_*
+            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG] and config.RANGE_NAMES[i] not in {"DDR", "HBUS", "HLS_CONTROL"}:
                 print_error(f"The clock domain {config.RANGE_CLOCK_DOMAINS[i]}MHz is not supported")
                 return False
             # Check if all the main_clock_domain slaves have the same frequency as MAIN_CLOCK_DOMAIN
@@ -156,9 +158,9 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
                     print_error(f"The {config.RANGE_NAMES[i]} frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same as MAIN_CLOCK_DOMAIN {config.MAIN_CLOCK_DOMAIN}")
                     return False
             # Check if the DDR has the right frequency
-            if config.RANGE_NAMES[i] == "DDR":
+            if config.RANGE_NAMES[i] in {"DDR", "HBUS"}:
                 if config.RANGE_CLOCK_DOMAINS[i] != DDR_FREQUENCY:
-                    print_error(f"The DDR frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same of DDR board clock {DDR_FREQUENCY}")
+                    print_error(f"The DDR and HBUS frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same of DDR board clock {DDR_FREQUENCY}")
                     return False
 
     # Check the presence of multiple BRAMs, for now a single occurrence of BRAM is supported
@@ -189,26 +191,31 @@ def check_inter_config(configs : list) -> bool:
             continue
 
         # For each master of the current Configuration
-        for i in range(config.NUM_MI):
+        for mi_index in range(config.NUM_MI):
             # If a master is a bus (is in the CONFIG_NAME dict)
-            if config.RANGE_NAMES[i] in CONFIG_NAMES.values():
+            if config.RANGE_NAMES[mi_index] in CONFIG_NAMES.values():
                 # Find the child bus configuration
                 for child_config in configs:
-                    if child_config.CONFIG_NAME == config.RANGE_NAMES[i]:
+                    # TODO: allow loop back to MBUS
+                    if child_config.CONFIG_NAME == config.RANGE_NAMES[mi_index] and child_config.CONFIG_NAME != "MBUS":
+                        print(child_config.CONFIG_NAME)
                         # Compute the base and the end address of the parent bus
-                        parent_base_address = int(config.BASE_ADDR[i], 16)
-                        parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[i]-1))
+                        parent_base_address = int(config.BASE_ADDR[mi_index], 16)
+                        parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[mi_index]-1))
 
                         # Compute the base and the end address of the child bus
                         child_base_address = int(child_config.BASE_ADDR[0], 16)
-                        child_base_address_tmp = int(child_config.BASE_ADDR[-1], 16)
-                        child_end_address = child_base_address_tmp + ~(~1 << (child_config.RANGE_ADDR_WIDTH[i]-1))
+                        last_base_address = int(child_config.BASE_ADDR[-1], 16) # Base address of last MI interface of this child
+                        child_end_address = last_base_address + ~(~1 << (child_config.RANGE_ADDR_WIDTH[-1]-1))
 
                         # Do the checks
                         # Check if the address space of the child is containted in the address space of the parent
                         if child_base_address < parent_base_address or child_end_address > parent_end_address:
-                            print_error(f"Address of {child_config.CONFIG_NAME} is not properly contained in {config.CONFIG_NAME}")
-                            return False
+                            # Except for HBUS, which can loop back to MBUS
+                            # TODO: revise this, maybe assume only one (first?) HBUS MI to loop back and skip check for that one only
+                            if child_config.CONFIG_NAME != "HBUS":
+                                print_error(f"Address of {child_config.CONFIG_NAME} is not properly contained in {config.CONFIG_NAME}")
+                                return False
     return True
 
 ##############
@@ -217,10 +224,10 @@ def check_inter_config(configs : list) -> bool:
 def parse_args(argv : list) -> list:
     print_info("Parsing arguments...")
     # CSV configuration file path
-    config_file_names = ['configs/common/config_system.csv', 'configs/embedded/config_main_bus.csv', 'configs/embedded/config_peripheral_bus.csv']
-    if len(sys.argv) >= 4:
+    config_file_names = CONFIG_NAMES
+    if len(sys.argv) >= 5:
         # Get the array of bus/system names from the second arg to the last but one
-        config_file_names = sys.argv[1:4]
+        config_file_names = sys.argv[1:5]
     print_info("Parsing done!")
     return config_file_names
 

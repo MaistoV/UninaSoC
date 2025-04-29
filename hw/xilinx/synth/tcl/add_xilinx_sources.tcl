@@ -9,6 +9,8 @@ set src_file_list [ list \
     $::env(XILINX_ROOT)/rtl/uninasoc_ddr4.svh                \
     $::env(XILINX_ROOT)/rtl/mbus_buses.svinc                 \
     $::env(XILINX_ROOT)/rtl/pbus_buses.svinc                 \
+    $::env(XILINX_ROOT)/rtl/hbus_buses.svinc                 \
+    $::env(XILINX_ROOT)/rtl/highperformance_bus.sv           \
     $::env(XILINX_ROOT)/rtl/uninasoc_clk_assignments.svinc   \
     $::env(XILINX_ROOT)/rtl/sys_master.sv                    \
     $::env(XILINX_ROOT)/rtl/rv_socket.sv                     \

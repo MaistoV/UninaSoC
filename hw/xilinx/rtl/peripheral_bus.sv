@@ -7,7 +7,7 @@
 //      _________________            _______________                  _____________             _______
 //     |                 |  AXI4    |   AXI Prot    |   AXI Lite     |             |           |       |
 // --->| Clock Converter |--------->|   Converter   |--------------->|             |---------->| UART  |
-//     |_________________|          |_______________|                | Pheripheral |           |_______|
+//     |_________________|          |_______________|                |  Peripheral |           |_______|
 //                                                                   |    XBAR     |
 //                                                                   |  (axilite)  |            ___________
 //                                                                   |             |           |           |
@@ -65,7 +65,7 @@ module peripheral_bus #(
     /////////////////////////////////////////
     `include "pbus_buses.svinc"
     `DECLARE_AXI_BUS(to_prot_conv, AXI_DATA_WIDTH)
-    
+
     ///////////////////////
     // Interrupt Signals //
     ///////////////////////

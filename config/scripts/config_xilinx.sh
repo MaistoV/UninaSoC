@@ -9,13 +9,14 @@
 #   $1: System CSV config
 #   $2: MBUS Source CSV config
 #   $3: PBUS Source CSV config
+#   $3: HBUS Source CSV config
 #   $4: Target MK file
 
 ##############
 # Parse args #
 ##############
 
-EXPECTED_ARGC=4;
+EXPECTED_ARGC=5;
 ARGC=$#;
 
 # Check argc
@@ -28,7 +29,8 @@ fi
 CONFIG_SYS_CSV=$1
 CONFIG_MAIN_CSV=$2
 CONFIG_PBUS_CSV=$3
-OUTPUT_MK_FILE=$4
+CONFIG_HBUS_CSV=$4
+OUTPUT_MK_FILE=$5
 
 ##########
 # Script #
@@ -46,6 +48,8 @@ bus_target_values=(
         NUM_SI
         NUM_MI
         PBUS_NUM_MI
+        HBUS_NUM_MI
+        HBUS_NUM_SI
     )
 
 # Loop over system targets
@@ -62,14 +66,21 @@ done
 
 # Loop over bus targets
 for target in ${bus_target_values[*]}; do
-    # Special case for PBUS
-    # Assume a prexif
-    if [[ "$target" == "PBUS_"* ]]; then
+
+    # Prefixed targets for PBUS nad HBUS
+    if [[ "$target" == "PBUS_"* || "$target" == "HBUS_"*  ]]; then
         # Discard prefix (first 5 chars)
         prefix_len=5
         grep_target=${target:$prefix_len}
+        # Select source config file
+        if [[ "$target" == "PBUS_"* ]]; then
+            source_config=${CONFIG_PBUS_CSV}
+        fi
+        if [[ "$target" == "HBUS_"* ]]; then
+            source_config=${CONFIG_HBUS_CSV}
+        fi
         # Search for value
-        target_value=$(grep "${grep_target}" ${CONFIG_PBUS_CSV} | awk -F "," '{print $2}');
+        target_value=$(grep "${grep_target}" ${source_config} | awk -F "," '{print $2}');
     else
         # Search in main bus config
         target_value=$(grep "${target}" ${CONFIG_MAIN_CSV} | grep -v RANGE | awk -F "," '{print $2}');

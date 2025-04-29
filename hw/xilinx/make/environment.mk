@@ -79,7 +79,7 @@ XILINX_BITSTREAM ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl
 XILINX_PROBE_LTX ?= ${XILINX_PROJECT_BUILD_DIR}/${XILINX_PROJECT_NAME}.runs/impl_1/${XILINX_PROJECT_NAME}.ltx
 
 # Whether to use ILA probes (0|1)
-XILINX_ILA ?= 1
+XILINX_ILA ?= 0
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=                                \
@@ -94,6 +94,8 @@ XILINX_VIVADO_ENV ?=                                \
     MAIN_CLOCK_FREQ_MHZ=${MAIN_CLOCK_FREQ_MHZ}      \
     RANGE_CLOCK_DOMAINS="${RANGE_CLOCK_DOMAINS}"    \
     PBUS_NUM_MI=${PBUS_NUM_MI}                      \
+    HBUS_NUM_MI=${HBUS_NUM_MI}                      \
+    HBUS_NUM_SI=${HBUS_NUM_SI}                      \
     XILINX_ILA=${XILINX_ILA}                        \
     SYNTH_STRATEGY=${SYNTH_STRATEGY}                \
     IMPL_STRATEGY=${IMPL_STRATEGY}                  \

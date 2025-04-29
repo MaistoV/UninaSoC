@@ -34,7 +34,6 @@ if len(sys.argv) >= 2:
 
 # CSV bus configuration file path
 bus_config_file_name = 'config/configs/embedded/config_main_bus.csv'
-# bus_config_file_name = 'config/axi_memory_map/configs/PoC_config.csv'
 if len(sys.argv) >= 3:
 	bus_config_file_name = sys.argv[2]
 
@@ -72,6 +71,8 @@ if "main_bus" in bus_config_file_name:
     config.CONFIG_NAME = "MBUS"
 elif "peripheral_bus" in bus_config_file_name:
     config.CONFIG_NAME = "PBUS"
+elif "highperformance_bus" in bus_config_file_name:
+    config.CONFIG_NAME = "HBUS"
 
 ###################
 # Read Sys config #
