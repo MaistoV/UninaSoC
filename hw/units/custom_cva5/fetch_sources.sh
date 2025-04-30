@@ -4,14 +4,13 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Create rtl dir
-
 mkdir rtl
 GIT_URL="https://github.com/openhwgroup/cva5.git"
-GIT_TAG=v0.9  
 CLONE_DIR=cva5
 
 printf "${YELLOW} [FETCH SOURCES] Cloning source repository${NC}\n"
-git clone --branch ${GIT_TAG} --depth 1 ${GIT_URL} ${CLONE_DIR}
+# Clona il repository senza tag specifico (prende l'ultima versione disponibile)
+git clone --depth 1 ${GIT_URL} ${CLONE_DIR}
 
 # Copia i file sorgenti RTL nella cartella rtl
 printf "${YELLOW} [FETCH SOURCES] Copying RTL source files to rtl/ ${NC}\n"
@@ -25,6 +24,3 @@ sudo rm -r ${CLONE_DIR}
 
 # Messaggio finale
 printf "${GREEN} [FETCH SOURCES] Done! RTL files are in rtl/ ${NC}\n"
-
-
-
