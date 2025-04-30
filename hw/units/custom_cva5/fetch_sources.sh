@@ -6,7 +6,7 @@ NC='\033[0m' # No Color
 # Create rtl dir
 
 mkdir rtl
-GIT_URL="https://github.com/openhwgroup/cva5.git"
+GIT_URL="https://github.com/annalia01/cva5_annalia.git"
 GIT_TAG=v0.9  
 CLONE_DIR=cva5
 
