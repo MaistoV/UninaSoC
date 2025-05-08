@@ -9,10 +9,10 @@
 ##########
 
 # AXI
-XLEN ?= 32
+XLEN ?= 64
 ADDR_WIDTH ?= ${XLEN}
 DATA_WIDTH ?= ${XLEN}
-ID_WIDTH ?= 2
+ID_WIDTH ?= 4
 
 # Main bus
 NUM_SI ?= 4
@@ -21,10 +21,10 @@ NUM_MI ?= 4
 PBUS_NUM_MI ?= 5
 
 # RV core
-CORE_SELECTOR ?= CORE_CV32E40P
+CORE_SELECTOR ?= CORE_CV64A6
 
 # VIO resetn
-VIO_RESETN_DEFAULT ?= 1
+VIO_RESETN_DEFAULT ?= 0
 
 # BRAM size
 BRAM_DEPTHS ?=  8192

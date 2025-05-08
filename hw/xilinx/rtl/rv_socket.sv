@@ -491,7 +491,7 @@ module rv_socket # (
             custom_cv64a6 cv64a6_core (
 
                 .clk_i           ( clk_i                    ),
-                .rst_ni          ( rst_ni                   ),
+                .rst_ni          ( core_resetn_internal     ),
                 .boot_addr_i     ( bootaddr_i               ),
                 .hart_id_i       ( '0                       ),
                 .irq_i           ( '0                       ), // Should be EXT interrupt
