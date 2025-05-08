@@ -154,6 +154,7 @@ fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "016x") + 
 
 # The stack is allocated at the end of first memory block
 # _stack_end can be user-defined for the application, as bss and rodata
+# _stack_end will be aligned to 64 bits, making it working for both 32 and 64 bits configurations
 
 # Note: The memory size specified in the config.csv file may differ from the
 # physical memory allocated for the SoC (refer to hw/xilinx/ips/common/xlnx_blk_mem_gen/config.tcl).
@@ -161,7 +162,8 @@ fd.write("_vector_table_end = 0x" + format(vector_table_start + 32*4, "016x") + 
 # and xlnx_blk_mem_gen/config.tcl. As a result, we assume a maximum memory size of
 # 32KB for now, based on the current setting in `config.tcl`.
 
-stack_start = min(0x7ffc, device_dict['memory'][BOOT_MEMORY_BLOCK]['base'] + device_dict['memory'][BOOT_MEMORY_BLOCK]['range'] - 0x4)
+# TODO: we can make this correctly aligned to the bram now
+stack_start = min(0x7ff8, device_dict['memory'][BOOT_MEMORY_BLOCK]['base'] + device_dict['memory'][BOOT_MEMORY_BLOCK]['range'] - 0x8)
 fd.write("_stack_start = 0x" + format(stack_start, "016x") + ";\n")
 
 # Generate sections

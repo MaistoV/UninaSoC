@@ -119,8 +119,12 @@ def parse_XLEN (
 		logging.warning("Invalid XLEN value, please select either 32 or 64")
 
 	# Select BUS-related parameters
-	data_width = int(config.XLEN)
-	addr_width = int(config.XLEN)
+	if config.CONFIG_NAME == "PBUS":
+		data_width = 32
+		addr_width = 32
+	else:
+		data_width = int(config.XLEN)
+		addr_width = int(config.XLEN)
 
 	# Set BUS-related parameters
 	config.set_ADDR_WIDTH(addr_width)

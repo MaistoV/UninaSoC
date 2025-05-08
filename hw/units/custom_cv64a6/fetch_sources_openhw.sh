@@ -34,9 +34,10 @@ printf "${YELLOW}[FETCH_SOURCES] Resolve dependencies with Bender${NC}\n"
 ./bender checkout
 ./bender script flist -t ${BENDER_TARGET} -t fpga > ../flist
 
-# Append to flist files not listed by bender (idk why)
+# Append to flist files not listed by bender
 find "$PWD/common/local/util" -type f -name "*.sv" >> ../flist
 find "$PWD/core/cva6_mmu" -type f -name "*.sv" >> ../flist
+find "$PWD/vendor/pulp-platform/fpga-support/rtl" -type f -name "*.sv" >> ../flist
 
 # Append to flist all the header files
 find "$PWD" -type f -name "*.svh" >> ../flist
@@ -87,11 +88,8 @@ sed -i '/<=/ s/rs2_forwarding_i/rs2_forwarding_i[0]/g' ${RTL_DIR}/ex_stage.sv
 # Enable synthesis for xilinx sram (from tech cells)
 sed -i 's/translate_off/translate_on/g' ${RTL_DIR}/tc_sram_wrapper.sv
 
-# Patch Unread
-# TODO
-
-# Copy FPGA sources from vendor
-# TODO
+# Patch unread.sv to be used by vivado
+sed -i '1i `define TARGET_VIVADO' ${RTL_DIR}/unread.sv
 
 ####################
 # Remove Artifacts #
