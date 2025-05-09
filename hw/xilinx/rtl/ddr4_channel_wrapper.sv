@@ -265,7 +265,8 @@ module ddr4_channel_wrapper # (
 
     );
 
-    // Map DDR4 address signals depending on ddr4 wrapper data width
+    // Map DDR4 address signals
+    // Zero extend them if the address width is 32, otherwise clip them down.
     assign ddr4_axi_awaddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_awaddr } : dwidth_conv_to_ddr4_axi_awaddr[DDR4_CHANNEL_ADDRESS_WIDTH-1:0];
     assign ddr4_axi_araddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_araddr } : dwidth_conv_to_ddr4_axi_araddr[DDR4_CHANNEL_ADDRESS_WIDTH-1:0];
 
