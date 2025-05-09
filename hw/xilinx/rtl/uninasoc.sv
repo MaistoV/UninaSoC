@@ -89,9 +89,9 @@ module uninasoc (
     /////////////////////
 
     // SYS_* params are verilog defines. They depend on the config flow (see config.mk)
-    localparam LOCAL_DATA_WIDTH = SYS_DATA_WIDTH;
-    localparam LOCAL_ADDR_WIDTH = SYS_ADDR_WIDTH;
-    localparam LOCAL_ID_WIDTH = SYS_ID_WIDTH;
+    localparam LOCAL_DATA_WIDTH = MBUS_DATA_WIDTH;
+    localparam LOCAL_ADDR_WIDTH = MBUS_ADDR_WIDTH;
+    localparam LOCAL_ID_WIDTH = MBUS_ID_WIDTH;
     localparam peripherals_interrupts_num = 4;
 
     ///////////////////

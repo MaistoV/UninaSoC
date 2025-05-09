@@ -49,7 +49,7 @@ module peripheral_bus #(
     input logic PBUS_reset_ni,
 
     // AXI4 Slave interface from the main xbar
-    `DEFINE_AXI_SLAVE_PORTS(s, SYS_DATA_WIDTH, SYS_ADDR_WIDTH, SYS_ID_WIDTH),
+    `DEFINE_AXI_SLAVE_PORTS(s, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH),
 
     // EMBEDDED ONLY
     // UART interface
@@ -69,7 +69,7 @@ module peripheral_bus #(
     // Buses declaration and concatenation //
     /////////////////////////////////////////
     `include "pbus_buses.svinc"
-    `DECLARE_AXI_BUS(to_dwidth_conv, SYS_DATA_WIDTH, SYS_ADDR_WIDTH, SYS_ID_WIDTH)
+    `DECLARE_AXI_BUS(to_dwidth_conv, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH)
     `DECLARE_AXI_BUS(to_prot_conv, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
     
     ///////////////////////
@@ -98,9 +98,9 @@ module peripheral_bus #(
     `ifdef PBUS_HAS_CLOCK_DOMAIN
         axi_clock_converter_wrapper # (
 
-        .LOCAL_DATA_WIDTH   (SYS_DATA_WIDTH),
-        .LOCAL_ADDR_WIDTH   (SYS_ADDR_WIDTH),
-        .LOCAL_ID_WIDTH     (SYS_ID_WIDTH)
+        .LOCAL_DATA_WIDTH   (MBUS_DATA_WIDTH),
+        .LOCAL_ADDR_WIDTH   (MBUS_ADDR_WIDTH),
+        .LOCAL_ID_WIDTH     (MBUS_ID_WIDTH)
 
         ) axi_clk_conv_u (
 
@@ -202,7 +202,7 @@ module peripheral_bus #(
     //////////////////////////
 
     // Use a Dwidth converter if System XLEN is 64-bits wide.
-    if( SYS_DATA_WIDTH == 64 ) begin: clock_conv_to_dwidth_conv
+    if( MBUS_DATA_WIDTH == 64 ) begin: clock_conv_to_dwidth_conv
 
         xlnx_axi_dwidth_64_to_32_converter axi_dwidth_conv_u (
             .s_axi_aclk     ( PBUS_clock_i      ),

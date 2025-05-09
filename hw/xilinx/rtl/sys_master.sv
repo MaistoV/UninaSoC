@@ -287,7 +287,7 @@ module sys_master # (
 
     // Use a Dwidth converter if System XLEN is 32-bits wide.
     // As we need to adapt from 64-bits XDMA interface.
-    if( SYS_DATA_WIDTH != 64 ) begin: dwidth_converter
+    if( MBUS_DATA_WIDTH != 64 ) begin: dwidth_converter
         xlnx_axi_dwidth_64_to_32_converter xlnx_axi_dwidth_64_to_32_converter_u (
             .s_axi_aclk     ( axi_aclk    ),
             .s_axi_aresetn  ( axi_aresetn ),
