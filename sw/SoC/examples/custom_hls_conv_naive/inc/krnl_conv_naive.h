@@ -1,1 +1,0 @@
-../../../../../hw/units/custom_hls_conv_naive/assets/conv_naive/hw/src/krnl_conv_naive.h

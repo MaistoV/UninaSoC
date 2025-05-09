@@ -1,1 +1,0 @@
-../../custom_hls_conv_naive/assets/rebuild_hls.sh

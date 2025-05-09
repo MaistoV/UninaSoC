@@ -1,1 +1,0 @@
-../../../../../hw/units/custom_hls_conv_opt6/assets/conv_opt6/hw/conv_opt6/hls/impl/ip/drivers/krnl_conv_opt6_v1_0/src/xkrnl_conv_opt6_hw.h

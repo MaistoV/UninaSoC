@@ -1,1 +1,0 @@
-../../../../../hw/units/custom_hls_conv_naive/assets/conv_naive/hw/conv_naive/hls/impl/ip/drivers/krnl_conv_naive_v1_0/src/xkrnl_conv_naive_hw.h

@@ -1,1 +1,0 @@
-../../../../../hw/units/custom_hls_conv_opt2/assets/conv_opt2/sw/host.c
