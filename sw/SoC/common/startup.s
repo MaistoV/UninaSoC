@@ -95,9 +95,13 @@ _start:
   mv a0, zero
   mv a1, zero
 
+  # Jump to main
   jal ra, main
 
+  # Wait for interrupt
+_exit_wfi:
+  wfi
 
-
-
-
+  # Spin on exit
+_exit_spin:
+  j _exit_spin
