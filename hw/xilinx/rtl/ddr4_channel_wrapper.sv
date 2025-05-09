@@ -42,6 +42,10 @@ module ddr4_channel_wrapper # (
 
 );
 
+    // DDR4 local parameters
+    localparam DDR4_CHANNEL_ADDRESS_WIDTH = 34;
+    localparam DDR4_CHANNEL_DATA_WIDTH = 512;
+
     // DDR4 sys reset - it is active high
     logic ddr4_reset = 1'b1;
 
@@ -58,14 +62,14 @@ module ddr4_channel_wrapper # (
     logic ddr_rst;
 
     // DDR4 34-bits address signals
-    logic [33:0] ddr4_axi_awaddr;
-    logic [33:0] ddr4_axi_araddr;
+    logic [DDR4_CHANNEL_ADDRESS_WIDTH-1:0] ddr4_axi_awaddr;
+    logic [DDR4_CHANNEL_ADDRESS_WIDTH-1:0] ddr4_axi_araddr;
 
     // AXI bus from the clock converter to the dwidth converter
     `DECLARE_AXI_BUS(clk_conv_to_dwidth_conv, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 
     // AXI bus from the dwidth converter to the DDR4
-    `DECLARE_AXI_BUS(dwidth_conv_to_ddr4, 512, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
+    `DECLARE_AXI_BUS(dwidth_conv_to_ddr4, DDR4_CHANNEL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 
     // Dwidth converter master ID signals assigned to 0
     // Since the AXI data width converter has a reordering depth of 1 it doesn't have ID in its master ports - for more details see the documentation
@@ -262,8 +266,8 @@ module ddr4_channel_wrapper # (
     );
 
     // Map DDR4 address signals depending on ddr4 wrapper data width
-    assign ddr4_axi_awaddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_awaddr } : dwidth_conv_to_ddr4_axi_awaddr[33:0];
-    assign ddr4_axi_araddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_araddr } : dwidth_conv_to_ddr4_axi_araddr[33:0];
+    assign ddr4_axi_awaddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_awaddr } : dwidth_conv_to_ddr4_axi_awaddr[DDR4_CHANNEL_ADDRESS_WIDTH-1:0];
+    assign ddr4_axi_araddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_araddr } : dwidth_conv_to_ddr4_axi_araddr[DDR4_CHANNEL_ADDRESS_WIDTH-1:0];
 
     xlnx_ddr4 ddr4_u (
         .c0_sys_clk_n                ( clk_300mhz_0_n_i ),
