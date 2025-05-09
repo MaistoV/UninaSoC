@@ -302,7 +302,7 @@ module peripheral_bus #(
     /////////////////////
 
     // AXI4 to AXI4-Lite protocol converter
-    xlnx_axi4_to_axilite_converter axi4_to_axilite_u (
+    xlnx_axi4_to_axilite_d32_converter axi4_to_axilite_u (
         .aclk           ( PBUS_clock_i              ), // input wire s_axi_aclk
         .aresetn        ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         // AXI4 slave port (from main clock converter)

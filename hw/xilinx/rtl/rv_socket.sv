@@ -429,7 +429,7 @@ module rv_socket # (
 
             // Convert from Microblaze V (AXI-lite) to socket (AXI)
             // Only instruction port (AXI-lite), data port is socket compliant (AXI)
-            xlnx_axilite_to_axi4_converter axilite_to_axi4_converter_u (
+            xlnx_axilite_to_axi4_d32_converter axilite_to_axi4_converter_u (
                 .aclk           ( clk_i                             ), // input wire aclk
                 .aresetn        ( rst_ni                            ), // input wire aresetn
                 // From Microblaze (AXI-lite)
