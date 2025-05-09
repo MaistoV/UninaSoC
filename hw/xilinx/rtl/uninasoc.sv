@@ -88,16 +88,6 @@ module uninasoc (
     // Local variables //
     /////////////////////
 
-    // MBUS_* params are verilog defines. They depend on the config flow (see config.mk)
-    localparam LOCAL_DATA_WIDTH = MBUS_DATA_WIDTH;
-    localparam LOCAL_ADDR_WIDTH = MBUS_ADDR_WIDTH;
-    localparam LOCAL_ID_WIDTH = MBUS_ID_WIDTH;
-
-    // PBUS is fixed to 32-bits
-    localparam PBUS_DATA_WIDTH = 32;
-    localparam PBUS_ADDR_WIDTH = 32;
-    localparam PBUS_ID_WIDTH = MBUS_ID_WIDTH;
-
     localparam peripherals_interrupts_num = 4;
 
     ///////////////////
@@ -244,9 +234,9 @@ module uninasoc (
 
     sys_master # (
         
-        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
-        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
-        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
 
         ) sys_master_u (
 
@@ -323,9 +313,9 @@ module uninasoc (
     // RV Socket
     rv_socket # (
 
-        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH    ),
-        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH    ),
-        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH      ),
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH    ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH    ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH      ),
         .CORE_SELECTOR      ( CORE_SELECTOR )
         
     ) rv_socket_u (
@@ -566,9 +556,9 @@ module uninasoc (
 
     plic_wrapper #(
 
-        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
-        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
-        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
         
     ) plic_wrapper_u (
         .clk_i          ( main_clk                      ), // input wire s_axi_aclk
@@ -689,9 +679,9 @@ module uninasoc (
     // DDR4 Channel 0
     ddr4_channel_wrapper # (
 
-        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH    ),
-        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH    ),
-        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH      )
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH    ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH    ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH      )
 
     ) ddr4_channel_0_wrapper_u (
         .clock_i              ( main_clk          ),

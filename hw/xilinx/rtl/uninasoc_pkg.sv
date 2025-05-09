@@ -11,10 +11,18 @@ package uninasoc_pkg;
     localparam int unsigned NUM_GPIO_IN  = 16;
     localparam int unsigned NUM_GPIO_OUT = 16;
 
-    // System widths depending on XLEN
+    // MBUS widths depending on XLEN
     localparam MBUS_DATA_WIDTH = `MBUS_DATA_WIDTH;
     localparam MBUS_ADDR_WIDTH = `MBUS_ADDR_WIDTH;
     localparam MBUS_ID_WIDTH = `MBUS_ID_WIDTH;
+
+    // PBUS is fixed to 32-bits
+    localparam PBUS_DATA_WIDTH = 32;
+    localparam PBUS_ADDR_WIDTH = 32;
+    localparam PBUS_ID_WIDTH = MBUS_ID_WIDTH;
+
+    // HBUS
+    // To be defined here in the future
 
     ///////////////////////
     // AXI main crossbar //
