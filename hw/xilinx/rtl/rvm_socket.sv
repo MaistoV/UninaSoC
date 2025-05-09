@@ -226,9 +226,12 @@ module rvm_socket # (
             //      Veer core      //
             /////////////////////////
 
+            (* keep_hierarchy = "TRUE" *)  // DEBUG
             custom_veer custom_veer_u (
-                .clk_i           ( clk_i                ),
-                .rst_ni          ( core_resetn_internal ),
+                .clk_i           ( clk_i         ),
+                .rst_ni          ( core_resetn_i ),
+                .dbg_rst_li      ( ~rst_ni       ),
+
                 // IRQ Interface
                 .nmi_int_i       ( nmi_int       ), // input logic
                 .nmi_vec_i       ( nmi_vec       ), // input logic [31:1]

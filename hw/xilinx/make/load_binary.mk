@@ -54,11 +54,12 @@ xsdb_run:
 # Use openOCD as a backed
 OPENOCD ?= openocd
 OPENOCD_TARGET ?= nexysA7
-OPENOCD_SCRIPT ?= ${XILINX_SCRIPTS_LOAD_ROOT}/openocd_${OPENOCD_TARGET}.cfg
+# OPENOCD_SCRIPT ?= ${XILINX_SCRIPTS_LOAD_ROOT}/openocd_${OPENOCD_TARGET}.cfg
+OPENOCD_SCRIPT ?= ${XILINX_SCRIPTS_LOAD_ROOT}/veerwolf_nexys_debug.cfg
 
 openocd_run:
 	@echo "[INFO] Make sure to kill any instance of hw_server running on the target USB device"
-	${OPENOCD} -f ${OPENOCD_SCRIPT}
+	${OPENOCD} -f ${OPENOCD_SCRIPT} #-d
 
 ##################################
 # Load ELF - Debugger and Loader #

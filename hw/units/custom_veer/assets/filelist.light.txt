@@ -8,7 +8,6 @@ src/chipsalliance.org_cores_VeeR_EH1_1.9/design/mem.sv
 src/chipsalliance.org_cores_VeeR_EH1_1.9/design/ifu/ifu_ic_mem.sv
 src/chipsalliance.org_cores_VeeR_EH1_1.9/design/ifu/ifu_iccm_mem.sv
 src/chipsalliance.org_cores_VeeR_EH1_1.9/design/lsu/lsu_dccm_mem.sv
-src/pulp-platform.org__common_cells_1.20.0/src/stream_to_mem.sv
 src/chipsalliance.org_cores_VeeR_EH1_1.9/design/lsu/lsu_trigger.sv
 src/chipsalliance.org_cores_VeeR_EH1_1.9/design/lsu/lsu_stbuf.sv
 src/chipsalliance.org_cores_VeeR_EH1_1.9/design/lsu/lsu_lsc_ctl.sv
