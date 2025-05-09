@@ -10,6 +10,7 @@ package uninasoc_pkg;
 
     localparam int unsigned NUM_GPIO_IN  = 16;
     localparam int unsigned NUM_GPIO_OUT = 16;
+    localparam int unsigned HBUS_AXI_DATAWIDTH = 512;
 
     ///////////////////////
     // AXI main crossbar //

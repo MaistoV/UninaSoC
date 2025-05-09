@@ -82,8 +82,8 @@ module highperformance_bus #(
     parameter int unsigned    HBUS_AXI_DATAWIDTH = 512, // In bits
     parameter int unsigned    MBUS_AXI_DATAWIDTH = 32,  // In bits
     parameter int unsigned    NUM_ACC_MASTERS    = 1, // Number of accelerator masters to HBUS (TBD)
-    parameter int unsigned    NUM_DDR_CHANNELS   = 1, // TBD
-    parameter int unsigned    NUM_HBM_CHANNELS   = 0  // TBD
+    parameter int unsigned    NUM_DDR_CHANNELS   = 1, // Number of DDR channels under HBUS (TBD)
+    parameter int unsigned    NUM_HBM_CHANNELS   = 0  // Number of HBM channels under HBUS (TBD)
 )(
 
     // MBUS clock and reset
@@ -116,7 +116,7 @@ module highperformance_bus #(
 
     // Ensure HBUS has clock domain
     `ifndef HBUS_HAS_CLOCK_DOMAIN
-        $error("HBUS must be in 300MHz clock domain!");
+        $error("HBUS must be in have its own clock domain!");
     `endif
 
     /////////////////
@@ -603,9 +603,10 @@ module highperformance_bus #(
     /////////////////
     // AXI4 Slaves //
     /////////////////
+
     // TODO: this is just a single DDR4 channel for now
     // TODO: generate over NUM_DDR_CHANNELS
-    // TODO: generate over NUM_HBM_CHANNELS
+    // TODO: integrate HBM a well and generate over NUM_HBM_CHANNELS
 
     // Synch DDR4 sys reset - it is active high
     logic ddr4_reset = 1'b1;
