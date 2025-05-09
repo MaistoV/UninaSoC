@@ -142,7 +142,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
     # Check valid main clock domain
     if config.CONFIG_NAME == "MBUS":
         if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
-            print_error(f"The clock domain {clok_domain}MHz is not supported")
+            print_error(f"The clock domain {config.MAIN_CLOCK_DOMAIN}MHz is not supported")
             return False
         # Check valid clock domains
         for i in range(len(config.RANGE_CLOCK_DOMAINS)):
@@ -188,21 +188,27 @@ def check_inter_config(configs : list) -> bool:
         if config.CONFIG_NAME == "SYS":
             continue
 
-        # For each master of the current Configuration
-        for i in range(config.NUM_MI):
+        # Check ID width is large enough for number of masters (NUM_SI)
+        clog2_NUM_SI = (int(config.NUM_SI-1)).bit_length()
+        if config.ID_WIDTH < clog2_NUM_SI:
+            print_error(f"The ID_WIDTH value {config.ID_WIDTH} is less than clog2(config.NUM_SI) {clog2_NUM_SI} in {config.CONFIG_NAME}")
+            return False
+
+        # For each slave (MI) of the current Configuration
+        for mi_index in range(config.NUM_MI):
             # If a master is a bus (is in the CONFIG_NAME dict)
-            if config.RANGE_NAMES[i] in CONFIG_NAMES.values():
+            if config.RANGE_NAMES[mi_index] in CONFIG_BASENAMES.values():
                 # Find the child bus configuration
                 for child_config in configs:
-                    if child_config.CONFIG_NAME == config.RANGE_NAMES[i]:
+                    if child_config.CONFIG_NAME == config.RANGE_NAMES[mi_index]:
                         # Compute the base and the end address of the parent bus
-                        parent_base_address = int(config.BASE_ADDR[i], 16)
-                        parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[i]-1))
+                        parent_base_address = int(config.BASE_ADDR[mi_index], 16)
+                        parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[mi_index]-1))
 
                         # Compute the base and the end address of the child bus
                         child_base_address = int(child_config.BASE_ADDR[0], 16)
-                        child_base_address_tmp = int(child_config.BASE_ADDR[-1], 16)
-                        child_end_address = child_base_address_tmp + ~(~1 << (child_config.RANGE_ADDR_WIDTH[i]-1))
+                        last_base_address = int(child_config.BASE_ADDR[-1], 16) # Base address of last MI interface of this child
+                        child_end_address = last_base_address + ~(~1 << (child_config.RANGE_ADDR_WIDTH[-1]-1))
 
                         # Do the checks
                         # Check if the address space of the child is containted in the address space of the parent
@@ -214,23 +220,30 @@ def check_inter_config(configs : list) -> bool:
 ##############
 # Parse args #
 ##############
-def parse_args(argv : list) -> list:
+def parse_args(arg_list : list) -> list:
     print_info("Parsing arguments...")
-    # CSV configuration file path
-    config_file_names = ['configs/common/config_system.csv', 'configs/embedded/config_main_bus.csv', 'configs/embedded/config_peripheral_bus.csv']
-    if len(sys.argv) >= 4:
-        # Get the array of bus/system names from the second arg to the last but one
-        config_file_names = sys.argv[1:4]
+    expected_args = len(CONFIG_BASENAMES)
+    num_args = len(arg_list) -1
+    if num_args != expected_args:
+        print_error("Wrong number of arguments (" + str(num_args) + "), expecting " + str(expected_args))
+        exit(1)
+    # Get the array of bus/system names from the second arg to the last
+    config_file_names = arg_list[1:len(CONFIG_BASENAMES)+1]
     print_info("Parsing done!")
     return config_file_names
 
 
 if __name__ == "__main__":
+
+    # Parse arguments
     config_file_names = parse_args(sys.argv)
+
+    # Parse configurations
     print_info("Reading configuration...")
-    configs = read_config(config_file_names)
+    configs = read_configs(config_file_names)
     print_info("Configuration read!")
 
+    # Check status init
     status = True
 
     # Intra-config check
