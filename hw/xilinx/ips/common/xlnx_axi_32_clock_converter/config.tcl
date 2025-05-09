@@ -9,6 +9,6 @@ set_property -dict [list \
 ] [get_ips $::env(IP_NAME)]
 
 # Fixed to 32 bits
-set_property CONFIG.DATA_WIDTH  32  [get_ips $::env(IP_NAME)]
-set_property CONFIG.ADDR_WIDTH  32  [get_ips $::env(IP_NAME)]
-set_property CONFIG.ID_WIDTH    2   [get_ips $::env(IP_NAME)]
+set_property CONFIG.DATA_WIDTH  32                 [get_ips $::env(IP_NAME)]
+set_property CONFIG.ADDR_WIDTH  32                 [get_ips $::env(IP_NAME)]
+set_property CONFIG.ID_WIDTH    $::env(ID_WIDTH)   [get_ips $::env(IP_NAME)]

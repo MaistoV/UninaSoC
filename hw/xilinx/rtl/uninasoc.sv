@@ -96,7 +96,7 @@ module uninasoc (
     // PBUS is fixed to 32-bits
     localparam PBUS_DATA_WIDTH = 32;
     localparam PBUS_ADDR_WIDTH = 32;
-    localparam PBUS_ID_WIDTH = 2;
+    localparam PBUS_ID_WIDTH = MBUS_ID_WIDTH;
 
     localparam peripherals_interrupts_num = 4;
 
