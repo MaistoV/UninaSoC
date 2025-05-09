@@ -489,8 +489,8 @@ module uninasoc (
     xlnx_blk_mem_gen main_memory_u (
         .rsta_busy      ( /* open */                ), // output wire rsta_busy
         .rstb_busy      ( /* open */                ), // output wire rstb_busy
-        .s_aclk         ( main_clk                  ), // input wire s_aclk
-        .s_aresetn      ( main_rstn                 ), // input wire s_aresetn
+        .s_aclk         ( BRAM_clk                  ), // input wire s_aclk
+        .s_aresetn      ( BRAM_rstn                 ), // input wire s_aresetn
         .s_axi_awid     ( MBUS_to_BRAM_axi_awid     ), // input wire [3 : 0] s_axi_awid
         .s_axi_awaddr   ( MBUS_to_BRAM_axi_awaddr   ), // input wire [31 : 0] s_axi_awaddr
         .s_axi_awlen    ( MBUS_to_BRAM_axi_awlen    ), // input wire [7 : 0] s_axi_awlen
@@ -547,8 +547,8 @@ module uninasoc (
 
 
     custom_rv_plic custom_rv_plic_u (
-        .clk_i          ( main_clk                      ), // input wire s_axi_aclk
-        .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn
+        .clk_i          ( PLIC_clk                      ), // input wire s_axi_aclk
+        .rst_ni         ( PLIC_rstn                     ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
         .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)

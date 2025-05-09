@@ -48,13 +48,13 @@ XSDB ?= xsdb
 # 32-bit RISC-V port exposed by Vivado HW Server is 3004 (same of OpenOCD)
 DEBUG_PORT ?= 3004
 
+# Run XSDB as a backed
 xsdb_run:
 	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_backend.tcl
 
-# Use openOCD as a backed
+# Run openOCD as a backed
 OPENOCD ?= openocd
 OPENOCD_SCRIPT ?= ${XILINX_SCRIPTS_LOAD_ROOT}/openocd.cfg
-
 openocd_run:
 	@echo "[INFO] Make sure to kill any instance of hw_server running on the target USB device"
 	${OPENOCD} -f ${OPENOCD_SCRIPT}
@@ -63,10 +63,13 @@ openocd_run:
 # Load ELF - Debugger and Loader #
 ##################################
 
-# Use GDB to load the ELF and run (open the backend in a shell before)
-
+# Run GDB to load the ELF and run (open the backend in a shell before)
 gdb_run:
 	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/run_gdb.sh ${ELF_PATH} ${DEBUG_PORT}"
+
+# Run XSBD to load the ELF and run directly
+xsdb_run_elf:
+	${XSDB} ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_run_elf.tcl ${ELF_PATH}
 
 ###########
 # PHONIES #
