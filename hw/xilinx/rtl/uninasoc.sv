@@ -88,10 +88,16 @@ module uninasoc (
     // Local variables //
     /////////////////////
 
-    // SYS_* params are verilog defines. They depend on the config flow (see config.mk)
+    // MBUS_* params are verilog defines. They depend on the config flow (see config.mk)
     localparam LOCAL_DATA_WIDTH = MBUS_DATA_WIDTH;
     localparam LOCAL_ADDR_WIDTH = MBUS_ADDR_WIDTH;
     localparam LOCAL_ID_WIDTH = MBUS_ID_WIDTH;
+
+    // PBUS is fixed to 32-bits
+    localparam PBUS_DATA_WIDTH = 32;
+    localparam PBUS_ADDR_WIDTH = 32;
+    localparam PBUS_ID_WIDTH = 2;
+
     localparam peripherals_interrupts_num = 4;
 
     ///////////////////
@@ -617,9 +623,9 @@ module uninasoc (
 
     peripheral_bus # (
 
-        .LOCAL_DATA_WIDTH   ( 32 ),
-        .LOCAL_ADDR_WIDTH   ( 32 ),
-        .LOCAL_ID_WIDTH     ( 2  )
+        .LOCAL_DATA_WIDTH   ( PBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( PBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( PBUS_ID_WIDTH   )
 
         ) peripheral_bus_u (
 
