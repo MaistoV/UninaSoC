@@ -82,4 +82,19 @@ package uninasoc_pkg;
     localparam int unsigned PLIC_TIM1_INTERRUPT = 3;        // Timer 1 (From PBUS)
     localparam int unsigned PLIC_UART_INTERRUPT = 4;        // UART    (From PBUS)
 
+    ///////////////
+    // Functions //
+    ///////////////
+
+    // This function is used to turn a core_selector id into the corresponding core name string
+    function string core_selector_to_string(input int core_sel);
+        case (core_sel)
+            CORE_PICORV32:     return "CORE_PICORV32";
+            CORE_CV32E40P:     return "CORE_CV32E40P";
+            CORE_IBEX:         return "CORE_IBEX";
+            CORE_MICROBLAZEV:  return "CORE_MICROBLAZEV";
+            default:           return $sformatf("UNKNOWN_CORE_%0d", core_sel);
+        endcase
+    endfunction
+
 endpackage : uninasoc_pkg
