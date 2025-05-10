@@ -46,10 +46,22 @@ vio_%:
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/vio_reset.tcl -tclargs $@
 
-program_bitstream:
+# Program the bitstream based on the SoC profile
+program_bitstream: program_bitstream_${SOC_CONFIG}
+
+# Program bitstream for embedded profile
+program_bitstream_embedded:
 	${XILINX_VIVADO} \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/$@.tcl
 
+# Program bitstream for HPC profile
+PCIE_DEV ?= 01:00.0 # TODO: remove this and find the dev automatically in the script
+program_bitstream_hpc:
+	${XILINX_VIVADO} \
+		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
+		-source ${XILINX_SCRIPTS_UTILS_ROOT}/$@.tcl
+	sudo ${XILINX_SCRIPTS_UTILS_ROOT}/pcie_hot_reset.sh ${PCIE_DEV}
+
 # PHONIES
-.PHONY: open_prj open_gui start_hw_server open_hw_manager open_ila program_bitstream
+.PHONY: open_prj open_gui start_hw_server open_hw_manager open_ila program_bitstream program_bitstream_embedded program_bitstream_hpc

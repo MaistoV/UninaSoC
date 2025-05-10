@@ -13,14 +13,14 @@ NC='\033[0m' # No Color
 mkdir -p rtl
 
 # clone repo (Ibex releases are inconsistent, therefore we must stick to a specific commit).
-GIT_URL=git@github.com:lowRISC/ibex.git
+GIT_URL=https://github.com/lowRISC/ibex.git
 GIT_BRANCH=master
 GIT_COMMIT=6e466c1504b61333d1b2ba85c69bff94b65e9284
 CLONE_DIR=ibex
 printf "${YELLOW}[FETCH_SOURCES] Cloning source repository${NC}\n"
 git clone ${GIT_URL} -b ${GIT_BRANCH} ${CLONE_DIR}
 cd ${CLONE_DIR};
-git reset --hard ${GIT_COMMIT}
+git checkout ${GIT_COMMIT}
 
 # Copy all RTL files into rtl dir
 # We use the flist pre-generated with fusesoc and saved in assets

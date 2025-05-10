@@ -35,9 +35,11 @@ The following table details the supported properties.
 
 | Name  | Description | Values | Default
 |-|-|-|-|
-| CORE_SELECTOR         | Select target RV core (**only for main_bus**)             | CORE_PICORV32, CORE_CV32E40P, CORE_IBEX, CORE_MICROBLAZEV | None (**mandatory value**)
+| CORE_SELECTOR         | Select target RV core (**only for main_bus**)             | CORE_PICORV32*, CORE_CV32E40P, CORE_IBEX, CORE_MICROBLAZEV | None (**mandatory value**)
 | VIO_RESETN_DEFAULT    | Select value for VIO resetn (**only for main_bus**)       | [0,1]                                                     | 1
 | XLEN                  | Defines Bus DATA_WIDTH, ADDRESS_WIDTH and Toolchain version | [32,64]                                                 | 32
+
+> NOTE: the external PicoRV32 IP is currently bugged in CSR support. Any code running with CORE_PICORV32 must not perform any CSR operation.
 
 ### Bus Configuration
 

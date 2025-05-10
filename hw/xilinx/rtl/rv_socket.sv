@@ -85,6 +85,11 @@ module rv_socket # (
             //      PicoRV32        //
             //////////////////////////
 
+            // Tie-off unused signals
+            assign core_instr_mem_wdata = '0;
+            assign core_instr_mem_we    = '0;
+            assign core_instr_mem_be    = '0;
+
             ///////////////////////////////////////////////////////////////////////////
             //  Pico has a custom interrupt handling mechanisms. I am not sure if    //
             //  it is just an alternative to standard risc-v interrupt handling,     //
@@ -215,7 +220,7 @@ module rv_socket # (
                 .rst_ni                 ( core_resetn_internal ),
                 .hart_id_i              ( hart_id ),
                 // First instruction executed is going to be at boot_addr_i + 0x80 (i.e. right after the vector table)
-                .boot_addr_i            ( boot_addr_i ),
+                .boot_addr_i            ( bootaddr_i ),
 
                 // Instruction memory interface
                 .instr_mem_req          ( core_instr_mem_req        ),
