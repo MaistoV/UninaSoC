@@ -8,10 +8,11 @@
 //
 //      ___________          ____________         _______________                _____________             _______
 //     |           |  AXI4  |            | AXI4  |               |   AXI Lite   |             |           |       |
-// --->|   Clock   |------->| Data Width |------>|  AXI Protocol |------------->|             |---------->| UART  |
-//     | Converter |        |  Converter |       |   Converter   |              | Pheripheral |           |_______|
-//     |___________|        | (Optional) |       |_______________|              |    XBAR     |
-//                          |____________|                                      |  (axilite)  |            ___________
+//     |   Clock   | (XLEN) | Data Width | (32)  |  AXI Protocol |     (32)     |             |---------->| UART  |
+// --->| Converter |------->| Converter  |------>|   Converter   |------------->|             |           |_______|
+//     |           |        | (Optional) |       |               |              | Peripheral  |           
+//     |___________|        |____________|       |_______________|              |    XBAR     |
+//                                                                              |  (Axilite)  |            ___________
 //                                                                              |             |           |           |
 //                                                                              |             |---------->| GPIO_out  |
 //                                                                              |             |           |___________|
