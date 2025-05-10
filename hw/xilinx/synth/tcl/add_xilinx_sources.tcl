@@ -17,6 +17,7 @@ set src_file_list [ list \
     $::env(XILINX_ROOT)/rtl/axilite_uart.sv                  \
     $::env(XILINX_ROOT)/rtl/peripheral_bus.sv                \
     $::env(XILINX_ROOT)/rtl/ddr4_channel_wrapper.sv          \
+    $::env(XILINX_ROOT)/rtl/plic_wrapper.sv                  \
     $::env(XILINX_ROOT)/rtl/uninasoc.sv                      \
 ]
 
