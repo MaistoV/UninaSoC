@@ -76,7 +76,7 @@ module custom_top_wrapper # (
     ////////////////////////////
 
     // AXI Slave Interface
-    `DEFINE_AXI_SLAVE_PORTS(s)
+    `DEFINE_AXI_SLAVE_PORTS(s, AXI_DATA_WIDTH, AXI_ADDR_WIDTH, AXI_ID_WIDTH)
 );
 
     ////////////////////////

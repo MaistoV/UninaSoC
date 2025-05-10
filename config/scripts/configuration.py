@@ -14,7 +14,8 @@ class Configuration:
 		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.VIO_RESETN_DEFAULT	 : int = 1      # Reset using Xilinx VIO
-		self.XLEN                : int = 32		# System-level len (only applicable to MBUS)
+		self.XLEN                : int = 32		# MBUS, CPU and Toolchain data width
+		self.PHYSICAL_ADDR_WIDTH : int = 32 	# MBUS physical address width
 		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
 		self.ADDR_WIDTH			 : int = 32 	# Address Width
