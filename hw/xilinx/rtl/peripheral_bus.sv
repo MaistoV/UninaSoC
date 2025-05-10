@@ -7,26 +7,27 @@
 //      _________________            _______________                  _____________             _______
 //     |                 |  AXI4    |   AXI Prot    |   AXI Lite     |             |           |       |
 // --->| Clock Converter |--------->|   Converter   |--------------->|             |---------->| UART  |
-//     |_________________|          |_______________|                | Pheripheral |           |_______|
+//     |_________________|          |_______________|                | Peripheral  |           |_______|
 //                                                                   |    XBAR     |
 //                                                                   |  (axilite)  |            ___________
-//                                                                   |             |           |           |
-//                                                                   |             |---------->| GPIO_out  |
-//                                                                   |             |           |___________|
-//                                                                   |             |            ___________
-//                                                                   |             |           |           |
-//                                                                   |             |---------->| GPIO_in   |
-//                                                                   |             |           |___________|
-//                                                                   |             |            ________
-//                                                                   |             |           |        |
-//                                                                   |             |---------->| TIM0   |
-//                                                                   |             |           |________|
-//                                                                   |             |            ________
-//                                                                   |             |           |        |
-//                                                                   |             |---------->| TIM1   |
-//                                                                   |_____________|           |________|
-//
-//
+//                                                                   |             |           |           |  Interrupts
+//                                                                   |             |---------->| GPIO_out  |------|
+//                                                                   |             |           |___________|      |
+//                                                                   |             |            ___________       |
+//                                                                   |             |           |           |      |
+//                                                                   |             |---------->| GPIO_in   |----| |
+//                                                                   |             |           |___________|    | |
+//                                                                   |             |            ________        | |
+//                                                                   |             |           |        |       | |
+//                                                                   |             |---------->| TIM0   |-----| | |
+//                                                                   |             |           |________|     | | |
+//                                                                   |             |            ________      | | |
+//                                                                   |             |           |        |     | | |
+//                                                                   |             |---------->| TIM1   |---| | | |
+//         __________________                                        |_____________|           |________|   | | | |
+//        |                  |       NUM_IRQ interrupts                                                     | | | |
+// <------| CDC Synchronizer |<-----------------------------------------------------------------------------|-|-|-|
+//        |__________________|
 //
 
 // Import packages
@@ -65,7 +66,7 @@ module peripheral_bus #(
     /////////////////////////////////////////
     `include "pbus_buses.svinc"
     `DECLARE_AXI_BUS(to_prot_conv, AXI_DATA_WIDTH)
-    
+
     ///////////////////////
     // Interrupt Signals //
     ///////////////////////
@@ -76,19 +77,15 @@ module peripheral_bus #(
     // EMBEDDED ONLY
     logic gpio_in_int;
 
-    // Assign interrupt pins
-    assign int_o[PBUS_GPIOIN_INTERRUPT] = gpio_in_int;
-    assign int_o[PBUS_TIM0_INTERRUPT]   = tim0_int;
-    assign int_o[PBUS_TIM1_INTERRUPT]   = tim1_int;
-    assign int_o[PBUS_UART_INTERRUPT]   = uart_int;
-
-
-    /////////////////////
-    // Clock Converter //
-    /////////////////////
+    //////////////////////
+    // Clock Converters //
+    //////////////////////
 
     // If the PBUS has a clock domain (the pbus has a clock different than main clock)
     `ifdef PBUS_HAS_CLOCK_DOMAIN
+
+        // Input clock converter - convert from MAIN_DOMAIN to PBUS_DOMAIN
+
         xlnx_axi_clock_converter xlnx_axi_clock_converter_u (
             .s_axi_aclk     ( main_clock_i   ),
             .s_axi_aresetn  ( main_reset_ni  ),
@@ -179,8 +176,45 @@ module peripheral_bus #(
             .m_axi_rvalid   ( to_prot_conv_axi_rvalid    ),
             .m_axi_rready   ( to_prot_conv_axi_rready    )
         );
+
+        // Assign interrupt pins (input to the cdc)
+        logic [NUM_IRQ-1:0] cdc_src_in;
+        always_comb begin
+            cdc_src_in = '0;
+            cdc_src_in[PBUS_GPIOIN_INTERRUPT] = gpio_in_int;
+            cdc_src_in[PBUS_TIM0_INTERRUPT]   = tim0_int;
+            cdc_src_in[PBUS_TIM1_INTERRUPT]   = tim1_int;
+            cdc_src_in[PBUS_UART_INTERRUPT]   = uart_int;
+        end
+
+
+        // Output clock converter - convert from PBUS_DOMAIN to MAIN_DOMAIN (mainly used for interrupts)
+        xpm_cdc_array_single #(
+            .DEST_SYNC_FF   ( 4             ),     // Number of sync flip-flops
+            .SRC_INPUT_REG  ( 1             ),     // Input register enable
+            .WIDTH          ( NUM_IRQ       )      // Width of data to sync
+        )
+        xpm_cdc_array_single_inst (
+            .dest_out       ( int_o         ),
+            .dest_clk       ( main_clock_i  ),     // Destination clock domain (MAIN_DOMAIN)
+            .src_clk        ( PBUS_clock_i  ),     // Source clock domain (PBUS_DOMAIN)
+            .src_in         ( cdc_src_in    )
+        );
+
+
     `else // The PBUS has the same clock of main clock
+
+        // Passthrough slave interface
         `ASSIGN_AXI_BUS (to_prot_conv, s)
+
+        // Assign interrupt pins
+        always_comb begin
+            int_o = '0;
+            int_o[PBUS_GPIOIN_INTERRUPT] = gpio_in_int;
+            int_o[PBUS_TIM0_INTERRUPT]   = tim0_int;
+            int_o[PBUS_TIM1_INTERRUPT]   = tim1_int;
+            int_o[PBUS_UART_INTERRUPT]   = uart_int;
+        end
     `endif
 
     /////////////////////
