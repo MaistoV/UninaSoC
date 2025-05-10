@@ -53,14 +53,14 @@ program_bitstream: program_bitstream_${SOC_CONFIG}
 program_bitstream_embedded:
 	${XILINX_VIVADO} \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
-		-source ${XILINX_SCRIPTS_UTILS_ROOT}/$@.tcl
+		-source ${XILINX_SCRIPTS_UTILS_ROOT}/program_bitstream.tcl
 
 # Program bitstream for HPC profile
 PCIE_DEV ?= 01:00.0 # TODO: remove this and find the dev automatically in the script
 program_bitstream_hpc:
 	${XILINX_VIVADO} \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
-		-source ${XILINX_SCRIPTS_UTILS_ROOT}/$@.tcl
+		-source ${XILINX_SCRIPTS_UTILS_ROOT}/program_bitstream.tcl
 	sudo ${XILINX_SCRIPTS_UTILS_ROOT}/pcie_hot_reset.sh ${PCIE_DEV}
 
 # PHONIES
