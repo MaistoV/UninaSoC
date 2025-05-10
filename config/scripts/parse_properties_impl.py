@@ -111,20 +111,53 @@ def parse_XLEN (
 		property_name : str,
 		property_value: str,
 ):
-	# XLEN property will set bus DATA_WIDTH and ADDR_WIDTH
-	value = int(property_value)
-	config.XLEN = value
+	
+	# When parsing the Peripheral Bus, fix the Data Width to 32
+	if config.CONFIG_NAME == "PBUS":
+		config.XLEN = 32
+		config.set_DATA_WIDTH(32)
+	else:
+		# XLEN property will set bus DATA_WIDTH
+		# Note: ADDR_WIDTH is set by parse PHYSICAL_ADDR_WIDTH after XLEN is parsed
+		value = int(property_value)
+		config.XLEN = value
 
-	if (value not in [32, 64]):
-		logging.warning("Invalid XLEN value, please select either 32 or 64")
+		# Check if the XLEN value is a valid one
+		if (value not in [32, 64]):
+			logging.warning("Invalid XLEN value, please select either 32 or 64")
 
-	# Select BUS-related parameters
-	data_width = int(config.XLEN)
-	addr_width = int(config.XLEN)
+		# Select BUS DATA WIDTH accordingly
+		data_width = int(config.XLEN)
+		config.set_DATA_WIDTH(data_width)
 
-	# Set BUS-related parameters
-	config.set_ADDR_WIDTH(addr_width)
-	config.set_DATA_WIDTH(data_width)
+	return config
+
+def parse_PHYSICAL_ADDR_WIDTH (
+		config,
+		property_name : str,
+		property_value: str,
+):
+
+	# When parsing the Peripheral Bus, fix the Address Width to 32
+	if config.CONFIG_NAME == "PBUS":
+			config.PHYISICAL_ADDR_WIDTH = 32
+			config.set_ADDR_WIDTH(32)
+	# Otherwise parse the property
+	else:
+		# Physical Address Width depends on XLEN.
+		# It can either be 32 for 32-bit systems, or larger for 64-bit system.
+		# However, 64-bit systems might not need all 64 bits addressing space.
+
+		physical_addr_width = int(property_value)
+		xlen = int(config.XLEN)
+
+		if 	xlen == 32 and physical_addr_width != 32 \
+			or \
+			xlen == 64 and physical_addr_width < 32 :
+			logging.error("Invalid XLEN ({xlen}) and physical_addr_width ({phyisical_addr_width}) values established")
+
+		config.PHYISICAL_ADDR_WIDTH = physical_addr_width
+		config.set_ADDR_WIDTH(physical_addr_width)
 
 	return config
 
