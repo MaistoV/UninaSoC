@@ -70,8 +70,8 @@ cp ${DEP_COMMON_CELLS}/include/common_cells/*.svh ${RTL_DIR};
 
 # Loop through all files in the rtl directory
 echo -e "${YELLOW}[PATCH_SOURCES] Patching include paths for flat includes and specific substitutions${NC}"
-for rtl_file in ${RTL_DIR}/*; do    
-    if [[ -f $rtl_file ]]; then        
+for rtl_file in ${RTL_DIR}/*; do
+    if [[ -f $rtl_file ]]; then
         # Substitute AXI includes
         sed -i "s|\`include \"axi/typedef.svh\"|\`include \"axi_typedef.svh\"|g" $rtl_file
         sed -i "s|\`include \"axi/assign.svh\"|\`include \"axi_assign.svh\"|g" $rtl_file
@@ -84,6 +84,9 @@ done
 # Selectively patch exe_stage: superscalarity on forwarding signals is not supported
 sed -i '/<=/ s/rs1_forwarding_i/rs1_forwarding_i[0]/g' ${RTL_DIR}/ex_stage.sv
 sed -i '/<=/ s/rs2_forwarding_i/rs2_forwarding_i[0]/g' ${RTL_DIR}/ex_stage.sv
+
+# Copy updated config
+cp assets/cv64a6_imafdch_sv39_config_pkg.sv ${RTL_DIR}/
 
 # Enable synthesis for xilinx sram (from tech cells)
 sed -i 's/translate_off/translate_on/g' ${RTL_DIR}/tc_sram_wrapper.sv

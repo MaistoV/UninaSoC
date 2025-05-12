@@ -84,6 +84,10 @@ _reset_handler:
   j _start
 
 _default_handler:
+  # Light on all leds
+  li t0, 0xffff
+  li t1, 0x20200 # GPIO data register is at offset 0x0
+  sw t0, (t1)
   j _default_handler
 
 .section .text.start
@@ -91,12 +95,29 @@ _default_handler:
 _start:
   .global _start
 
+  # Light off led[0]
+  li t0, 0x0
+  li t1, 0x20200 # GPIO data register is at offset 0x0
+  sw t0, (t1)
+
   # jump to main program entry point (argc = argv = 0)
   mv a0, zero
   mv a1, zero
 
   jal ra, main
 
+  # Light on led[15], turn off led[0]
+  li t0, 0x8000
+  li t1, 0x20200 # GPIO data register is at offset 0x0
+  sw t0, (t1)
+
+  # Wait for interrupt
+_exit_wfi:
+  wfi
+
+  # Spin on exit
+_exit_spin:
+  j _exit_spin
 
 
 

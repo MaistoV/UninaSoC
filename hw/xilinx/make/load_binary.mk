@@ -33,6 +33,14 @@ load_binary_embedded: ${BIN_PATH}
 load_binary_hpc: ${BIN_PATH}
 	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/xdma_load_binary.sh ${BIN_PATH} ${BASE_ADDRESS} ${LOAD_BINARY_READBACK}"
 
+# This is only for embedded for now
+load_binary_and_run:
+	${XILINX_VIVADO} \
+		-source ${XILINX_SCRIPT_ROOT}/utils/open_hw_manager.tcl \
+		-source ${XILINX_SCRIPTS_UTILS_ROOT}/program_bitstream.tcl \
+		-source ${XILINX_SCRIPTS_LOAD_ROOT}/jtag2axi_load_binary.tcl \
+		-source ${XILINX_SCRIPTS_UTILS_ROOT}/vio_reset.tcl -tclargs vio_resetn
+
 ######################
 # Load ELF - Backend #
 ######################
