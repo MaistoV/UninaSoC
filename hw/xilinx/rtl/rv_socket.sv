@@ -28,8 +28,8 @@ module rv_socket # (
     `DEFINE_AXI_MASTER_PORTS(rv_socket_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
 
     // Debug module
-    `DEFINE_AXI_MASTER_PORTS(dbg_master, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
-    `DEFINE_AXI_SLAVE_PORTS(dbg_slave, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_dbg_master, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
+    `DEFINE_AXI_SLAVE_PORTS(rv_socket_dbg_slave, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 );
 
     //////////////////////////////////////////////////////
@@ -493,11 +493,11 @@ module rv_socket # (
                 .clk_i           ( clk_i                    ),
                 .rst_ni          ( core_resetn_internal     ),
                 .boot_addr_i     ( bootaddr_i               ),
-                .hart_id_i       ( '0                       ),
+                .hart_id_i       ( hart_id                  ),
                 .irq_i           ( '0                       ), // Should be EXT interrupt
                 .ipi_i           ( '0                       ), // Shoult be SW interrupt
                 .time_irq_i      ( '0                       ), // Should be TIM interrupt
-                .debug_req_i     ( '0                       ),
+                .debug_req_i     ( debug_req_core           ),
 
                 .m_axi_awaddr   ( cv64a6_axi_awaddr        ), // output wire [31 : 0] m_axi_awaddr
                 .m_axi_awlen    ( cv64a6_axi_awlen         ), // output wire [7 : 0] m_axi_awlen
@@ -702,7 +702,15 @@ module rv_socket # (
 
     // This is only for PULP cores, that share a common debug module
     // Other cores are required to instatiate their own DM
-    if ( CORE_SELECTOR inside {CORE_CV32E40P, CORE_IBEX} ) begin : dm_gen
+    if ( CORE_SELECTOR inside {CORE_CV32E40P, CORE_IBEX, CORE_CV64A6} ) begin : dm_gen
+
+        ///////////////////////////
+        // Debug Module Instance //
+        ///////////////////////////
+
+        // Declare AXI interfaces for internal debugger master and slave port (always 32 bits)
+        `DECLARE_AXI_BUS(dbg_master_to_dwidth_conv, 32, 32, LOCAL_ID_WIDTH);
+        `DECLARE_AXI_BUS(dwidth_conv_to_dbg_slave, 32, 32, LOCAL_ID_WIDTH);
 
         //  BSCANE2 tap
         (* keep_hierarchy = "yes" *)  // DEBUG
@@ -713,86 +721,275 @@ module rv_socket # (
             .ndmreset_o             ( ndmreset_o              ), // Open
             .dmactive_o             ( dmactive_o              ), // Open
             // AXI Slave
-            .dbg_slave_axi_awid         ( dbg_slave_axi_awid      ),
-            .dbg_slave_axi_awaddr       ( dbg_slave_axi_awaddr    ),
-            .dbg_slave_axi_awlen        ( dbg_slave_axi_awlen     ),
-            .dbg_slave_axi_awsize       ( dbg_slave_axi_awsize    ),
-            .dbg_slave_axi_awburst      ( dbg_slave_axi_awburst   ),
-            .dbg_slave_axi_awlock       ( dbg_slave_axi_awlock    ),
-            .dbg_slave_axi_awcache      ( dbg_slave_axi_awcache   ),
-            .dbg_slave_axi_awprot       ( dbg_slave_axi_awprot    ),
-            .dbg_slave_axi_awqos        ( dbg_slave_axi_awqos     ),
-            .dbg_slave_axi_awvalid      ( dbg_slave_axi_awvalid   ),
-            .dbg_slave_axi_awready      ( dbg_slave_axi_awready   ),
-            .dbg_slave_axi_wdata        ( dbg_slave_axi_wdata     ),
-            .dbg_slave_axi_wstrb        ( dbg_slave_axi_wstrb     ),
-            .dbg_slave_axi_wlast        ( dbg_slave_axi_wlast     ),
-            .dbg_slave_axi_wvalid       ( dbg_slave_axi_wvalid    ),
-            .dbg_slave_axi_wready       ( dbg_slave_axi_wready    ),
-            .dbg_slave_axi_bid          ( dbg_slave_axi_bid       ),
-            .dbg_slave_axi_bresp        ( dbg_slave_axi_bresp     ),
-            .dbg_slave_axi_bvalid       ( dbg_slave_axi_bvalid    ),
-            .dbg_slave_axi_bready       ( dbg_slave_axi_bready    ),
-            .dbg_slave_axi_arid         ( dbg_slave_axi_arid      ),
-            .dbg_slave_axi_araddr       ( dbg_slave_axi_araddr    ),
-            .dbg_slave_axi_arlen        ( dbg_slave_axi_arlen     ),
-            .dbg_slave_axi_arsize       ( dbg_slave_axi_arsize    ),
-            .dbg_slave_axi_arburst      ( dbg_slave_axi_arburst   ),
-            .dbg_slave_axi_arlock       ( dbg_slave_axi_arlock    ),
-            .dbg_slave_axi_arcache      ( dbg_slave_axi_arcache   ),
-            .dbg_slave_axi_arprot       ( dbg_slave_axi_arprot    ),
-            .dbg_slave_axi_arqos        ( dbg_slave_axi_arqos     ),
-            .dbg_slave_axi_arvalid      ( dbg_slave_axi_arvalid   ),
-            .dbg_slave_axi_arready      ( dbg_slave_axi_arready   ),
-            .dbg_slave_axi_rid          ( dbg_slave_axi_rid       ),
-            .dbg_slave_axi_rdata        ( dbg_slave_axi_rdata     ),
-            .dbg_slave_axi_rresp        ( dbg_slave_axi_rresp     ),
-            .dbg_slave_axi_rlast        ( dbg_slave_axi_rlast     ),
-            .dbg_slave_axi_rvalid       ( dbg_slave_axi_rvalid    ),
-            .dbg_slave_axi_rready       ( dbg_slave_axi_rready    ),
+            .dbg_slave_axi_awid         ( dwidth_conv_to_dbg_slave_axi_awid      ),
+            .dbg_slave_axi_awaddr       ( dwidth_conv_to_dbg_slave_axi_awaddr    ),
+            .dbg_slave_axi_awlen        ( dwidth_conv_to_dbg_slave_axi_awlen     ),
+            .dbg_slave_axi_awsize       ( dwidth_conv_to_dbg_slave_axi_awsize    ),
+            .dbg_slave_axi_awburst      ( dwidth_conv_to_dbg_slave_axi_awburst   ),
+            .dbg_slave_axi_awlock       ( dwidth_conv_to_dbg_slave_axi_awlock    ),
+            .dbg_slave_axi_awcache      ( dwidth_conv_to_dbg_slave_axi_awcache   ),
+            .dbg_slave_axi_awprot       ( dwidth_conv_to_dbg_slave_axi_awprot    ),
+            .dbg_slave_axi_awqos        ( dwidth_conv_to_dbg_slave_axi_awqos     ),
+            .dbg_slave_axi_awvalid      ( dwidth_conv_to_dbg_slave_axi_awvalid   ),
+            .dbg_slave_axi_awready      ( dwidth_conv_to_dbg_slave_axi_awready   ),
+            .dbg_slave_axi_wdata        ( dwidth_conv_to_dbg_slave_axi_wdata     ),
+            .dbg_slave_axi_wstrb        ( dwidth_conv_to_dbg_slave_axi_wstrb     ),
+            .dbg_slave_axi_wlast        ( dwidth_conv_to_dbg_slave_axi_wlast     ),
+            .dbg_slave_axi_wvalid       ( dwidth_conv_to_dbg_slave_axi_wvalid    ),
+            .dbg_slave_axi_wready       ( dwidth_conv_to_dbg_slave_axi_wready    ),
+            .dbg_slave_axi_bid          ( dwidth_conv_to_dbg_slave_axi_bid       ),
+            .dbg_slave_axi_bresp        ( dwidth_conv_to_dbg_slave_axi_bresp     ),
+            .dbg_slave_axi_bvalid       ( dwidth_conv_to_dbg_slave_axi_bvalid    ),
+            .dbg_slave_axi_bready       ( dwidth_conv_to_dbg_slave_axi_bready    ),
+            .dbg_slave_axi_arid         ( dwidth_conv_to_dbg_slave_axi_arid      ),
+            .dbg_slave_axi_araddr       ( dwidth_conv_to_dbg_slave_axi_araddr    ),
+            .dbg_slave_axi_arlen        ( dwidth_conv_to_dbg_slave_axi_arlen     ),
+            .dbg_slave_axi_arsize       ( dwidth_conv_to_dbg_slave_axi_arsize    ),
+            .dbg_slave_axi_arburst      ( dwidth_conv_to_dbg_slave_axi_arburst   ),
+            .dbg_slave_axi_arlock       ( dwidth_conv_to_dbg_slave_axi_arlock    ),
+            .dbg_slave_axi_arcache      ( dwidth_conv_to_dbg_slave_axi_arcache   ),
+            .dbg_slave_axi_arprot       ( dwidth_conv_to_dbg_slave_axi_arprot    ),
+            .dbg_slave_axi_arqos        ( dwidth_conv_to_dbg_slave_axi_arqos     ),
+            .dbg_slave_axi_arvalid      ( dwidth_conv_to_dbg_slave_axi_arvalid   ),
+            .dbg_slave_axi_arready      ( dwidth_conv_to_dbg_slave_axi_arready   ),
+            .dbg_slave_axi_rid          ( dwidth_conv_to_dbg_slave_axi_rid       ),
+            .dbg_slave_axi_rdata        ( dwidth_conv_to_dbg_slave_axi_rdata     ),
+            .dbg_slave_axi_rresp        ( dwidth_conv_to_dbg_slave_axi_rresp     ),
+            .dbg_slave_axi_rlast        ( dwidth_conv_to_dbg_slave_axi_rlast     ),
+            .dbg_slave_axi_rvalid       ( dwidth_conv_to_dbg_slave_axi_rvalid    ),
+            .dbg_slave_axi_rready       ( dwidth_conv_to_dbg_slave_axi_rready    ),
             // AXI Master
-            .dbg_master_axi_awid        ( dbg_master_axi_awid     ),
-            .dbg_master_axi_awaddr      ( dbg_master_axi_awaddr   ),
-            .dbg_master_axi_awlen       ( dbg_master_axi_awlen    ),
-            .dbg_master_axi_awsize      ( dbg_master_axi_awsize   ),
-            .dbg_master_axi_awburst     ( dbg_master_axi_awburst  ),
-            .dbg_master_axi_awlock      ( dbg_master_axi_awlock   ),
-            .dbg_master_axi_awcache     ( dbg_master_axi_awcache  ),
-            .dbg_master_axi_awprot      ( dbg_master_axi_awprot   ),
-            .dbg_master_axi_awregion    ( dbg_master_axi_awregion ),
-            .dbg_master_axi_awqos       ( dbg_master_axi_awqos    ),
-            .dbg_master_axi_awvalid     ( dbg_master_axi_awvalid  ),
-            .dbg_master_axi_awready     ( dbg_master_axi_awready  ),
-            .dbg_master_axi_wdata       ( dbg_master_axi_wdata    ),
-            .dbg_master_axi_wstrb       ( dbg_master_axi_wstrb    ),
-            .dbg_master_axi_wlast       ( dbg_master_axi_wlast    ),
-            .dbg_master_axi_wvalid      ( dbg_master_axi_wvalid   ),
-            .dbg_master_axi_wready      ( dbg_master_axi_wready   ),
-            .dbg_master_axi_bid         ( dbg_master_axi_bid      ),
-            .dbg_master_axi_bresp       ( dbg_master_axi_bresp    ),
-            .dbg_master_axi_bvalid      ( dbg_master_axi_bvalid   ),
-            .dbg_master_axi_bready      ( dbg_master_axi_bready   ),
-            .dbg_master_axi_arid        ( dbg_master_axi_arid     ),
-            .dbg_master_axi_araddr      ( dbg_master_axi_araddr   ),
-            .dbg_master_axi_arlen       ( dbg_master_axi_arlen    ),
-            .dbg_master_axi_arsize      ( dbg_master_axi_arsize   ),
-            .dbg_master_axi_arburst     ( dbg_master_axi_arburst  ),
-            .dbg_master_axi_arlock      ( dbg_master_axi_arlock   ),
-            .dbg_master_axi_arcache     ( dbg_master_axi_arcache  ),
-            .dbg_master_axi_arprot      ( dbg_master_axi_arprot   ),
-            .dbg_master_axi_arregion    ( dbg_master_axi_arregion ),
-            .dbg_master_axi_arqos       ( dbg_master_axi_arqos    ),
-            .dbg_master_axi_arvalid     ( dbg_master_axi_arvalid  ),
-            .dbg_master_axi_arready     ( dbg_master_axi_arready  ),
-            .dbg_master_axi_rid         ( dbg_master_axi_rid      ),
-            .dbg_master_axi_rdata       ( dbg_master_axi_rdata    ),
-            .dbg_master_axi_rresp       ( dbg_master_axi_rresp    ),
-            .dbg_master_axi_rlast       ( dbg_master_axi_rlast    ),
-            .dbg_master_axi_rvalid      ( dbg_master_axi_rvalid   ),
-            .dbg_master_axi_rready      ( dbg_master_axi_rready   ),
+            .dbg_master_axi_awid        ( dbg_master_to_dwidth_axi_awid     ),
+            .dbg_master_axi_awaddr      ( dbg_master_to_dwidth_axi_awaddr   ),
+            .dbg_master_axi_awlen       ( dbg_master_to_dwidth_axi_awlen    ),
+            .dbg_master_axi_awsize      ( dbg_master_to_dwidth_axi_awsize   ),
+            .dbg_master_axi_awburst     ( dbg_master_to_dwidth_axi_awburst  ),
+            .dbg_master_axi_awlock      ( dbg_master_to_dwidth_axi_awlock   ),
+            .dbg_master_axi_awcache     ( dbg_master_to_dwidth_axi_awcache  ),
+            .dbg_master_axi_awprot      ( dbg_master_to_dwidth_axi_awprot   ),
+            .dbg_master_axi_awregion    ( dbg_master_to_dwidth_axi_awregion ),
+            .dbg_master_axi_awqos       ( dbg_master_to_dwidth_axi_awqos    ),
+            .dbg_master_axi_awvalid     ( dbg_master_to_dwidth_axi_awvalid  ),
+            .dbg_master_axi_awready     ( dbg_master_to_dwidth_axi_awready  ),
+            .dbg_master_axi_wdata       ( dbg_master_to_dwidth_axi_wdata    ),
+            .dbg_master_axi_wstrb       ( dbg_master_to_dwidth_axi_wstrb    ),
+            .dbg_master_axi_wlast       ( dbg_master_to_dwidth_axi_wlast    ),
+            .dbg_master_axi_wvalid      ( dbg_master_to_dwidth_axi_wvalid   ),
+            .dbg_master_axi_wready      ( dbg_master_to_dwidth_axi_wready   ),
+            .dbg_master_axi_bid         ( dbg_master_to_dwidth_axi_bid      ),
+            .dbg_master_axi_bresp       ( dbg_master_to_dwidth_axi_bresp    ),
+            .dbg_master_axi_bvalid      ( dbg_master_to_dwidth_axi_bvalid   ),
+            .dbg_master_axi_bready      ( dbg_master_to_dwidth_axi_bready   ),
+            .dbg_master_axi_arid        ( dbg_master_to_dwidth_axi_arid     ),
+            .dbg_master_axi_araddr      ( dbg_master_to_dwidth_axi_araddr   ),
+            .dbg_master_axi_arlen       ( dbg_master_to_dwidth_axi_arlen    ),
+            .dbg_master_axi_arsize      ( dbg_master_to_dwidth_axi_arsize   ),
+            .dbg_master_axi_arburst     ( dbg_master_to_dwidth_axi_arburst  ),
+            .dbg_master_axi_arlock      ( dbg_master_to_dwidth_axi_arlock   ),
+            .dbg_master_axi_arcache     ( dbg_master_to_dwidth_axi_arcache  ),
+            .dbg_master_axi_arprot      ( dbg_master_to_dwidth_axi_arprot   ),
+            .dbg_master_axi_arregion    ( dbg_master_to_dwidth_axi_arregion ),
+            .dbg_master_axi_arqos       ( dbg_master_to_dwidth_axi_arqos    ),
+            .dbg_master_axi_arvalid     ( dbg_master_to_dwidth_axi_arvalid  ),
+            .dbg_master_axi_arready     ( dbg_master_to_dwidth_axi_arready  ),
+            .dbg_master_axi_rid         ( dbg_master_to_dwidth_axi_rid      ),
+            .dbg_master_axi_rdata       ( dbg_master_to_dwidth_axi_rdata    ),
+            .dbg_master_axi_rresp       ( dbg_master_to_dwidth_axi_rresp    ),
+            .dbg_master_axi_rlast       ( dbg_master_to_dwidth_axi_rlast    ),
+            .dbg_master_axi_rvalid      ( dbg_master_to_dwidth_axi_rvalid   ),
+            .dbg_master_axi_rready      ( dbg_master_to_dwidth_axi_rready   ),
             // To PULP core
             .debug_req_o            ( debug_req_core           )
         );
+
+        ////////////////////////////////
+        // Debug Datawidth Converters //
+        ////////////////////////////////
+
+        // The dbg module is always working as a 32-bits ip.
+        // In order to debug a 64-bit core, we need two Data Width converters
+        if (LOCAL_DATA_WIDTH == 64) begin: rv_socket_dbg_64_bits
+
+            // Convert Master Port (transactions going from 32-bits DBG to 64-bits MBUS)
+            xlnx_axi_dwidth_32_to_64_converter dbg_master_32_to_64_converter_u (
+                .s_axi_aclk     ( clk_i  ),
+                .s_axi_aresetn  ( rst_ni ),
+
+                // Transaction 32-bits wide coming from DBG module
+                .s_axi_awid     ( dbg_master_to_dwidth_axi_awid    ),
+                .s_axi_awaddr   ( dbg_master_to_dwidth_axi_awaddr  ),
+                .s_axi_awlen    ( dbg_master_to_dwidth_axi_awlen   ),
+                .s_axi_awsize   ( dbg_master_to_dwidth_axi_awsize  ),
+                .s_axi_awburst  ( dbg_master_to_dwidth_axi_awburst ),
+                .s_axi_awvalid  ( dbg_master_to_dwidth_axi_awvalid ),
+                .s_axi_awready  ( dbg_master_to_dwidth_axi_awready ),
+                .s_axi_wdata    ( dbg_master_to_dwidth_axi_wdata   ),
+                .s_axi_wstrb    ( dbg_master_to_dwidth_axi_wstrb   ),
+                .s_axi_wlast    ( dbg_master_to_dwidth_axi_wlast   ),
+                .s_axi_wvalid   ( dbg_master_to_dwidth_axi_wvalid  ),
+                .s_axi_wready   ( dbg_master_to_dwidth_axi_wready  ),
+                .s_axi_bid      ( dbg_master_to_dwidth_axi_bid     ),
+                .s_axi_bresp    ( dbg_master_to_dwidth_axi_bresp   ),
+                .s_axi_bvalid   ( dbg_master_to_dwidth_axi_bvalid  ),
+                .s_axi_bready   ( dbg_master_to_dwidth_axi_bready  ),
+                .s_axi_arid     ( dbg_master_to_dwidth_axi_arid    ),
+                .s_axi_araddr   ( dbg_master_to_dwidth_axi_araddr  ),
+                .s_axi_arlen    ( dbg_master_to_dwidth_axi_arlen   ),
+                .s_axi_arsize   ( dbg_master_to_dwidth_axi_arsize  ),
+                .s_axi_arburst  ( dbg_master_to_dwidth_axi_arburst ),
+                .s_axi_arvalid  ( dbg_master_to_dwidth_axi_arvalid ),
+                .s_axi_arready  ( dbg_master_to_dwidth_axi_arready ),
+                .s_axi_rid      ( dbg_master_to_dwidth_axi_rid     ),
+                .s_axi_rdata    ( dbg_master_to_dwidth_axi_rdata   ),
+                .s_axi_rresp    ( dbg_master_to_dwidth_axi_rresp   ),
+                .s_axi_rlast    ( dbg_master_to_dwidth_axi_rlast   ),
+                .s_axi_rvalid   ( dbg_master_to_dwidth_axi_rvalid  ),
+                .s_axi_rready   ( dbg_master_to_dwidth_axi_rready  ),
+                .s_axi_awlock   ( dbg_master_to_dwidth_axi_awlock  ),
+                .s_axi_awcache  ( dbg_master_to_dwidth_axi_awcache ),
+                .s_axi_awprot   ( dbg_master_to_dwidth_axi_awprot  ),
+                .s_axi_awqos    ( 0   ),
+                .s_axi_awregion ( 0   ),
+                .s_axi_arlock   ( dbg_master_to_dwidth_axi_arlock  ),
+                .s_axi_arcache  ( dbg_master_to_dwidth_axi_arcache ),
+                .s_axi_arprot   ( dbg_master_to_dwidth_axi_arprot  ),
+                .s_axi_arqos    ( 0   ),
+                .s_axi_arregion ( 0   ),
+
+                // Transaction upscaled (64-bits) to MBUS
+                .m_axi_awaddr   ( rv_socket_dbg_master_axi_awaddr  ),
+                .m_axi_awlen    ( rv_socket_dbg_master_axi_awlen   ),
+                .m_axi_awsize   ( rv_socket_dbg_master_axi_awsize  ),
+                .m_axi_awburst  ( rv_socket_dbg_master_axi_awburst ),
+                .m_axi_awlock   ( rv_socket_dbg_master_axi_awlock  ),
+                .m_axi_awcache  ( rv_socket_dbg_master_axi_awcache ),
+                .m_axi_awprot   ( rv_socket_dbg_master_axi_awprot  ),
+                .m_axi_awqos    ( rv_socket_dbg_master_axi_awqos   ),
+                .m_axi_awvalid  ( rv_socket_dbg_master_axi_awvalid ),
+                .m_axi_awready  ( rv_socket_dbg_master_axi_awready ),
+                .m_axi_wdata    ( rv_socket_dbg_master_axi_wdata   ),
+                .m_axi_wstrb    ( rv_socket_dbg_master_axi_wstrb   ),
+                .m_axi_wlast    ( rv_socket_dbg_master_axi_wlast   ),
+                .m_axi_wvalid   ( rv_socket_dbg_master_axi_wvalid  ),
+                .m_axi_wready   ( rv_socket_dbg_master_axi_wready  ),
+                .m_axi_bresp    ( rv_socket_dbg_master_axi_bresp   ),
+                .m_axi_bvalid   ( rv_socket_dbg_master_axi_bvalid  ),
+                .m_axi_bready   ( rv_socket_dbg_master_axi_bready  ),
+                .m_axi_araddr   ( rv_socket_dbg_master_axi_araddr  ),
+                .m_axi_arlen    ( rv_socket_dbg_master_axi_arlen   ),
+                .m_axi_arsize   ( rv_socket_dbg_master_axi_arsize  ),
+                .m_axi_arburst  ( rv_socket_dbg_master_axi_arburst ),
+                .m_axi_arlock   ( rv_socket_dbg_master_axi_arlock  ),
+                .m_axi_arcache  ( rv_socket_dbg_master_axi_arcache ),
+                .m_axi_arprot   ( rv_socket_dbg_master_axi_arprot  ),
+                .m_axi_arqos    ( rv_socket_dbg_master_axi_arqos   ),
+                .m_axi_arvalid  ( rv_socket_dbg_master_axi_arvalid ),
+                .m_axi_arready  ( rv_socket_dbg_master_axi_arready ),
+                .m_axi_rdata    ( rv_socket_dbg_master_axi_rdata   ),
+                .m_axi_rresp    ( rv_socket_dbg_master_axi_rresp   ),
+                .m_axi_rlast    ( rv_socket_dbg_master_axi_rlast   ),
+                .m_axi_rvalid   ( rv_socket_dbg_master_axi_rvalid  ),
+                .m_axi_rready   ( rv_socket_dbg_master_axi_rready  )
+            );
+
+            assign rv_socket_dbg_master_axi_awid = '0;
+            assign rv_socket_dbg_master_axi_arid = '0;
+            assign rv_socket_dbg_master_axi_awregion = '0;
+            assign rv_socket_dbg_master_axi_arregion = '0;
+
+            ///////////////////////////////////////////////////////////////////////////
+
+            // Convert Slave Port (transactions coming from 64-bit MBUS to 32-bits DBG)
+            xlnx_axi_dwidth_64_to_32_converter dbg_slave_64_to_32_converter_u (
+                .s_axi_aclk     ( clk_i    ),
+                .s_axi_aresetn  ( rst_ni   ),
+
+                // Transaction from MBUS
+                .s_axi_awid     ( rv_socket_dbg_slave_axi_awid    ),
+                .s_axi_awaddr   ( rv_socket_dbg_slave_axi_awaddr  ),
+                .s_axi_awlen    ( rv_socket_dbg_slave_axi_awlen   ),
+                .s_axi_awsize   ( rv_socket_dbg_slave_axi_awsize  ),
+                .s_axi_awburst  ( rv_socket_dbg_slave_axi_awburst ),
+                .s_axi_awvalid  ( rv_socket_dbg_slave_axi_awvalid ),
+                .s_axi_awready  ( rv_socket_dbg_slave_axi_awready ),
+                .s_axi_wdata    ( rv_socket_dbg_slave_axi_wdata   ),
+                .s_axi_wstrb    ( rv_socket_dbg_slave_axi_wstrb   ),
+                .s_axi_wlast    ( rv_socket_dbg_slave_axi_wlast   ),
+                .s_axi_wvalid   ( rv_socket_dbg_slave_axi_wvalid  ),
+                .s_axi_wready   ( rv_socket_dbg_slave_axi_wready  ),
+                .s_axi_bid      ( rv_socket_dbg_slave_axi_bid     ),
+                .s_axi_bresp    ( rv_socket_dbg_slave_axi_bresp   ),
+                .s_axi_bvalid   ( rv_socket_dbg_slave_axi_bvalid  ),
+                .s_axi_bready   ( rv_socket_dbg_slave_axi_bready  ),
+                .s_axi_arid     ( rv_socket_dbg_slave_axi_arid    ),
+                .s_axi_araddr   ( rv_socket_dbg_slave_axi_araddr  ),
+                .s_axi_arlen    ( rv_socket_dbg_slave_axi_arlen   ),
+                .s_axi_arsize   ( rv_socket_dbg_slave_axi_arsize  ),
+                .s_axi_arburst  ( rv_socket_dbg_slave_axi_arburst ),
+                .s_axi_arvalid  ( rv_socket_dbg_slave_axi_arvalid ),
+                .s_axi_arready  ( rv_socket_dbg_slave_axi_arready ),
+                .s_axi_rid      ( rv_socket_dbg_slave_axi_rid     ),
+                .s_axi_rdata    ( rv_socket_dbg_slave_axi_rdata   ),
+                .s_axi_rresp    ( rv_socket_dbg_slave_axi_rresp   ),
+                .s_axi_rlast    ( rv_socket_dbg_slave_axi_rlast   ),
+                .s_axi_rvalid   ( rv_socket_dbg_slave_axi_rvalid  ),
+                .s_axi_rready   ( rv_socket_dbg_slave_axi_rready  ),
+                .s_axi_awlock   ( rv_socket_dbg_slave_axi_awlock  ),
+                .s_axi_awcache  ( rv_socket_dbg_slave_axi_awcache ),
+                .s_axi_awprot   ( rv_socket_dbg_slave_axi_awprot  ),
+                .s_axi_awqos    ( 0   ),
+                .s_axi_awregion ( 0   ),
+                .s_axi_arlock   ( rv_socket_dbg_slave_axi_arlock  ),
+                .s_axi_arcache  ( rv_socket_dbg_slave_axi_arcache ),
+                .s_axi_arprot   ( rv_socket_dbg_slave_axi_arprot  ),
+                .s_axi_arqos    ( 0   ),
+                .s_axi_arregion ( 0   ),
+
+                // Transaction downsized to 32-bits going into DBG module
+                .m_axi_awaddr   ( dwidth_conv_to_dbg_slave_axi_awaddr  ),
+                .m_axi_awlen    ( dwidth_conv_to_dbg_slave_axi_awlen   ),
+                .m_axi_awsize   ( dwidth_conv_to_dbg_slave_axi_awsize  ),
+                .m_axi_awburst  ( dwidth_conv_to_dbg_slave_axi_awburst ),
+                .m_axi_awlock   ( dwidth_conv_to_dbg_slave_axi_awlock  ),
+                .m_axi_awcache  ( dwidth_conv_to_dbg_slave_axi_awcache ),
+                .m_axi_awprot   ( dwidth_conv_to_dbg_slave_axi_awprot  ),
+                .m_axi_awqos    ( dwidth_conv_to_dbg_slave_axi_awqos   ),
+                .m_axi_awvalid  ( dwidth_conv_to_dbg_slave_axi_awvalid ),
+                .m_axi_awready  ( dwidth_conv_to_dbg_slave_axi_awready ),
+                .m_axi_wdata    ( dwidth_conv_to_dbg_slave_axi_wdata   ),
+                .m_axi_wstrb    ( dwidth_conv_to_dbg_slave_axi_wstrb   ),
+                .m_axi_wlast    ( dwidth_conv_to_dbg_slave_axi_wlast   ),
+                .m_axi_wvalid   ( dwidth_conv_to_dbg_slave_axi_wvalid  ),
+                .m_axi_wready   ( dwidth_conv_to_dbg_slave_axi_wready  ),
+                .m_axi_bresp    ( dwidth_conv_to_dbg_slave_axi_bresp   ),
+                .m_axi_bvalid   ( dwidth_conv_to_dbg_slave_axi_bvalid  ),
+                .m_axi_bready   ( dwidth_conv_to_dbg_slave_axi_bready  ),
+                .m_axi_araddr   ( dwidth_conv_to_dbg_slave_axi_araddr  ),
+                .m_axi_arlen    ( dwidth_conv_to_dbg_slave_axi_arlen   ),
+                .m_axi_arsize   ( dwidth_conv_to_dbg_slave_axi_arsize  ),
+                .m_axi_arburst  ( dwidth_conv_to_dbg_slave_axi_arburst ),
+                .m_axi_arlock   ( dwidth_conv_to_dbg_slave_axi_arlock  ),
+                .m_axi_arcache  ( dwidth_conv_to_dbg_slave_axi_arcache ),
+                .m_axi_arprot   ( dwidth_conv_to_dbg_slave_axi_arprot  ),
+                .m_axi_arqos    ( dwidth_conv_to_dbg_slave_axi_arqos   ),
+                .m_axi_arvalid  ( dwidth_conv_to_dbg_slave_axi_arvalid ),
+                .m_axi_arready  ( dwidth_conv_to_dbg_slave_axi_arready ),
+                .m_axi_rdata    ( dwidth_conv_to_dbg_slave_axi_rdata   ),
+                .m_axi_rresp    ( dwidth_conv_to_dbg_slave_axi_rresp   ),
+                .m_axi_rlast    ( dwidth_conv_to_dbg_slave_axi_rlast   ),
+                .m_axi_rvalid   ( dwidth_conv_to_dbg_slave_axi_rvalid  ),
+                .m_axi_rready   ( dwidth_conv_to_dbg_slave_axi_rready  )
+            );
+
+            assign dwidth_conv_to_dbg_slave_axi_awid = '0;
+            assign dwidth_conv_to_dbg_slave_axi_arid = '0;
+            assign dwidth_conv_to_dbg_slave_axi_awregion = '0;
+            assign dwidth_conv_to_dbg_slave_axi_arregion = '0;
+
+        end else begin: rv_socket_dbg_32_bits
+            `ASSIGN_AXI_BUS( rv_socket_dbg_master, dbg_master_to_dwidth_conv );
+            `ASSIGN_AXI_BUS( dwidth_conv_to_dbg_slave, rv_socket_dbg_slave );
+        end
 
     end : dm_gen
     else begin : dm_not_gen
@@ -801,8 +998,8 @@ module rv_socket # (
         assign debug_req_core = '0;
 
         // Sink unused interafces
-        `SINK_AXI_MASTER_INTERFACE(dbg_master);
-        `SINK_AXI_SLAVE_INTERFACE(dbg_slave);
+        `SINK_AXI_MASTER_INTERFACE(rv_socket_dbg_master);
+        `SINK_AXI_SLAVE_INTERFACE(rv_socket_dbg_slave);
 
     end : dm_not_gen
 
