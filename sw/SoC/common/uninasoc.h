@@ -1,5 +1,5 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-// Description: Common header file for basic funcitons
+// Description: Common header file for basic functions.
 
 #ifndef __UNINASOC_H_
 #define __UNINASOC_H_
