@@ -1,3 +1,4 @@
+// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 // Description: Using -nostdlib is not sufficient, this file provides local implementations of compiler-inferred functions
 
 #ifndef __STDLIB_H_
