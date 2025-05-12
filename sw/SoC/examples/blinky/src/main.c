@@ -13,7 +13,5 @@ int main(){
         *gpio_addr = 0x00000000;
     }
 
-    while(1);
-
     return 0;
 }
