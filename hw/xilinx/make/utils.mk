@@ -58,9 +58,14 @@ program_bitstream_embedded:
 # Program bitstream for HPC profile
 PCIE_DEV ?= 01:00.0 # TODO: remove this and find the dev automatically in the script
 program_bitstream_hpc:
+#	Kill pending virtual_uart instances (if any)
+#	TODO: This might be overkill, as only that one instance should cause problems 
+	killall virtual_uart 
+#	Program
 	${XILINX_VIVADO} \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/program_bitstream.tcl
+#	Rescan PCIe device
 	sudo ${XILINX_SCRIPTS_UTILS_ROOT}/pcie_hot_reset.sh ${PCIE_DEV}
 
 # PHONIES
