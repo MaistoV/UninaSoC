@@ -22,7 +22,7 @@ module ddr4_channel_wrapper # (
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
     parameter int unsigned    LOCAL_ID_WIDTH    = 32
-    ) (
+) (
     // SoC clock and reset
     input logic clock_i,
     input logic reset_ni,
@@ -81,12 +81,10 @@ module ddr4_channel_wrapper # (
 
     // AXI Clock converter from 250 MHz (xdma global design clk) to 300 MHz (AXI user interface DDR clk) - the data width is XLEN
     axi_clock_converter_wrapper # (
-
-        .LOCAL_DATA_WIDTH   (LOCAL_DATA_WIDTH),
-        .LOCAL_ADDR_WIDTH   (LOCAL_ADDR_WIDTH),
-        .LOCAL_ID_WIDTH     (LOCAL_ID_WIDTH)
-
-        ) axi_clk_conv_u (
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+    ) axi_clk_conv_u (
 
         .s_axi_aclk     ( clock_i        ),
         .s_axi_aresetn  ( reset_ni       ),

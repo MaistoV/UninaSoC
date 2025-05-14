@@ -85,10 +85,10 @@ module rv_socket # (
 
     // Check if the selected Core is compatible with the system XLEN
     if ( LOCAL_DATA_WIDTH == 64 && CORE_SELECTOR inside {CORE_PICORV32,CORE_CV32E40P,CORE_IBEX,CORE_MICROBLAZEV} ||
-         LOCAL_DATA_WIDTH == 32 && CORE_SELECTOR inside {-1} )
-
+         LOCAL_DATA_WIDTH == 32 && CORE_SELECTOR inside {-1} ) begin : xlen_core_error
         $error($sformatf("[Socket] Illegal CORE (%s) for the selected XLEN (%0d)",
                         core_selector_to_string(CORE_SELECTOR), LOCAL_DATA_WIDTH));
+    end : xlen_core_error
 
     ////////////////////////
     // Core Instantiation //

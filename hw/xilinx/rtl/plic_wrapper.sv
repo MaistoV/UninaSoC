@@ -10,8 +10,8 @@ module plic_wrapper # (
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
     parameter int unsigned    LOCAL_ID_WIDTH    = 2
-    ) (
-
+) (
+    // Clock and reset
     input  logic            clk_i,
     input  logic            rst_ni,
 
@@ -23,7 +23,6 @@ module plic_wrapper # (
 
     // AXI Slave Interface
     `DEFINE_AXI_SLAVE_PORTS(s, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
-
 );
 
     // Declare internal 32-bit bus to PLIC interface
@@ -35,7 +34,7 @@ module plic_wrapper # (
 
     // the PLIC is always a 32-bits peripheral,
     // therefore a dwidth converter is required if XLEN = 64
-    if (LOCAL_DATA_WIDTH == 64) begin: axi_32_dwidth_converter
+    if (LOCAL_DATA_WIDTH == 64) begin : gen_axi_32_dwidth_conv
 
         xlnx_axi_dwidth_64_to_32_converter axi_dwidth_conv_u (
             .s_axi_aclk     ( clk_i      ),
@@ -82,7 +81,6 @@ module plic_wrapper # (
             .s_axi_arqos    ( 0   ),
             .s_axi_arregion ( 0   ),
 
-
             // Master to Protocol Converter
             .m_axi_awaddr   ( to_plic_axi_awaddr  ),
             .m_axi_awlen    ( to_plic_axi_awlen   ),
@@ -117,7 +115,6 @@ module plic_wrapper # (
             .m_axi_rlast    ( to_plic_axi_rlast   ),
             .m_axi_rvalid   ( to_plic_axi_rvalid  ),
             .m_axi_rready   ( to_plic_axi_rready  )
-
         );
 
         // Since the AXI data width converter has a reordering depth of 1 it doesn't have ID in its master ports - for more details see the documentation
@@ -126,9 +123,10 @@ module plic_wrapper # (
         assign to_plic_axi_arid = '0;
         assign to_plic_axi_rid  = '0;
 
-    end else begin: no_conversion
+    end : gen_axi_32_dwidth_conv
+    else begin : no_conv
         `ASSIGN_AXI_BUS (to_plic, s)
-    end
+    end : no_conv
 
     ////////////////////////////////////////////////
     // Platform-Level Interrupt Controller (PLIC) //

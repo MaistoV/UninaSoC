@@ -43,7 +43,7 @@ module sys_master # (
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
     parameter int unsigned    LOCAL_ID_WIDTH    = 2
-    ) (
+) (
 
     // EMBEDDED ONLY
     // Input clock and reset
@@ -79,12 +79,12 @@ module sys_master # (
     ////////////////////////////////////
     // Main clock and reset selection //
     ////////////////////////////////////
-    
+
     // Main clock and main reset
     logic main_clk;
     logic main_rstn;
     logic locked;
-    
+
     // Main clock and reset assignment
     generate
         case (`MAIN_CLOCK_FREQ_MHZ)
@@ -113,13 +113,13 @@ module sys_master # (
             end
         endcase
     endgenerate
-    
+
     //////////////////////////
     // Resets synchronizers //
     //////////////////////////
     // Use locked signal as resets generator
     // NOTE: this is temporary until we introduce a reset generation logic here
-    
+
     // Reset sync for 10 MHz clock
     xpm_cdc_async_rst #(
         .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
@@ -129,7 +129,7 @@ module sys_master # (
         .dest_clk  ( clk_10MHz_o  ),
         .dest_arst ( rstn_10MHz_o )
     );
-    
+
     // Reset sync for 20 MHz clock
     xpm_cdc_async_rst #(
         .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
@@ -139,7 +139,7 @@ module sys_master # (
         .dest_clk  ( clk_20MHz_o  ),
         .dest_arst ( rstn_20MHz_o )
     );
-    
+
     // Reset sync for 50 MHz clock
     xpm_cdc_async_rst #(
         .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
@@ -149,7 +149,7 @@ module sys_master # (
         .dest_clk  ( clk_50MHz_o  ),
         .dest_arst ( rstn_50MHz_o )
     );
-    
+
     // Reset sync for 100 MHz clock
     xpm_cdc_async_rst #(
         .DEST_SYNC_FF    ( 4 ), // Use 4 sync registers
@@ -287,7 +287,7 @@ module sys_master # (
 
     // Use a Dwidth converter if System XLEN is 32-bits wide.
     // As we need to adapt from 64-bits XDMA interface.
-    if( MBUS_DATA_WIDTH != 64 ) begin: dwidth_converter
+    if ( MBUS_DATA_WIDTH != 64 ) begin : gen_dwidth_conv
         xlnx_axi_dwidth_64_to_32_converter xlnx_axi_dwidth_64_to_32_converter_u (
             .s_axi_aclk     ( axi_aclk    ),
             .s_axi_aresetn  ( axi_aresetn ),
@@ -378,12 +378,10 @@ module sys_master # (
         assign axi_dwidth_converter_to_clock_converter_axi_arid = '0;
         assign axi_dwidth_converter_to_clock_converter_axi_awregion = '0;
         assign axi_dwidth_converter_to_clock_converter_axi_arregion = '0;
-
-    end else begin: no_dwidth_conversion
-
+    end : gen_dwidth_conv
+    else begin : no_dwidth_conv
         `ASSIGN_AXI_BUS (axi_dwidth_converter_to_clock_converter, xdma_to_axi_dwidth_converter);
-
-    end
+    end : no_dwidth_conv
 
     xlnx_axi_clock_converter xlnx_axi_clock_converter_u (
         .s_axi_aclk     ( axi_aclk    ),

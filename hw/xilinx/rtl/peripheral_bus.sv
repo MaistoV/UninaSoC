@@ -43,7 +43,7 @@ module peripheral_bus #(
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
     parameter int unsigned    LOCAL_ID_WIDTH    = 2,
     parameter int unsigned    NUM_IRQ           = 4
-    )(
+)(
     input logic main_clock_i,
     input logic main_reset_ni,
     input logic PBUS_clock_i,
@@ -230,7 +230,7 @@ module peripheral_bus #(
     //////////////////////////
 
     // Use a Dwidth converter if System XLEN is 64-bits wide.
-    if( MBUS_DATA_WIDTH == 64 ) begin: clock_conv_to_dwidth_conv
+    if ( MBUS_DATA_WIDTH == 64 ) begin : gen_dwidth_conv
 
         xlnx_axi_dwidth_64_to_32_converter axi_dwidth_conv_u (
             .s_axi_aclk     ( PBUS_clock_i      ),
@@ -320,10 +320,10 @@ module peripheral_bus #(
         assign to_prot_conv_axi_bid  = '0;
         assign to_prot_conv_axi_arid = '0;
         assign to_prot_conv_axi_rid  = '0;
-
-    end else begin: clock_conv_to_prot_conv
+    end : gen_dwidth_conv
+    else begin : no_dwidth_conv
         `ASSIGN_AXI_BUS (to_prot_conv, to_dwidth_conv)
-    end;
+    end : no_dwidth_conv
 
     /////////////////////
     // AXI-lite Master //
@@ -448,12 +448,10 @@ module peripheral_bus #(
 
     // AXI4 Lite UART
     axilite_uart # (
-
-        .LOCAL_DATA_WIDTH   (LOCAL_DATA_WIDTH),
-        .LOCAL_ADDR_WIDTH   (LOCAL_ADDR_WIDTH),
-        .LOCAL_ID_WIDTH     (LOCAL_ID_WIDTH)
-
-        ) axilite_uart_u (
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+    ) axilite_uart_u (
         .clock_i        ( PBUS_clock_i              ), // input wire s_axi_aclk
         .reset_ni       ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         .int_core_o     ( uart_int                  ), // Output interrupt
@@ -463,7 +461,6 @@ module peripheral_bus #(
         // EMBEDDED ONLY
         .tx_o           ( uart_tx_o                 ), // Transmission signal (SoC output signal)
         .rx_i           ( uart_rx_i                 ), // Receive signal (SoC input signal)
-
 
         // AXI4 lite slave port (from xbar lite)
         .s_axilite_awaddr   ( PBUS_to_UART_axilite_awaddr  ),

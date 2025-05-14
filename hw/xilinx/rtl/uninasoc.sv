@@ -233,12 +233,10 @@ module uninasoc (
     /////////////////
 
     sys_master # (
-
         .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
         .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
-
-        ) sys_master_u (
+    ) sys_master_u (
 
         // EMBEDDED ONLY
         .sys_clock_i(sys_clock_i),
@@ -316,7 +314,7 @@ module uninasoc (
         .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH    ),
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH    ),
         .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH      ),
-        .CORE_SELECTOR      ( CORE_SELECTOR )
+        .CORE_SELECTOR      ( CORE_SELECTOR      )
 
     ) rv_socket_u (
         .clk_i          ( main_clk   ),
@@ -679,9 +677,9 @@ module uninasoc (
     // DDR4 Channel 0
     ddr4_channel_wrapper # (
 
-        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH    ),
-        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH    ),
-        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH      )
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
 
     ) ddr4_channel_0_wrapper_u (
         .clock_i              ( main_clk          ),

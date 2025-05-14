@@ -24,7 +24,7 @@ module axi_clock_converter_wrapper # (
 
 );
 
-    if (LOCAL_DATA_WIDTH == 32) begin: axi_32_clock_converter
+    if (LOCAL_DATA_WIDTH == 32) begin : gen_axi_32_clock_conv
 
         xlnx_axi_d32_clock_converter axi_clk_conv_u (
 
@@ -115,7 +115,8 @@ module axi_clock_converter_wrapper # (
             .m_axi_rready   ( m_axi_rready   )
         );
 
-    end else begin: axi_64_clock_converter
+    end : gen_axi_32_clock_conv
+    else begin : gen_axi_64_clock_conv
 
         xlnx_axi_d64_clock_converter axi_clk_conv_u (
 
@@ -206,7 +207,7 @@ module axi_clock_converter_wrapper # (
             .m_axi_rready   ( m_axi_rready   )
         );
 
-    end
+    end : gen_axi_64_clock_conv
 
 endmodule
 

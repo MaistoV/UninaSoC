@@ -17,17 +17,6 @@
 // MEM parameters, such as strobe, data and address width,
 // must be compatible with AXI, therefore we directly reuse them.
 
-//////////////////////////////////
-//    _____                     //
-//   |_   _|  _ _ __  ___ ___   //
-//     | || || | '_ \/ -_|_-<   //
-//     |_| \_, | .__/\___/__/   //
-//         |__/|_|              //
-//////////////////////////////////
-
-// MEM signal types
-typedef logic                           mem_logic_t;
-
 ////////////////////////////////////////
 //    __  __   _   ___ ___  ___       //
 //   |  \/  | /_\ / __| _ \/ _ \ ___  //
@@ -42,29 +31,27 @@ typedef logic                           mem_logic_t;
 
 // Declare MEM bus specifying the DATA_WIDTH
 `define DECLARE_MEM_BUS(bus_name, DATA_WIDTH, ADDR_WIDTH)   \
-                                                \
-    mem_logic_t                     ``bus_name``_mem_req;       \
-    mem_logic_t                     ``bus_name``_mem_gnt;       \
-    mem_logic_t                     ``bus_name``_mem_valid;     \
-    logic [ADDR_WIDTH-1 : 0]        ``bus_name``_mem_addr;      \
-    logic [DATA_WIDTH-1 : 0]        ``bus_name``_mem_rdata;     \
-    logic [DATA_WIDTH-1 : 0]        ``bus_name``_mem_wdata;     \
-    mem_logic_t                     ``bus_name``_mem_we;        \
-    logic [(DATA_WIDTH)/8-1 : 0]    ``bus_name``_mem_be;        \
-    mem_logic_t                     ``bus_name``_mem_error;
+    logic                        ``bus_name``_mem_req;       \
+    logic                        ``bus_name``_mem_gnt;       \
+    logic                        ``bus_name``_mem_valid;     \
+    logic [ADDR_WIDTH-1 : 0]     ``bus_name``_mem_addr;      \
+    logic [DATA_WIDTH-1 : 0]     ``bus_name``_mem_rdata;     \
+    logic [DATA_WIDTH-1 : 0]     ``bus_name``_mem_wdata;     \
+    logic                        ``bus_name``_mem_we;        \
+    logic [(DATA_WIDTH)/8-1 : 0] ``bus_name``_mem_be;        \
+    logic                        ``bus_name``_mem_error;
 
 // Declare MEM array
 `define DECLARE_MEM_BUS_ARRAY(array_name, size, DATA_WIDTH, ADDR_WIDTH)   \
-                                                \
-    mem_logic_t [``size`` -1 : 0]                       ``bus_name``_mem_req;       \
-    mem_logic_t [``size`` -1 : 0]                       ``bus_name``_mem_gnt;       \
-    mem_logic_t [``size`` -1 : 0]                       ``bus_name``_mem_valid;     \
-    logic [ADDR_WIDTH-1 : 0]        [``size`` -1 : 0]   ``bus_name``_mem_addr;      \
-    logic [DATA_WIDTH-1 : 0]        [``size`` -1 : 0]   ``bus_name``_mem_rdata;     \
-    logic [DATA_WIDTH-1 : 0]        [``size`` -1 : 0]   ``bus_name``_mem_wdata;     \
-    mem_logic_t [``size`` -1 : 0]                       ``bus_name``_mem_we;        \
-    logic [(DATA_WIDTH)/8-1 : 0]    [``size`` -1 : 0]   ``bus_name``_mem_be;        \
-    mem_logic_t [``size`` -1 : 0]                       ``bus_name``_mem_error;
+    logic                       [``size`` -1 : 0] ``bus_name``_mem_req;       \
+    logic                       [``size`` -1 : 0] ``bus_name``_mem_gnt;       \
+    logic                       [``size`` -1 : 0] ``bus_name``_mem_valid;     \
+    logic [ADDR_WIDTH-1     : 0][``size`` -1 : 0] ``bus_name``_mem_addr;      \
+    logic [DATA_WIDTH-1     : 0][``size`` -1 : 0] ``bus_name``_mem_rdata;     \
+    logic [DATA_WIDTH-1     : 0][``size`` -1 : 0] ``bus_name``_mem_wdata;     \
+    logic                       [``size`` -1 : 0] ``bus_name``_mem_we;        \
+    logic [(DATA_WIDTH)/8-1 : 0][``size`` -1 : 0] ``bus_name``_mem_be;        \
+    logic                       [``size`` -1 : 0] ``bus_name``_mem_error;
 
 ///////////////////////
 //  Bus Assignment   //
@@ -113,26 +100,26 @@ typedef logic                           mem_logic_t;
 
 // MEM MASTER PORTS
 `define DEFINE_MEM_MASTER_PORTS(bus_name, DATA_WIDTH, ADDR_WIDTH)               \
-    output mem_logic_t                  ``bus_name``_mem_req,        \
-    input  mem_logic_t                  ``bus_name``_mem_gnt,        \
-    input  mem_logic_t                  ``bus_name``_mem_valid,      \
+    output logic                        ``bus_name``_mem_req,        \
+    input  logic                        ``bus_name``_mem_gnt,        \
+    input  logic                        ``bus_name``_mem_valid,      \
     output logic [ADDR_WIDTH-1 : 0]     ``bus_name``_mem_addr,       \
     input  logic [DATA_WIDTH-1 : 0]     ``bus_name``_mem_rdata,      \
     output logic [DATA_WIDTH-1 : 0]     ``bus_name``_mem_wdata,      \
-    output mem_logic_t                  ``bus_name``_mem_we,         \
+    output logic                        ``bus_name``_mem_we,         \
     output logic [(DATA_WIDTH)/8-1 : 0] ``bus_name``_mem_be,         \
-    input  mem_logic_t                  ``bus_name``_mem_error
+    input  logic                        ``bus_name``_mem_error
 
 `define DEFINE_MEM_SLAVE_PORTS(bus_name, DATA_WIDTH, ADDR_WIDTH)                \
-    input  mem_logic_t                  ``bus_name``_mem_req,        \
-    output mem_logic_t                  ``bus_name``_mem_gnt,        \
-    output mem_logic_t                  ``bus_name``_mem_valid,      \
+    input  logic                        ``bus_name``_mem_req,        \
+    output logic                        ``bus_name``_mem_gnt,        \
+    output logic                        ``bus_name``_mem_valid,      \
     input  logic [ADDR_WIDTH-1 : 0]     ``bus_name``_mem_addr,       \
     output logic [DATA_WIDTH-1 : 0]     ``bus_name``_mem_rdata,      \
     input  logic [DATA_WIDTH-1 : 0]     ``bus_name``_mem_wdata,      \
-    input  mem_logic_t                  ``bus_name``_mem_we,         \
+    input  logic                        ``bus_name``_mem_we,         \
     input  logic [(DATA_WIDTH)/8-1 : 0] ``bus_name``_mem_be,         \
-    output mem_logic_t                  ``bus_name``_mem_error
+    output logic                        ``bus_name``_mem_error
 
 /////////////////////
 // Sink interfaces //
