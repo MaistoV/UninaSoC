@@ -233,7 +233,7 @@ module uninasoc (
     /////////////////
 
     sys_master # (
-        
+
         .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
         .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
@@ -317,7 +317,7 @@ module uninasoc (
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH    ),
         .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH      ),
         .CORE_SELECTOR      ( CORE_SELECTOR )
-        
+
     ) rv_socket_u (
         .clk_i          ( main_clk   ),
         .rst_ni         ( main_rstn  ),
@@ -559,7 +559,7 @@ module uninasoc (
         .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
         .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
-        
+
     ) plic_wrapper_u (
         .clk_i          ( main_clk                      ), // input wire s_axi_aclk
         .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn

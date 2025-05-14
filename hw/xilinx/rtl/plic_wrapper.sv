@@ -1,7 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-// Description: 
+// Description:
 //      This module is a wrapper for the RISC-V PLIC hosting both the PLIC and an optional
-//      Data width converter. It is required as RISC-V PLIC is a 32-bits IP by default. 
+//      Data width converter. It is required as RISC-V PLIC is a 32-bits IP by default.
 //      Therefore, if the MBUS is 64-bits wide, a converter is required.
 
 `include "uninasoc_axi.svh"
@@ -33,7 +33,7 @@ module plic_wrapper # (
     // Data Width Converter //
     //////////////////////////
 
-    // the PLIC is always a 32-bits peripheral, 
+    // the PLIC is always a 32-bits peripheral,
     // therefore a dwidth converter is required if XLEN = 64
     if (LOCAL_DATA_WIDTH == 64) begin: axi_32_dwidth_converter
 

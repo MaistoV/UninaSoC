@@ -87,7 +87,7 @@ module rv_socket # (
     if ( LOCAL_DATA_WIDTH == 64 && CORE_SELECTOR inside {CORE_PICORV32,CORE_CV32E40P,CORE_IBEX,CORE_MICROBLAZEV} ||
          LOCAL_DATA_WIDTH == 32 && CORE_SELECTOR inside {-1} )
 
-        $error($sformatf("[Socket] Illegal CORE (%s) for the selected XLEN (%0d)", 
+        $error($sformatf("[Socket] Illegal CORE (%s) for the selected XLEN (%0d)",
                         core_selector_to_string(CORE_SELECTOR), LOCAL_DATA_WIDTH));
 
     ////////////////////////

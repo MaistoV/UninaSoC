@@ -16,9 +16,9 @@ module custom_top_wrapper # (
     //////////////////////////////////////
 
     // AXI/MEM macros parameter
-    parameter LOCAL_DATA_WIDTH  = 32,   
+    parameter LOCAL_DATA_WIDTH  = 32,
     parameter LOCAL_ADDR_WIDTH  = 32,
-    parameter LOCAL_ID_WIDTH  = 2 
+    parameter LOCAL_ID_WIDTH  = 2
 
 ) (
 

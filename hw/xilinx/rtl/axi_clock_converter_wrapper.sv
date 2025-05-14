@@ -16,7 +16,7 @@ module axi_clock_converter_wrapper # (
 
     `DEFINE_AXI_MASTER_PORTS(m, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
 
-    // Slave Interface 
+    // Slave Interface
     input logic s_axi_aclk,
     input logic s_axi_aresetn,
 
