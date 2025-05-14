@@ -48,8 +48,6 @@ FILE_SLAVE_CONCAT_HEADER = \
 # Template strings
 DECLARE_BUS_PREFIX                 = "`DECLARE_AXI_BUS("
 
-#DECLARE_BUS_SUFFIX                 = ", LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)\n"
-
 DECLARE_AXILITE_BUS_PREFIX         = "`DECLARE_AXILITE_BUS("
 
 DECLARE_BUS_ARRAY_PREFIX           = "`DECLARE_AXI_BUS_ARRAY("
@@ -76,7 +74,7 @@ def GET_BUS_SUFFIX(busname) -> None:
     bus_suffix = ", "   + busname + "_DATA_WIDTH, " \
                         + busname + "_ADDR_WIDTH, " \
                         + busname + "_ID_WIDTH)\n"
-    
+
     return bus_suffix
 
 
