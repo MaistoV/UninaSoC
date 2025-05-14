@@ -19,8 +19,8 @@ BASE_ADDRESS ?= 0x00000000
 LOAD_BINARY_READBACK ?= false
 
 # Load the binary into SoC memory (BRAM for now)
-# Call the specific load script based on the SOC_CONFIG (HPC or EMBEDDED)
-load_binary: load_binary_${SOC_CONFIG}
+# Call the specific load script based on the SOC_PROFILE (HPC or EMBEDDED)
+load_binary: load_binary_${SOC_PROFILE}
 
 # Write the binary to BRAM through jtag2axi
 load_binary_embedded: ${BIN_PATH}

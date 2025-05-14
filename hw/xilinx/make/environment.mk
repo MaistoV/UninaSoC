@@ -43,18 +43,18 @@ XILINX_IP_LIST_XCI := ${XILINX_COMMON_IP_LIST_XCI}
 CUSTOM_IP_LIST_XCI := ${CUSTOM_COMMON_IP_LIST_XCI}
 
 # Selecting flow: HPC or EMBEDDED
-ifeq (${SOC_CONFIG}, hpc)
+ifeq (${SOC_PROFILE}, hpc)
     XILINX_IP_LIST         += ${XILINX_HPC_IP_LIST}
     XILINX_IP_LIST_XCI     += ${XILINX_HPC_IP_LIST_XCI}
     CUSTOM_IP_LIST         += ${CUSTOM_HPC_IP_LIST}
     CUSTOM_IP_LIST_XCI     += ${CUSTOM_HPC_IP_LIST_XCI}
-else ifeq (${SOC_CONFIG}, embedded)
+else ifeq (${SOC_PROFILE}, embedded)
     XILINX_IP_LIST         += ${XILINX_EMBEDDED_IP_LIST}
     XILINX_IP_LIST_XCI     += ${XILINX_EMBEDDED_IP_LIST_XCI}
     CUSTOM_IP_LIST         += ${CUSTOM_EMBEDDED_IP_LIST}
     CUSTOM_IP_LIST_XCI     += ${CUSTOM_EMBEDDED_IP_LIST_XCI}
 else
-$(error "Unsupported config ${SOC_CONFIG}")
+$(error "Unsupported config ${SOC_PROFILE}")
 endif
 
 # Concatenate/create the final IP lists
@@ -99,7 +99,7 @@ XILINX_VIVADO_ENV ?=                                \
     IMPL_STRATEGY=${IMPL_STRATEGY}                  \
     XILINX_PART_NUMBER=${XILINX_PART_NUMBER}        \
     XILINX_PROJECT_NAME=${XILINX_PROJECT_NAME}      \
-    SOC_CONFIG=${SOC_CONFIG}                        \
+    SOC_PROFILE=${SOC_PROFILE}                        \
     XILINX_BOARD_PART=${XILINX_BOARD_PART}          \
     XILINX_HW_SERVER_HOST=${XILINX_HW_SERVER_HOST}  \
     XILINX_HW_SERVER_PORT=${XILINX_HW_SERVER_PORT}  \

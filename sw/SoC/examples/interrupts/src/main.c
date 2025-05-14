@@ -11,7 +11,7 @@
 //      to be connected to the PLIC. The timer must NOT be connected directly to the core's TIM line in this example.
 //
 //      Note 2: The IS_EMBEDDED macro is automatically defined in this example's Makefile depending on
-//      vesuvius configuration (according to the SOC_CONFIG envvar set in settings.sh)
+//      SoC profile (according to the SOC_PROFILE envvar set in settings.sh)
 //
 
 #include <stdint.h>
