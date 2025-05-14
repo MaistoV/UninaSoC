@@ -72,6 +72,8 @@ if "main_bus" in bus_config_file_name:
     config.CONFIG_NAME = "MBUS"
 elif "peripheral_bus" in bus_config_file_name:
     config.CONFIG_NAME = "PBUS"
+elif "highperformance_bus" in bus_config_file_name:
+    config.CONFIG_NAME = "HBUS"
 
 ###################
 # Read Sys config #

@@ -19,7 +19,7 @@ module custom_top_wrapper # (
     parameter LOCAL_AXI_DATA_WIDTH    = 32,
     parameter LOCAL_AXI_ADDR_WIDTH    = 32,
     parameter LOCAL_AXI_STRB_WIDTH    = LOCAL_AXI_DATA_WIDTH / 8,
-    parameter LOCAL_AXI_ID_WIDTH      = 2,
+    parameter LOCAL_AXI_ID_WIDTH      = 3, // TODO: align with config
     parameter LOCAL_AXI_REGION_WIDTH  = 4,
     parameter LOCAL_AXI_LEN_WIDTH     = 8,
     parameter LOCAL_AXI_SIZE_WIDTH    = 3,
