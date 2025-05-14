@@ -232,7 +232,11 @@ module uninasoc (
     // AXI masters //
     /////////////////
 
-    sys_master sys_master_u (
+    sys_master # (
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
+    ) sys_master_u (
 
         // EMBEDDED ONLY
         .sys_clock_i(sys_clock_i),
@@ -306,9 +310,12 @@ module uninasoc (
 
     // RV Socket
     rv_socket # (
-        .DATA_WIDTH    ( AXI_DATA_WIDTH ),
-        .ADDR_WIDTH    ( AXI_ADDR_WIDTH ),
-        .CORE_SELECTOR ( CORE_SELECTOR  )
+
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH    ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH    ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH      ),
+        .CORE_SELECTOR      ( CORE_SELECTOR      )
+
     ) rv_socket_u (
         .clk_i          ( main_clk   ),
         .rst_ni         ( main_rstn  ),
@@ -545,15 +552,18 @@ module uninasoc (
 
     end : system_interrupts
 
+    plic_wrapper #(
 
-    custom_rv_plic custom_rv_plic_u (
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
+
+    ) plic_wrapper_u (
         .clk_i          ( main_clk                      ), // input wire s_axi_aclk
         .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
         .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)
-        .irq_id_o       (                               ), // Unused (non standard signal)
-        .msip_o         (                               ), // Unused (non standard signal)
         .s_axi_awid     ( MBUS_to_PLIC_axi_awid         ), // input wire [1 : 0] s_axi_awid
         .s_axi_awaddr   ( MBUS_to_PLIC_axi_awaddr       ), // input wire [25 : 0] s_axi_awaddr
         .s_axi_awlen    ( MBUS_to_PLIC_axi_awlen        ), // input wire [7 : 0] s_axi_awlen
@@ -599,7 +609,13 @@ module uninasoc (
     // PERIPHERAL BUS //
     ////////////////////
 
-    peripheral_bus peripheral_bus_u (
+    peripheral_bus # (
+
+        .LOCAL_DATA_WIDTH   ( PBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( PBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( PBUS_ID_WIDTH   )
+
+        ) peripheral_bus_u (
 
         .main_clock_i   ( main_clk    ),
         .main_reset_ni  ( main_rstn   ),
@@ -659,7 +675,13 @@ module uninasoc (
 `ifdef HPC
 
     // DDR4 Channel 0
-    ddr4_channel_wrapper  ddr4_channel_0_wrapper_u (
+    ddr4_channel_wrapper # (
+
+        .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
+
+    ) ddr4_channel_0_wrapper_u (
         .clock_i              ( main_clk          ),
         .reset_ni             ( main_rstn         ),
 
@@ -686,16 +708,16 @@ module uninasoc (
         // AXILITE interface - for ECC status and control - not connected
         .s_ctrl_axilite_awvalid  ( 1'b0  ),
         .s_ctrl_axilite_awready  (       ),
-        .s_ctrl_axilite_awaddr   ( 32'd0 ),
+        .s_ctrl_axilite_awaddr   ( '0    ),
         .s_ctrl_axilite_wvalid   ( 1'b0  ),
         .s_ctrl_axilite_wready   (       ),
-        .s_ctrl_axilite_wdata    ( 32'd0 ),
+        .s_ctrl_axilite_wdata    ( '0    ),
         .s_ctrl_axilite_bvalid   (       ),
         .s_ctrl_axilite_bready   ( 1'b1  ),
         .s_ctrl_axilite_bresp    (       ),
         .s_ctrl_axilite_arvalid  ( 1'b0  ),
         .s_ctrl_axilite_arready  (       ),
-        .s_ctrl_axilite_araddr   ( 31'd0 ),
+        .s_ctrl_axilite_araddr   ( '0    ),
         .s_ctrl_axilite_rvalid   (       ),
         .s_ctrl_axilite_rready   ( 1'b1  ),
         .s_ctrl_axilite_rdata    (       ),

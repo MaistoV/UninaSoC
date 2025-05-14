@@ -47,7 +47,6 @@ FILE_SLAVE_CONCAT_HEADER = \
 
 # Template strings
 DECLARE_BUS_PREFIX                 = "`DECLARE_AXI_BUS("
-DECLARE_BUS_SUFFIX                 = ", AXI_DATA_WIDTH)\n"
 
 DECLARE_AXILITE_BUS_PREFIX         = "`DECLARE_AXILITE_BUS("
 
@@ -68,6 +67,16 @@ RTL_FILES                = {
     "MBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/mbus_buses.svinc",
     "PBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/pbus_buses.svinc"
 }
+
+# Get the correct bus suffix depending on bus name
+def GET_BUS_SUFFIX(busname) -> None:
+
+    bus_suffix = ", "   + busname + "_DATA_WIDTH, " \
+                        + busname + "_ADDR_WIDTH, " \
+                        + busname + "_ID_WIDTH)\n"
+
+    return bus_suffix
+
 
 # Write the concatenation macro for master/slave buses to the rtl file
 def concat_buses(lines : list, buses : list, is_master : bool, config : configuration.Configuration) -> None:
@@ -109,7 +118,7 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
 
 
     # Declare an AXI4/AXILITE BUS ARRAY master/slave
-    lines.append(f"{declare_prefix}{config.CONFIG_NAME}{suffix}, {bus_cnt_str}{BASE_SUFFIX}")
+    lines.append(f"{declare_prefix}{config.CONFIG_NAME}{suffix}, {bus_cnt_str}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
     # Concatenate all master/slave buses with the declared AXI4/AXILITE BUS ARRAY
     lines.append(f"{concat_prefix}{len(buses)}({config.CONFIG_NAME}{suffix}{buses_string}{BASE_SUFFIX}")
 
@@ -139,10 +148,10 @@ def declare_buses(lines : list, is_master : bool, config : configuration.Configu
 
         if config.CONFIG_NAME == "PBUS":
             # If the bus is PBUS declare an AXILITE bus using the last created bus name
-            lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{BASE_SUFFIX}")
+            lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
         else:
             # If the bus is not PBUS declare an AXI4 bus using the last created bus name
-            lines.append(f"{DECLARE_BUS_PREFIX}{buses[-1]}{DECLARE_BUS_SUFFIX}")
+            lines.append(f"{DECLARE_BUS_PREFIX}{buses[-1]}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
     return buses
 
 

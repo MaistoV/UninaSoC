@@ -8,9 +8,12 @@
 # Values #
 ##########
 
-# AXI
+# System
 XLEN ?= 32
-ADDR_WIDTH ?= ${XLEN}
+PHYSICAL_ADDR_WIDTH ?= 32
+
+# AXI
+ADDR_WIDTH ?= ${PHYSICAL_ADDR_WIDTH}
 DATA_WIDTH ?= ${XLEN}
 ID_WIDTH ?= 2
 

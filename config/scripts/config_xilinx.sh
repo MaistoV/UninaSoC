@@ -39,6 +39,7 @@ sys_target_values=(
         CORE_SELECTOR
         VIO_RESETN_DEFAULT
         XLEN
+        PHYSICAL_ADDR_WIDTH
     )
 
 bus_target_values=(

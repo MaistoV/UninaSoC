@@ -11,6 +11,19 @@ package uninasoc_pkg;
     localparam int unsigned NUM_GPIO_IN  = 16;
     localparam int unsigned NUM_GPIO_OUT = 16;
 
+    // MBUS widths depending on XLEN
+    localparam MBUS_DATA_WIDTH = `MBUS_DATA_WIDTH;
+    localparam MBUS_ADDR_WIDTH = `MBUS_ADDR_WIDTH;
+    localparam MBUS_ID_WIDTH = `MBUS_ID_WIDTH;
+
+    // PBUS is fixed to 32-bits
+    localparam PBUS_DATA_WIDTH = 32;
+    localparam PBUS_ADDR_WIDTH = 32;
+    localparam PBUS_ID_WIDTH = MBUS_ID_WIDTH;
+
+    // HBUS
+    // To be defined here in the future
+
     ///////////////////////
     // AXI main crossbar //
     ///////////////////////
@@ -68,5 +81,20 @@ package uninasoc_pkg;
     localparam int unsigned PLIC_TIM0_INTERRUPT = 2;        // Timer 0 (From PBUS)
     localparam int unsigned PLIC_TIM1_INTERRUPT = 3;        // Timer 1 (From PBUS)
     localparam int unsigned PLIC_UART_INTERRUPT = 4;        // UART    (From PBUS)
+
+    ///////////////
+    // Functions //
+    ///////////////
+
+    // This function is used to turn a core_selector id into the corresponding core name string
+    function string core_selector_to_string(input int core_sel);
+        case (core_sel)
+            CORE_PICORV32:     return "CORE_PICORV32";
+            CORE_CV32E40P:     return "CORE_CV32E40P";
+            CORE_IBEX:         return "CORE_IBEX";
+            CORE_MICROBLAZEV:  return "CORE_MICROBLAZEV";
+            default:           return $sformatf("UNKNOWN_CORE_%0d", core_sel);
+        endcase
+    endfunction
 
 endpackage : uninasoc_pkg
