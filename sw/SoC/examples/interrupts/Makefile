@@ -37,6 +37,15 @@ LIB_INC_TINYIO    = -I$(LIB_DIR)/tinyio/inc
 LIB_OBJ_LIST     = $(LIB_OBJ_TINYIO)
 LIB_INC_LIST     = $(LIB_INC_TINYIO)
 
+##########
+# MACROS #
+##########
+
+MACRO_LIST =
+ifeq ($(SOC_PROFILE), embedded)
+MACRO_LIST += -DIS_EMBEDDED
+endif
+
 
 #############
 # Toolchain #

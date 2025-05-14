@@ -31,7 +31,7 @@ The top-level `Makefile` can be used to build the platform for the specific targ
 
 First, setup environment with:
 ``` bash
-source settings.sh <soc_config> <board>
+source settings.sh <SOC_PROFILE> <board>
 ```
 > NOTE: If no input parameter is specificed, we default to `embedded` profile and the Nexys A7-100T board.
 

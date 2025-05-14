@@ -48,12 +48,12 @@ export XILINX_PROJECT_NAME=uninasoc
 
 # PS: Environmental variable BOARD should match the .xdc constraint file name.
 
-SOC_CONFIG=$1
+SOC_PROFILE=$1
 BOARD_CONFIG=$2
 
-if [[ ${SOC_CONFIG} == "hpc" ]]; then
+if [[ ${SOC_PROFILE} == "hpc" ]]; then
 
-    export SOC_CONFIG=hpc
+    export SOC_PROFILE=hpc
 
     # Use wildcard instead device specific part number
     export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Xilinx/*
@@ -74,7 +74,7 @@ if [[ ${SOC_CONFIG} == "hpc" ]]; then
 
 else
 
-    export SOC_CONFIG=embedded
+    export SOC_PROFILE=embedded
 
     # Use wildcard instead device specific part number
     export XILINX_HW_SERVER_FPGA_PATH=xilinx_tcf/Digilent/*

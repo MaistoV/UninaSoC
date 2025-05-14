@@ -36,7 +36,7 @@ from utils import *
 VALID_PROTOCOLS = ["AXI4", "AXI4LITE"]
 MIN_AXI4_ADDR_WIDTH = 12
 MIN_AXI4LITE_ADDR_WIDTH = 1
-SOC_CONFIG = os.getenv("SOC_CONFIG", "embedded")
+SOC_PROFILE = os.getenv("SOC_PROFILE", "embedded")
 # NOTE: These frequencies depend on the clock_wizard configuration (config.tcl)
 SUPPORTED_CLOCK_DOMAINS_EMBEDDED = [10, 20, 50, 100]
 SUPPORTED_CLOCK_DOMAINS_HPC      = [10, 20, 50, 100, 250]
@@ -141,13 +141,13 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
 
     # Check valid main clock domain
     if config.CONFIG_NAME == "MBUS":
-        if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
+        if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_PROFILE]:
             print_error(f"The clock domain {config.MAIN_CLOCK_DOMAIN}MHz is not supported")
             return False
         # Check valid clock domains
         for i in range(len(config.RANGE_CLOCK_DOMAINS)):
             # Check if the clock frequency is valid (DDR has its own clock domain)
-            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG] and config.RANGE_NAMES[i] != "DDR":
+            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_PROFILE] and config.RANGE_NAMES[i] != "DDR":
                 print_error(f"The clock domain {config.RANGE_CLOCK_DOMAINS[i]}MHz is not supported")
                 return False
             # Check if all the main_clock_domain slaves have the same frequency as MAIN_CLOCK_DOMAIN
