@@ -17,10 +17,9 @@ vivado*
 webtalk*
 
 # Build outputs
-build/
+build*/
 
 # Temporary files and directories
 tmp*
 backup*
 *.log
-
