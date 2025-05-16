@@ -1,5 +1,20 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-// Description: TBD
+// Description: 
+// Wrapper of the high-performance bus (HBUS) offering wide data interfaces, e.g. 512 bits. This bus offers several AXI interfaces:
+//     - masters: 
+//        - to DDR channels (wide)
+//        - to HBM channels (wide)
+//        - m_MBUS: to MBUS (XLEN)
+//    - slaves:
+//        - s_MBUS: from MBUS (XLEN)
+//        - s_acc: from accelerators (wide)
+//    - Clocking
+//        - each DDR or HBM channel is clocked in its own physical clock domain
+//        - the core xbar is clocked on a high-speed clock from a physical DRAM domain, DDR channel 0 by default
+//        - the core xbar clock/reset are exposed externally, e.g. for accelerators
+//        - the MBUS interfaces (m_MBUS and s_MBUS) are already clock-bridged and data-width adapted
+//
+// Architecture:
 //               ___________              _____________              ______________             ______________
 // s_MBUS       |           | DATA: XLEN |             | DATA: 512  |              |           |              |_
 // ------------>|   Clock   |----------->|   Dwidth    |----------->|              |---------->| DDR channels | |
