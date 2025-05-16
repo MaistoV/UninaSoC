@@ -51,7 +51,7 @@ def read_config(config_file_names : list) -> list:
 ############
 
 # Print/debug stuff
-PRINT_PREFIX = "[CONFIG]"
+PRINT_PREFIX = "[CHECK_CONFIG]"
 PRINT_ERROR_PREFIX = "[ERROR]"
 PRINT_WARNING_PREFIX = "[WARNING]"
 

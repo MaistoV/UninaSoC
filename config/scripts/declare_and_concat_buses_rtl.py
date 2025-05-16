@@ -129,14 +129,6 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
         # The suffix of the bus array
         suffix = "_slaves"
 
-    # Add data width too
-    if config.CONFIG_NAME == "MBUS":
-        data_width  = "AXI_DATA_WIDTH"
-    elif config.CONFIG_NAME == "PBUS":
-        data_width  = "32"
-    elif config.CONFIG_NAME == "HBUS":
-        data_width  = "HBUS_AXI_DATAWIDTH"
-
     for bus in buses:
         # Add each bus previously declared to the bus string
         # In the and it looks like (for masters): ..., MASTER1_to_BUS, MASTER0_to_BUS
@@ -218,7 +210,7 @@ if __name__ == "__main__":
     configs = read_config(config_file_names)
 
     for config in configs:
-        filename = RTL_FILES[config.CONFIG_NAME]
-        file = open(filename, "w")
+        file = open(RTL_FILES[config.CONFIG_NAME], "w")
         declare_and_concat_buses(file, config)
         file.close()
+

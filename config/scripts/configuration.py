@@ -70,7 +70,8 @@ class Configuration:
 			# Skip mock buses
 			return
 		else:
-			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
+			logging.warning("Address Width " + str(value) + " value isn't compatible with AXI PROTOCOL " + self.PROTOCOL)
+			exit(1)
 
 	def set_DATA_WIDTH (self, value: int):
 		# Reads the Address Widdth applied to all Interfaces

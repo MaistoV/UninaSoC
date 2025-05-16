@@ -119,28 +119,6 @@ def parse_XLEN (
 		property_name : str,
 		property_value: str,
 ):
-<<<<<<< HEAD
-	# XLEN property will also set MBUS DATA_WIDTH and ADDR_WIDTH
-	value = int(property_value)
-	config.XLEN = value
-
-	if (value not in [32, 64]):
-		logging.warning("Invalid XLEN value, please select either 32 or 64")
-
-	# Set BUS-related parameters
-	if config.CONFIG_NAME == "MBUS":
-		config.set_ADDR_WIDTH(int(config.XLEN))
-		config.set_DATA_WIDTH(int(config.XLEN))
-	elif config.CONFIG_NAME == "PBUS":
-		config.set_ADDR_WIDTH(32)
-		config.set_DATA_WIDTH(32)
-	elif config.CONFIG_NAME == "HBUS":
-		config.set_ADDR_WIDTH(32) # TODO: update for RV64
-		config.set_DATA_WIDTH(512)
-	else:
-		logging.error("Can't read valid config.CONFIG_NAME " + config.CONFIG_NAME)
-
-=======
 	# No need to parse for mock buses
 	if (config.PROTOCOL == "MOCK"):
 		# No-op
@@ -203,7 +181,6 @@ def parse_PHYSICAL_ADDR_WIDTH (
 		# Set proptery in config
 		config.PHYISICAL_ADDR_WIDTH = physical_addr_width
 		config.set_ADDR_WIDTH(physical_addr_width)
->>>>>>> 5e140cf942145bd00b77129d7a9e72c7cdc7305a
 
 	return config
 

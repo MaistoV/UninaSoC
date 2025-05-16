@@ -16,35 +16,26 @@ OBJS	 = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.c=.o)))
 RM	  = rm -rf					 # Remove recursively command
 MKDIR   = @mkdir -p $(@D)			 # Creates folders if not present
 
-##########
-# MACROS #
-##########
-
-MACRO_LIST =
-ifeq ($(SOC_CONFIG), embedded)
-MACRO_LIST += -DIS_EMBEDDED
-endif
-
 ###############################################################################
 
 ###########
 # Targets #
 ###########
 
-all: bin/$(PROGRAM_NAME).bin bin/$(PROGRAM_NAME).dump
+all: bin/$(PROGRAM_NAME).bin
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@echo "\n[OBJ] Creating OBJs $@ from SRC $^"
+	@echo "\n[OBJ] Creating OBJs from src"
 	$(MKDIR)
-	$(CC) -o $@ $^ -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS) $(MACRO_LIST)
+	$(CC) -o $@ $^ -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS)
 
 obj/startup.o:
-	@echo "\n[OBJ] Creating OBJ $@ from SRC $(STARTUP_DIR)/startup.s"
+	@echo "\n[OBJ] Creating OBJs from $(STARTUP_DIR)/startup.s"
 	$(MKDIR)
-	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s $(CFLAGS) $(LIB_INC_LIST)
+	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s -I$(LIB_INC_LIST) $(CFLAGS)
 
 bin/$(PROGRAM_NAME).elf: $(OBJS) obj/startup.o
-	@echo "\n[ELF] Linking $^ into $@"
+	@echo "\n[ELF] Creating elf file"
 	$(MKDIR)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
@@ -58,7 +49,6 @@ clean:
 
 .PHONY: all clean
 
-dump: bin/$(PROGRAM_NAME).dump
-bin/$(PROGRAM_NAME).dump:
-	$(OBJDUMP) -D bin/$(PROGRAM_NAME).elf > $@
+dump:
+	$(OBJDUMP) -D bin/$(PROGRAM_NAME).elf
 

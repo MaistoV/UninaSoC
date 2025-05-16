@@ -142,7 +142,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
     # Check valid main clock domain
     if config.CONFIG_NAME == "MBUS":
         if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
-            print_error(f"The clock domain {clock_domain}MHz is not supported")
+            print_error(f"The clock domain {clok_domain}MHz is not supported")
             return False
         # Check valid clock domains
         for i in range(len(config.RANGE_CLOCK_DOMAINS)):
