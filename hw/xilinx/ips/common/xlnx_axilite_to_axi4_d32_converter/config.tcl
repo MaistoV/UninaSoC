@@ -9,7 +9,7 @@ set_property -dict  [list	CONFIG.MI_PROTOCOL      {AXI4} \
                     ] [get_ips $::env(IP_NAME)]
 
 # Currently it is only used for the microblaze-V, that is only allowed as a 32-bits master
-set_property CONFIG.DATA_WIDTH  32                 [get_ips $::env(IP_NAME)]
-set_property CONFIG.ADDR_WIDTH  32                 [get_ips $::env(IP_NAME)]
-set_property CONFIG.ID_WIDTH    $::env(ID_WIDTH)   [get_ips $::env(IP_NAME)]
+set_property CONFIG.DATA_WIDTH  32                     [get_ips $::env(IP_NAME)]
+set_property CONFIG.ADDR_WIDTH  32                     [get_ips $::env(IP_NAME)]
+set_property CONFIG.ID_WIDTH    $::env(MBUS_ID_WIDTH)   [get_ips $::env(IP_NAME)]
 
