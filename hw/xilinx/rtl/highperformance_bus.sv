@@ -1,7 +1,7 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-// Description: 
+// Description:
 // Wrapper of the high-performance bus (HBUS) offering wide data interfaces, e.g. 512 bits. This bus offers several AXI interfaces:
-//     - masters: 
+//     - masters:
 //        - to DDR channels (wide)
 //        - to HBM channels (wide)
 //        - m_MBUS: to MBUS (XLEN)
@@ -218,6 +218,11 @@ module highperformance_bus #(
     );
 
     // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface HBUS data width)
+    // Tie-off undriven nets
+    assign s_MBUS_clock_conv_to_dwidth_conv_axi_awqos    = '0;
+    assign s_MBUS_clock_conv_to_dwidth_conv_axi_arqos    = '0;
+    assign s_MBUS_clock_conv_to_dwidth_conv_axi_arregion = '0;
+    assign s_MBUS_clock_conv_to_dwidth_conv_axi_awregion = '0;
     // s_MBUS_clock_conv_to_dwidth_conv -> dwidth_conv_to_HBUS
     xlnx_axi_dwidth_to512_converter axi_dwidth_conv_s_MBUS_u (
         .s_axi_aclk     ( HBUS_clk     ),
@@ -255,13 +260,13 @@ module highperformance_bus #(
         .s_axi_awlock   ( s_MBUS_clock_conv_to_dwidth_conv_axi_awlock  ),
         .s_axi_awcache  ( s_MBUS_clock_conv_to_dwidth_conv_axi_awcache ),
         .s_axi_awprot   ( s_MBUS_clock_conv_to_dwidth_conv_axi_awprot  ),
-        .s_axi_awqos    ( '0   ),
-        .s_axi_awregion ( '0   ),
+        .s_axi_awqos    ( s_MBUS_clock_conv_to_dwidth_conv_axi_awqos   ),
+        .s_axi_awregion ( s_MBUS_clock_conv_to_dwidth_conv_axi_awregion),
         .s_axi_arlock   ( s_MBUS_clock_conv_to_dwidth_conv_axi_arlock  ),
         .s_axi_arcache  ( s_MBUS_clock_conv_to_dwidth_conv_axi_arcache ),
         .s_axi_arprot   ( s_MBUS_clock_conv_to_dwidth_conv_axi_arprot  ),
-        .s_axi_arqos    ( '0   ),
-        .s_axi_arregion ( '0   ),
+        .s_axi_arqos    ( s_MBUS_clock_conv_to_dwidth_conv_axi_arqos   ),
+        .s_axi_arregion ( s_MBUS_clock_conv_to_dwidth_conv_axi_arregion),
         // Master to DDR
         // .m_axi_awid     ( dwidth_conv_to_HBUS_axi_awid    ),
         .m_axi_awaddr   ( dwidth_conv_to_HBUS_axi_awaddr  ),
@@ -306,6 +311,11 @@ module highperformance_bus #(
     );
 
     // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface HBUS data width)
+    // Tie-off undriven nets
+    assign dwidth_conv_from_HBUS_axi_awqos    = '0;
+    assign dwidth_conv_from_HBUS_axi_arqos    = '0;
+    assign dwidth_conv_from_HBUS_axi_arregion = '0;
+    assign dwidth_conv_from_HBUS_axi_awregion = '0;
     // dwidth_conv_from_HBUS -> m_MBUS_dwidth_conv_to_clock_conv
     xlnx_axi_dwidth_from512_converter axi_dwidth_conv_m_MBUS_u (
         // Clock and reset
@@ -345,13 +355,13 @@ module highperformance_bus #(
         .s_axi_awlock   ( dwidth_conv_from_HBUS_axi_awlock  ),
         .s_axi_awcache  ( dwidth_conv_from_HBUS_axi_awcache ),
         .s_axi_awprot   ( dwidth_conv_from_HBUS_axi_awprot  ),
-        .s_axi_awqos    ( '0   ),
-        .s_axi_awregion ( '0   ),
+        .s_axi_awqos    ( dwidth_conv_from_HBUS_axi_awqos   ),
+        .s_axi_awregion ( dwidth_conv_from_HBUS_axi_awregion),
         .s_axi_arlock   ( dwidth_conv_from_HBUS_axi_arlock  ),
         .s_axi_arcache  ( dwidth_conv_from_HBUS_axi_arcache ),
         .s_axi_arprot   ( dwidth_conv_from_HBUS_axi_arprot  ),
-        .s_axi_arqos    ( '0   ),
-        .s_axi_arregion ( '0   ),
+        .s_axi_arqos    ( dwidth_conv_from_HBUS_axi_arqos   ),
+        .s_axi_arregion ( dwidth_conv_from_HBUS_axi_arregion),
         // Master
         // .m_axi_awid     ( m_MBUS_dwidth_conv_to_clock_conv_axi_awid    ),
         .m_axi_awaddr   ( m_MBUS_dwidth_conv_to_clock_conv_axi_awaddr  ),
