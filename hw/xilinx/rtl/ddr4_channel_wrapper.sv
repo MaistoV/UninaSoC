@@ -8,8 +8,8 @@
 //              It has the following sub-architecture
 //
 //
-//             _______________            ADDR: 32 bit  ____________  ADDR: 32 bit     ADDR: 34 bit    ____________
-//   250 MHz  |     Clock     | 300 MHz   DATA: 32 bit |   Dwidth   | DATA: 512 bit    DATA: 512 bit  |            |
+//             _______________            ADDR: XELN    ____________  ADDR: XLEN       ADDR: 34 bit    ____________
+//   250 MHz  |     Clock     | 300 MHz   DATA: XLEN   |   Dwidth   | DATA: 512 bit    DATA: 512 bit  |            |
 // ---------> |   Converter   |----------------------->| Converter  |-------------------------------->| DDR4 (MIG) |
 //            |_______________|                        |____________|                                 |____________|
 //
@@ -18,7 +18,11 @@
 `include "uninasoc_pcie.svh"
 `include "uninasoc_ddr4.svh"
 
-module ddr4_channel_wrapper (
+module ddr4_channel_wrapper # (
+    parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
+    parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
+    parameter int unsigned    LOCAL_ID_WIDTH    = 32
+) (
     // SoC clock and reset
     input logic clock_i,
     input logic reset_ni,
@@ -31,12 +35,16 @@ module ddr4_channel_wrapper (
     `DEFINE_DDR4_PORTS(x),
 
     // AXI-lite CSR interface
-    `DEFINE_AXILITE_SLAVE_PORTS(s_ctrl),
+    `DEFINE_AXILITE_SLAVE_PORTS(s_ctrl, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
 
     // AXI4 Slave interface
-    `DEFINE_AXI_SLAVE_PORTS(s)
+    `DEFINE_AXI_SLAVE_PORTS(s, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 
 );
+
+    // DDR4 local parameters
+    localparam DDR4_CHANNEL_ADDRESS_WIDTH = 34;
+    localparam DDR4_CHANNEL_DATA_WIDTH = 512;
 
     // DDR4 sys reset - it is active high
     logic ddr4_reset = 1'b1;
@@ -53,11 +61,15 @@ module ddr4_channel_wrapper (
     logic ddr_clk;
     logic ddr_rst;
 
+    // DDR4 34-bits address signals
+    logic [DDR4_CHANNEL_ADDRESS_WIDTH-1:0] ddr4_axi_awaddr;
+    logic [DDR4_CHANNEL_ADDRESS_WIDTH-1:0] ddr4_axi_araddr;
+
     // AXI bus from the clock converter to the dwidth converter
-    `DECLARE_AXI_BUS(clk_conv_to_dwidth_conv, 32)
+    `DECLARE_AXI_BUS(clk_conv_to_dwidth_conv, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 
     // AXI bus from the dwidth converter to the DDR4
-    `DECLARE_AXI_BUS(dwidth_conv_to_ddr4, 512)
+    `DECLARE_AXI_BUS(dwidth_conv_to_ddr4, DDR4_CHANNEL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 
     // Dwidth converter master ID signals assigned to 0
     // Since the AXI data width converter has a reordering depth of 1 it doesn't have ID in its master ports - for more details see the documentation
@@ -67,8 +79,13 @@ module ddr4_channel_wrapper (
     assign dwidth_conv_to_ddr4_axi_arid = '0;
     assign dwidth_conv_to_ddr4_axi_rid  = '0;
 
-    // AXI Clock converter from 250 MHz (xdma global design clk) to 300 MHz (AXI user interface DDR clk) - the data width here is 32 bit
-    xlnx_axi_clock_converter axi_clk_conv_u (
+    // AXI Clock converter from 250 MHz (xdma global design clk) to 300 MHz (AXI user interface DDR clk) - the data width is XLEN
+    axi_clock_converter_wrapper # (
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+    ) axi_clk_conv_u (
+
         .s_axi_aclk     ( clock_i        ),
         .s_axi_aresetn  ( reset_ni       ),
 
@@ -158,7 +175,7 @@ module ddr4_channel_wrapper (
     );
 
 
-    // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface DDR data width)
+    // AXI dwith converter from XLEN bit (global AXI data width) to 512 bit (AXI user interface DDR data width)
     xlnx_axi_dwidth_to512_converter axi_dwidth_conv_u (
         .s_axi_aclk     ( ddr_clk      ),
         .s_axi_aresetn  ( ~ddr_rst     ),
@@ -246,6 +263,11 @@ module ddr4_channel_wrapper (
 
     );
 
+    // Map DDR4 address signals
+    // Zero extend them if the address width is 32, otherwise clip them down.
+    assign ddr4_axi_awaddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_awaddr } : dwidth_conv_to_ddr4_axi_awaddr[DDR4_CHANNEL_ADDRESS_WIDTH-1:0];
+    assign ddr4_axi_araddr = (LOCAL_ADDR_WIDTH == 32) ? { 2'b00, dwidth_conv_to_ddr4_axi_araddr } : dwidth_conv_to_ddr4_axi_araddr[DDR4_CHANNEL_ADDRESS_WIDTH-1:0];
+
     xlnx_ddr4 ddr4_u (
         .c0_sys_clk_n                ( clk_300mhz_0_n_i ),
         .c0_sys_clk_p                ( clk_300mhz_0_p_i ),
@@ -302,7 +324,7 @@ module ddr4_channel_wrapper (
 
         // AXI4 interface
         .c0_ddr4_s_axi_awid          ( dwidth_conv_to_ddr4_axi_awid    ),
-        .c0_ddr4_s_axi_awaddr        ( { 2'b00, dwidth_conv_to_ddr4_axi_awaddr } ),
+        .c0_ddr4_s_axi_awaddr        ( ddr4_axi_awaddr                 ),
         .c0_ddr4_s_axi_awlen         ( dwidth_conv_to_ddr4_axi_awlen   ),
         .c0_ddr4_s_axi_awsize        ( dwidth_conv_to_ddr4_axi_awsize  ),
         .c0_ddr4_s_axi_awburst       ( dwidth_conv_to_ddr4_axi_awburst ),
@@ -322,7 +344,7 @@ module ddr4_channel_wrapper (
         .c0_ddr4_s_axi_bresp         ( dwidth_conv_to_ddr4_axi_bresp   ),
         .c0_ddr4_s_axi_bvalid        ( dwidth_conv_to_ddr4_axi_bvalid  ),
         .c0_ddr4_s_axi_arid          ( dwidth_conv_to_ddr4_axi_arid    ),
-        .c0_ddr4_s_axi_araddr        ( { 2'b00, dwidth_conv_to_ddr4_axi_araddr } ),
+        .c0_ddr4_s_axi_araddr        ( ddr4_axi_araddr                 ),
         .c0_ddr4_s_axi_arlen         ( dwidth_conv_to_ddr4_axi_arlen   ),
         .c0_ddr4_s_axi_arsize        ( dwidth_conv_to_ddr4_axi_arsize  ),
         .c0_ddr4_s_axi_arburst       ( dwidth_conv_to_ddr4_axi_arburst ),
@@ -339,7 +361,6 @@ module ddr4_channel_wrapper (
         .c0_ddr4_s_axi_rid           ( dwidth_conv_to_ddr4_axi_rid     ),
         .c0_ddr4_s_axi_rdata         ( dwidth_conv_to_ddr4_axi_rdata   )
     );
-
 
 endmodule
 

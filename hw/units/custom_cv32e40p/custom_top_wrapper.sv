@@ -15,6 +15,8 @@ module custom_top_wrapper # (
     //  Add here IP-related parameters  //
     //////////////////////////////////////
 
+    parameter LOCAL_DATA_WIDTH  = 32,   // AXI/MEM macros parameter
+    parameter LOCAL_ADDR_WIDTH  = 32,   // AXI/MEM macros parameter
     parameter COREV_PULP        = 0,    // PULP ISA Extension (incl. custom CSRs and hardware loop, excl. cv.elw)
     parameter COREV_CLUSTER     = 0,    // PULP Cluster interface (incl. cv.elw)
     parameter FPU               = 0,    // Floating Point Unit (interfaced via APU interface)
@@ -62,9 +64,9 @@ module custom_top_wrapper # (
     ////////////////////////////
 
     // MEM Master Interface Array
-    `DEFINE_MEM_MASTER_PORTS(instr),
+    `DEFINE_MEM_MASTER_PORTS(instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH),
     // MEM Slave Interface Array
-    `DEFINE_MEM_MASTER_PORTS(data)
+    `DEFINE_MEM_MASTER_PORTS(data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH)
 );
 
     // Tie-off non-driven signals

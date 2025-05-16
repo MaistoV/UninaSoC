@@ -83,19 +83,21 @@ XILINX_ILA ?= 0
 
 # Full environment variables list for Vivado
 XILINX_VIVADO_ENV ?=                                \
-    DATA_WIDTH=${DATA_WIDTH}                        \
-    ADDR_WIDTH=${ADDR_WIDTH}                        \
-    ID_WIDTH=${ID_WIDTH}                            \
+    MBUS_DATA_WIDTH=${MBUS_DATA_WIDTH}              \
+    MBUS_ADDR_WIDTH=${MBUS_ADDR_WIDTH}              \
     CORE_SELECTOR=${CORE_SELECTOR}                  \
     VIO_RESETN_DEFAULT=${VIO_RESETN_DEFAULT}        \
-    NUM_SI=${NUM_SI}                                \
-    NUM_MI=${NUM_MI}                                \
+    MBUS_NUM_SI=${MBUS_NUM_SI}                      \
+    MBUS_NUM_MI=${MBUS_NUM_MI}                      \
+    MBUS_ID_WIDTH=${MBUS_ID_WIDTH}                  \
     BRAM_DEPTHS="${BRAM_DEPTHS}"                    \
     MAIN_CLOCK_FREQ_MHZ=${MAIN_CLOCK_FREQ_MHZ}      \
     RANGE_CLOCK_DOMAINS="${RANGE_CLOCK_DOMAINS}"    \
     PBUS_NUM_MI=${PBUS_NUM_MI}                      \
+    PBUS_ID_WIDTH=${PBUS_ID_WIDTH}                  \
     HBUS_NUM_MI=${HBUS_NUM_MI}                      \
     HBUS_NUM_SI=${HBUS_NUM_SI}                      \
+    HBUS_ID_WIDTH=${HBUS_ID_WIDTH}                  \
     XILINX_ILA=${XILINX_ILA}                        \
     SYNTH_STRATEGY=${SYNTH_STRATEGY}                \
     IMPL_STRATEGY=${IMPL_STRATEGY}                  \

@@ -35,7 +35,5 @@ set_property CONTROL.TRIGGER_CONDITION OR [get_hw_ilas -of_objects [get_hw_devic
 display_hw_ila_data [upload_hw_ila_data [get_hw_ilas]]
 
 # Arm ILA
-puts "\[ILA\] Arming ILA"
-run_hw_ila [get_hw_ilas]
-
-display_hw_ila_data [upload_hw_ila_data [get_hw_ilas]]
+# puts "\[ILA\] Arming ILA"
+# run_hw_ila [get_hw_ilas]

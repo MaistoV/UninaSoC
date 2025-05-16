@@ -37,7 +37,7 @@ module custom_top_wrapper # (
     parameter LOCAL_AXI_DATA_WIDTH    = 32,
     parameter LOCAL_AXI_ADDR_WIDTH    = 32,
     parameter LOCAL_AXI_STRB_WIDTH    = 4,
-    parameter LOCAL_AXI_ID_WIDTH      = 2,
+    parameter LOCAL_AXI_ID_WIDTH      = 3, // TODO: align with config
     parameter LOCAL_AXI_REGION_WIDTH  = 4,
     parameter LOCAL_AXI_LEN_WIDTH     = 8,
     parameter LOCAL_AXI_SIZE_WIDTH    = 3,
@@ -68,8 +68,8 @@ module custom_top_wrapper # (
     //////////////////////
     //  Bus Interfaces  //
     //////////////////////
-    `DEFINE_AXI_MASTER_PORTS(dbg_master),
-    `DEFINE_AXI_SLAVE_PORTS(dbg_slave)
+    `DEFINE_AXI_MASTER_PORTS(dbg_master, LOCAL_AXI_DATA_WIDTH, LOCAL_AXI_ADDR_WIDTH, LOCAL_AXI_ID_WIDTH),
+    `DEFINE_AXI_SLAVE_PORTS(dbg_slave, LOCAL_AXI_DATA_WIDTH, LOCAL_AXI_ADDR_WIDTH, LOCAL_AXI_ID_WIDTH)
 );
 
     // Architecture:
@@ -111,8 +111,8 @@ module custom_top_wrapper # (
     axi_resp_t dbg_master_axi_resp;
 
     // Mem buses
-    `DECLARE_MEM_BUS(dbg_slave, DATA_WIDTH);
-    `DECLARE_MEM_BUS(dbg_master, DATA_WIDTH);
+    `DECLARE_MEM_BUS(dbg_slave, LOCAL_MEM_DATA_WIDTH, LOCAL_MEM_ADDR_WIDTH);
+    `DECLARE_MEM_BUS(dbg_master, LOCAL_MEM_DATA_WIDTH, LOCAL_MEM_ADDR_WIDTH);
 
     // Pack hartinfo_t struct
     dm::hartinfo_t hartinfo;
