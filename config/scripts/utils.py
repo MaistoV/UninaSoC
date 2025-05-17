@@ -12,12 +12,12 @@ import configuration
 import parse_properties_wrapper
 
 # Name of buses
-CONFIG_NAMES                = {
-    "config_main_bus.csv"       : "MBUS",
-    "config_peripheral_bus.csv" : "PBUS",
-    "config_system.csv"         : "SYS"
+CONFIG_NAMES = {
+    "config_main_bus.csv"            : "MBUS",
+    "config_peripheral_bus.csv"      : "PBUS",
+    "config_highperformance_bus.csv" : "HBUS",
+    "config_system.csv"              : "SYS"
 }
-
 
 ###############
 # Read config #
@@ -29,14 +29,16 @@ def read_config(config_file_names : list) -> list:
         # Create a configuration object for each bus
         config = configuration.Configuration()
 
+        # Naming the actual bus
+        end_name = name.split("/")[-1]
+        # Parse name first
+        config.CONFIG_NAME = CONFIG_NAMES[end_name]
+
         # Reading the CSV
         for index, row in pd.read_csv(name, sep=",").iterrows():
             # Update the config
 	        config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
 
-        # Naming the actual bus
-        end_name = name.split("/")[-1]
-        config.CONFIG_NAME = CONFIG_NAMES[end_name]
         # Append the config to the list
         configs.append(config)
 

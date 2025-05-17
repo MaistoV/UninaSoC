@@ -58,8 +58,8 @@ module peripheral_bus #(
     output logic                        uart_tx_o,
 
     // GPIOs
-    input  logic [NUM_GPIO_IN  -1 : 0]  gpio_in_i,
-    output logic [NUM_GPIO_OUT -1 : 0]  gpio_out_o,
+    input  logic [GPIO_IN_WIDTH  -1 : 0]  gpio_in_i,
+    output logic [GPIO_OUT_WIDTH -1 : 0]  gpio_out_o,
 
     // Interrupts
     output logic [NUM_IRQ - 1 : 0]      int_o

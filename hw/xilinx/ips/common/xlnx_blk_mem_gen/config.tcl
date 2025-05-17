@@ -29,11 +29,11 @@ set_property -dict [list CONFIG.Interface_Type {AXI4} \
                 ] [get_ips $::env(IP_NAME)]
 
 # Use envvars out of list
-set_property CONFIG.Write_Width_A $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.Read_Width_A  $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.Write_Width_B $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.Read_Width_B  $::env(DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.AXI_ID_Width  $::env(ID_WIDTH)       [get_ips $::env(IP_NAME)]
+set_property CONFIG.Write_Width_A $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_A  $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Write_Width_B $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_B  $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.AXI_ID_Width  $::env(MBUS_ID_WIDTH)       [get_ips $::env(IP_NAME)]
 
 # Get the BRAM depth
 set bram_depths [split $::env(BRAM_DEPTHS) " "]

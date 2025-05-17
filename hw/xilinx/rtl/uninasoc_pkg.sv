@@ -8,30 +8,33 @@ package uninasoc_pkg;
     // SoC-level defines //
     ///////////////////////
 
-    localparam int unsigned NUM_GPIO_IN  = 16;
-    localparam int unsigned NUM_GPIO_OUT = 16;
+    // GPIO widths
+    localparam int unsigned GPIO_IN_WIDTH  = 16;
+    localparam int unsigned GPIO_OUT_WIDTH = 16;
 
-    // MBUS widths depending on XLEN
-    localparam MBUS_DATA_WIDTH = `MBUS_DATA_WIDTH;
-    localparam MBUS_ADDR_WIDTH = `MBUS_ADDR_WIDTH;
-    localparam MBUS_ID_WIDTH = `MBUS_ID_WIDTH;
+    // MBUS widths
+    localparam MBUS_DATA_WIDTH = `MBUS_DATA_WIDTH; // From SoC config
+    localparam MBUS_ADDR_WIDTH = `MBUS_ADDR_WIDTH; // From SoC config
+    localparam MBUS_ID_WIDTH   = `MBUS_ID_WIDTH;   // From MBUS config
 
-    // PBUS is fixed to 32-bits
-    localparam PBUS_DATA_WIDTH = 32;
-    localparam PBUS_ADDR_WIDTH = 32;
-    localparam PBUS_ID_WIDTH = MBUS_ID_WIDTH;
+    // PBUS widths
+    localparam PBUS_DATA_WIDTH = 32; // Fixed 32-bits
+    localparam PBUS_ADDR_WIDTH = 32; // Fixed 32-bits
+    localparam PBUS_ID_WIDTH = `PBUS_ID_WIDTH; // From PBUS config
 
-    // HBUS
-    // To be defined here in the future
+    // HBUS widths
+    localparam int unsigned HBUS_DATA_WIDTH = 512; // Same as DRAM channels
+    localparam int unsigned HBUS_ADDR_WIDTH = `MBUS_ADDR_WIDTH; // Same as MBUS
+    localparam int unsigned HBUS_ID_WIDTH   = `HBUS_ID_WIDTH; // From HBUS config
 
     ///////////////////////
     // AXI main crossbar //
     ///////////////////////
 
     // Main Crosbar masters
-    localparam int unsigned NUM_SI = `NUM_SI;
+    localparam int unsigned MBUS_NUM_SI = `MBUS_NUM_SI;
     // Main Crosbar slaves
-    localparam int unsigned NUM_MI = `NUM_MI;
+    localparam int unsigned MBUS_NUM_MI = `MBUS_NUM_MI;
 
     /////////////////////////////
     // AXI Lite peripheral bus //
@@ -40,6 +43,13 @@ package uninasoc_pkg;
     // Always assume 1 master
     // Peripheral bus slaves
     localparam int unsigned PBUS_NUM_MI = `PBUS_NUM_MI;
+
+    //////////////////////////
+    // High-performance bus //
+    //////////////////////////
+    localparam int unsigned HBUS_NUM_SI = `HBUS_NUM_SI;
+    localparam int unsigned HBUS_NUM_MI = `HBUS_NUM_MI;
+
 
     //////////////////////////
     // Supported Processors //

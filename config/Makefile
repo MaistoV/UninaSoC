@@ -3,15 +3,17 @@ PYTHON ?= python3.10 # Requires >= 3.10
 
 # csv array for check config and create linker script
 CONFIG_BUS_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
-			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
+			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv \
+			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_highperformance_bus.csv
 
 # csv for system-level configuration
 CONFIG_SYSTEM_CSV ?= ${CONFIG_ROOT}/configs/common/config_system.csv
 
-all: config_main_bus config_peripheral_bus config_ld config_sw config_xilinx
+all: config_main_bus config_peripheral_bus config_highperformance_bus config_ld config_sw config_xilinx
 
 config_main_bus:
 config_peripheral_bus:
+config_highperformance_bus:
 config_%_bus: CONFIG_BUS_CSV = ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_$*_bus.csv
 config_%_bus: OUTPUT_TCL_FILE = ${XILINX_ROOT}/ips/common/xlnx_$*_crossbar/config.tcl
 config_%_bus: config_check
