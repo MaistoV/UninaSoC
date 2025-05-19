@@ -495,781 +495,6 @@ module uninasoc (
         .dbg_slave_axi_rready      ( MBUS_to_DM_mem_axi_rready   )
     );
 
-    // Architecture: HLS IP integration (CDC)
-    //    _________________________________________
-    //   |                                         |
-    //   |  xlnx_axi_clock_converter_hls_control_u |<--- MBUS_to_HLS_CONTROL
-    //   |_________________________________________|
-    //                     | HLS_CONTROL
-    //    _________________v_______________________
-    //   |                                         |
-    //   |   xlnx_axi4_to_axilite_converter_hls_u  |
-    //   |_________________________________________|
-    //                     | HLS_CONTROL_axilite
-    //                  ___v____
-    //                 |        |
-    //                 | HLS IP |
-    //                 |________|
-    //                     | HLS_gmem0
-    //    _________________v_______________________
-    //   |                                         |
-    //   |  xlnx_axi_clock_converter_hls_gmem0_u   |--- HLS_gmem0_to_MBUS --->
-    //   |_________________________________________|
-
-    // This is meant top be sed
-    localparam string CUSTOM_HLS_VERSION = "conv_opt6";
-
-    // Interfaces in HLS_CONTROL clock domain
-    `DECLARE_AXI_BUS(HLS_CONTROL, AXI_DATA_WIDTH);
-    `DECLARE_AXI_BUS(HLS_gmem0, AXI_DATA_WIDTH); // not used for "conv_opt6"
-    `DECLARE_AXI_BUS(HLS_gmem0_d512, HBUS_AXI_DATAWIDTH)// used for "conv_opt6"
-    // HLS_DOTPROD_CONTROL AXI-lite
-    `DECLARE_AXILITE_BUS(HLS_CONTROL);
-
-    // Add clock bridges (if necessary)
-    `ifdef HLS_CONTROL_HAS_CLOCK_DOMAIN
-        // HLS_CONTROL <- MBUS_to_HLS_CONTROL
-        xlnx_axi_clock_converter xlnx_axi_clock_converter_hls_control_u (
-            // Slave from MBUS
-            .s_axi_aclk     ( main_clk  ),
-            .s_axi_aresetn  ( main_rstn ),
-            .s_axi_awid     ( MBUS_to_HLS_CONTROL_axi_awid     ),
-            .s_axi_awaddr   ( MBUS_to_HLS_CONTROL_axi_awaddr   ),
-            .s_axi_awlen    ( MBUS_to_HLS_CONTROL_axi_awlen    ),
-            .s_axi_awsize   ( MBUS_to_HLS_CONTROL_axi_awsize   ),
-            .s_axi_awburst  ( MBUS_to_HLS_CONTROL_axi_awburst  ),
-            .s_axi_awlock   ( MBUS_to_HLS_CONTROL_axi_awlock   ),
-            .s_axi_awcache  ( MBUS_to_HLS_CONTROL_axi_awcache  ),
-            .s_axi_awprot   ( MBUS_to_HLS_CONTROL_axi_awprot   ),
-            .s_axi_awqos    ( MBUS_to_HLS_CONTROL_axi_awqos    ),
-            .s_axi_awvalid  ( MBUS_to_HLS_CONTROL_axi_awvalid  ),
-            .s_axi_awready  ( MBUS_to_HLS_CONTROL_axi_awready  ),
-            .s_axi_awregion ( MBUS_to_HLS_CONTROL_axi_awregion ),
-            .s_axi_wdata    ( MBUS_to_HLS_CONTROL_axi_wdata    ),
-            .s_axi_wstrb    ( MBUS_to_HLS_CONTROL_axi_wstrb    ),
-            .s_axi_wlast    ( MBUS_to_HLS_CONTROL_axi_wlast    ),
-            .s_axi_wvalid   ( MBUS_to_HLS_CONTROL_axi_wvalid   ),
-            .s_axi_wready   ( MBUS_to_HLS_CONTROL_axi_wready   ),
-            .s_axi_bid      ( MBUS_to_HLS_CONTROL_axi_bid      ),
-            .s_axi_bresp    ( MBUS_to_HLS_CONTROL_axi_bresp    ),
-            .s_axi_bvalid   ( MBUS_to_HLS_CONTROL_axi_bvalid   ),
-            .s_axi_bready   ( MBUS_to_HLS_CONTROL_axi_bready   ),
-            .s_axi_arid     ( MBUS_to_HLS_CONTROL_axi_arid     ),
-            .s_axi_araddr   ( MBUS_to_HLS_CONTROL_axi_araddr   ),
-            .s_axi_arlen    ( MBUS_to_HLS_CONTROL_axi_arlen    ),
-            .s_axi_arsize   ( MBUS_to_HLS_CONTROL_axi_arsize   ),
-            .s_axi_arburst  ( MBUS_to_HLS_CONTROL_axi_arburst  ),
-            .s_axi_arlock   ( MBUS_to_HLS_CONTROL_axi_arlock   ),
-            .s_axi_arregion ( MBUS_to_HLS_CONTROL_axi_arregion ),
-            .s_axi_arcache  ( MBUS_to_HLS_CONTROL_axi_arcache  ),
-            .s_axi_arprot   ( MBUS_to_HLS_CONTROL_axi_arprot   ),
-            .s_axi_arqos    ( MBUS_to_HLS_CONTROL_axi_arqos    ),
-            .s_axi_arvalid  ( MBUS_to_HLS_CONTROL_axi_arvalid  ),
-            .s_axi_arready  ( MBUS_to_HLS_CONTROL_axi_arready  ),
-            .s_axi_rid      ( MBUS_to_HLS_CONTROL_axi_rid      ),
-            .s_axi_rdata    ( MBUS_to_HLS_CONTROL_axi_rdata    ),
-            .s_axi_rresp    ( MBUS_to_HLS_CONTROL_axi_rresp    ),
-            .s_axi_rlast    ( MBUS_to_HLS_CONTROL_axi_rlast    ),
-            .s_axi_rvalid   ( MBUS_to_HLS_CONTROL_axi_rvalid   ),
-            .s_axi_rready   ( MBUS_to_HLS_CONTROL_axi_rready   ),
-
-            // Master to protocol converter
-            .m_axi_aclk     ( HLS_CONTROL_clk  ),
-            .m_axi_aresetn  ( HLS_CONTROL_rstn ),
-            .m_axi_awid     ( HLS_CONTROL_axi_awid      ),
-            .m_axi_awaddr   ( HLS_CONTROL_axi_awaddr    ),
-            .m_axi_awlen    ( HLS_CONTROL_axi_awlen     ),
-            .m_axi_awsize   ( HLS_CONTROL_axi_awsize    ),
-            .m_axi_awburst  ( HLS_CONTROL_axi_awburst   ),
-            .m_axi_awlock   ( HLS_CONTROL_axi_awlock    ),
-            .m_axi_awcache  ( HLS_CONTROL_axi_awcache   ),
-            .m_axi_awprot   ( HLS_CONTROL_axi_awprot    ),
-            .m_axi_awregion ( HLS_CONTROL_axi_awregion  ),
-            .m_axi_awqos    ( HLS_CONTROL_axi_awqos     ),
-            .m_axi_awvalid  ( HLS_CONTROL_axi_awvalid   ),
-            .m_axi_awready  ( HLS_CONTROL_axi_awready   ),
-            .m_axi_wdata    ( HLS_CONTROL_axi_wdata     ),
-            .m_axi_wstrb    ( HLS_CONTROL_axi_wstrb     ),
-            .m_axi_wlast    ( HLS_CONTROL_axi_wlast     ),
-            .m_axi_wvalid   ( HLS_CONTROL_axi_wvalid    ),
-            .m_axi_wready   ( HLS_CONTROL_axi_wready    ),
-            .m_axi_bid      ( HLS_CONTROL_axi_bid       ),
-            .m_axi_bresp    ( HLS_CONTROL_axi_bresp     ),
-            .m_axi_bvalid   ( HLS_CONTROL_axi_bvalid    ),
-            .m_axi_bready   ( HLS_CONTROL_axi_bready    ),
-            .m_axi_arid     ( HLS_CONTROL_axi_arid      ),
-            .m_axi_araddr   ( HLS_CONTROL_axi_araddr    ),
-            .m_axi_arlen    ( HLS_CONTROL_axi_arlen     ),
-            .m_axi_arsize   ( HLS_CONTROL_axi_arsize    ),
-            .m_axi_arburst  ( HLS_CONTROL_axi_arburst   ),
-            .m_axi_arlock   ( HLS_CONTROL_axi_arlock    ),
-            .m_axi_arcache  ( HLS_CONTROL_axi_arcache   ),
-            .m_axi_arprot   ( HLS_CONTROL_axi_arprot    ),
-            .m_axi_arregion ( HLS_CONTROL_axi_arregion  ),
-            .m_axi_arqos    ( HLS_CONTROL_axi_arqos     ),
-            .m_axi_arvalid  ( HLS_CONTROL_axi_arvalid   ),
-            .m_axi_arready  ( HLS_CONTROL_axi_arready   ),
-            .m_axi_rid      ( HLS_CONTROL_axi_rid       ),
-            .m_axi_rdata    ( HLS_CONTROL_axi_rdata     ),
-            .m_axi_rresp    ( HLS_CONTROL_axi_rresp     ),
-            .m_axi_rlast    ( HLS_CONTROL_axi_rlast     ),
-            .m_axi_rvalid   ( HLS_CONTROL_axi_rvalid    ),
-            .m_axi_rready   ( HLS_CONTROL_axi_rready    )
-        );
-
-        // conv_opt6 does relies on HBUS clock
-        if ( CUSTOM_HLS_VERSION != "conv_opt6" ) begin : no_gen_hls_conv_opt6
-            // HLS_gmem0_to_MBUS <- HLS_gmem0
-            xlnx_axi_clock_converter xlnx_axi_clock_converter_hls_gmem0_u (
-                // Slave from MBUS
-                .s_axi_aclk     ( HLS_CONTROL_clk  ),
-                .s_axi_aresetn  ( HLS_CONTROL_rstn ),
-                .s_axi_awid     ( HLS_gmem0_axi_awid     ),
-                .s_axi_awaddr   ( HLS_gmem0_axi_awaddr   ),
-                .s_axi_awlen    ( HLS_gmem0_axi_awlen    ),
-                .s_axi_awsize   ( HLS_gmem0_axi_awsize   ),
-                .s_axi_awburst  ( HLS_gmem0_axi_awburst  ),
-                .s_axi_awlock   ( HLS_gmem0_axi_awlock   ),
-                .s_axi_awcache  ( HLS_gmem0_axi_awcache  ),
-                .s_axi_awprot   ( HLS_gmem0_axi_awprot   ),
-                .s_axi_awqos    ( HLS_gmem0_axi_awqos    ),
-                .s_axi_awvalid  ( HLS_gmem0_axi_awvalid  ),
-                .s_axi_awready  ( HLS_gmem0_axi_awready  ),
-                .s_axi_awregion ( HLS_gmem0_axi_awregion ),
-                .s_axi_wdata    ( HLS_gmem0_axi_wdata    ),
-                .s_axi_wstrb    ( HLS_gmem0_axi_wstrb    ),
-                .s_axi_wlast    ( HLS_gmem0_axi_wlast    ),
-                .s_axi_wvalid   ( HLS_gmem0_axi_wvalid   ),
-                .s_axi_wready   ( HLS_gmem0_axi_wready   ),
-                .s_axi_bid      ( HLS_gmem0_axi_bid      ),
-                .s_axi_bresp    ( HLS_gmem0_axi_bresp    ),
-                .s_axi_bvalid   ( HLS_gmem0_axi_bvalid   ),
-                .s_axi_bready   ( HLS_gmem0_axi_bready   ),
-                .s_axi_arid     ( HLS_gmem0_axi_arid     ),
-                .s_axi_araddr   ( HLS_gmem0_axi_araddr   ),
-                .s_axi_arlen    ( HLS_gmem0_axi_arlen    ),
-                .s_axi_arsize   ( HLS_gmem0_axi_arsize   ),
-                .s_axi_arburst  ( HLS_gmem0_axi_arburst  ),
-                .s_axi_arlock   ( HLS_gmem0_axi_arlock   ),
-                .s_axi_arregion ( HLS_gmem0_axi_arregion ),
-                .s_axi_arcache  ( HLS_gmem0_axi_arcache  ),
-                .s_axi_arprot   ( HLS_gmem0_axi_arprot   ),
-                .s_axi_arqos    ( HLS_gmem0_axi_arqos    ),
-                .s_axi_arvalid  ( HLS_gmem0_axi_arvalid  ),
-                .s_axi_arready  ( HLS_gmem0_axi_arready  ),
-                .s_axi_rid      ( HLS_gmem0_axi_rid      ),
-                .s_axi_rdata    ( HLS_gmem0_axi_rdata    ),
-                .s_axi_rresp    ( HLS_gmem0_axi_rresp    ),
-                .s_axi_rlast    ( HLS_gmem0_axi_rlast    ),
-                .s_axi_rvalid   ( HLS_gmem0_axi_rvalid   ),
-                .s_axi_rready   ( HLS_gmem0_axi_rready   ),
-
-                // Master to protocol converter
-                .m_axi_aclk     ( main_clk  ),
-                .m_axi_aresetn  ( main_rstn ),
-                .m_axi_awid     ( HLS_gmem0_to_MBUS_axi_awid      ),
-                .m_axi_awaddr   ( HLS_gmem0_to_MBUS_axi_awaddr    ),
-                .m_axi_awlen    ( HLS_gmem0_to_MBUS_axi_awlen     ),
-                .m_axi_awsize   ( HLS_gmem0_to_MBUS_axi_awsize    ),
-                .m_axi_awburst  ( HLS_gmem0_to_MBUS_axi_awburst   ),
-                .m_axi_awlock   ( HLS_gmem0_to_MBUS_axi_awlock    ),
-                .m_axi_awcache  ( HLS_gmem0_to_MBUS_axi_awcache   ),
-                .m_axi_awprot   ( HLS_gmem0_to_MBUS_axi_awprot    ),
-                .m_axi_awregion ( HLS_gmem0_to_MBUS_axi_awregion  ),
-                .m_axi_awqos    ( HLS_gmem0_to_MBUS_axi_awqos     ),
-                .m_axi_awvalid  ( HLS_gmem0_to_MBUS_axi_awvalid   ),
-                .m_axi_awready  ( HLS_gmem0_to_MBUS_axi_awready   ),
-                .m_axi_wdata    ( HLS_gmem0_to_MBUS_axi_wdata     ),
-                .m_axi_wstrb    ( HLS_gmem0_to_MBUS_axi_wstrb     ),
-                .m_axi_wlast    ( HLS_gmem0_to_MBUS_axi_wlast     ),
-                .m_axi_wvalid   ( HLS_gmem0_to_MBUS_axi_wvalid    ),
-                .m_axi_wready   ( HLS_gmem0_to_MBUS_axi_wready    ),
-                .m_axi_bid      ( HLS_gmem0_to_MBUS_axi_bid       ),
-                .m_axi_bresp    ( HLS_gmem0_to_MBUS_axi_bresp     ),
-                .m_axi_bvalid   ( HLS_gmem0_to_MBUS_axi_bvalid    ),
-                .m_axi_bready   ( HLS_gmem0_to_MBUS_axi_bready    ),
-                .m_axi_arid     ( HLS_gmem0_to_MBUS_axi_arid      ),
-                .m_axi_araddr   ( HLS_gmem0_to_MBUS_axi_araddr    ),
-                .m_axi_arlen    ( HLS_gmem0_to_MBUS_axi_arlen     ),
-                .m_axi_arsize   ( HLS_gmem0_to_MBUS_axi_arsize    ),
-                .m_axi_arburst  ( HLS_gmem0_to_MBUS_axi_arburst   ),
-                .m_axi_arlock   ( HLS_gmem0_to_MBUS_axi_arlock    ),
-                .m_axi_arcache  ( HLS_gmem0_to_MBUS_axi_arcache   ),
-                .m_axi_arprot   ( HLS_gmem0_to_MBUS_axi_arprot    ),
-                .m_axi_arregion ( HLS_gmem0_to_MBUS_axi_arregion  ),
-                .m_axi_arqos    ( HLS_gmem0_to_MBUS_axi_arqos     ),
-                .m_axi_arvalid  ( HLS_gmem0_to_MBUS_axi_arvalid   ),
-                .m_axi_arready  ( HLS_gmem0_to_MBUS_axi_arready   ),
-                .m_axi_rid      ( HLS_gmem0_to_MBUS_axi_rid       ),
-                .m_axi_rdata    ( HLS_gmem0_to_MBUS_axi_rdata     ),
-                .m_axi_rresp    ( HLS_gmem0_to_MBUS_axi_rresp     ),
-                .m_axi_rlast    ( HLS_gmem0_to_MBUS_axi_rlast     ),
-                .m_axi_rvalid   ( HLS_gmem0_to_MBUS_axi_rvalid    ),
-                .m_axi_rready   ( HLS_gmem0_to_MBUS_axi_rready    )
-            );
-        end : no_gen_hls_conv_opt6
-    `else // notdefined(HLS_CONTROL_HAS_CLOCK_DOMAIN)
-        // Pass through interfaces
-        // HLS_CONTROL <- MBUS_to_HLS_CONTROL
-        `ASSIGN_AXI_BUS(HLS_CONTROL, MBUS_to_HLS_CONTROL)
-        // HLS_gmem0_to_MBUS <- HLS_gmem0
-        `ASSIGN_AXI_BUS(HLS_gmem0_to_MBUS, HLS_gmem0)
-    `endif
-
-    // AXI converter for HLS_DOTPROD_CONTROL
-    xlnx_axi4_to_axilite_converter xlnx_axi4_to_axilite_converter_hls_u (
-        // Clock and reset
-        .aclk               ( HLS_CONTROL_clk           ), // input wire s_aclk
-        .aresetn            ( HLS_CONTROL_rstn          ), // input wire s_aresetn
-        // Slave interface
-        .s_axi_awid         ( HLS_CONTROL_axi_awid      ), // input wire [1 : 0] s_axi_awid
-        .s_axi_awaddr       ( HLS_CONTROL_axi_awaddr    ), // input wire [31 : 0] s_axi_awaddr
-        .s_axi_awlen        ( HLS_CONTROL_axi_awlen     ), // input wire [7 : 0] s_axi_awlen
-        .s_axi_awsize       ( HLS_CONTROL_axi_awsize    ), // input wire [2 : 0] s_axi_awsize
-        .s_axi_awburst      ( HLS_CONTROL_axi_awburst   ), // input wire [1 : 0] s_axi_awburst
-        .s_axi_awlock       ( HLS_CONTROL_axi_awlock    ), // input wire [0 : 0] s_axi_awlock
-        .s_axi_awcache      ( HLS_CONTROL_axi_awcache   ), // input wire [3 : 0] s_axi_awcache
-        .s_axi_awprot       ( HLS_CONTROL_axi_awprot    ), // input wire [2 : 0] s_axi_awprot
-        .s_axi_awregion     ( HLS_CONTROL_axi_awregion  ), // input wire [3 : 0] s_axi_awregion
-        .s_axi_awqos        ( HLS_CONTROL_axi_awqos     ), // input wire [3 : 0] s_axi_awqos
-        .s_axi_awvalid      ( HLS_CONTROL_axi_awvalid   ), // input wire s_axi_awvalid
-        .s_axi_awready      ( HLS_CONTROL_axi_awready   ), // output wire s_axi_awready
-        .s_axi_wdata        ( HLS_CONTROL_axi_wdata     ), // input wire [31 : 0] s_axi_wdata
-        .s_axi_wstrb        ( HLS_CONTROL_axi_wstrb     ), // input wire [3 : 0] s_axi_wstrb
-        .s_axi_wlast        ( HLS_CONTROL_axi_wlast     ), // input wire s_axi_wlast
-        .s_axi_wvalid       ( HLS_CONTROL_axi_wvalid    ), // input wire s_axi_wvalid
-        .s_axi_wready       ( HLS_CONTROL_axi_wready    ), // output wire s_axi_wready
-        .s_axi_bid          ( HLS_CONTROL_axi_bid       ), // output wire [1 : 0] s_axi_bid
-        .s_axi_bresp        ( HLS_CONTROL_axi_bresp     ), // output wire [1 : 0] s_axi_bresp
-        .s_axi_bvalid       ( HLS_CONTROL_axi_bvalid    ), // output wire s_axi_bvalid
-        .s_axi_bready       ( HLS_CONTROL_axi_bready    ), // input wire s_axi_bready
-        .s_axi_arid         ( HLS_CONTROL_axi_arid      ), // input wire [1 : 0] s_axi_arid
-        .s_axi_araddr       ( HLS_CONTROL_axi_araddr    ), // input wire [31 : 0] s_axi_araddr
-        .s_axi_arlen        ( HLS_CONTROL_axi_arlen     ), // input wire [7 : 0] s_axi_arlen
-        .s_axi_arsize       ( HLS_CONTROL_axi_arsize    ), // input wire [2 : 0] s_axi_arsize
-        .s_axi_arburst      ( HLS_CONTROL_axi_arburst   ), // input wire [1 : 0] s_axi_arburst
-        .s_axi_arlock       ( HLS_CONTROL_axi_arlock    ), // input wire [0 : 0] s_axi_arlock
-        .s_axi_arcache      ( HLS_CONTROL_axi_arcache   ), // input wire [3 : 0] s_axi_arcache
-        .s_axi_arprot       ( HLS_CONTROL_axi_arprot    ), // input wire [2 : 0] s_axi_arprot
-        .s_axi_arregion     ( HLS_CONTROL_axi_arregion  ), // input wire [3 : 0] s_axi_arregion
-        .s_axi_arqos        ( HLS_CONTROL_axi_arqos     ), // input wire [3 : 0] s_axi_arqos
-        .s_axi_arvalid      ( HLS_CONTROL_axi_arvalid   ), // input wire s_axi_arvalid
-        .s_axi_arready      ( HLS_CONTROL_axi_arready   ), // output wire s_axi_arready
-        .s_axi_rid          ( HLS_CONTROL_axi_rid       ), // output wire [1 : 0] s_axi_rid
-        .s_axi_rdata        ( HLS_CONTROL_axi_rdata     ), // output wire [31 : 0] s_axi_rdata
-        .s_axi_rresp        ( HLS_CONTROL_axi_rresp     ), // output wire [1 : 0] s_axi_rresp
-        .s_axi_rlast        ( HLS_CONTROL_axi_rlast     ), // output wire s_axi_rlast
-        .s_axi_rvalid       ( HLS_CONTROL_axi_rvalid    ), // output wire s_axi_rvalid
-        .s_axi_rready       ( HLS_CONTROL_axi_rready    ), // input wire s_axi_rready
-        // Master interface
-        .m_axi_awaddr       ( HLS_CONTROL_axilite_awaddr        ), // output wire [31 : 0] m_axi_awaddr
-        .m_axi_awprot       ( HLS_CONTROL_axilite_awprot        ), // output wire [2 : 0] m_axi_awprot
-        .m_axi_awvalid      ( HLS_CONTROL_axilite_awvalid       ), // output wire m_axi_awvalid
-        .m_axi_awready      ( HLS_CONTROL_axilite_awready       ), // input wire m_axi_awready
-        .m_axi_wdata        ( HLS_CONTROL_axilite_wdata         ), // output wire [31 : 0] m_axi_wdata
-        .m_axi_wstrb        ( HLS_CONTROL_axilite_wstrb         ), // output wire [3 : 0] m_axi_wstrb
-        .m_axi_wvalid       ( HLS_CONTROL_axilite_wvalid        ), // output wire m_axi_wvalid
-        .m_axi_wready       ( HLS_CONTROL_axilite_wready        ), // input wire m_axi_wready
-        .m_axi_bresp        ( HLS_CONTROL_axilite_bresp         ), // input wire [1 : 0] m_axi_bresp
-        .m_axi_bvalid       ( HLS_CONTROL_axilite_bvalid        ), // input wire m_axi_bvalid
-        .m_axi_bready       ( HLS_CONTROL_axilite_bready        ), // output wire m_axi_bready
-        .m_axi_araddr       ( HLS_CONTROL_axilite_araddr        ), // output wire [31 : 0] m_axi_araddr
-        .m_axi_arprot       ( HLS_CONTROL_axilite_arprot        ), // output wire [2 : 0] m_axi_arprot
-        .m_axi_arvalid      ( HLS_CONTROL_axilite_arvalid       ), // output wire m_axi_arvalid
-        .m_axi_arready      ( HLS_CONTROL_axilite_arready       ), // input wire m_axi_arready
-        .m_axi_rdata        ( HLS_CONTROL_axilite_rdata         ), // input wire [31 : 0] m_axi_rdata
-        .m_axi_rresp        ( HLS_CONTROL_axilite_rresp         ), // input wire [1 : 0] m_axi_rresp
-        .m_axi_rvalid       ( HLS_CONTROL_axilite_rvalid        ), // input wire m_axi_rvalid
-        .m_axi_rready       ( HLS_CONTROL_axilite_rready        )  // output wire m_axi_rready
-    );
-
-    // DEBUG
-    (* mark_debug = 1 *) logic hls_interrupt_o;
-    // TODO: sychronize hls_interrupt_o to main clock domain
-    // logic hls_interrupt_sync_main;
-
-    if ( CUSTOM_HLS_VERSION == "conv_naive" ) begin : gen_hls_conv_naive
-        // HLS core instance
-        custom_hls_conv_naive custom_hls_conv_naive_u (
-            .clk_i                      ( HLS_CONTROL_clk              ), // input wire clk_i
-            .rst_ni                     ( HLS_CONTROL_rstn             ), // input wire rst_ni
-            .interrupt_o                ( hls_interrupt_o              ), // output wire interrupt_o
-            .gmem0_axi_awid             ( HLS_gmem0_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
-            .gmem0_axi_awaddr           ( HLS_gmem0_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
-            .gmem0_axi_awlen            ( HLS_gmem0_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
-            .gmem0_axi_awsize           ( HLS_gmem0_axi_awsize         ), // output wire [2 : 0] gmem0_axi_awsize
-            .gmem0_axi_awburst          ( HLS_gmem0_axi_awburst        ), // output wire [1 : 0] gmem0_axi_awburst
-            .gmem0_axi_awlock           ( HLS_gmem0_axi_awlock         ), // output wire gmem0_axi_awlock
-            .gmem0_axi_awcache          ( HLS_gmem0_axi_awcache        ), // output wire [3 : 0] gmem0_axi_awcache
-            .gmem0_axi_awprot           ( HLS_gmem0_axi_awprot         ), // output wire [2 : 0] gmem0_axi_awprot
-            .gmem0_axi_awqos            ( HLS_gmem0_axi_awqos          ), // output wire [3 : 0] gmem0_axi_awqos
-            .gmem0_axi_awvalid          ( HLS_gmem0_axi_awvalid        ), // output wire gmem0_axi_awvalid
-            .gmem0_axi_awready          ( HLS_gmem0_axi_awready        ), // input wire gmem0_axi_awready
-            .gmem0_axi_awregion         ( HLS_gmem0_axi_awregion       ), // output wire [3 : 0] gmem0_axi_awregion
-            .gmem0_axi_wdata            ( HLS_gmem0_axi_wdata          ), // output wire [31 : 0] gmem0_axi_wdata
-            .gmem0_axi_wstrb            ( HLS_gmem0_axi_wstrb          ), // output wire [3 : 0] gmem0_axi_wstrb
-            .gmem0_axi_wlast            ( HLS_gmem0_axi_wlast          ), // output wire gmem0_axi_wlast
-            .gmem0_axi_wvalid           ( HLS_gmem0_axi_wvalid         ), // output wire gmem0_axi_wvalid
-            .gmem0_axi_wready           ( HLS_gmem0_axi_wready         ), // input wire gmem0_axi_wready
-            .gmem0_axi_bid              ( HLS_gmem0_axi_bid            ), // input wire [1 : 0] gmem0_axi_bid
-            .gmem0_axi_bresp            ( HLS_gmem0_axi_bresp          ), // input wire [1 : 0] gmem0_axi_bresp
-            .gmem0_axi_bvalid           ( HLS_gmem0_axi_bvalid         ), // input wire gmem0_axi_bvalid
-            .gmem0_axi_bready           ( HLS_gmem0_axi_bready         ), // output wire gmem0_axi_bready
-            .gmem0_axi_araddr           ( HLS_gmem0_axi_araddr         ), // output wire [31 : 0] gmem0_axi_araddr
-            .gmem0_axi_arlen            ( HLS_gmem0_axi_arlen          ), // output wire [7 : 0] gmem0_axi_arlen
-            .gmem0_axi_arsize           ( HLS_gmem0_axi_arsize         ), // output wire [2 : 0] gmem0_axi_arsize
-            .gmem0_axi_arburst          ( HLS_gmem0_axi_arburst        ), // output wire [1 : 0] gmem0_axi_arburst
-            .gmem0_axi_arlock           ( HLS_gmem0_axi_arlock         ), // output wire gmem0_axi_arlock
-            .gmem0_axi_arcache          ( HLS_gmem0_axi_arcache        ), // output wire [3 : 0] gmem0_axi_arcache
-            .gmem0_axi_arprot           ( HLS_gmem0_axi_arprot         ), // output wire [2 : 0] gmem0_axi_arprot
-            .gmem0_axi_arqos            ( HLS_gmem0_axi_arqos          ), // output wire [3 : 0] gmem0_axi_arqos
-            .gmem0_axi_arvalid          ( HLS_gmem0_axi_arvalid        ), // output wire gmem0_axi_arvalid
-            .gmem0_axi_arready          ( HLS_gmem0_axi_arready        ), // input wire gmem0_axi_arready
-            .gmem0_axi_arid             ( HLS_gmem0_axi_arid           ), // output wire [1 : 0] gmem0_axi_arid
-            .gmem0_axi_arregion         ( HLS_gmem0_axi_arregion       ), // output wire [3 : 0] gmem0_axi_arregion
-            .gmem0_axi_rid              ( HLS_gmem0_axi_rid            ), // input wire [1 : 0] gmem0_axi_rid
-            .gmem0_axi_rdata            ( HLS_gmem0_axi_rdata          ), // input wire [31 : 0] gmem0_axi_rdata
-            .gmem0_axi_rresp            ( HLS_gmem0_axi_rresp          ), // input wire [1 : 0] gmem0_axi_rresp
-            .gmem0_axi_rlast            ( HLS_gmem0_axi_rlast          ), // input wire gmem0_axi_rlast
-            .gmem0_axi_rvalid           ( HLS_gmem0_axi_rvalid         ), // input wire gmem0_axi_rvalid
-            .gmem0_axi_rready           ( HLS_gmem0_axi_rready         ), // output wire gmem0_axi_rready
-            .control_axilite_awaddr     ( HLS_CONTROL_axilite_awaddr   ), // input wire [31 : 0] control_axilite_awaddr
-            .control_axilite_awprot     ( HLS_CONTROL_axilite_awprot   ), // input wire [2 : 0] control_axilite_awprot
-            .control_axilite_awvalid    ( HLS_CONTROL_axilite_awvalid  ), // input wire control_axilite_awvalid
-            .control_axilite_awready    ( HLS_CONTROL_axilite_awready  ), // output wire control_axilite_awready
-            .control_axilite_wdata      ( HLS_CONTROL_axilite_wdata    ), // input wire [31 : 0] control_axilite_wdata
-            .control_axilite_wstrb      ( HLS_CONTROL_axilite_wstrb    ), // input wire [3 : 0] control_axilite_wstrb
-            .control_axilite_wvalid     ( HLS_CONTROL_axilite_wvalid   ), // input wire control_axilite_wvalid
-            .control_axilite_wready     ( HLS_CONTROL_axilite_wready   ), // output wire control_axilite_wready
-            .control_axilite_bresp      ( HLS_CONTROL_axilite_bresp    ), // output wire [1 : 0] control_axilite_bresp
-            .control_axilite_bvalid     ( HLS_CONTROL_axilite_bvalid   ), // output wire control_axilite_bvalid
-            .control_axilite_bready     ( HLS_CONTROL_axilite_bready   ), // input wire control_axilite_bready
-            .control_axilite_araddr     ( HLS_CONTROL_axilite_araddr   ), // input wire [31 : 0] control_axilite_araddr
-            .control_axilite_arprot     ( HLS_CONTROL_axilite_arprot   ), // input wire [2 : 0] control_axilite_arprot
-            .control_axilite_arvalid    ( HLS_CONTROL_axilite_arvalid  ), // input wire control_axilite_arvalid
-            .control_axilite_arready    ( HLS_CONTROL_axilite_arready  ), // output wire control_axilite_arready
-            .control_axilite_rdata      ( HLS_CONTROL_axilite_rdata    ), // output wire [31 : 0] control_axilite_rdata
-            .control_axilite_rresp      ( HLS_CONTROL_axilite_rresp    ), // output wire [1 : 0] control_axilite_rresp
-            .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid   ), // output wire control_axilite_rvalid
-            .control_axilite_rready     ( HLS_CONTROL_axilite_rready   )  // input wire control_axilite_rready
-        );
-    end : gen_hls_conv_naive
-    else if ( CUSTOM_HLS_VERSION == "conv_opt1" ) begin : gen_hls_conv_opt1
-        // HLS core instance
-        custom_hls_conv_opt1 custom_hls_conv_opt1_u (
-            .clk_i                      ( HLS_CONTROL_clk              ), // input wire clk_i
-            .rst_ni                     ( HLS_CONTROL_rstn             ), // input wire rst_ni
-            .interrupt_o                ( hls_interrupt_o              ), // output wire interrupt_o
-            .gmem0_axi_awid             ( HLS_gmem0_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
-            .gmem0_axi_awaddr           ( HLS_gmem0_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
-            .gmem0_axi_awlen            ( HLS_gmem0_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
-            .gmem0_axi_awsize           ( HLS_gmem0_axi_awsize         ), // output wire [2 : 0] gmem0_axi_awsize
-            .gmem0_axi_awburst          ( HLS_gmem0_axi_awburst        ), // output wire [1 : 0] gmem0_axi_awburst
-            .gmem0_axi_awlock           ( HLS_gmem0_axi_awlock         ), // output wire gmem0_axi_awlock
-            .gmem0_axi_awcache          ( HLS_gmem0_axi_awcache        ), // output wire [3 : 0] gmem0_axi_awcache
-            .gmem0_axi_awprot           ( HLS_gmem0_axi_awprot         ), // output wire [2 : 0] gmem0_axi_awprot
-            .gmem0_axi_awqos            ( HLS_gmem0_axi_awqos          ), // output wire [3 : 0] gmem0_axi_awqos
-            .gmem0_axi_awvalid          ( HLS_gmem0_axi_awvalid        ), // output wire gmem0_axi_awvalid
-            .gmem0_axi_awready          ( HLS_gmem0_axi_awready        ), // input wire gmem0_axi_awready
-            .gmem0_axi_awregion         ( HLS_gmem0_axi_awregion       ), // output wire [3 : 0] gmem0_axi_awregion
-            .gmem0_axi_wdata            ( HLS_gmem0_axi_wdata          ), // output wire [31 : 0] gmem0_axi_wdata
-            .gmem0_axi_wstrb            ( HLS_gmem0_axi_wstrb          ), // output wire [3 : 0] gmem0_axi_wstrb
-            .gmem0_axi_wlast            ( HLS_gmem0_axi_wlast          ), // output wire gmem0_axi_wlast
-            .gmem0_axi_wvalid           ( HLS_gmem0_axi_wvalid         ), // output wire gmem0_axi_wvalid
-            .gmem0_axi_wready           ( HLS_gmem0_axi_wready         ), // input wire gmem0_axi_wready
-            .gmem0_axi_bid              ( HLS_gmem0_axi_bid            ), // input wire [1 : 0] gmem0_axi_bid
-            .gmem0_axi_bresp            ( HLS_gmem0_axi_bresp          ), // input wire [1 : 0] gmem0_axi_bresp
-            .gmem0_axi_bvalid           ( HLS_gmem0_axi_bvalid         ), // input wire gmem0_axi_bvalid
-            .gmem0_axi_bready           ( HLS_gmem0_axi_bready         ), // output wire gmem0_axi_bready
-            .gmem0_axi_araddr           ( HLS_gmem0_axi_araddr         ), // output wire [31 : 0] gmem0_axi_araddr
-            .gmem0_axi_arlen            ( HLS_gmem0_axi_arlen          ), // output wire [7 : 0] gmem0_axi_arlen
-            .gmem0_axi_arsize           ( HLS_gmem0_axi_arsize         ), // output wire [2 : 0] gmem0_axi_arsize
-            .gmem0_axi_arburst          ( HLS_gmem0_axi_arburst        ), // output wire [1 : 0] gmem0_axi_arburst
-            .gmem0_axi_arlock           ( HLS_gmem0_axi_arlock         ), // output wire gmem0_axi_arlock
-            .gmem0_axi_arcache          ( HLS_gmem0_axi_arcache        ), // output wire [3 : 0] gmem0_axi_arcache
-            .gmem0_axi_arprot           ( HLS_gmem0_axi_arprot         ), // output wire [2 : 0] gmem0_axi_arprot
-            .gmem0_axi_arqos            ( HLS_gmem0_axi_arqos          ), // output wire [3 : 0] gmem0_axi_arqos
-            .gmem0_axi_arvalid          ( HLS_gmem0_axi_arvalid        ), // output wire gmem0_axi_arvalid
-            .gmem0_axi_arready          ( HLS_gmem0_axi_arready        ), // input wire gmem0_axi_arready
-            .gmem0_axi_arid             ( HLS_gmem0_axi_arid           ), // output wire [1 : 0] gmem0_axi_arid
-            .gmem0_axi_arregion         ( HLS_gmem0_axi_arregion       ), // output wire [3 : 0] gmem0_axi_arregion
-            .gmem0_axi_rid              ( HLS_gmem0_axi_rid            ), // input wire [1 : 0] gmem0_axi_rid
-            .gmem0_axi_rdata            ( HLS_gmem0_axi_rdata          ), // input wire [31 : 0] gmem0_axi_rdata
-            .gmem0_axi_rresp            ( HLS_gmem0_axi_rresp          ), // input wire [1 : 0] gmem0_axi_rresp
-            .gmem0_axi_rlast            ( HLS_gmem0_axi_rlast          ), // input wire gmem0_axi_rlast
-            .gmem0_axi_rvalid           ( HLS_gmem0_axi_rvalid         ), // input wire gmem0_axi_rvalid
-            .gmem0_axi_rready           ( HLS_gmem0_axi_rready         ), // output wire gmem0_axi_rready
-            .control_axilite_awaddr     ( HLS_CONTROL_axilite_awaddr   ), // input wire [31 : 0] control_axilite_awaddr
-            .control_axilite_awprot     ( HLS_CONTROL_axilite_awprot   ), // input wire [2 : 0] control_axilite_awprot
-            .control_axilite_awvalid    ( HLS_CONTROL_axilite_awvalid  ), // input wire control_axilite_awvalid
-            .control_axilite_awready    ( HLS_CONTROL_axilite_awready  ), // output wire control_axilite_awready
-            .control_axilite_wdata      ( HLS_CONTROL_axilite_wdata    ), // input wire [31 : 0] control_axilite_wdata
-            .control_axilite_wstrb      ( HLS_CONTROL_axilite_wstrb    ), // input wire [3 : 0] control_axilite_wstrb
-            .control_axilite_wvalid     ( HLS_CONTROL_axilite_wvalid   ), // input wire control_axilite_wvalid
-            .control_axilite_wready     ( HLS_CONTROL_axilite_wready   ), // output wire control_axilite_wready
-            .control_axilite_bresp      ( HLS_CONTROL_axilite_bresp    ), // output wire [1 : 0] control_axilite_bresp
-            .control_axilite_bvalid     ( HLS_CONTROL_axilite_bvalid   ), // output wire control_axilite_bvalid
-            .control_axilite_bready     ( HLS_CONTROL_axilite_bready   ), // input wire control_axilite_bready
-            .control_axilite_araddr     ( HLS_CONTROL_axilite_araddr   ), // input wire [31 : 0] control_axilite_araddr
-            .control_axilite_arprot     ( HLS_CONTROL_axilite_arprot   ), // input wire [2 : 0] control_axilite_arprot
-            .control_axilite_arvalid    ( HLS_CONTROL_axilite_arvalid  ), // input wire control_axilite_arvalid
-            .control_axilite_arready    ( HLS_CONTROL_axilite_arready  ), // output wire control_axilite_arready
-            .control_axilite_rdata      ( HLS_CONTROL_axilite_rdata    ), // output wire [31 : 0] control_axilite_rdata
-            .control_axilite_rresp      ( HLS_CONTROL_axilite_rresp    ), // output wire [1 : 0] control_axilite_rresp
-            .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid   ), // output wire control_axilite_rvalid
-            .control_axilite_rready     ( HLS_CONTROL_axilite_rready   )  // input wire control_axilite_rready
-        );
-    end : gen_hls_conv_opt1
-    else if ( CUSTOM_HLS_VERSION == "conv_opt2" ) begin : gen_hls_conv_opt2
-        // HLS core instance
-        custom_hls_conv_opt2 custom_hls_conv_opt2_u (
-            .clk_i                      ( HLS_CONTROL_clk              ), // input wire clk_i
-            .rst_ni                     ( HLS_CONTROL_rstn             ), // input wire rst_ni
-            .interrupt_o                ( hls_interrupt_o              ), // output wire interrupt_o
-            .gmem0_axi_awid             ( HLS_gmem0_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
-            .gmem0_axi_awaddr           ( HLS_gmem0_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
-            .gmem0_axi_awlen            ( HLS_gmem0_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
-            .gmem0_axi_awsize           ( HLS_gmem0_axi_awsize         ), // output wire [2 : 0] gmem0_axi_awsize
-            .gmem0_axi_awburst          ( HLS_gmem0_axi_awburst        ), // output wire [1 : 0] gmem0_axi_awburst
-            .gmem0_axi_awlock           ( HLS_gmem0_axi_awlock         ), // output wire gmem0_axi_awlock
-            .gmem0_axi_awcache          ( HLS_gmem0_axi_awcache        ), // output wire [3 : 0] gmem0_axi_awcache
-            .gmem0_axi_awprot           ( HLS_gmem0_axi_awprot         ), // output wire [2 : 0] gmem0_axi_awprot
-            .gmem0_axi_awqos            ( HLS_gmem0_axi_awqos          ), // output wire [3 : 0] gmem0_axi_awqos
-            .gmem0_axi_awvalid          ( HLS_gmem0_axi_awvalid        ), // output wire gmem0_axi_awvalid
-            .gmem0_axi_awready          ( HLS_gmem0_axi_awready        ), // input wire gmem0_axi_awready
-            .gmem0_axi_awregion         ( HLS_gmem0_axi_awregion       ), // output wire [3 : 0] gmem0_axi_awregion
-            .gmem0_axi_wdata            ( HLS_gmem0_axi_wdata          ), // output wire [31 : 0] gmem0_axi_wdata
-            .gmem0_axi_wstrb            ( HLS_gmem0_axi_wstrb          ), // output wire [3 : 0] gmem0_axi_wstrb
-            .gmem0_axi_wlast            ( HLS_gmem0_axi_wlast          ), // output wire gmem0_axi_wlast
-            .gmem0_axi_wvalid           ( HLS_gmem0_axi_wvalid         ), // output wire gmem0_axi_wvalid
-            .gmem0_axi_wready           ( HLS_gmem0_axi_wready         ), // input wire gmem0_axi_wready
-            .gmem0_axi_bid              ( HLS_gmem0_axi_bid            ), // input wire [1 : 0] gmem0_axi_bid
-            .gmem0_axi_bresp            ( HLS_gmem0_axi_bresp          ), // input wire [1 : 0] gmem0_axi_bresp
-            .gmem0_axi_bvalid           ( HLS_gmem0_axi_bvalid         ), // input wire gmem0_axi_bvalid
-            .gmem0_axi_bready           ( HLS_gmem0_axi_bready         ), // output wire gmem0_axi_bready
-            .gmem0_axi_araddr           ( HLS_gmem0_axi_araddr         ), // output wire [31 : 0] gmem0_axi_araddr
-            .gmem0_axi_arlen            ( HLS_gmem0_axi_arlen          ), // output wire [7 : 0] gmem0_axi_arlen
-            .gmem0_axi_arsize           ( HLS_gmem0_axi_arsize         ), // output wire [2 : 0] gmem0_axi_arsize
-            .gmem0_axi_arburst          ( HLS_gmem0_axi_arburst        ), // output wire [1 : 0] gmem0_axi_arburst
-            .gmem0_axi_arlock           ( HLS_gmem0_axi_arlock         ), // output wire gmem0_axi_arlock
-            .gmem0_axi_arcache          ( HLS_gmem0_axi_arcache        ), // output wire [3 : 0] gmem0_axi_arcache
-            .gmem0_axi_arprot           ( HLS_gmem0_axi_arprot         ), // output wire [2 : 0] gmem0_axi_arprot
-            .gmem0_axi_arqos            ( HLS_gmem0_axi_arqos          ), // output wire [3 : 0] gmem0_axi_arqos
-            .gmem0_axi_arvalid          ( HLS_gmem0_axi_arvalid        ), // output wire gmem0_axi_arvalid
-            .gmem0_axi_arready          ( HLS_gmem0_axi_arready        ), // input wire gmem0_axi_arready
-            .gmem0_axi_arid             ( HLS_gmem0_axi_arid           ), // output wire [1 : 0] gmem0_axi_arid
-            .gmem0_axi_arregion         ( HLS_gmem0_axi_arregion       ), // output wire [3 : 0] gmem0_axi_arregion
-            .gmem0_axi_rid              ( HLS_gmem0_axi_rid            ), // input wire [1 : 0] gmem0_axi_rid
-            .gmem0_axi_rdata            ( HLS_gmem0_axi_rdata          ), // input wire [31 : 0] gmem0_axi_rdata
-            .gmem0_axi_rresp            ( HLS_gmem0_axi_rresp          ), // input wire [1 : 0] gmem0_axi_rresp
-            .gmem0_axi_rlast            ( HLS_gmem0_axi_rlast          ), // input wire gmem0_axi_rlast
-            .gmem0_axi_rvalid           ( HLS_gmem0_axi_rvalid         ), // input wire gmem0_axi_rvalid
-            .gmem0_axi_rready           ( HLS_gmem0_axi_rready         ), // output wire gmem0_axi_rready
-            .control_axilite_awaddr     ( HLS_CONTROL_axilite_awaddr   ), // input wire [31 : 0] control_axilite_awaddr
-            .control_axilite_awprot     ( HLS_CONTROL_axilite_awprot   ), // input wire [2 : 0] control_axilite_awprot
-            .control_axilite_awvalid    ( HLS_CONTROL_axilite_awvalid  ), // input wire control_axilite_awvalid
-            .control_axilite_awready    ( HLS_CONTROL_axilite_awready  ), // output wire control_axilite_awready
-            .control_axilite_wdata      ( HLS_CONTROL_axilite_wdata    ), // input wire [31 : 0] control_axilite_wdata
-            .control_axilite_wstrb      ( HLS_CONTROL_axilite_wstrb    ), // input wire [3 : 0] control_axilite_wstrb
-            .control_axilite_wvalid     ( HLS_CONTROL_axilite_wvalid   ), // input wire control_axilite_wvalid
-            .control_axilite_wready     ( HLS_CONTROL_axilite_wready   ), // output wire control_axilite_wready
-            .control_axilite_bresp      ( HLS_CONTROL_axilite_bresp    ), // output wire [1 : 0] control_axilite_bresp
-            .control_axilite_bvalid     ( HLS_CONTROL_axilite_bvalid   ), // output wire control_axilite_bvalid
-            .control_axilite_bready     ( HLS_CONTROL_axilite_bready   ), // input wire control_axilite_bready
-            .control_axilite_araddr     ( HLS_CONTROL_axilite_araddr   ), // input wire [31 : 0] control_axilite_araddr
-            .control_axilite_arprot     ( HLS_CONTROL_axilite_arprot   ), // input wire [2 : 0] control_axilite_arprot
-            .control_axilite_arvalid    ( HLS_CONTROL_axilite_arvalid  ), // input wire control_axilite_arvalid
-            .control_axilite_arready    ( HLS_CONTROL_axilite_arready  ), // output wire control_axilite_arready
-            .control_axilite_rdata      ( HLS_CONTROL_axilite_rdata    ), // output wire [31 : 0] control_axilite_rdata
-            .control_axilite_rresp      ( HLS_CONTROL_axilite_rresp    ), // output wire [1 : 0] control_axilite_rresp
-            .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid   ), // output wire control_axilite_rvalid
-            .control_axilite_rready     ( HLS_CONTROL_axilite_rready   )  // input wire control_axilite_rready
-        );
-    end : gen_hls_conv_opt2
-    else if ( CUSTOM_HLS_VERSION == "conv_opt3" ) begin : gen_hls_conv_opt3
-        // HLS core instance
-        custom_hls_conv_opt3 custom_hls_conv_opt3_u (
-            .clk_i                      ( HLS_CONTROL_clk              ), // input wire clk_i
-            .rst_ni                     ( HLS_CONTROL_rstn             ), // input wire rst_ni
-            .interrupt_o                ( hls_interrupt_o              ), // output wire interrupt_o
-            .gmem0_axi_awid             ( HLS_gmem0_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
-            .gmem0_axi_awaddr           ( HLS_gmem0_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
-            .gmem0_axi_awlen            ( HLS_gmem0_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
-            .gmem0_axi_awsize           ( HLS_gmem0_axi_awsize         ), // output wire [2 : 0] gmem0_axi_awsize
-            .gmem0_axi_awburst          ( HLS_gmem0_axi_awburst        ), // output wire [1 : 0] gmem0_axi_awburst
-            .gmem0_axi_awlock           ( HLS_gmem0_axi_awlock         ), // output wire gmem0_axi_awlock
-            .gmem0_axi_awcache          ( HLS_gmem0_axi_awcache        ), // output wire [3 : 0] gmem0_axi_awcache
-            .gmem0_axi_awprot           ( HLS_gmem0_axi_awprot         ), // output wire [2 : 0] gmem0_axi_awprot
-            .gmem0_axi_awqos            ( HLS_gmem0_axi_awqos          ), // output wire [3 : 0] gmem0_axi_awqos
-            .gmem0_axi_awvalid          ( HLS_gmem0_axi_awvalid        ), // output wire gmem0_axi_awvalid
-            .gmem0_axi_awready          ( HLS_gmem0_axi_awready        ), // input wire gmem0_axi_awready
-            .gmem0_axi_awregion         ( HLS_gmem0_axi_awregion       ), // output wire [3 : 0] gmem0_axi_awregion
-            .gmem0_axi_wdata            ( HLS_gmem0_axi_wdata          ), // output wire [31 : 0] gmem0_axi_wdata
-            .gmem0_axi_wstrb            ( HLS_gmem0_axi_wstrb          ), // output wire [3 : 0] gmem0_axi_wstrb
-            .gmem0_axi_wlast            ( HLS_gmem0_axi_wlast          ), // output wire gmem0_axi_wlast
-            .gmem0_axi_wvalid           ( HLS_gmem0_axi_wvalid         ), // output wire gmem0_axi_wvalid
-            .gmem0_axi_wready           ( HLS_gmem0_axi_wready         ), // input wire gmem0_axi_wready
-            .gmem0_axi_bid              ( HLS_gmem0_axi_bid            ), // input wire [1 : 0] gmem0_axi_bid
-            .gmem0_axi_bresp            ( HLS_gmem0_axi_bresp          ), // input wire [1 : 0] gmem0_axi_bresp
-            .gmem0_axi_bvalid           ( HLS_gmem0_axi_bvalid         ), // input wire gmem0_axi_bvalid
-            .gmem0_axi_bready           ( HLS_gmem0_axi_bready         ), // output wire gmem0_axi_bready
-            .gmem0_axi_araddr           ( HLS_gmem0_axi_araddr         ), // output wire [31 : 0] gmem0_axi_araddr
-            .gmem0_axi_arlen            ( HLS_gmem0_axi_arlen          ), // output wire [7 : 0] gmem0_axi_arlen
-            .gmem0_axi_arsize           ( HLS_gmem0_axi_arsize         ), // output wire [2 : 0] gmem0_axi_arsize
-            .gmem0_axi_arburst          ( HLS_gmem0_axi_arburst        ), // output wire [1 : 0] gmem0_axi_arburst
-            .gmem0_axi_arlock           ( HLS_gmem0_axi_arlock         ), // output wire gmem0_axi_arlock
-            .gmem0_axi_arcache          ( HLS_gmem0_axi_arcache        ), // output wire [3 : 0] gmem0_axi_arcache
-            .gmem0_axi_arprot           ( HLS_gmem0_axi_arprot         ), // output wire [2 : 0] gmem0_axi_arprot
-            .gmem0_axi_arqos            ( HLS_gmem0_axi_arqos          ), // output wire [3 : 0] gmem0_axi_arqos
-            .gmem0_axi_arvalid          ( HLS_gmem0_axi_arvalid        ), // output wire gmem0_axi_arvalid
-            .gmem0_axi_arready          ( HLS_gmem0_axi_arready        ), // input wire gmem0_axi_arready
-            .gmem0_axi_arid             ( HLS_gmem0_axi_arid           ), // output wire [1 : 0] gmem0_axi_arid
-            .gmem0_axi_arregion         ( HLS_gmem0_axi_arregion       ), // output wire [3 : 0] gmem0_axi_arregion
-            .gmem0_axi_rid              ( HLS_gmem0_axi_rid            ), // input wire [1 : 0] gmem0_axi_rid
-            .gmem0_axi_rdata            ( HLS_gmem0_axi_rdata          ), // input wire [31 : 0] gmem0_axi_rdata
-            .gmem0_axi_rresp            ( HLS_gmem0_axi_rresp          ), // input wire [1 : 0] gmem0_axi_rresp
-            .gmem0_axi_rlast            ( HLS_gmem0_axi_rlast          ), // input wire gmem0_axi_rlast
-            .gmem0_axi_rvalid           ( HLS_gmem0_axi_rvalid         ), // input wire gmem0_axi_rvalid
-            .gmem0_axi_rready           ( HLS_gmem0_axi_rready         ), // output wire gmem0_axi_rready
-            // WARNING: gmem1 and gmem2 are not sychronized!!
-            .gmem1_axi_awid             ( HLS_gmem1_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem1_axi_awid
-            .gmem1_axi_awaddr           ( HLS_gmem1_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem1_axi_awaddr
-            .gmem1_axi_awlen            ( HLS_gmem1_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem1_axi_awlen
-            .gmem1_axi_awsize           ( HLS_gmem1_to_MBUS_axi_awsize         ), // output wire [2 : 0] gmem1_axi_awsize
-            .gmem1_axi_awburst          ( HLS_gmem1_to_MBUS_axi_awburst        ), // output wire [1 : 0] gmem1_axi_awburst
-            .gmem1_axi_awlock           ( HLS_gmem1_to_MBUS_axi_awlock         ), // output wire gmem1_axi_awlock
-            .gmem1_axi_awcache          ( HLS_gmem1_to_MBUS_axi_awcache        ), // output wire [3 : 0] gmem1_axi_awcache
-            .gmem1_axi_awprot           ( HLS_gmem1_to_MBUS_axi_awprot         ), // output wire [2 : 0] gmem1_axi_awprot
-            .gmem1_axi_awqos            ( HLS_gmem1_to_MBUS_axi_awqos          ), // output wire [3 : 0] gmem1_axi_awqos
-            .gmem1_axi_awvalid          ( HLS_gmem1_to_MBUS_axi_awvalid        ), // output wire gmem1_axi_awvalid
-            .gmem1_axi_awready          ( HLS_gmem1_to_MBUS_axi_awready        ), // input wire gmem1_axi_awready
-            .gmem1_axi_awregion         ( HLS_gmem1_to_MBUS_axi_awregion       ), // output wire [3 : 0] gmem1_axi_awregion
-            .gmem1_axi_wdata            ( HLS_gmem1_to_MBUS_axi_wdata          ), // output wire [31 : 0] gmem1_axi_wdata
-            .gmem1_axi_wstrb            ( HLS_gmem1_to_MBUS_axi_wstrb          ), // output wire [3 : 0] gmem1_axi_wstrb
-            .gmem1_axi_wlast            ( HLS_gmem1_to_MBUS_axi_wlast          ), // output wire gmem1_axi_wlast
-            .gmem1_axi_wvalid           ( HLS_gmem1_to_MBUS_axi_wvalid         ), // output wire gmem1_axi_wvalid
-            .gmem1_axi_wready           ( HLS_gmem1_to_MBUS_axi_wready         ), // input wire gmem1_axi_wready
-            .gmem1_axi_bid              ( HLS_gmem1_to_MBUS_axi_bid            ), // input wire [1 : 0] gmem1_axi_bid
-            .gmem1_axi_bresp            ( HLS_gmem1_to_MBUS_axi_bresp          ), // input wire [1 : 0] gmem1_axi_bresp
-            .gmem1_axi_bvalid           ( HLS_gmem1_to_MBUS_axi_bvalid         ), // input wire gmem1_axi_bvalid
-            .gmem1_axi_bready           ( HLS_gmem1_to_MBUS_axi_bready         ), // output wire gmem1_axi_bready
-            .gmem1_axi_araddr           ( HLS_gmem1_to_MBUS_axi_araddr         ), // output wire [31 : 0] gmem1_axi_araddr
-            .gmem1_axi_arlen            ( HLS_gmem1_to_MBUS_axi_arlen          ), // output wire [7 : 0] gmem1_axi_arlen
-            .gmem1_axi_arsize           ( HLS_gmem1_to_MBUS_axi_arsize         ), // output wire [2 : 0] gmem1_axi_arsize
-            .gmem1_axi_arburst          ( HLS_gmem1_to_MBUS_axi_arburst        ), // output wire [1 : 0] gmem1_axi_arburst
-            .gmem1_axi_arlock           ( HLS_gmem1_to_MBUS_axi_arlock         ), // output wire gmem1_axi_arlock
-            .gmem1_axi_arcache          ( HLS_gmem1_to_MBUS_axi_arcache        ), // output wire [3 : 0] gmem1_axi_arcache
-            .gmem1_axi_arprot           ( HLS_gmem1_to_MBUS_axi_arprot         ), // output wire [2 : 0] gmem1_axi_arprot
-            .gmem1_axi_arqos            ( HLS_gmem1_to_MBUS_axi_arqos          ), // output wire [3 : 0] gmem1_axi_arqos
-            .gmem1_axi_arvalid          ( HLS_gmem1_to_MBUS_axi_arvalid        ), // output wire gmem1_axi_arvalid
-            .gmem1_axi_arready          ( HLS_gmem1_to_MBUS_axi_arready        ), // input wire gmem1_axi_arready
-            .gmem1_axi_arid             ( HLS_gmem1_to_MBUS_axi_arid           ), // output wire [1 : 0] gmem1_axi_arid
-            .gmem1_axi_arregion         ( HLS_gmem1_to_MBUS_axi_arregion       ), // output wire [3 : 0] gmem1_axi_arregion
-            .gmem1_axi_rid              ( HLS_gmem1_to_MBUS_axi_rid            ), // input wire [1 : 0] gmem1_axi_rid
-            .gmem1_axi_rdata            ( HLS_gmem1_to_MBUS_axi_rdata          ), // input wire [31 : 0] gmem1_axi_rdata
-            .gmem1_axi_rresp            ( HLS_gmem1_to_MBUS_axi_rresp          ), // input wire [1 : 0] gmem1_axi_rresp
-            .gmem1_axi_rlast            ( HLS_gmem1_to_MBUS_axi_rlast          ), // input wire gmem1_axi_rlast
-            .gmem1_axi_rvalid           ( HLS_gmem1_to_MBUS_axi_rvalid         ), // input wire gmem1_axi_rvalid
-            .gmem1_axi_rready           ( HLS_gmem1_to_MBUS_axi_rready         ), // output wire gmem1_axi_rready
-            .gmem2_axi_awid             ( HLS_gmem2_to_MBUS_axi_awid           ), // output wire [1 : 0] gmem2_axi_awid
-            .gmem2_axi_awaddr           ( HLS_gmem2_to_MBUS_axi_awaddr         ), // output wire [31 : 0] gmem2_axi_awaddr
-            .gmem2_axi_awlen            ( HLS_gmem2_to_MBUS_axi_awlen          ), // output wire [7 : 0] gmem2_axi_awlen
-            .gmem2_axi_awsize           ( HLS_gmem2_to_MBUS_axi_awsize         ), // output wire [2 : 0] gmem2_axi_awsize
-            .gmem2_axi_awburst          ( HLS_gmem2_to_MBUS_axi_awburst        ), // output wire [1 : 0] gmem2_axi_awburst
-            .gmem2_axi_awlock           ( HLS_gmem2_to_MBUS_axi_awlock         ), // output wire gmem2_axi_awlock
-            .gmem2_axi_awcache          ( HLS_gmem2_to_MBUS_axi_awcache        ), // output wire [3 : 0] gmem2_axi_awcache
-            .gmem2_axi_awprot           ( HLS_gmem2_to_MBUS_axi_awprot         ), // output wire [2 : 0] gmem2_axi_awprot
-            .gmem2_axi_awqos            ( HLS_gmem2_to_MBUS_axi_awqos          ), // output wire [3 : 0] gmem2_axi_awqos
-            .gmem2_axi_awvalid          ( HLS_gmem2_to_MBUS_axi_awvalid        ), // output wire gmem2_axi_awvalid
-            .gmem2_axi_awready          ( HLS_gmem2_to_MBUS_axi_awready        ), // input wire gmem2_axi_awready
-            .gmem2_axi_awregion         ( HLS_gmem2_to_MBUS_axi_awregion       ), // output wire [3 : 0] gmem2_axi_awregion
-            .gmem2_axi_wdata            ( HLS_gmem2_to_MBUS_axi_wdata          ), // output wire [31 : 0] gmem2_axi_wdata
-            .gmem2_axi_wstrb            ( HLS_gmem2_to_MBUS_axi_wstrb          ), // output wire [3 : 0] gmem2_axi_wstrb
-            .gmem2_axi_wlast            ( HLS_gmem2_to_MBUS_axi_wlast          ), // output wire gmem2_axi_wlast
-            .gmem2_axi_wvalid           ( HLS_gmem2_to_MBUS_axi_wvalid         ), // output wire gmem2_axi_wvalid
-            .gmem2_axi_wready           ( HLS_gmem2_to_MBUS_axi_wready         ), // input wire gmem2_axi_wready
-            .gmem2_axi_bid              ( HLS_gmem2_to_MBUS_axi_bid            ), // input wire [1 : 0] gmem2_axi_bid
-            .gmem2_axi_bresp            ( HLS_gmem2_to_MBUS_axi_bresp          ), // input wire [1 : 0] gmem2_axi_bresp
-            .gmem2_axi_bvalid           ( HLS_gmem2_to_MBUS_axi_bvalid         ), // input wire gmem2_axi_bvalid
-            .gmem2_axi_bready           ( HLS_gmem2_to_MBUS_axi_bready         ), // output wire gmem2_axi_bready
-            .gmem2_axi_araddr           ( HLS_gmem2_to_MBUS_axi_araddr         ), // output wire [31 : 0] gmem2_axi_araddr
-            .gmem2_axi_arlen            ( HLS_gmem2_to_MBUS_axi_arlen          ), // output wire [7 : 0] gmem2_axi_arlen
-            .gmem2_axi_arsize           ( HLS_gmem2_to_MBUS_axi_arsize         ), // output wire [2 : 0] gmem2_axi_arsize
-            .gmem2_axi_arburst          ( HLS_gmem2_to_MBUS_axi_arburst        ), // output wire [1 : 0] gmem2_axi_arburst
-            .gmem2_axi_arlock           ( HLS_gmem2_to_MBUS_axi_arlock         ), // output wire gmem2_axi_arlock
-            .gmem2_axi_arcache          ( HLS_gmem2_to_MBUS_axi_arcache        ), // output wire [3 : 0] gmem2_axi_arcache
-            .gmem2_axi_arprot           ( HLS_gmem2_to_MBUS_axi_arprot         ), // output wire [2 : 0] gmem2_axi_arprot
-            .gmem2_axi_arqos            ( HLS_gmem2_to_MBUS_axi_arqos          ), // output wire [3 : 0] gmem2_axi_arqos
-            .gmem2_axi_arvalid          ( HLS_gmem2_to_MBUS_axi_arvalid        ), // output wire gmem2_axi_arvalid
-            .gmem2_axi_arready          ( HLS_gmem2_to_MBUS_axi_arready        ), // input wire gmem2_axi_arready
-            .gmem2_axi_arid             ( HLS_gmem2_to_MBUS_axi_arid           ), // output wire [1 : 0] gmem2_axi_arid
-            .gmem2_axi_arregion         ( HLS_gmem2_to_MBUS_axi_arregion       ), // output wire [3 : 0] gmem2_axi_arregion
-            .gmem2_axi_rid              ( HLS_gmem2_to_MBUS_axi_rid            ), // input wire [1 : 0] gmem2_axi_rid
-            .gmem2_axi_rdata            ( HLS_gmem2_to_MBUS_axi_rdata          ), // input wire [31 : 0] gmem2_axi_rdata
-            .gmem2_axi_rresp            ( HLS_gmem2_to_MBUS_axi_rresp          ), // input wire [1 : 0] gmem2_axi_rresp
-            .gmem2_axi_rlast            ( HLS_gmem2_to_MBUS_axi_rlast          ), // input wire gmem2_axi_rlast
-            .gmem2_axi_rvalid           ( HLS_gmem2_to_MBUS_axi_rvalid         ), // input wire gmem2_axi_rvalid
-            .gmem2_axi_rready           ( HLS_gmem2_to_MBUS_axi_rready         ), // output wire gmem2_axi_rready
-            .control_axilite_awaddr     ( HLS_CONTROL_axilite_awaddr           ), // input wire [31 : 0] control_axilite_awaddr
-            .control_axilite_awprot     ( HLS_CONTROL_axilite_awprot           ), // input wire [2 : 0] control_axilite_awprot
-            .control_axilite_awvalid    ( HLS_CONTROL_axilite_awvalid          ), // input wire control_axilite_awvalid
-            .control_axilite_awready    ( HLS_CONTROL_axilite_awready          ), // output wire control_axilite_awready
-            .control_axilite_wdata      ( HLS_CONTROL_axilite_wdata            ), // input wire [31 : 0] control_axilite_wdata
-            .control_axilite_wstrb      ( HLS_CONTROL_axilite_wstrb            ), // input wire [3 : 0] control_axilite_wstrb
-            .control_axilite_wvalid     ( HLS_CONTROL_axilite_wvalid           ), // input wire control_axilite_wvalid
-            .control_axilite_wready     ( HLS_CONTROL_axilite_wready           ), // output wire control_axilite_wready
-            .control_axilite_bresp      ( HLS_CONTROL_axilite_bresp            ), // output wire [1 : 0] control_axilite_bresp
-            .control_axilite_bvalid     ( HLS_CONTROL_axilite_bvalid           ), // output wire control_axilite_bvalid
-            .control_axilite_bready     ( HLS_CONTROL_axilite_bready           ), // input wire control_axilite_bready
-            .control_axilite_araddr     ( HLS_CONTROL_axilite_araddr           ), // input wire [31 : 0] control_axilite_araddr
-            .control_axilite_arprot     ( HLS_CONTROL_axilite_arprot           ), // input wire [2 : 0] control_axilite_arprot
-            .control_axilite_arvalid    ( HLS_CONTROL_axilite_arvalid          ), // input wire control_axilite_arvalid
-            .control_axilite_arready    ( HLS_CONTROL_axilite_arready          ), // output wire control_axilite_arready
-            .control_axilite_rdata      ( HLS_CONTROL_axilite_rdata            ), // output wire [31 : 0] control_axilite_rdata
-            .control_axilite_rresp      ( HLS_CONTROL_axilite_rresp            ), // output wire [1 : 0] control_axilite_rresp
-            .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid           ), // output wire control_axilite_rvalid
-            .control_axilite_rready     ( HLS_CONTROL_axilite_rready           )  // input wire control_axilite_rreadys
-        );
-    end : gen_hls_conv_opt3
-    else if ( CUSTOM_HLS_VERSION == "conv_opt4" ) begin : gen_hls_conv_opt4
-        // HLS core instance
-        custom_hls_conv_opt4 custom_hls_conv_opt4_u (
-            .clk_i                      ( HLS_CONTROL_clk              ), // input wire clk_i
-            .rst_ni                     ( HLS_CONTROL_rstn             ), // input wire rst_ni
-            .interrupt_o                ( hls_interrupt_o              ), // output wire interrupt_o
-            .gmem0_axi_awid             ( HLS_gmem0_axi_awid           ), // output wire [1 : 0] gmem0_axi_awid
-            .gmem0_axi_awaddr           ( HLS_gmem0_axi_awaddr         ), // output wire [31 : 0] gmem0_axi_awaddr
-            .gmem0_axi_awlen            ( HLS_gmem0_axi_awlen          ), // output wire [7 : 0] gmem0_axi_awlen
-            .gmem0_axi_awsize           ( HLS_gmem0_axi_awsize         ), // output wire [2 : 0] gmem0_axi_awsize
-            .gmem0_axi_awburst          ( HLS_gmem0_axi_awburst        ), // output wire [1 : 0] gmem0_axi_awburst
-            .gmem0_axi_awlock           ( HLS_gmem0_axi_awlock         ), // output wire gmem0_axi_awlock
-            .gmem0_axi_awcache          ( HLS_gmem0_axi_awcache        ), // output wire [3 : 0] gmem0_axi_awcache
-            .gmem0_axi_awprot           ( HLS_gmem0_axi_awprot         ), // output wire [2 : 0] gmem0_axi_awprot
-            .gmem0_axi_awqos            ( HLS_gmem0_axi_awqos          ), // output wire [3 : 0] gmem0_axi_awqos
-            .gmem0_axi_awvalid          ( HLS_gmem0_axi_awvalid        ), // output wire gmem0_axi_awvalid
-            .gmem0_axi_awready          ( HLS_gmem0_axi_awready        ), // input wire gmem0_axi_awready
-            .gmem0_axi_awregion         ( HLS_gmem0_axi_awregion       ), // output wire [3 : 0] gmem0_axi_awregion
-            .gmem0_axi_wdata            ( HLS_gmem0_axi_wdata          ), // output wire [31 : 0] gmem0_axi_wdata
-            .gmem0_axi_wstrb            ( HLS_gmem0_axi_wstrb          ), // output wire [3 : 0] gmem0_axi_wstrb
-            .gmem0_axi_wlast            ( HLS_gmem0_axi_wlast          ), // output wire gmem0_axi_wlast
-            .gmem0_axi_wvalid           ( HLS_gmem0_axi_wvalid         ), // output wire gmem0_axi_wvalid
-            .gmem0_axi_wready           ( HLS_gmem0_axi_wready         ), // input wire gmem0_axi_wready
-            .gmem0_axi_bid              ( HLS_gmem0_axi_bid            ), // input wire [1 : 0] gmem0_axi_bid
-            .gmem0_axi_bresp            ( HLS_gmem0_axi_bresp          ), // input wire [1 : 0] gmem0_axi_bresp
-            .gmem0_axi_bvalid           ( HLS_gmem0_axi_bvalid         ), // input wire gmem0_axi_bvalid
-            .gmem0_axi_bready           ( HLS_gmem0_axi_bready         ), // output wire gmem0_axi_bready
-            .gmem0_axi_araddr           ( HLS_gmem0_axi_araddr         ), // output wire [31 : 0] gmem0_axi_araddr
-            .gmem0_axi_arlen            ( HLS_gmem0_axi_arlen          ), // output wire [7 : 0] gmem0_axi_arlen
-            .gmem0_axi_arsize           ( HLS_gmem0_axi_arsize         ), // output wire [2 : 0] gmem0_axi_arsize
-            .gmem0_axi_arburst          ( HLS_gmem0_axi_arburst        ), // output wire [1 : 0] gmem0_axi_arburst
-            .gmem0_axi_arlock           ( HLS_gmem0_axi_arlock         ), // output wire gmem0_axi_arlock
-            .gmem0_axi_arcache          ( HLS_gmem0_axi_arcache        ), // output wire [3 : 0] gmem0_axi_arcache
-            .gmem0_axi_arprot           ( HLS_gmem0_axi_arprot         ), // output wire [2 : 0] gmem0_axi_arprot
-            .gmem0_axi_arqos            ( HLS_gmem0_axi_arqos          ), // output wire [3 : 0] gmem0_axi_arqos
-            .gmem0_axi_arvalid          ( HLS_gmem0_axi_arvalid        ), // output wire gmem0_axi_arvalid
-            .gmem0_axi_arready          ( HLS_gmem0_axi_arready        ), // input wire gmem0_axi_arready
-            .gmem0_axi_arid             ( HLS_gmem0_axi_arid           ), // output wire [1 : 0] gmem0_axi_arid
-            .gmem0_axi_arregion         ( HLS_gmem0_axi_arregion       ), // output wire [3 : 0] gmem0_axi_arregion
-            .gmem0_axi_rid              ( HLS_gmem0_axi_rid            ), // input wire [1 : 0] gmem0_axi_rid
-            .gmem0_axi_rdata            ( HLS_gmem0_axi_rdata          ), // input wire [31 : 0] gmem0_axi_rdata
-            .gmem0_axi_rresp            ( HLS_gmem0_axi_rresp          ), // input wire [1 : 0] gmem0_axi_rresp
-            .gmem0_axi_rlast            ( HLS_gmem0_axi_rlast          ), // input wire gmem0_axi_rlast
-            .gmem0_axi_rvalid           ( HLS_gmem0_axi_rvalid         ), // input wire gmem0_axi_rvalid
-            .gmem0_axi_rready           ( HLS_gmem0_axi_rready         ), // output wire gmem0_axi_rready
-            .control_axilite_awaddr     ( HLS_CONTROL_axilite_awaddr   ), // input wire [31 : 0] control_axilite_awaddr
-            .control_axilite_awprot     ( HLS_CONTROL_axilite_awprot   ), // input wire [2 : 0] control_axilite_awprot
-            .control_axilite_awvalid    ( HLS_CONTROL_axilite_awvalid  ), // input wire control_axilite_awvalid
-            .control_axilite_awready    ( HLS_CONTROL_axilite_awready  ), // output wire control_axilite_awready
-            .control_axilite_wdata      ( HLS_CONTROL_axilite_wdata    ), // input wire [31 : 0] control_axilite_wdata
-            .control_axilite_wstrb      ( HLS_CONTROL_axilite_wstrb    ), // input wire [3 : 0] control_axilite_wstrb
-            .control_axilite_wvalid     ( HLS_CONTROL_axilite_wvalid   ), // input wire control_axilite_wvalid
-            .control_axilite_wready     ( HLS_CONTROL_axilite_wready   ), // output wire control_axilite_wready
-            .control_axilite_bresp      ( HLS_CONTROL_axilite_bresp    ), // output wire [1 : 0] control_axilite_bresp
-            .control_axilite_bvalid     ( HLS_CONTROL_axilite_bvalid   ), // output wire control_axilite_bvalid
-            .control_axilite_bready     ( HLS_CONTROL_axilite_bready   ), // input wire control_axilite_bready
-            .control_axilite_araddr     ( HLS_CONTROL_axilite_araddr   ), // input wire [31 : 0] control_axilite_araddr
-            .control_axilite_arprot     ( HLS_CONTROL_axilite_arprot   ), // input wire [2 : 0] control_axilite_arprot
-            .control_axilite_arvalid    ( HLS_CONTROL_axilite_arvalid  ), // input wire control_axilite_arvalid
-            .control_axilite_arready    ( HLS_CONTROL_axilite_arready  ), // output wire control_axilite_arready
-            .control_axilite_rdata      ( HLS_CONTROL_axilite_rdata    ), // output wire [31 : 0] control_axilite_rdata
-            .control_axilite_rresp      ( HLS_CONTROL_axilite_rresp    ), // output wire [1 : 0] control_axilite_rresp
-            .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid   ), // output wire control_axilite_rvalid
-            .control_axilite_rready     ( HLS_CONTROL_axilite_rready   )  // input wire control_axilite_rready
-        );
-    end : gen_hls_conv_opt4
-    else if ( CUSTOM_HLS_VERSION == "conv_opt6" ) begin : gen_hls_conv_opt6
-        // NOTE: AXI_DATA_WITDH=512 for this one, and should only be connected to HBUS
-        // HLS core instance
-        custom_hls_conv_opt6 custom_hls_conv_opt6_u (
-            .clk_i                      ( HLS_CONTROL_clk              ), // input wire clk_i
-            .rst_ni                     ( HLS_CONTROL_rstn             ), // input wire rst_ni
-            .interrupt_o                ( hls_interrupt_o              ), // output wire interrupt_o
-            .gmem0_axi_awid             ( HLS_gmem0_d512_axi_awid      ),
-            .gmem0_axi_awaddr           ( HLS_gmem0_d512_axi_awaddr    ),
-            .gmem0_axi_awlen            ( HLS_gmem0_d512_axi_awlen     ),
-            .gmem0_axi_awsize           ( HLS_gmem0_d512_axi_awsize    ),
-            .gmem0_axi_awburst          ( HLS_gmem0_d512_axi_awburst   ),
-            .gmem0_axi_awlock           ( HLS_gmem0_d512_axi_awlock    ),
-            .gmem0_axi_awcache          ( HLS_gmem0_d512_axi_awcache   ),
-            .gmem0_axi_awprot           ( HLS_gmem0_d512_axi_awprot    ),
-            .gmem0_axi_awqos            ( HLS_gmem0_d512_axi_awqos     ),
-            .gmem0_axi_awvalid          ( HLS_gmem0_d512_axi_awvalid   ),
-            .gmem0_axi_awready          ( HLS_gmem0_d512_axi_awready   ),
-            .gmem0_axi_awregion         ( HLS_gmem0_d512_axi_awregion  ),
-            .gmem0_axi_wdata            ( HLS_gmem0_d512_axi_wdata     ),
-            .gmem0_axi_wstrb            ( HLS_gmem0_d512_axi_wstrb     ),
-            .gmem0_axi_wlast            ( HLS_gmem0_d512_axi_wlast     ),
-            .gmem0_axi_wvalid           ( HLS_gmem0_d512_axi_wvalid    ),
-            .gmem0_axi_wready           ( HLS_gmem0_d512_axi_wready    ),
-            .gmem0_axi_bid              ( HLS_gmem0_d512_axi_bid       ),
-            .gmem0_axi_bresp            ( HLS_gmem0_d512_axi_bresp     ),
-            .gmem0_axi_bvalid           ( HLS_gmem0_d512_axi_bvalid    ),
-            .gmem0_axi_bready           ( HLS_gmem0_d512_axi_bready    ),
-            .gmem0_axi_araddr           ( HLS_gmem0_d512_axi_araddr    ),
-            .gmem0_axi_arlen            ( HLS_gmem0_d512_axi_arlen     ),
-            .gmem0_axi_arsize           ( HLS_gmem0_d512_axi_arsize    ),
-            .gmem0_axi_arburst          ( HLS_gmem0_d512_axi_arburst   ),
-            .gmem0_axi_arlock           ( HLS_gmem0_d512_axi_arlock    ),
-            .gmem0_axi_arcache          ( HLS_gmem0_d512_axi_arcache   ),
-            .gmem0_axi_arprot           ( HLS_gmem0_d512_axi_arprot    ),
-            .gmem0_axi_arqos            ( HLS_gmem0_d512_axi_arqos     ),
-            .gmem0_axi_arvalid          ( HLS_gmem0_d512_axi_arvalid   ),
-            .gmem0_axi_arready          ( HLS_gmem0_d512_axi_arready   ),
-            .gmem0_axi_arid             ( HLS_gmem0_d512_axi_arid      ),
-            .gmem0_axi_arregion         ( HLS_gmem0_d512_axi_arregion  ),
-            .gmem0_axi_rid              ( HLS_gmem0_d512_axi_rid       ),
-            .gmem0_axi_rdata            ( HLS_gmem0_d512_axi_rdata     ),
-            .gmem0_axi_rresp            ( HLS_gmem0_d512_axi_rresp     ),
-            .gmem0_axi_rlast            ( HLS_gmem0_d512_axi_rlast     ),
-            .gmem0_axi_rvalid           ( HLS_gmem0_d512_axi_rvalid    ),
-            .gmem0_axi_rready           ( HLS_gmem0_d512_axi_rready    ),
-            .control_axilite_awaddr     ( HLS_CONTROL_axilite_awaddr   ), // input wire [31 : 0] control_axilite_awaddr
-            .control_axilite_awprot     ( HLS_CONTROL_axilite_awprot   ), // input wire [2 : 0] control_axilite_awprot
-            .control_axilite_awvalid    ( HLS_CONTROL_axilite_awvalid  ), // input wire control_axilite_awvalid
-            .control_axilite_awready    ( HLS_CONTROL_axilite_awready  ), // output wire control_axilite_awready
-            .control_axilite_wdata      ( HLS_CONTROL_axilite_wdata    ), // input wire [31 : 0] control_axilite_wdata
-            .control_axilite_wstrb      ( HLS_CONTROL_axilite_wstrb    ), // input wire [3 : 0] control_axilite_wstrb
-            .control_axilite_wvalid     ( HLS_CONTROL_axilite_wvalid   ), // input wire control_axilite_wvalid
-            .control_axilite_wready     ( HLS_CONTROL_axilite_wready   ), // output wire control_axilite_wready
-            .control_axilite_bresp      ( HLS_CONTROL_axilite_bresp    ), // output wire [1 : 0] control_axilite_bresp
-            .control_axilite_bvalid     ( HLS_CONTROL_axilite_bvalid   ), // output wire control_axilite_bvalid
-            .control_axilite_bready     ( HLS_CONTROL_axilite_bready   ), // input wire control_axilite_bready
-            .control_axilite_araddr     ( HLS_CONTROL_axilite_araddr   ), // input wire [31 : 0] control_axilite_araddr
-            .control_axilite_arprot     ( HLS_CONTROL_axilite_arprot   ), // input wire [2 : 0] control_axilite_arprot
-            .control_axilite_arvalid    ( HLS_CONTROL_axilite_arvalid  ), // input wire control_axilite_arvalid
-            .control_axilite_arready    ( HLS_CONTROL_axilite_arready  ), // output wire control_axilite_arready
-            .control_axilite_rdata      ( HLS_CONTROL_axilite_rdata    ), // output wire [31 : 0] control_axilite_rdata
-            .control_axilite_rresp      ( HLS_CONTROL_axilite_rresp    ), // output wire [1 : 0] control_axilite_rresp
-            .control_axilite_rvalid     ( HLS_CONTROL_axilite_rvalid   ), // output wire control_axilite_rvalid
-            .control_axilite_rready     ( HLS_CONTROL_axilite_rready   )  // input wire control_axilite_rready
-        );
-    end : gen_hls_conv_opt6
-    else begin: gen_no_hls
-        // Just sink the interfaces
-        `SINK_AXI_MASTER_INTERFACE(HLS_gmem0)
-        // `SINK_AXILITE_SLAVE_INTERFACE(HLS_CONTROL) // buggy Vivado
-    end : gen_no_hls
-
     ////////////////
     // AXI slaves //
     ////////////////
@@ -1454,94 +679,107 @@ module uninasoc (
 // In HPC profile
 `ifdef HPC
 
-    // TODO: HBUS wants to use channel 0 for now, decide how to assign DDR channels to HBUS or loose MBUS slaves
-    // // DDR4 Channel 0
-    // ddr4_channel_wrapper # (
-    //     .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
-    //     .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
-    //     .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
-    // ) ddr4_channel_0_wrapper_u (
-    //     .clock_i              ( main_clk          ),
-    //     .reset_ni             ( main_rstn         ),
-    //     // DDR4 differential clock
-    //     .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
-    //     .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
+    // HLS CONV2D -> HBUS
+    `DECLARE_AXI_BUS(HLS_gmem0_d512, HBUS_AXI_DATAWIDTH, HBUS_AXI_ADDR_WIDTH, HBUS_AXI_ID_WIDTH)
 
-    //     // Connect DDR4 channel 0
-    //     .cx_ddr4_adr          ( c0_ddr4_adr       ),
-    //     .cx_ddr4_ba           ( c0_ddr4_ba        ),
-    //     .cx_ddr4_cke          ( c0_ddr4_cke       ),
-    //     .cx_ddr4_cs_n         ( c0_ddr4_cs_n      ),
-    //     .cx_ddr4_dq           ( c0_ddr4_dq        ),
-    //     .cx_ddr4_dqs_t        ( c0_ddr4_dqs_t     ),
-    //     .cx_ddr4_dqs_c        ( c0_ddr4_dqs_c     ),
-    //     .cx_ddr4_odt          ( c0_ddr4_odt       ),
-    //     .cx_ddr4_par          ( c0_ddr4_par       ),
-    //     .cx_ddr4_bg           ( c0_ddr4_bg        ),
-    //     .cx_ddr4_act_n        ( c0_ddr4_act_n     ),
-    //     .cx_ddr4_reset_n      ( c0_ddr4_reset_n   ),
-    //     .cx_ddr4_ck_t         ( c0_ddr4_ck_t      ),
-    //     .cx_ddr4_ck_c         ( c0_ddr4_ck_c      ),
-
-    //     // AXILITE interface - for ECC status and control - not connected
-    //     .s_ctrl_axilite_awvalid  ( 1'b0  ),
-    //     .s_ctrl_axilite_awready  (       ),
-    //     .s_ctrl_axilite_awaddr   ( 32'd0 ),
-    //     .s_ctrl_axilite_wvalid   ( 1'b0  ),
-    //     .s_ctrl_axilite_wready   (       ),
-    //     .s_ctrl_axilite_wdata    ( 32'd0 ),
-    //     .s_ctrl_axilite_bvalid   (       ),
-    //     .s_ctrl_axilite_bready   ( 1'b1  ),
-    //     .s_ctrl_axilite_bresp    (       ),
-    //     .s_ctrl_axilite_arvalid  ( 1'b0  ),
-    //     .s_ctrl_axilite_arready  (       ),
-    //     .s_ctrl_axilite_araddr   ( 31'd0 ),
-    //     .s_ctrl_axilite_rvalid   (       ),
-    //     .s_ctrl_axilite_rready   ( 1'b1  ),
-    //     .s_ctrl_axilite_rdata    (       ),
-    //     .s_ctrl_axilite_rresp    (       ),
-
-    //     // Slave interface
-    //     .s_axi_awid           ( MBUS_to_DDR_axi_awid     ),
-    //     .s_axi_awaddr         ( MBUS_to_DDR_axi_awaddr   ),
-    //     .s_axi_awlen          ( MBUS_to_DDR_axi_awlen    ),
-    //     .s_axi_awsize         ( MBUS_to_DDR_axi_awsize   ),
-    //     .s_axi_awburst        ( MBUS_to_DDR_axi_awburst  ),
-    //     .s_axi_awlock         ( MBUS_to_DDR_axi_awlock   ),
-    //     .s_axi_awcache        ( MBUS_to_DDR_axi_awcache  ),
-    //     .s_axi_awprot         ( MBUS_to_DDR_axi_awprot   ),
-    //     .s_axi_awregion       ( MBUS_to_DDR_axi_awregion ),
-    //     .s_axi_awqos          ( MBUS_to_DDR_axi_awqos    ),
-    //     .s_axi_awvalid        ( MBUS_to_DDR_axi_awvalid  ),
-    //     .s_axi_awready        ( MBUS_to_DDR_axi_awready  ),
-    //     .s_axi_wdata          ( MBUS_to_DDR_axi_wdata    ),
-    //     .s_axi_wstrb          ( MBUS_to_DDR_axi_wstrb    ),
-    //     .s_axi_wlast          ( MBUS_to_DDR_axi_wlast    ),
-    //     .s_axi_wvalid         ( MBUS_to_DDR_axi_wvalid   ),
-    //     .s_axi_wready         ( MBUS_to_DDR_axi_wready   ),
-    //     .s_axi_bid            ( MBUS_to_DDR_axi_bid      ),
-    //     .s_axi_bresp          ( MBUS_to_DDR_axi_bresp    ),
-    //     .s_axi_bvalid         ( MBUS_to_DDR_axi_bvalid   ),
-    //     .s_axi_bready         ( MBUS_to_DDR_axi_bready   ),
-    //     .s_axi_arid           ( MBUS_to_DDR_axi_arid     ),
-    //     .s_axi_araddr         ( MBUS_to_DDR_axi_araddr   ),
-    //     .s_axi_arlen          ( MBUS_to_DDR_axi_arlen    ),
-    //     .s_axi_arsize         ( MBUS_to_DDR_axi_arsize   ),
-    //     .s_axi_arburst        ( MBUS_to_DDR_axi_arburst  ),
-    //     .s_axi_arlock         ( MBUS_to_DDR_axi_arlock   ),
-    //     .s_axi_arcache        ( MBUS_to_DDR_axi_arcache  ),
-    //     .s_axi_arprot         ( MBUS_to_DDR_axi_arprot   ),
-    //     .s_axi_arregion       ( MBUS_to_DDR_axi_arregion ),
-    //     .s_axi_arqos          ( MBUS_to_DDR_axi_arqos    ),
-    //     .s_axi_arvalid        ( MBUS_to_DDR_axi_arvalid  ),
-    //     .s_axi_arready        ( MBUS_to_DDR_axi_arready  ),
-    //     .s_axi_rid            ( MBUS_to_DDR_axi_rid      ),
-    //     .s_axi_rdata          ( MBUS_to_DDR_axi_rdata    ),
-    //     .s_axi_rresp          ( MBUS_to_DDR_axi_rresp    ),
-    //     .s_axi_rlast          ( MBUS_to_DDR_axi_rlast    ),
-    //     .s_axi_rvalid         ( MBUS_to_DDR_axi_rvalid   ),
-    //     .s_axi_rready         ( MBUS_to_DDR_axi_rready   )
-    // );
+    // HLS CONV2D IP
+    hls_conv2d_wrapper # (
+        // MBUS parameters
+        .MBUS_AXI_ADDR_WIDTH ( MBUS_AXI_ADDR_WIDTH ),
+        .MBUS_AXI_DATA_WIDTH ( MBUS_AXI_DATA_WIDTH ),
+        .MBUS_AXI_ID_WIDTH   ( MBUS_AXI_ID_WIDTH   ),
+        // HBUS parameters
+        .HBUS_AXI_DATA_WIDTH ( HBUS_AXI_DATA_WIDTH ),
+        .HBUS_AXI_ADDR_WIDTH ( HBUS_AXI_ADDR_WIDTH ),
+        .HBUS_AXI_ID_WIDTH   ( HBUS_AXI_ID_WIDTH   )
+    ) hls_conv2d_wrapper_u (
+        // MBUS clock and reset
+        .main_clk_i          ( main_clk_i ),
+        .main_rstn_i         ( main_rstn_i ),
+        // HLS IP clock and reset (from HBUS)
+        .HLS_CONTROL_clk_i   ( HLS_CONTROL_clk_i  ),
+        .HLS_CONTROL_rstn_i  ( HLS_CONTROL_rstn_i ),
+        // Slave for control
+        .s_HLS_CONTROL_axi_awid     ( MBUS_to_HLS_CONTROL_axi_awid     ),
+        .s_HLS_CONTROL_axi_awaddr   ( MBUS_to_HLS_CONTROL_axi_awaddr   ),
+        .s_HLS_CONTROL_axi_awlen    ( MBUS_to_HLS_CONTROL_axi_awlen    ),
+        .s_HLS_CONTROL_axi_awsize   ( MBUS_to_HLS_CONTROL_axi_awsize   ),
+        .s_HLS_CONTROL_axi_awburst  ( MBUS_to_HLS_CONTROL_axi_awburst  ),
+        .s_HLS_CONTROL_axi_awlock   ( MBUS_to_HLS_CONTROL_axi_awlock   ),
+        .s_HLS_CONTROL_axi_awcache  ( MBUS_to_HLS_CONTROL_axi_awcache  ),
+        .s_HLS_CONTROL_axi_awprot   ( MBUS_to_HLS_CONTROL_axi_awprot   ),
+        .s_HLS_CONTROL_axi_awregion ( MBUS_to_HLS_CONTROL_axi_awregion ),
+        .s_HLS_CONTROL_axi_awqos    ( MBUS_to_HLS_CONTROL_axi_awqos    ),
+        .s_HLS_CONTROL_axi_awvalid  ( MBUS_to_HLS_CONTROL_axi_awvalid  ),
+        .s_HLS_CONTROL_axi_awready  ( MBUS_to_HLS_CONTROL_axi_awready  ),
+        .s_HLS_CONTROL_axi_wdata    ( MBUS_to_HLS_CONTROL_axi_wdata    ),
+        .s_HLS_CONTROL_axi_wstrb    ( MBUS_to_HLS_CONTROL_axi_wstrb    ),
+        .s_HLS_CONTROL_axi_wlast    ( MBUS_to_HLS_CONTROL_axi_wlast    ),
+        .s_HLS_CONTROL_axi_wvalid   ( MBUS_to_HLS_CONTROL_axi_wvalid   ),
+        .s_HLS_CONTROL_axi_wready   ( MBUS_to_HLS_CONTROL_axi_wready   ),
+        .s_HLS_CONTROL_axi_bid      ( MBUS_to_HLS_CONTROL_axi_bid      ),
+        .s_HLS_CONTROL_axi_bresp    ( MBUS_to_HLS_CONTROL_axi_bresp    ),
+        .s_HLS_CONTROL_axi_bvalid   ( MBUS_to_HLS_CONTROL_axi_bvalid   ),
+        .s_HLS_CONTROL_axi_bready   ( MBUS_to_HLS_CONTROL_axi_bready   ),
+        .s_HLS_CONTROL_axi_arid     ( MBUS_to_HLS_CONTROL_axi_arid     ),
+        .s_HLS_CONTROL_axi_araddr   ( MBUS_to_HLS_CONTROL_axi_araddr   ),
+        .s_HLS_CONTROL_axi_arlen    ( MBUS_to_HLS_CONTROL_axi_arlen    ),
+        .s_HLS_CONTROL_axi_arsize   ( MBUS_to_HLS_CONTROL_axi_arsize   ),
+        .s_HLS_CONTROL_axi_arburst  ( MBUS_to_HLS_CONTROL_axi_arburst  ),
+        .s_HLS_CONTROL_axi_arlock   ( MBUS_to_HLS_CONTROL_axi_arlock   ),
+        .s_HLS_CONTROL_axi_arcache  ( MBUS_to_HLS_CONTROL_axi_arcache  ),
+        .s_HLS_CONTROL_axi_arprot   ( MBUS_to_HLS_CONTROL_axi_arprot   ),
+        .s_HLS_CONTROL_axi_arregion ( MBUS_to_HLS_CONTROL_axi_arregion ),
+        .s_HLS_CONTROL_axi_arqos    ( MBUS_to_HLS_CONTROL_axi_arqos    ),
+        .s_HLS_CONTROL_axi_arvalid  ( MBUS_to_HLS_CONTROL_axi_arvalid  ),
+        .s_HLS_CONTROL_axi_arready  ( MBUS_to_HLS_CONTROL_axi_arready  ),
+        .s_HLS_CONTROL_axi_rid      ( MBUS_to_HLS_CONTROL_axi_rid      ),
+        .s_HLS_CONTROL_axi_rdata    ( MBUS_to_HLS_CONTROL_axi_rdata    ),
+        .s_HLS_CONTROL_axi_rresp    ( MBUS_to_HLS_CONTROL_axi_rresp    ),
+        .s_HLS_CONTROL_axi_rlast    ( MBUS_to_HLS_CONTROL_axi_rlast    ),
+        .s_HLS_CONTROL_axi_rvalid   ( MBUS_to_HLS_CONTROL_axi_rvalid   ),
+        .s_HLS_CONTROL_axi_rready   ( MBUS_to_HLS_CONTROL_axi_rready   ),
+        // Master to HBUS
+        .m_HLS_gmem0_d512_axi_awid      ( s_acc_HBUS_axi_awid     ),
+        .m_HLS_gmem0_d512_axi_awaddr    ( s_acc_HBUS_axi_awaddr   ),
+        .m_HLS_gmem0_d512_axi_awlen     ( s_acc_HBUS_axi_awlen    ),
+        .m_HLS_gmem0_d512_axi_awsize    ( s_acc_HBUS_axi_awsize   ),
+        .m_HLS_gmem0_d512_axi_awburst   ( s_acc_HBUS_axi_awburst  ),
+        .m_HLS_gmem0_d512_axi_awlock    ( s_acc_HBUS_axi_awlock   ),
+        .m_HLS_gmem0_d512_axi_awcache   ( s_acc_HBUS_axi_awcache  ),
+        .m_HLS_gmem0_d512_axi_awprot    ( s_acc_HBUS_axi_awprot   ),
+        .m_HLS_gmem0_d512_axi_awqos     ( s_acc_HBUS_axi_awqos    ),
+        .m_HLS_gmem0_d512_axi_awvalid   ( s_acc_HBUS_axi_awvalid  ),
+        .m_HLS_gmem0_d512_axi_awready   ( s_acc_HBUS_axi_awready  ),
+        .m_HLS_gmem0_d512_axi_awregion  ( s_acc_HBUS_axi_awregion ),
+        .m_HLS_gmem0_d512_axi_wdata     ( s_acc_HBUS_axi_wdata    ),
+        .m_HLS_gmem0_d512_axi_wstrb     ( s_acc_HBUS_axi_wstrb    ),
+        .m_HLS_gmem0_d512_axi_wlast     ( s_acc_HBUS_axi_wlast    ),
+        .m_HLS_gmem0_d512_axi_wvalid    ( s_acc_HBUS_axi_wvalid   ),
+        .m_HLS_gmem0_d512_axi_wready    ( s_acc_HBUS_axi_wready   ),
+        .m_HLS_gmem0_d512_axi_bid       ( s_acc_HBUS_axi_bid      ),
+        .m_HLS_gmem0_d512_axi_bresp     ( s_acc_HBUS_axi_bresp    ),
+        .m_HLS_gmem0_d512_axi_bvalid    ( s_acc_HBUS_axi_bvalid   ),
+        .m_HLS_gmem0_d512_axi_bready    ( s_acc_HBUS_axi_bready   ),
+        .m_HLS_gmem0_d512_axi_arid      ( s_acc_HBUS_axi_arid     ),
+        .m_HLS_gmem0_d512_axi_araddr    ( s_acc_HBUS_axi_araddr   ),
+        .m_HLS_gmem0_d512_axi_arlen     ( s_acc_HBUS_axi_arlen    ),
+        .m_HLS_gmem0_d512_axi_arsize    ( s_acc_HBUS_axi_arsize   ),
+        .m_HLS_gmem0_d512_axi_arburst   ( s_acc_HBUS_axi_arburst  ),
+        .m_HLS_gmem0_d512_axi_arlock    ( s_acc_HBUS_axi_arlock   ),
+        .m_HLS_gmem0_d512_axi_arcache   ( s_acc_HBUS_axi_arcache  ),
+        .m_HLS_gmem0_d512_axi_arprot    ( s_acc_HBUS_axi_arprot   ),
+        .m_HLS_gmem0_d512_axi_arqos     ( s_acc_HBUS_axi_arqos    ),
+        .m_HLS_gmem0_d512_axi_arvalid   ( s_acc_HBUS_axi_arvalid  ),
+        .m_HLS_gmem0_d512_axi_arready   ( s_acc_HBUS_axi_arready  ),
+        .m_HLS_gmem0_d512_axi_arregion  ( s_acc_HBUS_axi_arregion ),
+        .m_HLS_gmem0_d512_axi_rid       ( s_acc_HBUS_axi_rid      ),
+        .m_HLS_gmem0_d512_axi_rdata     ( s_acc_HBUS_axi_rdata    ),
+        .m_HLS_gmem0_d512_axi_rresp     ( s_acc_HBUS_axi_rresp    ),
+        .m_HLS_gmem0_d512_axi_rlast     ( s_acc_HBUS_axi_rlast    ),
+        .m_HLS_gmem0_d512_axi_rvalid    ( s_acc_HBUS_axi_rvalid   ),
+        .m_HLS_gmem0_d512_axi_rready    ( s_acc_HBUS_axi_rready   ),
+    );
 
     //////////
     // HBUS //
