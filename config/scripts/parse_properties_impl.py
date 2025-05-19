@@ -14,6 +14,8 @@ import logging
 import math
 # configuration Class declaration
 from configuration import *
+# Valid protocols
+from check_config import VALID_PROTOCOLS
 
 def parse_CORE_SELECTOR (
 		config,
@@ -48,10 +50,15 @@ def parse_Interfaces (
 		match property_name :
 			case "NUM_SI":
 				config.NUM_SI = value
+				# Assert PBUS has only one master
+				if ( config.CONFIG_NAME == "PBUS" ) and ( value != 1 ):
+					logging.error(property_name  + " must be 1 for PBUS, not " + str(value))
+					exit(1)
 			case "NUM_MI":
 				config.NUM_MI = value
 	else:
 		logging.warning(property_name  + " out-of-range (0..16). Using default value.")
+
 	return config
 
 def parse_STRATEGY (
@@ -100,10 +107,11 @@ def parse_PROTOCOL (
 	# Reads the AXI PROTOCOL Version
 	# The range of possible values is (AXI4, AXI4LITE, AXI3) whith AXI4 as deafault value
 	# If the value is missing or is incorrect in the csv file,  default value is used
-	if ((property_value == "AXI4") or (property_value == "AXI4LITE") or (property_value == "AXI3")):
+	if property_value in VALID_PROTOCOLS:
 		config.PROTOCOL = property_value
 	else:
-		logging.warning("PROTOCOL invalid. Using default value (AXI4).")
+		logging.error(f"PROTOCOL {property_value} invalid.")
+		exit(1)
 	return config
 
 def parse_XLEN (
@@ -111,24 +119,38 @@ def parse_XLEN (
 		property_name : str,
 		property_value: str,
 ):
+	# No need to parse for mock buses
+	if (config.PROTOCOL == "MOCK"):
+		# No-op
+		return config
 
-	# When parsing the Peripheral Bus, fix the Data Width to 32
-	if config.CONFIG_NAME == "PBUS":
-		config.XLEN = 32
-		config.set_DATA_WIDTH(32)
-	else:
-		# XLEN property will set bus DATA_WIDTH
-		# Note: ADDR_WIDTH is set by parse PHYSICAL_ADDR_WIDTH after XLEN is parsed
-		value = int(property_value)
-		config.XLEN = value
-
-		# Check if the XLEN value is valid
-		if (value not in [32, 64]):
-			logging.warning("Invalid XLEN value, please select either 32 or 64")
-
-		# Select BUS DATA_WIDTH accordingly
-		data_width = int(config.XLEN)
-		config.set_DATA_WIDTH(data_width)
+	# Set BUS-related parameters
+	match config.CONFIG_NAME:
+		# Main bus, use XLEN
+		case "MBUS":
+			value = int(property_value)
+			# Check if the XLEN value is valid
+			if (value not in [32, 64]):
+				logging.warning("Invalid XLEN value ({value}), please select either 32 or 64")
+			# XLEN property will set bus DATA_WIDTH
+			# Note: ADDR_WIDTH is set by parse PHYSICAL_ADDR_WIDTH after XLEN is parsed
+			config.XLEN = value
+			# Select BUS DATA_WIDTH accordingly
+			config.set_DATA_WIDTH(value)
+		# Peripheral Bus, fix Data Width to 32
+		case "PBUS":
+			config.XLEN = 32
+			config.set_DATA_WIDTH(32)
+		# High-performance Bus, fix Data Width to 512
+		case "HBUS":
+			config.set_DATA_WIDTH(512)
+		# SoC config
+		case "SYS":
+			# No-op
+			logging.info("Skipping DATA_WIDTH set for SYS")
+		case _:
+			logging.error("Can't read valid config.CONFIG_NAME " + config.CONFIG_NAME)
+			exit(1)
 
 	return config
 
@@ -154,6 +176,7 @@ def parse_PHYSICAL_ADDR_WIDTH (
 			or \
 			((xlen == 64) and (physical_addr_width < 32)) :
 			logging.error("Invalid XLEN ({xlen}) and physical_addr_width ({phyisical_addr_width}) values established")
+			exit(1)
 
 		# Set proptery in config
 		config.PHYISICAL_ADDR_WIDTH = physical_addr_width
@@ -474,6 +497,12 @@ def parse_RANGE_BASE_ADDR (
 		property_name : str,
 		property_value: str,
 	):
+
+	# No need to parse for mock buses
+	if (config.PROTOCOL == "MOCK"):
+		# No-op
+		return config
+
 	# Reads every up to 64-bit Range Base Address for each Master Interface
 	# The range of possible values is [0x0000000000000000 ; 0xffffffffffffffff] with 0xffffffffffffffff (not used) as deafault value (0x0000000000100000 for the first Range of every Master)
 	# If the value is missing or is incorrect, an error is generated
@@ -509,8 +538,10 @@ def parse_RANGE_BASE_ADDR (
 					config.BASE_ADDR.append(values[(config.ADDR_RANGES * i) + j])
 		else:
 			logging.error("Wrong RANGE_BASE_ADDR format.")
+			exit(1)
 	else:
 		logging.error("Not enough correct RANGE_BASE_ADDR values.")
+		exit(1)
 	# Return
 	return config
 
@@ -519,6 +550,12 @@ def parse_RANGE_ADDR_WIDTH (
 		property_name : str,
 		property_value: str,
 	):
+
+	# No need to parse for mock buses
+	if (config.PROTOCOL == "MOCK"):
+		# No-op
+		return config
+
 	# Reads every Range Address Width for each Master Interface. It must be inferior to the global Address Width
 	# [AXI4 ; AXI3] => the range of possible values is (12..64) whith 0 as deafault value (12 for the first Range of every Master)
 	# AXI4LITE => the range of possible values is (1..64) whith 0 as deafault value (12 for the first Range of every Master)
@@ -562,13 +599,8 @@ def parse_RANGE_ADDR_WIDTH (
 						else:
 							logging.warning("A RANGE_ADDR_WIDTH value is out-of-range (12..64) or greater than global Address Width. Using default value for this Master." + " - M" + str(i) + ",  Range " + str(j))
 	else:
-		for i in range(config.NUM_MI):
-			for j in range(config.ADDR_RANGES):
-					if (j == 0):
-						config.RANGE_ADDR_WIDTH.append(12)
-					else:
-						config.RANGE_ADDR_WIDTH.append(0)
-		logging.warning("Not enough correct Range Width values have been given. Using default values.")
+		logging.error("Not enough correct Range Width values have been given.")
+		exit(1)
 	return config
 
 def parse_Connectivity (

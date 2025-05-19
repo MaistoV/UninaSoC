@@ -18,10 +18,10 @@
 //-------------------------------------------------------------- HPC -------------------------------------------------------------------------------
 //
 //                                                                    _____________                      ____________
-// pcie_refclk_p   _____________       ______  data [64b]            |             | data[DATA_WIDTH]   |            | data[DATA_WIDTH]
+// pcie_refclk_p   _____________       ______                        |             |    XLEN            |            |
 // -------------->|             |     |      |---------------------->| Dwidth Conv |------------------->| Clock Conv |------------------>
-// pcie_refclk_n  | IBUFDS GTE4 |---->| XDMA |                  |--->|_____________|    |-------------->|____________|<----|
-//                |             |     |      |                  |                       |                ______________    |
+// pcie_refclk_n  | IBUFDS GTE4 |---->| XDMA |                  |--->|  (optional) |    |-------------->|____________|<----|
+//                |             |     |      |                  |    |_____________|    |                ______________    |
 // -------------->|_____________|     |      | axi_aclk[250MHz] |                       |               |              |   | soc_clock [10, 20, 50, 100, 250 (MHz)]
 //                                    |      |--------------------------------------------------------->| Clock Wizard |----------------->
 //                                    |______|                                                          |______________|
@@ -383,7 +383,12 @@ module sys_master # (
         `ASSIGN_AXI_BUS (axi_dwidth_converter_to_clock_converter, xdma_to_axi_dwidth_converter);
     end : no_dwidth_conv
 
-    xlnx_axi_clock_converter xlnx_axi_clock_converter_u (
+    // Clock converter
+    axi_clock_converter_wrapper # (
+        .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
+        .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
+        .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
+    ) axi_clock_converter_u (
         .s_axi_aclk     ( axi_aclk    ),
         .s_axi_aresetn  ( axi_aresetn ),
 
