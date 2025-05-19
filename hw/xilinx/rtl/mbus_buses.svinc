@@ -32,5 +32,5 @@
 /////////////////////////////////
 // Concatenate AXI slave buses //
 /////////////////////////////////
-`DECLARE_AXI_BUS_ARRAY(MBUS_slaves, HBUS_NUM_MI, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH)
+`DECLARE_AXI_BUS_ARRAY(MBUS_slaves, MBUS_NUM_MI, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH)
 `CONCAT_AXI_SLAVES_ARRAY6(MBUS_slaves, MBUS_to_PLIC, MBUS_to_HBUS, MBUS_to_HLS_CONTROL, MBUS_to_PBUS, MBUS_to_DM_mem, MBUS_to_BRAM)
