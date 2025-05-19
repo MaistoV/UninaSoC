@@ -136,7 +136,11 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
 
 
     # Declare an AXI4/AXILITE BUS ARRAY master/slave
+<<<<<<< HEAD
     lines.append(f"{declare_prefix}{config.CONFIG_NAME}{suffix}, {bus_cnt_str}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
+=======
+    lines.append(f"{declare_prefix}{config.CONFIG_NAME}{suffix}, {bus_cnt_str}{DECLARE_BUS_SUFFIX}")
+>>>>>>> origin/feature/rv64/cv64a6
     # Concatenate all master/slave buses with the declared AXI4/AXILITE BUS ARRAY
     lines.append(f"{concat_prefix}{len(buses)}({config.CONFIG_NAME}{suffix}{buses_string}{BASE_SUFFIX}")
 
@@ -166,8 +170,13 @@ def declare_buses(lines : list, is_master : bool, config : configuration.Configu
 
         if config.CONFIG_NAME == "PBUS":
             # If the bus is PBUS declare an AXILITE bus using the last created bus name
+<<<<<<< HEAD
             lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
         elif config.CONFIG_NAME in {"MBUS", "HBUS"}:
+=======
+            lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{DECLARE_BUS_SUFFIX}")
+        else:
+>>>>>>> origin/feature/rv64/cv64a6
             # If the bus is not PBUS declare an AXI4 bus using the last created bus name
             lines.append(f"{DECLARE_BUS_PREFIX}{buses[-1]}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
     return buses

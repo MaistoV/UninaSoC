@@ -99,7 +99,7 @@
 //////////////////
 
 // MEM MASTER PORTS
-`define DEFINE_MEM_MASTER_PORTS(bus_name, DATA_WIDTH, ADDR_WIDTH)               \
+`define DEFINE_MEM_MASTER_PORTS(bus_name, DATA_WIDTH, ADDR_WIDTH)    \
     output logic                        ``bus_name``_mem_req,        \
     input  logic                        ``bus_name``_mem_gnt,        \
     input  logic                        ``bus_name``_mem_valid,      \
@@ -110,7 +110,7 @@
     output logic [(DATA_WIDTH)/8-1 : 0] ``bus_name``_mem_be,         \
     input  logic                        ``bus_name``_mem_error
 
-`define DEFINE_MEM_SLAVE_PORTS(bus_name, DATA_WIDTH, ADDR_WIDTH)                \
+`define DEFINE_MEM_SLAVE_PORTS(bus_name, DATA_WIDTH, ADDR_WIDTH)     \
     input  logic                        ``bus_name``_mem_req,        \
     output logic                        ``bus_name``_mem_gnt,        \
     output logic                        ``bus_name``_mem_valid,      \

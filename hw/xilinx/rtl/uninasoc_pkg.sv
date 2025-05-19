@@ -27,6 +27,11 @@ package uninasoc_pkg;
     localparam int unsigned HBUS_ADDR_WIDTH = `MBUS_ADDR_WIDTH; // Same as MBUS
     localparam int unsigned HBUS_ID_WIDTH   = `HBUS_ID_WIDTH; // From HBUS config
 
+    // System widths depending on XLEN
+    localparam SYS_DATA_WIDTH = `SYS_DATA_WIDTH;
+    localparam SYS_ADDR_WIDTH = `SYS_ADDR_WIDTH;
+    localparam SYS_ID_WIDTH = `SYS_ID_WIDTH;
+
     ///////////////////////
     // AXI main crossbar //
     ///////////////////////
@@ -56,10 +61,13 @@ package uninasoc_pkg;
     //////////////////////////
 
     typedef enum int unsigned {
+        // 32-bits Cores
         CORE_PICORV32,
         CORE_CV32E40P,
         CORE_IBEX,
-        CORE_MICROBLAZEV
+        CORE_MICROBLAZEV,
+        // 64-bits Cores
+        CORE_CV64A6
     } core_selector_t;
 
     // Select core from macro

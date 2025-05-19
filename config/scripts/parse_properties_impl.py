@@ -124,6 +124,14 @@ def parse_XLEN (
 		# No-op
 		return config
 
+	# XLEN property will set bus DATA_WIDTH and ADDR_WIDTH
+	value = int(property_value)
+	config.XLEN = value
+
+	# Check sanity
+	if (value not in [32, 64]):
+		logging.warning("Invalid XLEN value, please select either 32 or 64")
+
 	# Set BUS-related parameters
 	match config.CONFIG_NAME:
 		# Main bus, use XLEN
