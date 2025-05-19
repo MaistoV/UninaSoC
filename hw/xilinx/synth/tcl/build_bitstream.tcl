@@ -55,6 +55,11 @@ set project_dir [get_property directory [current_project]]
 set report_dir $project_dir/reports
 exec mkdir -p $report_dir
 
+##########
+# Linter #
+##########
+synth_design -lint -file $report_dir/lint.log
+
 ###################
 # RTL elaboration #
 ###################
