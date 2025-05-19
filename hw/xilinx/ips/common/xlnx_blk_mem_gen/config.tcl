@@ -36,6 +36,7 @@ set_property CONFIG.Read_Width_B  $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP
 set_property CONFIG.AXI_ID_Width  $::env(MBUS_ID_WIDTH)       [get_ips $::env(IP_NAME)]
 
 # Get the BRAM depth
+# TODO: this parameter does not update this file, hence the IP is not going to be rebuilt
 set bram_depths [split $::env(BRAM_DEPTHS) " "]
 # This file is the config for the first BRAM occurrence, hence it uses the index 0
 set_property CONFIG.Write_Depth_A [lindex $bram_depths 0] [get_ips $::env(IP_NAME)]

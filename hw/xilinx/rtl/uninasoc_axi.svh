@@ -832,7 +832,6 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     input  axi_valid_t                  ``master_name``_axi_rvalid,   \
     output axi_ready_t                  ``master_name``_axi_rready
 
-
 // AXI4 SLAVE PORTS
 `define DEFINE_AXI_SLAVE_PORTS(slave_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)         \
   // AW channel                                    \
@@ -879,6 +878,53 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
   output axi_last_t                     ``slave_name``_axi_rlast,    \
   output axi_valid_t                    ``slave_name``_axi_rvalid,   \
   input  axi_ready_t                    ``slave_name``_axi_rready
+
+// AXI4 SLAVE PORTS
+`define DEFINE_AXI_SLAVE_PORTS_dwidth(slave_name, DATA_WIDTH)         \
+  // AW channel                                    \
+  input  axi_id_t     ``slave_name``_axi_awid,     \
+  input  axi_addr_t   ``slave_name``_axi_awaddr,   \
+  input  axi_len_t    ``slave_name``_axi_awlen,    \
+  input  axi_size_t   ``slave_name``_axi_awsize,   \
+  input  axi_burst_t  ``slave_name``_axi_awburst,  \
+  input  axi_lock_t   ``slave_name``_axi_awlock,   \
+  input  axi_cache_t  ``slave_name``_axi_awcache,  \
+  input  axi_prot_t   ``slave_name``_axi_awprot,   \
+  input  axi_qos_t    ``slave_name``_axi_awqos,    \
+  input  axi_valid_t  ``slave_name``_axi_awvalid,  \
+  output axi_ready_t  ``slave_name``_axi_awready,  \
+  input  axi_region_t ``slave_name``_axi_awregion, \
+  // W channel                                     \
+  input  logic [DATA_WIDTH-1 : 0]      ``slave_name``_axi_wdata,    \
+  input  logic [(DATA_WIDTH/8)-1 : 0]  ``slave_name``_axi_wstrb,    \
+  input  axi_last_t   ``slave_name``_axi_wlast,    \
+  input  axi_valid_t  ``slave_name``_axi_wvalid,   \
+  output axi_ready_t  ``slave_name``_axi_wready,   \
+  // B channel                                     \
+  output axi_id_t     ``slave_name``_axi_bid,      \
+  output axi_resp_t   ``slave_name``_axi_bresp,    \
+  output axi_valid_t  ``slave_name``_axi_bvalid,   \
+  input  axi_ready_t  ``slave_name``_axi_bready,   \
+  // AR channel                                    \
+  input  axi_addr_t   ``slave_name``_axi_araddr,   \
+  input  axi_len_t    ``slave_name``_axi_arlen,    \
+  input  axi_size_t   ``slave_name``_axi_arsize,   \
+  input  axi_burst_t  ``slave_name``_axi_arburst,  \
+  input  axi_lock_t   ``slave_name``_axi_arlock,   \
+  input  axi_cache_t  ``slave_name``_axi_arcache,  \
+  input  axi_prot_t   ``slave_name``_axi_arprot,   \
+  input  axi_qos_t    ``slave_name``_axi_arqos,    \
+  input  axi_valid_t  ``slave_name``_axi_arvalid,  \
+  output axi_ready_t  ``slave_name``_axi_arready,  \
+  input  axi_id_t     ``slave_name``_axi_arid,     \
+  input  axi_region_t ``slave_name``_axi_arregion, \
+  // R channel                                     \
+  output axi_id_t     ``slave_name``_axi_rid,      \
+  output [DATA_WIDTH-1 : 0] ``slave_name``_axi_rdata,    \
+  output axi_resp_t   ``slave_name``_axi_rresp,    \
+  output axi_last_t   ``slave_name``_axi_rlast,    \
+  output axi_valid_t  ``slave_name``_axi_rvalid,   \
+  input  axi_ready_t  ``slave_name``_axi_rready
 
 // AXI4 LITE MASTER PORTS
 `define DEFINE_AXILITE_MASTER_PORTS(master_name, DATA_WIDTH, ADDR_WIDTH, ID_WIDTH)          \
