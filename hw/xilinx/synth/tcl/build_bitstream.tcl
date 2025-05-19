@@ -71,6 +71,7 @@ close $fp
 set lines [split $file_data "\n"]
 set substring "CRITICAL WARNING"
 set line_cnt 0
+set critical_found "false"
 foreach line_value $lines {
     set line_cnt [expr $line_cnt + 1]
     if {[string first $substring $line_value] != -1} {
