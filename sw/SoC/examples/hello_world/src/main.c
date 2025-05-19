@@ -1,18 +1,21 @@
-// Description: Basic hello world application on platform
+#include "tinyIO.h"
+#include <stdint.h>
 
-#include "uninasoc.h"
+extern const volatile uint32_t _peripheral_UART_start;
 
 int main()
 {
 
-  // Init platform
-  uninasoc_init();
+  uint32_t uart_base_address = (uint32_t) &_peripheral_UART_start;
 
-  // Print
+  tinyIO_init(uart_base_address);
+
   printf("Hello World!\n\r");
 
-  // Return
+  while(1);
+
   return 0;
 
 }
+
 
