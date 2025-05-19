@@ -8,7 +8,6 @@
 //
 //      ___________          ____________         _______________                _____________             _______
 //     |           |  AXI4  |            | AXI4  |               |   AXI Lite   |             |           |       |
-<<<<<<< HEAD
 //     |   Clock   | (XLEN) | Data Width | (32)  |  AXI Protocol |     (32)     |             |---------->| UART  |
 // --->| Converter |------->| Converter  |------>|   Converter   |------------->| Peripheral  |           |_______|
 //     |           |        | (Optional) |       |               |              |    XBAR     |
@@ -31,29 +30,6 @@
 //        |                  |       NUM_IRQ interrupts                                                                | | | |
 // <------| CDC Synchronizer |<----------------------------------------------------------------------------------------|-|-|-|
 //        |__________________|
-=======
-// --->|   Clock   |------->| Data Width |------>|  AXI Protocol |------------->|             |---------->| UART  |
-//     | Converter |        |  Converter |       |   Converter   |              | Pheripheral |           |_______|
-//     |___________|        |____________|       |_______________|              |    XBAR     |
-//                                                                              |  (axilite)  |            ___________
-//                                                                              |             |           |           |
-//                                                                              |             |---------->| GPIO_out  |
-//                                                                              |             |           |___________|
-//                                                                              |             |            ___________
-//                                                                              |             |           |           |
-//                                                                              |             |---------->| GPIO_in   |
-//                                                                              |             |           |___________|
-//                                                                              |             |            ________
-//                                                                              |             |           |        |
-//                                                                              |             |---------->| TIM0   |
-//                                                                              |             |           |________|
-//                                                                              |             |            ________
-//                                                                              |             |           |        |
-//                                                                              |             |---------->| TIM1   |
-//                                                                              |_____________|           |________|
-//
-//
->>>>>>> origin/feature/rv64/cv64a6
 //
 
 // Import packages
@@ -67,22 +43,14 @@ module peripheral_bus #(
     parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
     parameter int unsigned    LOCAL_ID_WIDTH    = 2,
     parameter int unsigned    NUM_IRQ           = 4
-<<<<<<< HEAD
 )(
-=======
-    )(
->>>>>>> origin/feature/rv64/cv64a6
     input logic main_clock_i,
     input logic main_reset_ni,
     input logic PBUS_clock_i,
     input logic PBUS_reset_ni,
 
     // AXI4 Slave interface from the main xbar
-<<<<<<< HEAD
     `DEFINE_AXI_SLAVE_PORTS(s, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH),
-=======
-    `DEFINE_AXI_SLAVE_PORTS(s, SYS_DATA_WIDTH, SYS_ADDR_WIDTH, SYS_ID_WIDTH),
->>>>>>> origin/feature/rv64/cv64a6
 
     // EMBEDDED ONLY
     // UART interface
@@ -102,15 +70,9 @@ module peripheral_bus #(
     // Buses declaration and concatenation //
     /////////////////////////////////////////
     `include "pbus_buses.svinc"
-<<<<<<< HEAD
     `DECLARE_AXI_BUS(to_dwidth_conv, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH)
     `DECLARE_AXI_BUS(to_prot_conv, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 
-=======
-    `DECLARE_AXI_BUS(to_dwidth_conv, SYS_DATA_WIDTH, SYS_ADDR_WIDTH, SYS_ID_WIDTH)
-    `DECLARE_AXI_BUS(to_prot_conv, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
-    
->>>>>>> origin/feature/rv64/cv64a6
     ///////////////////////
     // Interrupt Signals //
     ///////////////////////
@@ -129,17 +91,9 @@ module peripheral_bus #(
     // Converter has the system size (i.e XLEN), which may be either 64 or 32
     `ifdef PBUS_HAS_CLOCK_DOMAIN
         axi_clock_converter_wrapper # (
-<<<<<<< HEAD
             .LOCAL_DATA_WIDTH   (MBUS_DATA_WIDTH),
             .LOCAL_ADDR_WIDTH   (MBUS_ADDR_WIDTH),
             .LOCAL_ID_WIDTH     (MBUS_ID_WIDTH)
-=======
-
-        .LOCAL_DATA_WIDTH   (SYS_DATA_WIDTH),
-        .LOCAL_ADDR_WIDTH   (SYS_ADDR_WIDTH),
-        .LOCAL_ID_WIDTH     (SYS_ID_WIDTH)
-
->>>>>>> origin/feature/rv64/cv64a6
         ) axi_clk_conv_u (
 
             .s_axi_aclk     ( main_clock_i   ),
@@ -258,7 +212,6 @@ module peripheral_bus #(
 
 
     `else // The PBUS has the same clock of main clock
-<<<<<<< HEAD
         // Passthrough slave interface
         `ASSIGN_AXI_BUS (to_dwidth_conv, s)
 
@@ -270,9 +223,6 @@ module peripheral_bus #(
             int_o[PBUS_TIM1_INTERRUPT]   = tim1_int;
             int_o[PBUS_UART_INTERRUPT]   = uart_int;
         end
-=======
-        `ASSIGN_AXI_BUS (to_dwidth_conv, s)
->>>>>>> origin/feature/rv64/cv64a6
     `endif
 
     //////////////////////////
@@ -280,11 +230,7 @@ module peripheral_bus #(
     //////////////////////////
 
     // Use a Dwidth converter if System XLEN is 64-bits wide.
-<<<<<<< HEAD
     if ( MBUS_DATA_WIDTH == 64 ) begin : gen_dwidth_conv
-=======
-    if( SYS_DATA_WIDTH == 64 ) begin: clock_conv_to_dwidth_conv
->>>>>>> origin/feature/rv64/cv64a6
 
         xlnx_axi_dwidth_64_to_32_converter axi_dwidth_conv_u (
             .s_axi_aclk     ( PBUS_clock_i      ),
@@ -374,17 +320,10 @@ module peripheral_bus #(
         assign to_prot_conv_axi_bid  = '0;
         assign to_prot_conv_axi_arid = '0;
         assign to_prot_conv_axi_rid  = '0;
-<<<<<<< HEAD
     end : gen_dwidth_conv
     else begin : no_dwidth_conv
         `ASSIGN_AXI_BUS (to_prot_conv, to_dwidth_conv)
     end : no_dwidth_conv
-=======
-
-    end else begin: clock_conv_to_prot_conv
-        `ASSIGN_AXI_BUS (to_prot_conv, to_dwidth_conv)
-    end;
->>>>>>> origin/feature/rv64/cv64a6
 
     /////////////////////
     // AXI-lite Master //
@@ -509,19 +448,10 @@ module peripheral_bus #(
 
     // AXI4 Lite UART
     axilite_uart # (
-<<<<<<< HEAD
         .LOCAL_DATA_WIDTH   ( LOCAL_DATA_WIDTH ),
         .LOCAL_ADDR_WIDTH   ( LOCAL_ADDR_WIDTH ),
         .LOCAL_ID_WIDTH     ( LOCAL_ID_WIDTH   )
     ) axilite_uart_u (
-=======
-
-        .LOCAL_DATA_WIDTH   (LOCAL_DATA_WIDTH),
-        .LOCAL_ADDR_WIDTH   (LOCAL_ADDR_WIDTH),
-        .LOCAL_ID_WIDTH     (LOCAL_ID_WIDTH)
-        
-        ) axilite_uart_u (
->>>>>>> origin/feature/rv64/cv64a6
         .clock_i        ( PBUS_clock_i              ), // input wire s_axi_aclk
         .reset_ni       ( PBUS_reset_ni             ), // input wire s_axi_aresetn
         .int_core_o     ( uart_int                  ), // Output interrupt

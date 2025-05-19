@@ -8,10 +8,9 @@
 # Values #
 ##########
 
-<<<<<<< HEAD
 # System
-XLEN ?= 32
-PHYSICAL_ADDR_WIDTH ?= 32
+XLEN ?= 64
+PHYSICAL_ADDR_WIDTH ?= 64
 
 # MBUS
 MBUS_NUM_SI ?= 5
@@ -19,13 +18,6 @@ MBUS_NUM_MI ?= 6
 MBUS_ADDR_WIDTH ?= ${PHYSICAL_ADDR_WIDTH}
 MBUS_DATA_WIDTH ?= ${XLEN}
 MBUS_ID_WIDTH ?= 3
-=======
-# AXI
-XLEN ?= 64
-ADDR_WIDTH ?= ${XLEN}
-DATA_WIDTH ?= ${XLEN}
-ID_WIDTH ?= 4
->>>>>>> origin/feature/rv64/cv64a6
 
 # PBUS
 PBUS_NUM_MI ?= 3

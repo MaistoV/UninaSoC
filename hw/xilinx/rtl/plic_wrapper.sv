@@ -81,10 +81,6 @@ module plic_wrapper # (
             .s_axi_arqos    ( 0   ),
             .s_axi_arregion ( 0   ),
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/feature/rv64/cv64a6
             // Master to Protocol Converter
             .m_axi_awaddr   ( to_plic_axi_awaddr  ),
             .m_axi_awlen    ( to_plic_axi_awlen   ),
