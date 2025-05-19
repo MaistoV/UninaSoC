@@ -184,8 +184,8 @@ module highperformance_bus #(
         .m_axi_awlock   ( s_MBUS_clock_conv_to_dwidth_conv_axi_awlock   ),
         .m_axi_awcache  ( s_MBUS_clock_conv_to_dwidth_conv_axi_awcache  ),
         .m_axi_awprot   ( s_MBUS_clock_conv_to_dwidth_conv_axi_awprot   ),
-        .m_axi_awregion ( s_MBUS_clock_conv_to_dwidth_conv_axi_awregion ),
-        .m_axi_awqos    ( s_MBUS_clock_conv_to_dwidth_conv_axi_awqos    ),
+        .m_axi_awregion ( s_MBUS_clock_conv_to_dwidth_conv_axi_awregion ), // Open
+        .m_axi_awqos    ( s_MBUS_clock_conv_to_dwidth_conv_axi_awqos    ), // Open
         .m_axi_awvalid  ( s_MBUS_clock_conv_to_dwidth_conv_axi_awvalid  ),
         .m_axi_awready  ( s_MBUS_clock_conv_to_dwidth_conv_axi_awready  ),
         .m_axi_wdata    ( s_MBUS_clock_conv_to_dwidth_conv_axi_wdata    ),
@@ -205,8 +205,8 @@ module highperformance_bus #(
         .m_axi_arlock   ( s_MBUS_clock_conv_to_dwidth_conv_axi_arlock   ),
         .m_axi_arcache  ( s_MBUS_clock_conv_to_dwidth_conv_axi_arcache  ),
         .m_axi_arprot   ( s_MBUS_clock_conv_to_dwidth_conv_axi_arprot   ),
-        .m_axi_arregion ( s_MBUS_clock_conv_to_dwidth_conv_axi_arregion ),
-        .m_axi_arqos    ( s_MBUS_clock_conv_to_dwidth_conv_axi_arqos    ),
+        .m_axi_arregion ( s_MBUS_clock_conv_to_dwidth_conv_axi_arregion ), // Open
+        .m_axi_arqos    ( s_MBUS_clock_conv_to_dwidth_conv_axi_arqos    ), // Open
         .m_axi_arvalid  ( s_MBUS_clock_conv_to_dwidth_conv_axi_arvalid  ),
         .m_axi_arready  ( s_MBUS_clock_conv_to_dwidth_conv_axi_arready  ),
         .m_axi_rid      ( s_MBUS_clock_conv_to_dwidth_conv_axi_rid      ),
@@ -219,10 +219,6 @@ module highperformance_bus #(
 
     // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface HBUS data width)
     // Tie-off undriven nets
-    assign s_MBUS_clock_conv_to_dwidth_conv_axi_awqos    = '0;
-    assign s_MBUS_clock_conv_to_dwidth_conv_axi_arqos    = '0;
-    assign s_MBUS_clock_conv_to_dwidth_conv_axi_arregion = '0;
-    assign s_MBUS_clock_conv_to_dwidth_conv_axi_awregion = '0;
     // s_MBUS_clock_conv_to_dwidth_conv -> dwidth_conv_to_HBUS
     xlnx_axi_dwidth_to512_converter axi_dwidth_conv_s_MBUS_u (
         .s_axi_aclk     ( HBUS_clk     ),
@@ -311,11 +307,6 @@ module highperformance_bus #(
     );
 
     // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface HBUS data width)
-    // Tie-off undriven nets
-    assign dwidth_conv_from_HBUS_axi_awqos    = '0;
-    assign dwidth_conv_from_HBUS_axi_arqos    = '0;
-    assign dwidth_conv_from_HBUS_axi_arregion = '0;
-    assign dwidth_conv_from_HBUS_axi_awregion = '0;
     // dwidth_conv_from_HBUS -> m_MBUS_dwidth_conv_to_clock_conv
     xlnx_axi_dwidth_from512_converter axi_dwidth_conv_m_MBUS_u (
         // Clock and reset
@@ -358,10 +349,10 @@ module highperformance_bus #(
         .s_axi_awqos    ( dwidth_conv_from_HBUS_axi_awqos   ),
         .s_axi_awregion ( dwidth_conv_from_HBUS_axi_awregion),
         .s_axi_arlock   ( dwidth_conv_from_HBUS_axi_arlock  ),
-        .s_axi_arcache  ( dwidth_conv_from_HBUS_axi_arcache ),
-        .s_axi_arprot   ( dwidth_conv_from_HBUS_axi_arprot  ),
-        .s_axi_arqos    ( dwidth_conv_from_HBUS_axi_arqos   ),
-        .s_axi_arregion ( dwidth_conv_from_HBUS_axi_arregion),
+        .s_axi_arcache  ( dwidth_conv_from_HBUS_axi_arcache ), // Open
+        .s_axi_arprot   ( dwidth_conv_from_HBUS_axi_arprot  ), // Open
+        .s_axi_arqos    ( dwidth_conv_from_HBUS_axi_arqos   ), // Open
+        .s_axi_arregion ( dwidth_conv_from_HBUS_axi_arregion), // Open
         // Master
         // .m_axi_awid     ( m_MBUS_dwidth_conv_to_clock_conv_axi_awid    ),
         .m_axi_awaddr   ( m_MBUS_dwidth_conv_to_clock_conv_axi_awaddr  ),
