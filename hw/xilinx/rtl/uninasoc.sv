@@ -680,25 +680,29 @@ module uninasoc (
 `ifdef HPC
 
     // HLS CONV2D -> HBUS
-    `DECLARE_AXI_BUS(HLS_gmem0_d512, HBUS_AXI_DATAWIDTH, HBUS_AXI_ADDR_WIDTH, HBUS_AXI_ID_WIDTH)
+    `DECLARE_AXI_BUS(HLS_gmem0_d512, HBUS_DATA_WIDTH, HBUS_ADDR_WIDTH, HBUS_ID_WIDTH)
+    // TODO: Only one HBUS accelerator for now
+    `DECLARE_AXI_BUS(s_acc_HBUS, HBUS_DATA_WIDTH, HBUS_ADDR_WIDTH, HBUS_ID_WIDTH)
+    // Just pass through the interface
+    `ASSIGN_AXI_BUS(s_acc_HBUS, HLS_gmem0_d512)
 
     // HLS CONV2D IP
     hls_conv2d_wrapper # (
         // MBUS parameters
-        .MBUS_AXI_ADDR_WIDTH ( MBUS_AXI_ADDR_WIDTH ),
-        .MBUS_AXI_DATA_WIDTH ( MBUS_AXI_DATA_WIDTH ),
-        .MBUS_AXI_ID_WIDTH   ( MBUS_AXI_ID_WIDTH   ),
+        .MBUS_ADDR_WIDTH ( MBUS_ADDR_WIDTH ),
+        .MBUS_DATA_WIDTH ( MBUS_DATA_WIDTH ),
+        .MBUS_ID_WIDTH   ( MBUS_ID_WIDTH   ),
         // HBUS parameters
-        .HBUS_AXI_DATA_WIDTH ( HBUS_AXI_DATA_WIDTH ),
-        .HBUS_AXI_ADDR_WIDTH ( HBUS_AXI_ADDR_WIDTH ),
-        .HBUS_AXI_ID_WIDTH   ( HBUS_AXI_ID_WIDTH   )
+        .HBUS_DATA_WIDTH ( HBUS_DATA_WIDTH ),
+        .HBUS_ADDR_WIDTH ( HBUS_ADDR_WIDTH ),
+        .HBUS_ID_WIDTH   ( HBUS_ID_WIDTH   )
     ) hls_conv2d_wrapper_u (
         // MBUS clock and reset
-        .main_clk_i          ( main_clk_i ),
-        .main_rstn_i         ( main_rstn_i ),
+        .main_clk_i          ( main_clk  ),
+        .main_rstn_i         ( main_rstn ),
         // HLS IP clock and reset (from HBUS)
-        .HLS_CONTROL_clk_i   ( HLS_CONTROL_clk_i  ),
-        .HLS_CONTROL_rstn_i  ( HLS_CONTROL_rstn_i ),
+        .HLS_CONTROL_clk_i   ( HLS_CONTROL_clk  ),
+        .HLS_CONTROL_rstn_i  ( HLS_CONTROL_rstn ),
         // Slave for control
         .s_HLS_CONTROL_axi_awid     ( MBUS_to_HLS_CONTROL_axi_awid     ),
         .s_HLS_CONTROL_axi_awaddr   ( MBUS_to_HLS_CONTROL_axi_awaddr   ),
@@ -740,55 +744,50 @@ module uninasoc (
         .s_HLS_CONTROL_axi_rvalid   ( MBUS_to_HLS_CONTROL_axi_rvalid   ),
         .s_HLS_CONTROL_axi_rready   ( MBUS_to_HLS_CONTROL_axi_rready   ),
         // Master to HBUS
-        .m_HLS_gmem0_d512_axi_awid      ( s_acc_HBUS_axi_awid     ),
-        .m_HLS_gmem0_d512_axi_awaddr    ( s_acc_HBUS_axi_awaddr   ),
-        .m_HLS_gmem0_d512_axi_awlen     ( s_acc_HBUS_axi_awlen    ),
-        .m_HLS_gmem0_d512_axi_awsize    ( s_acc_HBUS_axi_awsize   ),
-        .m_HLS_gmem0_d512_axi_awburst   ( s_acc_HBUS_axi_awburst  ),
-        .m_HLS_gmem0_d512_axi_awlock    ( s_acc_HBUS_axi_awlock   ),
-        .m_HLS_gmem0_d512_axi_awcache   ( s_acc_HBUS_axi_awcache  ),
-        .m_HLS_gmem0_d512_axi_awprot    ( s_acc_HBUS_axi_awprot   ),
-        .m_HLS_gmem0_d512_axi_awqos     ( s_acc_HBUS_axi_awqos    ),
-        .m_HLS_gmem0_d512_axi_awvalid   ( s_acc_HBUS_axi_awvalid  ),
-        .m_HLS_gmem0_d512_axi_awready   ( s_acc_HBUS_axi_awready  ),
-        .m_HLS_gmem0_d512_axi_awregion  ( s_acc_HBUS_axi_awregion ),
-        .m_HLS_gmem0_d512_axi_wdata     ( s_acc_HBUS_axi_wdata    ),
-        .m_HLS_gmem0_d512_axi_wstrb     ( s_acc_HBUS_axi_wstrb    ),
-        .m_HLS_gmem0_d512_axi_wlast     ( s_acc_HBUS_axi_wlast    ),
-        .m_HLS_gmem0_d512_axi_wvalid    ( s_acc_HBUS_axi_wvalid   ),
-        .m_HLS_gmem0_d512_axi_wready    ( s_acc_HBUS_axi_wready   ),
-        .m_HLS_gmem0_d512_axi_bid       ( s_acc_HBUS_axi_bid      ),
-        .m_HLS_gmem0_d512_axi_bresp     ( s_acc_HBUS_axi_bresp    ),
-        .m_HLS_gmem0_d512_axi_bvalid    ( s_acc_HBUS_axi_bvalid   ),
-        .m_HLS_gmem0_d512_axi_bready    ( s_acc_HBUS_axi_bready   ),
-        .m_HLS_gmem0_d512_axi_arid      ( s_acc_HBUS_axi_arid     ),
-        .m_HLS_gmem0_d512_axi_araddr    ( s_acc_HBUS_axi_araddr   ),
-        .m_HLS_gmem0_d512_axi_arlen     ( s_acc_HBUS_axi_arlen    ),
-        .m_HLS_gmem0_d512_axi_arsize    ( s_acc_HBUS_axi_arsize   ),
-        .m_HLS_gmem0_d512_axi_arburst   ( s_acc_HBUS_axi_arburst  ),
-        .m_HLS_gmem0_d512_axi_arlock    ( s_acc_HBUS_axi_arlock   ),
-        .m_HLS_gmem0_d512_axi_arcache   ( s_acc_HBUS_axi_arcache  ),
-        .m_HLS_gmem0_d512_axi_arprot    ( s_acc_HBUS_axi_arprot   ),
-        .m_HLS_gmem0_d512_axi_arqos     ( s_acc_HBUS_axi_arqos    ),
-        .m_HLS_gmem0_d512_axi_arvalid   ( s_acc_HBUS_axi_arvalid  ),
-        .m_HLS_gmem0_d512_axi_arready   ( s_acc_HBUS_axi_arready  ),
-        .m_HLS_gmem0_d512_axi_arregion  ( s_acc_HBUS_axi_arregion ),
-        .m_HLS_gmem0_d512_axi_rid       ( s_acc_HBUS_axi_rid      ),
-        .m_HLS_gmem0_d512_axi_rdata     ( s_acc_HBUS_axi_rdata    ),
-        .m_HLS_gmem0_d512_axi_rresp     ( s_acc_HBUS_axi_rresp    ),
-        .m_HLS_gmem0_d512_axi_rlast     ( s_acc_HBUS_axi_rlast    ),
-        .m_HLS_gmem0_d512_axi_rvalid    ( s_acc_HBUS_axi_rvalid   ),
-        .m_HLS_gmem0_d512_axi_rready    ( s_acc_HBUS_axi_rready   ),
+        .m_HLS_gmem0_d512_axi_awid      ( HLS_gmem0_d512_axi_awid     ),
+        .m_HLS_gmem0_d512_axi_awaddr    ( HLS_gmem0_d512_axi_awaddr   ),
+        .m_HLS_gmem0_d512_axi_awlen     ( HLS_gmem0_d512_axi_awlen    ),
+        .m_HLS_gmem0_d512_axi_awsize    ( HLS_gmem0_d512_axi_awsize   ),
+        .m_HLS_gmem0_d512_axi_awburst   ( HLS_gmem0_d512_axi_awburst  ),
+        .m_HLS_gmem0_d512_axi_awlock    ( HLS_gmem0_d512_axi_awlock   ),
+        .m_HLS_gmem0_d512_axi_awcache   ( HLS_gmem0_d512_axi_awcache  ),
+        .m_HLS_gmem0_d512_axi_awprot    ( HLS_gmem0_d512_axi_awprot   ),
+        .m_HLS_gmem0_d512_axi_awqos     ( HLS_gmem0_d512_axi_awqos    ),
+        .m_HLS_gmem0_d512_axi_awvalid   ( HLS_gmem0_d512_axi_awvalid  ),
+        .m_HLS_gmem0_d512_axi_awready   ( HLS_gmem0_d512_axi_awready  ),
+        .m_HLS_gmem0_d512_axi_awregion  ( HLS_gmem0_d512_axi_awregion ),
+        .m_HLS_gmem0_d512_axi_wdata     ( HLS_gmem0_d512_axi_wdata    ),
+        .m_HLS_gmem0_d512_axi_wstrb     ( HLS_gmem0_d512_axi_wstrb    ),
+        .m_HLS_gmem0_d512_axi_wlast     ( HLS_gmem0_d512_axi_wlast    ),
+        .m_HLS_gmem0_d512_axi_wvalid    ( HLS_gmem0_d512_axi_wvalid   ),
+        .m_HLS_gmem0_d512_axi_wready    ( HLS_gmem0_d512_axi_wready   ),
+        .m_HLS_gmem0_d512_axi_bid       ( HLS_gmem0_d512_axi_bid      ),
+        .m_HLS_gmem0_d512_axi_bresp     ( HLS_gmem0_d512_axi_bresp    ),
+        .m_HLS_gmem0_d512_axi_bvalid    ( HLS_gmem0_d512_axi_bvalid   ),
+        .m_HLS_gmem0_d512_axi_bready    ( HLS_gmem0_d512_axi_bready   ),
+        .m_HLS_gmem0_d512_axi_arid      ( HLS_gmem0_d512_axi_arid     ),
+        .m_HLS_gmem0_d512_axi_araddr    ( HLS_gmem0_d512_axi_araddr   ),
+        .m_HLS_gmem0_d512_axi_arlen     ( HLS_gmem0_d512_axi_arlen    ),
+        .m_HLS_gmem0_d512_axi_arsize    ( HLS_gmem0_d512_axi_arsize   ),
+        .m_HLS_gmem0_d512_axi_arburst   ( HLS_gmem0_d512_axi_arburst  ),
+        .m_HLS_gmem0_d512_axi_arlock    ( HLS_gmem0_d512_axi_arlock   ),
+        .m_HLS_gmem0_d512_axi_arcache   ( HLS_gmem0_d512_axi_arcache  ),
+        .m_HLS_gmem0_d512_axi_arprot    ( HLS_gmem0_d512_axi_arprot   ),
+        .m_HLS_gmem0_d512_axi_arqos     ( HLS_gmem0_d512_axi_arqos    ),
+        .m_HLS_gmem0_d512_axi_arvalid   ( HLS_gmem0_d512_axi_arvalid  ),
+        .m_HLS_gmem0_d512_axi_arready   ( HLS_gmem0_d512_axi_arready  ),
+        .m_HLS_gmem0_d512_axi_arregion  ( HLS_gmem0_d512_axi_arregion ),
+        .m_HLS_gmem0_d512_axi_rid       ( HLS_gmem0_d512_axi_rid      ),
+        .m_HLS_gmem0_d512_axi_rdata     ( HLS_gmem0_d512_axi_rdata    ),
+        .m_HLS_gmem0_d512_axi_rresp     ( HLS_gmem0_d512_axi_rresp    ),
+        .m_HLS_gmem0_d512_axi_rlast     ( HLS_gmem0_d512_axi_rlast    ),
+        .m_HLS_gmem0_d512_axi_rvalid    ( HLS_gmem0_d512_axi_rvalid   ),
+        .m_HLS_gmem0_d512_axi_rready    ( HLS_gmem0_d512_axi_rready   )
     );
 
     //////////
     // HBUS //
     //////////
-
-    // TODO: Only one HBUS accelerator for now
-    `DECLARE_AXI_BUS(s_acc_HBUS, HBUS_DATA_WIDTH, HBUS_ADDR_WIDTH, HBUS_ID_WIDTH)
-    // Just pass through the interface
-    `ASSIGN_AXI_BUS(s_acc_HBUS, HLS_gmem0_d512)
 
     highperformance_bus # (
         .HBUS_DATA_WIDTH  ( HBUS_DATA_WIDTH ),

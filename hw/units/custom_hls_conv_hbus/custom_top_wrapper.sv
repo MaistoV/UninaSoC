@@ -14,13 +14,12 @@ module custom_top_wrapper # (
     //////////////////////////////////////
     //  Add here IP-related parameters  //
     //////////////////////////////////////
-    localparam LOCAL_AXI_DATA_WIDTH = 512,
-    localparam LOCAL_AXI_ADDR_WIDTH = 32,
-    localparam LOCAL_AXI_ID_WIDTH   = 4,
+    localparam LOCAL_AXI_DATA_WIDTH     = 512,
+    localparam LOCAL_AXI_ADDR_WIDTH     = 32,
+    localparam LOCAL_AXI_ID_WIDTH       = 4,
     localparam LOCAL_AXILITE_DATA_WIDTH = 32,
     localparam LOCAL_AXILITE_ADDR_WIDTH = 32,
-    localparam LOCAL_AXILITE_ID_WIDTH   = 4,
-
+    localparam LOCAL_AXILITE_ID_WIDTH   = 4
 ) (
 
     ///////////////////////////////////
@@ -44,7 +43,7 @@ module custom_top_wrapper # (
 );
 
     // HLS top
-    krnl_conv_hbus krnl_conv_LOCAL_u (
+    krnl_conv_hbus krnl_conv_hbus_u (
         .ap_clk     ( clk_i       ),
         .ap_rst_n   ( rst_ni      ),
         .interrupt  ( interrupt_o ),
