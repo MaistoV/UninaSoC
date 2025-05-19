@@ -117,7 +117,7 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
                 declare_prefix = DECLARE_AXILITE_BUS_ARRAY_PREFIX  # The declaration prefix in case of a PBUS
             case  "MBUS":
                 declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS
-                bus_cnt_str    = "HBUS_NUM_MI"                     # The width of the bus array in case of MBUS
+                bus_cnt_str    = "MBUS_NUM_MI"                     # The width of the bus array in case of MBUS
                 concat_prefix  = CONCAT_SLAVE_BUS_PREFIX           # The concatenation prefix in case of MBUS
             case  "HBUS":
                 declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS
