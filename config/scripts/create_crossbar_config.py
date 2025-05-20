@@ -97,6 +97,10 @@ config_df = pd.read_csv(bus_config_file_name, sep=",")
 for index, row in config_df.iterrows():
 	config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
 
+if config.PROTOCOL == "MOCK":
+    print("[CONFIG] Skipping MOCK bus", config.CONFIG_NAME )
+    exit(0)
+
 ####################
 # Prepare commands #
 ####################
@@ -228,3 +232,6 @@ write_tcl.end_File(file)
 
 # Close file
 file.close
+
+# Print filename
+print("[CONFIG] Output file is at ", config_tcl_file_name)
