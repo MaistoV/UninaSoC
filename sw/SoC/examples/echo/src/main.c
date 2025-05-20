@@ -1,10 +1,10 @@
-#include "uninasoc.h"
+#include "simplyv.h"
 
 int main() {
 
   char str[128];
 
-  uninasoc_init();
+  simplyv_init();
 
   while(1){
     printf("Please enter a string\n\r");

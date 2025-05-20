@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>, Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+
 # Description:
 #   This script fetches risc-v compliant PLIC sources.
 #   Files are mostly fetched from open-titan ips.

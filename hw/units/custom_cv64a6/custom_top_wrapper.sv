@@ -1,11 +1,11 @@
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 // Description:
 //    TBD
 
 
 // Import headers
-`include "uninasoc_axi.svh"
-`include "uninasoc_mem.svh"
+`include "simplyv_axi.svh"
+`include "simplyv_mem.svh"
 
 `include "typedef.svh"
 
@@ -82,7 +82,7 @@ module custom_top_wrapper # (
 
   axi_req_t axi_req;
   axi_resp_t axi_rsp;
-    
+
   cva6 #(
     // For now, let's leave default configurations and definitions
   ) cva6_u (

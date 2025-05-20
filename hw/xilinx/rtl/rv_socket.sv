@@ -1,14 +1,14 @@
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-// Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
+
+
+
 // Description: Wrapper module for RISC-V CPUs and Debuggers
 
 // Import packages
-import uninasoc_pkg::*;
+import simplyv_pkg::*;
 
 // Import headers
-`include "uninasoc_axi.svh"
-`include "uninasoc_mem.svh"
+`include "simplyv_axi.svh"
+`include "simplyv_mem.svh"
 
 module rv_socket # (
     parameter core_selector_t CORE_SELECTOR     = CORE_CV32E40P,

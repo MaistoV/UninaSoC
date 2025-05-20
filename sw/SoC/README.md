@@ -1,11 +1,11 @@
-# UninaSoC Software Compilation and Usage
+# SimplyV Software Compilation and Usage
 
-This repository contains the software infrastructure needed to build bare-metal applications for UninaSoC.
+This repository contains the software infrastructure needed to build bare-metal applications for SimplyV.
 All example applications, as well as custom projects, are built upon the `projects/template` project.
 Projects rely on a common set of files in the `common` directory.
 
 * The `startup.s` that implements the very basic initialization operations.
-* The `UninaSoC.ld`, automatically generated during the configuration flow (see the root [README](../../README.md)).
+* The `SimplyV.ld`, automatically generated during the configuration flow (see the root [README](../../README.md)).
 * The `Makefile`, that implements all basic targets for building, shared among bare-metal applications.
 
 It is expected that libraries and projects depend at least on the common files.
@@ -82,7 +82,7 @@ described in **Build examples** ca be applied.
 
 ### User-defined linker script
 
-The shared linker script is automatically generated during the configuration phase of the UninaSoC project, based on the specified SoC configuration.
+The shared linker script is automatically generated during the configuration phase of the SimplyV project, based on the specified SoC configuration.
 By default, only a few symbols and sections are defined:
 
 - **Symbols**: Include the vector table base address, stack pointer value, and peripheral symbols (which can be imported into user code).

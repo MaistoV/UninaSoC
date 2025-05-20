@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Set ILA triggers, control and arm
 # Note: Assuming a single ILA IP in the design and hw_server already connected
 

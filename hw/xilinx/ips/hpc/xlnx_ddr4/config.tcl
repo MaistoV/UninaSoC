@@ -1,4 +1,4 @@
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 # Description: DDR4 SDRAM (MIG) IP configuration file
 
 create_ip -name ddr4 -vendor xilinx.com -library ip -version 2.2 -module_name $::env(IP_NAME)

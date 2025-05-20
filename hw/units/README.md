@@ -47,4 +47,4 @@ Once all sources are flattened in the `hw/units/<common|embedded|hpc>/custom_<IP
 
 The file `custom_top_wrapper.sv` RTL wrapper can leverage platform-compatible interfaces, namely MEM, AXI4 and AXI-lite.
 
-It can leverage the `hw/xilinx/rtl/uninasoc_mem.svh` and `hw/xilinx/rtl/uninasoc_axi.svh` headers (which are already included in the Vivado project packaging flow) to define macros for the MEM and AXI bus interfaces. While custom signals are allowed, we expect the custom IP to primarily communicate via either AXI (preferably) or MEM.
+It can leverage the `hw/xilinx/rtl/simplyv_mem.svh` and `hw/xilinx/rtl/simplyv_axi.svh` headers (which are already included in the Vivado project packaging flow) to define macros for the MEM and AXI bus interfaces. While custom signals are allowed, we expect the custom IP to primarily communicate via either AXI (preferably) or MEM.

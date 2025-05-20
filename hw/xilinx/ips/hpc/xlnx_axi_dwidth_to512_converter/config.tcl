@@ -1,4 +1,4 @@
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 # Description: AXI Data Width Converter - Needed to link the AXI crossbar (in general the entire SoC 32 bits) to the DDR MIG (512 bit)
 
 create_ip -name axi_dwidth_converter -vendor xilinx.com -library ip -version 2.1 -module_name $::env(IP_NAME)

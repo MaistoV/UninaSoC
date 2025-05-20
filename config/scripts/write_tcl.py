@@ -1,5 +1,5 @@
-# Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
+
 # Description: utility functions to write TCL file for AXI crossbar IP
 
 # Creates the standard initial part of the tcl Configuration file

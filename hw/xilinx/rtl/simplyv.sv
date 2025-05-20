@@ -1,8 +1,8 @@
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
-// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+
+
+
+
+
 // Description: Top level module of SoC architecture, with MBUs interconnection and FPGA board physical pins.
 
 // System architecture:
@@ -40,24 +40,24 @@
 // Import packages //
 /////////////////////
 
-import uninasoc_pkg::*;
+import simplyv_pkg::*;
 
 ////////////////////
 // Import headers //
 ////////////////////
 
-`include "uninasoc_axi.svh"
+`include "simplyv_axi.svh"
 
 `ifdef HPC
-    `include "uninasoc_pcie.svh"
-    `include "uninasoc_ddr4.svh"
+    `include "simplyv_pcie.svh"
+    `include "simplyv_ddr4.svh"
 `endif
 
 ///////////////////////
 // Module definition //
 ///////////////////////
 
-module uninasoc (
+module simplyv (
 
     `ifdef EMBEDDED
         // Clock and reset
@@ -133,7 +133,7 @@ module uninasoc (
     ///////////////////////
     // Clock assignments //
     ///////////////////////
-    `include "uninasoc_clk_assignments.svinc"
+    `include "simplyv_clk_assignments.svinc"
 
     ///////////////////////
     // Local assignments //
@@ -544,7 +544,7 @@ module uninasoc (
         rv_socket_interrupt_line = '0;
 
         // Mapping PLIC input interrupts (only from pbus at the moment)
-        // Mapping is static (refer to uninasoc_pkg.sv)
+        // Mapping is static (refer to simplyv_pkg.sv)
         plic_int_line[PLIC_RESERVED_INTERRUPT]  = 1'b0;
         plic_int_line[PLIC_GPIOIN_INTERRUPT]    = pbus_int_line[PBUS_GPIOIN_INTERRUPT];
         plic_int_line[PLIC_TIM0_INTERRUPT]      = pbus_int_line[PBUS_TIM0_INTERRUPT];
@@ -965,8 +965,6 @@ module uninasoc (
         .s_ctrl_axilite_wstrb    ( '0    ),
         .s_ctrl_axilite_awprot   ( '0    )
     );
-
 `endif // HPC
 
-
-endmodule : uninasoc
+endmodule : simplyv

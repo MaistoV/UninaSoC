@@ -1,13 +1,13 @@
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 // Description:
 // This module is intended as a top-level wrapper for the code in ./rtl
 // IT might support either MEM protocol or AXI protocol, using the
-// uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
+// simplyv_axi and simplyv_mem svh files in hw/xilinx/rtl
 
 
 // Import headers
-`include "uninasoc_axi.svh"
-`include "uninasoc_mem.svh"
+`include "simplyv_axi.svh"
+`include "simplyv_mem.svh"
 
 module custom_top_wrapper # (
 

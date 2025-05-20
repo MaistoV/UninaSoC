@@ -1,4 +1,4 @@
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 // Description:
 //  HLS implementation of a CONV2D engine.
 //  Version HBUS: Wide M_AXI port for HBUS.

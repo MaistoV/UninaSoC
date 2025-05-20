@@ -1,4 +1,4 @@
-# Author: Vincenzo Merola <vincenzo.merola2@unina.it>
+
 # Description:
 #   This Makefile uses Vitis compiler to simulate and synthesize HLS kernel
 

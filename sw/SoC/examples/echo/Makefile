@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano     <stefano.mercogliano@unina.it>
+
 # Description:
 #   This Makefile defines the project name and paths for the common Makefile.
 #    Optionally, a user can define additional targets here.

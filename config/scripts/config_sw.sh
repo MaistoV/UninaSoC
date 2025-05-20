@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 #   Replace config-based content of output file (sw/SoC/common/config.mk) based on XLEN values (system_config.csv)
 #   Target values are parsed and from inputs and updated in output file.

@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 # 	It assigns the correct toolchain size depending on XLEN config parameter.
 #	XLEN is overwritten by `config/scripts/config_sw.sh`
@@ -7,7 +7,7 @@
 # Toolchain #
 #############
 
-XLEN ?= 64
+XLEN ?= 32
 RV_PREFIX ?= riscv${XLEN}-unknown-elf-
 
 CC          = $(RV_PREFIX)gcc

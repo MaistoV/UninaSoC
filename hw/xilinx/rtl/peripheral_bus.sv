@@ -1,5 +1,5 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
 // Description: This module is the module wrapping the entire peripheral bus.
 //              This is a 32-bits bus, meaning a dwidth converter is required if the system XLEN is 64.
 //              It adds a AXI protocol converter before the axilite crossbar and all the peripherals connected to the axilite crossbar
@@ -33,10 +33,10 @@
 //
 
 // Import packages
-import uninasoc_pkg::*;
+import simplyv_pkg::*;
 
 // Import headers
-`include "uninasoc_axi.svh"
+`include "simplyv_axi.svh"
 
 module peripheral_bus #(
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,

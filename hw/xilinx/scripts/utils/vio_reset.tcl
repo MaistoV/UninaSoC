@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Utility script to toggle (0-> 1-> 0) VIO probe
 # Args:
 #  $1: VIO probe name

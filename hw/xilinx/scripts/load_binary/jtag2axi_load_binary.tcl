@@ -1,5 +1,5 @@
-# Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
+
 # Description: tcl script used to transfer a .bin file in a BRAM memory using jtag2axi IP and axi transactions
 # Input args:
 #    -argv0: absolute path to bin file to transfer

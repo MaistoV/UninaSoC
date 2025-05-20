@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description: Package Vivado IP from $src_file_list over $top_module, from an opened project
 # Input args:
 #    None

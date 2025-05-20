@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 #  This is a global makefile for the System-on-Chip software projects.
 #  It can be used to compile all default examples

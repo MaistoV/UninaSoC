@@ -1,7 +1,7 @@
 #!/bin/python3.10
-# Author: Stefano Toscano 		<stefa.toscano@studenti.unina.it>
-# Author: Vincenzo Maisto 		<vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano 		<stefano.mercogliano@unina.it>
+
+
+
 # Description:
 #   Generate a linker script file from the CSV configuration.
 # Note:
@@ -36,7 +36,7 @@ if len(sys.argv) >= len(config_file_names)+1:
 	config_file_names = sys.argv[1:len(config_file_names)+1]
 
 # Target linker script file
-ld_file_name = 'sw/SoC/common/UninaSoC.ld'
+ld_file_name = 'sw/SoC/common/SimplyV.ld'
 if len(sys.argv) >= 5:
 	# Get the linker script name, the last arg
 	ld_file_name = sys.argv[len(config_file_names)+1]

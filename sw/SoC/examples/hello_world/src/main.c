@@ -1,12 +1,12 @@
 // Description: Basic hello world application on platform
 
-#include "uninasoc.h"
+#include "simplyv.h"
 
 int main()
 {
 
   // Init platform
-  uninasoc_init();
+  simplyv_init();
 
   // Print
   printf("Hello World!\n\r");

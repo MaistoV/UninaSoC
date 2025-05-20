@@ -1,5 +1,5 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
 # Description:
 #    Hold all the configurable variables.
 #    This file is meant to be updated by the configuration flow.
@@ -9,8 +9,8 @@
 ##########
 
 # System
-XLEN ?= 64
-PHYSICAL_ADDR_WIDTH ?= 64
+XLEN ?= 32
+PHYSICAL_ADDR_WIDTH ?= 32
 
 # MBUS
 MBUS_NUM_SI ?= 5
@@ -29,7 +29,7 @@ HBUS_NUM_SI ?= 2
 HBUS_ID_WIDTH ?= 4
 
 # RV core
-CORE_SELECTOR ?= CORE_CV64A6
+CORE_SELECTOR ?= CORE_MICROBLAZEV
 
 # VIO resetn
 VIO_RESETN_DEFAULT ?= 1

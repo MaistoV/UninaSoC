@@ -1,6 +1,6 @@
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-# Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
-# Description: startup code for uninasoc
+
+
+# Description: startup code for simplyv
 
 .section .vector_table, "ax"
 .option norvc;

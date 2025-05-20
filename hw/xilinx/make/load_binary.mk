@@ -1,5 +1,5 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
 # Description: Make target to load binaries to SoC memory and interact with debugger
 
 # Common scripts directory

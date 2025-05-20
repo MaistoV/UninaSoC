@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Program bitstream, assuming an open connection to a device
 
 # Set programming files

@@ -1,4 +1,4 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 // Description: This module is a wrapper for a single DDR4 channel.
 //              It includes :
 //                 - A clock converter to increase the frequency to 300 MHz
@@ -15,8 +15,8 @@
 //
 
 
-`include "uninasoc_pcie.svh"
-`include "uninasoc_ddr4.svh"
+`include "simplyv_pcie.svh"
+`include "simplyv_ddr4.svh"
 
 module ddr4_channel_wrapper # (
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,

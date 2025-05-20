@@ -1,4 +1,4 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 // Description: Virtual uart utility functions header file
 
 #ifndef UTILS_H__

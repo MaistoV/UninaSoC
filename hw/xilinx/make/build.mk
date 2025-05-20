@@ -1,5 +1,5 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
 # Description: Make target to build Xilinx IPs and bitstream
 
 # Build bitstream from scratch

@@ -1,6 +1,6 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
+
+
 # Description:
 #    Hold all the environment variables for Xilinx tools.
 

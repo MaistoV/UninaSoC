@@ -1,7 +1,7 @@
 #!/bin/bash
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
+
 # Description:
 #   Replace config-based content of output file (hw/make/config.mk) based on input MBUS and PBUS configurations.
 #   Target values are parsed and from inputs and updated in output file.

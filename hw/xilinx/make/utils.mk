@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Hold all the Xilinx-related utility targets
 
 # Common scripts directory
@@ -59,8 +59,8 @@ program_bitstream_embedded:
 PCIE_DEV ?= 01:00.0 # TODO: remove this and find the dev automatically in the script
 program_bitstream_hpc:
 #	Kill pending virtual_uart instances (if any)
-#	TODO: This might be overkill, as only that one instance should cause problems 
-	-killall virtual_uart 
+#	TODO: This might be overkill, as only that one instance should cause problems
+	-killall virtual_uart
 #	Program
 	${XILINX_VIVADO} \
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/open_hw_manager.tcl \

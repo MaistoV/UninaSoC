@@ -1,5 +1,5 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
+
 # Description: Create a Vivado project, import sources and IPs and run: elaboration,
 #              synthesis and implementation up to bitstream generation.
 # Input args:

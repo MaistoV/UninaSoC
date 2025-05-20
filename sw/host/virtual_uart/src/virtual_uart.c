@@ -1,4 +1,4 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 // Description: Virtual Uart host application - virtual uart driver functions
 
 #include <stdint.h>

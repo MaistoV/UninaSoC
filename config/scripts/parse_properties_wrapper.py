@@ -1,7 +1,7 @@
-# Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
+
+
 # Description: this script calls the functions used to read and set configuration parameters
 # according to the given Parameter that has to be set. The Configuration class is taken as input and given to the called functions to modify the Configuration.
 

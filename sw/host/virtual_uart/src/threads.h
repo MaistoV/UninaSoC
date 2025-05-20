@@ -1,4 +1,4 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 // Description: Virtual uart threads header file
 
 #ifndef THREADS_H__

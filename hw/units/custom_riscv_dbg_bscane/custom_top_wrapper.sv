@@ -1,13 +1,13 @@
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 // Description:
 // This module is intended as a top-level wrapper for the code in ./rtl
 // IT might support either MEM protocol or AXI protocol, using the
-// uninasoc_axi and uninasoc_mem svh files in hw/xilinx/rtl
+// simplyv_axi and simplyv_mem svh files in hw/xilinx/rtl
 
 
-// Import UninaSoC headers
-`include "uninasoc_axi.svh"
-`include "uninasoc_mem.svh"
+// Import SimplyV headers
+`include "simplyv_axi.svh"
+`include "simplyv_mem.svh"
 // From axi/include
 `include "typedef.svh"
 

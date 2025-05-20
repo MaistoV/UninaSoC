@@ -1,4 +1,4 @@
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 # Description: HPC clock wizard. It takes the XDMA axi_aclk (250 MHz) and generates 5 clocks:
 #                  - clk_10  @ 10MHz
 #                  - clk_20  @ 20MHz

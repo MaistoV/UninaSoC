@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description: Launch GDB with a target ELF file and connecting to a specific backend port
 
 

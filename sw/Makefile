@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description:
 #  Top Makefile for the software flow. It just redirects to sub-folders' Makefiles.
 

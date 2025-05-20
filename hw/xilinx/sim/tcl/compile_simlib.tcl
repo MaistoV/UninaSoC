@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Compile simulation librarires in Vivado
 
 # set command "compile_simlib -simulator questa -simulator_exec_path {$::env(SIMULATOR_PATH)} \

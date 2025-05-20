@@ -1,5 +1,5 @@
 #!/bin/python3.10
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 # Description: utility functions to write RTL file for CLOCKS declaration and assignments
 
 ####################
@@ -24,13 +24,13 @@ f"// This file is auto-generated with {os.path.basename(__file__)}\n\n\
 
 # RTL files to edit
 RTL_FILES                = {
-    "UNINASOC"   : f"{os.environ.get('XILINX_ROOT')}/rtl/uninasoc_clk_assignments.svinc",
+    "SIMPLYV"   : f"{os.environ.get('XILINX_ROOT')}/rtl/simplyv_clk_assignments.svinc",
 }
 
 # Clocks declarations and assignments
 def declare_and_assign_clocks(config : configuration.Configuration) -> None:
-    # Declare and assign clocks in uninasoc
-    file = open(RTL_FILES["UNINASOC"], "w")
+    # Declare and assign clocks in simplyv
+    file = open(RTL_FILES["SIMPLYV"], "w")
     file.write(FILE_HEADER)
     file.write(f"assign main_clk = clk_{config.MAIN_CLOCK_DOMAIN}MHz;\n")
     file.write(f"assign main_rstn = rstn_{config.MAIN_CLOCK_DOMAIN}MHz;\n")
@@ -50,7 +50,7 @@ def declare_and_assign_clocks(config : configuration.Configuration) -> None:
 
     file.close()
 
-    print_info("Output file is at " + RTL_FILES["UNINASOC"])
+    print_info("Output file is at " + RTL_FILES["SIMPLYV"])
 
 ########
 # MAIN #

@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano  <stefano.mercogliano@unina.it>
+
 # Description: create a custom IP using rtl sources
 
 # Define the top_module name (NB: IP Name must be different from the top_module name)
@@ -9,10 +9,10 @@ set dir_name $::env(HW_UNITS_ROOT)/$::env(IP_NAME)
 set rtl_dir_name ${dir_name}/rtl
 set unina_soc_dir $::env(XILINX_ROOT)/rtl
 
-# Define paths for the uninasoc files (and wrapper file)
-set mem_macro_path ${unina_soc_dir}/uninasoc_mem.svh
-set axi_macro_path ${unina_soc_dir}/uninasoc_axi.svh
-set pkg_path ${unina_soc_dir}/uninasoc_pkg.sv
+# Define paths for the simplyv files (and wrapper file)
+set mem_macro_path ${unina_soc_dir}/simplyv_mem.svh
+set axi_macro_path ${unina_soc_dir}/simplyv_axi.svh
+set pkg_path ${unina_soc_dir}/simplyv_pkg.sv
 set top_module_path ${dir_name}/${top_module}.sv
 
 # Append svh files and top module

@@ -1,4 +1,4 @@
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 // Description:
 // Wrapper of the high-performance bus (HBUS) offering wide data interfaces, e.g. 512 bits. This bus offers several AXI interfaces:
 //     - masters:
@@ -37,11 +37,11 @@
 //
 
 // Import packages
-import uninasoc_pkg::*;
+import simplyv_pkg::*;
 
 // Import headers
-`include "uninasoc_axi.svh"
-`include "uninasoc_ddr4.svh"
+`include "simplyv_axi.svh"
+`include "simplyv_ddr4.svh"
 
 module highperformance_bus #(
     // HBUS AXI parameters

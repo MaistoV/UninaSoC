@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Create simulation model for a Xilix IP
 
 # Open a project containing the target IP

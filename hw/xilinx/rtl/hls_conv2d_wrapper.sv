@@ -1,4 +1,4 @@
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 // Description:
 //  Wrapper module for HLS CONV2D IP with clock bridges an AXI adapters.
 // Note:

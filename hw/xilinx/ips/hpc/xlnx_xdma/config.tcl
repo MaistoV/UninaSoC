@@ -1,4 +1,4 @@
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 # Description: XDMA configuration file
 create_ip -name xdma -vendor xilinx.com -library ip -version 4.1 -module_name $::env(IP_NAME)
 

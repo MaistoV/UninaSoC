@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: tcl script used to read back from AXI
 # Input args:
 #    -argv0: base address

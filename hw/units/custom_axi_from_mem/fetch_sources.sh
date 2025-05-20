@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description:
 #   This script downloads axi_to_mem from https://github.com/pulp-platform/axi/ sources and flattens them into the rtl directory
 

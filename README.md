@@ -1,5 +1,5 @@
-# UninaSoC
-RISC-V soft-SoC extensible plaftorm for Xilinx FPGAs from University of Naples Federico II.
+# SimplyV
+RISC-V soft-SoC extensible plaftorm for Xilinx FPGAs from University of \<anonymous\>.
 > NOTE: the name is temporary...
 
 ## Environment and Tools Version
@@ -10,7 +10,7 @@ This project was verified on Ubuntu 22.04 and the following tools version:
 > This is just because `CORE_MICROBLAZEV` is supported only in Vivado >= 2024.2.
 
 ## Architecture
-The base architecture of UninaSoC is depicted in the following:
+The base architecture of SimplyV is depicted in the following:
 ![SoC Architecture](./Base_SoC_layout.png)
 
 ## SoC Profiles
@@ -76,7 +76,7 @@ In both `hpc` and `embedded` profiles, the SoC architecture and host connection 
 The host connects to a RISC-V debug module through JTAG and a `Sys Master` AXI master module, allowing for direct control and read-back over the main bus.
 
 ### Profiles:
-UninaSoC supports the following profiles `embedded` and `hpc`.
+SimplyV supports the following profiles `embedded` and `hpc`.
 
 Physical resources depend on the target board and part number. W.r.t. the default supported boards, the platform offers:
 - Profile `embedded` on Nexys-A7-100T:
@@ -91,11 +91,11 @@ Physical resources depend on the target board and part number. W.r.t. the defaul
 ## Documentation Index
 
 Finer-grained documentation and insights to control the building flow, can be found below:
-1. [Configuration flow](config/README.md): re-configure UninaSoC.
+1. [Configuration flow](config/README.md): re-configure SimplyV.
 2. Hardware build:
    - [Hardware units](hw/units/README.md): prepare external custom IPs.
    - [Xilinx FPGA](hw/xilinx/README.md): package IPs, build bitstream, program device and debug platform.
-3. [Software build](sw/README.md): build software for UninaSoC.
+3. [Software build](sw/README.md): build software for SimplyV.
 4. Simulation (TBD):
    * Unit tests: Verilator
       * Royalty-free, good for students

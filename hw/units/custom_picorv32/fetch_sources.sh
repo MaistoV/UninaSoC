@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 # This script downloads picorv32 sources and flattens them into the rtl directory
 

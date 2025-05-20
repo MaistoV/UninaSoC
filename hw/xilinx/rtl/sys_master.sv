@@ -1,5 +1,5 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
 // Description: Sys master - Instantiates the right masetr AXI based on the SoC profile and gives the clk and rst to the soc
 //              EMBEDDED -> Jtag2Axi
 //              HPC      -> XDMA
@@ -34,11 +34,11 @@
 
 
 // Import packages
-import uninasoc_pkg::*;
+import simplyv_pkg::*;
 
 // Import headers
-`include "uninasoc_axi.svh"
-`include "uninasoc_pcie.svh"
+`include "simplyv_axi.svh"
+`include "simplyv_pcie.svh"
 
 module sys_master # (
     parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
@@ -546,7 +546,7 @@ module sys_master # (
     );
 
     // In order to comply with the load binary script, we need a 32 to 64 dwidth converter
-    if( SYS_DATA_WIDTH == 64 ) begin: dwidth_converter
+    if ( MBUS_DATA_WIDTH == 64 ) begin: dwidth_converter
 
         xlnx_axi_dwidth_32_to_64_converter xlnx_axi_dwidth_32_to_64_converter_u (
             .s_axi_aclk     ( main_clk  ),

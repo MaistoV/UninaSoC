@@ -1,4 +1,4 @@
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 # Description: AXI Clock Converter - Needed to do clock-domain crossing
 
 create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name $::env(IP_NAME)

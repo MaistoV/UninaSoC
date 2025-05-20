@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Args:
 #   $1: Path to target ELF
 #   $2: Path to target bitstream (optional)

@@ -1,7 +1,7 @@
-# Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
+
+
 # Description: Declaration of wrapper class for configuration properties with their default values (if any). Lists are just initialized as empty.
 
 # to print logging and error messages in the shell
@@ -20,8 +20,8 @@ class Configuration:
         self.ADDR_WIDTH          : int = 32        # Address Width
         self.DATA_WIDTH          : int = 32        # Data Width
         self.ID_WIDTH            : int = 4         # ID Data Width for MI and SI (a subset of it is used by the Interfaces Thread IDs)
-        self.NUM_MI              : int = 2         # Master Interface (MI) Number
-        self.NUM_SI              : int = 1         # Slave Interface (SI) Number
+        self.NUM_MI              : int = 0         # Master Interface (MI) Number
+        self.NUM_SI              : int = 0         # Slave Interface (SI) Number
         self.MASTER_NAMES        : list = []       # List of names of masters connected to the bus
         self.RANGE_NAMES         : list = []       # List of names of slaves connected to the bus
         self.ADDR_RANGES         : list = 1        # Number of Address Ranges for all MI

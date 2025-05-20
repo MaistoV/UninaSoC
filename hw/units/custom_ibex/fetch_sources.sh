@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 # This script downloads LowRISC Ibex sources and flattens them into the rtl directory
 

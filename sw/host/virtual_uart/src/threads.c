@@ -1,4 +1,4 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 // Description: Virtual Uart host application - threads
 //              This is a two-posix-thread application.
 //              The write_thread writes on the RX uart register (writes to the core)

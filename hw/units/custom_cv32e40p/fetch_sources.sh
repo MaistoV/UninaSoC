@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 # This script downloads cv32e40p cv32e40p_v1.8.3 sources and flattens them into the rtl directory
 

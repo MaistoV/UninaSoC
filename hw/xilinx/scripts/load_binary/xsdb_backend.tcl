@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 #   Open XSDB and connect to RISC-V hart 0
 #   The goal is to use XSDB as a backend for GDB

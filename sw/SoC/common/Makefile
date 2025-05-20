@@ -1,4 +1,4 @@
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 #   The common Makefile includes the standard targets to build bare-metal code.
 #	Each application will include this makefile and define the envvar related to path, dependencies and compilation flags.

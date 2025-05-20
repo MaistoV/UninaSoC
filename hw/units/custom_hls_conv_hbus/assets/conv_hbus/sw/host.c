@@ -1,9 +1,9 @@
-// Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 // Description: Baremetal host code coe conv_opt1 HLS IP core.
 
 #include "driver.h"
 #include "krnl_conv_hbus.h"
-#include "uninasoc.h"
+#include "simplyv.h"
 #include "measures.h"
 #include "utils.h"
 
@@ -42,7 +42,7 @@ int main() {
     uint32_t cnt;
 
     // Init platform
-    uninasoc_init();
+    simplyv_init();
 
     // Pre-allocate tensors, aligned to power of two
     #define ALIGN_I 2048

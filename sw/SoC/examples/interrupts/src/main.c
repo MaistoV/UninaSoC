@@ -1,5 +1,5 @@
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+
+
 // Description:
 //      This code demonstrates the usage of PLIC and interrupts.
 //      Physically, three interrupt lines are connected (in addition to line 0, which is reserved).

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description:
 # This script uses bender to download riscv-dbg and axi sources, and flattens them into the rtl/ directory
 

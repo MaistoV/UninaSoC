@@ -1,4 +1,4 @@
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 // Description:
 //      Ibex CPU is fully functional in 3 configurations: LIGHTWEIGHT, PERFORMANCE and OPENTITAN
 //      By Default, PERFORMANCE configuration is slected. Uncomment the appropriate define to select.
@@ -6,8 +6,8 @@
 
 
 // Import headers
-`include "uninasoc_axi.svh"
-`include "uninasoc_mem.svh"
+`include "simplyv_axi.svh"
+`include "simplyv_mem.svh"
 
 /////////////////////////
 // Ibex Configurations //

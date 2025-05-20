@@ -1,7 +1,4 @@
 #!/bin/python3.10
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
 #   Check the validity of the CSV configurations
 #   The checks are split in two part: 1) intra configuration checks and 2) inter configuration checks

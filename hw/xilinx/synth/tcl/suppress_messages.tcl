@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Suppress or change severity of Vivado messages
 # Input args:
 #    None

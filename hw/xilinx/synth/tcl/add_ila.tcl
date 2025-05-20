@@ -1,5 +1,5 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Cyril Koenig <cykoenig@iis.ee.ethz.ch>
+
+
 # Description: Create an ILA core and attach all nets in the design marked as MARK_DEBUG.
 
 # ILA clock from SoC design

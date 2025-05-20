@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 #   This file fetches CV64A6 sources from Pulp Fork repository
 

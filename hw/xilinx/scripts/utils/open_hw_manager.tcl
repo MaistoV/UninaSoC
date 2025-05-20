@@ -1,4 +1,4 @@
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
 # Description: Open Vivado Hardware Manager and set probe file
 
 # Connect to hw server

@@ -1,7 +1,7 @@
-# Author: Stefano Toscano <stefa.toscano@studenti.unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-# Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
+
+
+
 # Description: Definitions of the property-specific parsing functions and checking constraint.
 #			  If constraints aren't respected, correct values are used, issuing a warning and ignoring the input.
 

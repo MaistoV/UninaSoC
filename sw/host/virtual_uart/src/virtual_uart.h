@@ -1,4 +1,4 @@
-// Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
+
 // Description: Virtual uart host driver functions header file
 
 #ifndef VIRTUAL_UART_H__

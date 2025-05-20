@@ -1,6 +1,6 @@
 #!/bin/bash
-# Author: Vincenzo Merola <vincenzo.merola2@unina.it>
-# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+
+
 # Description: Fetch HLS sources and build Verilog and C standalone drivers
 
 # Colors

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+
 # Description:
 #   TBD
 
@@ -70,8 +70,8 @@ cp ${DEP_COMMON_CELLS}/include/common_cells/*.svh ${RTL_DIR};
 
 # Loop through all files in the rtl directory
 echo -e "${YELLOW}[PATCH_SOURCES] Patching include paths for flat includes and specific substitutions${NC}"
-for rtl_file in ${RTL_DIR}/*; do    
-    if [[ -f $rtl_file ]]; then        
+for rtl_file in ${RTL_DIR}/*; do
+    if [[ -f $rtl_file ]]; then
         # Substitute AXI includes
         sed -i "s|\`include \"axi/typedef.svh\"|\`include \"axi_typedef.svh\"|g" $rtl_file
         sed -i "s|\`include \"axi/assign.svh\"|\`include \"axi_assign.svh\"|g" $rtl_file

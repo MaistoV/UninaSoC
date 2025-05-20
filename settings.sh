@@ -32,7 +32,7 @@ export HW_UNITS_ROOT=${ROOT_DIR}/hw/units
 # Xilinx #
 ##########
 # Xilinx project name
-export XILINX_PROJECT_NAME=uninasoc
+export XILINX_PROJECT_NAME=simplyv
 
 #############################
 # SoC & Board Configuration #
