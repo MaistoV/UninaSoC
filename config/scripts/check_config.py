@@ -36,7 +36,7 @@ from utils import *
 VALID_PROTOCOLS = ["AXI4", "AXI4LITE", "MOCK"] # AXI3 not implemented yet
 MIN_AXI4_ADDR_WIDTH = 12
 MIN_AXI4LITE_ADDR_WIDTH = 1
-SOC_CONFIG = os.getenv("SOC_CONFIG", "embedded")
+SOC_PROFILE = os.getenv("SOC_PROFILE", "embedded")
 # NOTE: These frequencies depend on the clock_wizard configuration (config.tcl)
 SUPPORTED_CLOCK_DOMAINS_EMBEDDED = [10, 20, 50, 100]
 SUPPORTED_CLOCK_DOMAINS_HPC      = [10, 20, 50, 100, 250]
@@ -141,8 +141,8 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
 
     # Check valid main clock domain
     if config.CONFIG_NAME == "MBUS":
-        if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG]:
-            print_error(f"The clock domain {clok_domain}MHz is not supported")
+        if config.MAIN_CLOCK_DOMAIN not in SUPPORTED_CLOCK_DOMAINS[SOC_PROFILE]:
+            print_error(f"The clock domain {config.MAIN_CLOCK_DOMAIN}MHz is not supported")
             return False
         # Check valid clock domains
         for i in range(len(config.RANGE_CLOCK_DOMAINS)):
@@ -189,14 +189,19 @@ def check_inter_config(configs : list) -> bool:
         if config.CONFIG_NAME == "SYS":
             continue
 
-        # For each master of the current Configuration
+        # Check ID width is large enough for number of masters (NUM_SI)
+        clog2_NUM_SI = (int(config.NUM_SI-1)).bit_length()
+        if config.ID_WIDTH < clog2_NUM_SI:
+            print_error(f"The ID_WIDTH value {config.ID_WIDTH} is less than clog2(config.NUM_SI) {clog2_NUM_SI} in {config.CONFIG_NAME}")
+            return False
+
+        # For each slave (MI) of the current Configuration
         for mi_index in range(config.NUM_MI):
             # If a master is a bus (is in the CONFIG_NAME dict)
-            if config.RANGE_NAMES[mi_index] in CONFIG_NAMES.values():
+            if config.RANGE_NAMES[mi_index] in CONFIG_BASENAMES.values():
                 # Find the child bus configuration
                 for child_config in configs:
-                    # TODO: allow loop back to MBUS
-                    if child_config.CONFIG_NAME == config.RANGE_NAMES[mi_index] and child_config.CONFIG_NAME != "MBUS":
+                    if child_config.CONFIG_NAME == config.RANGE_NAMES[mi_index]:
                         # Compute the base and the end address of the parent bus
                         parent_base_address = int(config.BASE_ADDR[mi_index], 16)
                         parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[mi_index]-1))
@@ -219,23 +224,30 @@ def check_inter_config(configs : list) -> bool:
 ##############
 # Parse args #
 ##############
-def parse_args(argv : list) -> list:
+def parse_args(arg_list : list) -> list:
     print_info("Parsing arguments...")
-    # CSV configuration file path
-    config_file_names = CONFIG_NAMES
-    if len(sys.argv) >= 5:
-        # Get the array of bus/system names from the second arg to the last but one
-        config_file_names = sys.argv[1:len(CONFIG_NAMES)+1]
+    expected_args = len(CONFIG_BASENAMES)
+    num_args = len(arg_list) -1
+    if num_args != expected_args:
+        print_error("Wrong number of arguments (" + str(num_args) + "), expecting " + str(expected_args))
+        exit(1)
+    # Get the array of bus/system names from the second arg to the last
+    config_file_names = arg_list[1:len(CONFIG_BASENAMES)+1]
     print_info("Parsing done!")
     return config_file_names
 
 
 if __name__ == "__main__":
+
+    # Parse arguments
     config_file_names = parse_args(sys.argv)
+
+    # Parse configurations
     print_info("Reading configuration...")
-    configs = read_config(config_file_names)
+    configs = read_configs(config_file_names)
     print_info("Configuration read!")
 
+    # Check status init
     status = True
 
     # Intra-config check

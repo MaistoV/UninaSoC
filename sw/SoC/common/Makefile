@@ -22,20 +22,20 @@ MKDIR   = @mkdir -p $(@D)			 # Creates folders if not present
 # Targets #
 ###########
 
-all: bin/$(PROGRAM_NAME).bin
+all: bin/$(PROGRAM_NAME).bin bin/$(PROGRAM_NAME).dump
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@echo "\n[OBJ] Creating OBJs from src"
+	@echo "\n[OBJ] Creating OBJs from src $^"
 	$(MKDIR)
-	$(CC) -o $@ $^ -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS)
+	$(CC) -o $@ $^ $(INC_FLAGS) $(LIB_INC_LIST) $(CFLAGS)
 
 obj/startup.o:
 	@echo "\n[OBJ] Creating OBJs from $(STARTUP_DIR)/startup.s"
 	$(MKDIR)
-	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s -I$(LIB_INC_LIST) $(CFLAGS)
+	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s $(LIB_INC_LIST) $(CFLAGS)
 
 bin/$(PROGRAM_NAME).elf: $(OBJS) obj/startup.o
-	@echo "\n[ELF] Creating elf file"
+	@echo "\n[ELF] Linking OBJs $^ into ELF $@"
 	$(MKDIR)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
@@ -49,6 +49,6 @@ clean:
 
 .PHONY: all clean
 
-dump:
-	$(OBJDUMP) -D bin/$(PROGRAM_NAME).elf
-
+dump: bin/$(PROGRAM_NAME).dump
+bin/$(PROGRAM_NAME).dump:
+	$(OBJDUMP) -D bin/$(PROGRAM_NAME).elf > $@

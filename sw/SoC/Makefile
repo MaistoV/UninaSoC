@@ -21,7 +21,7 @@ examples:
 	@echo "[Make] Compile all the example projects"
 	@for example in ${EXAMPLES_LIST}; do \
 		echo "[Make] Compiling project $$example" ; \
-		${MAKE} -C $$example ; \
+		${MAKE} -C $$example && \
 		echo "\n[Make] Done\n" ; \
 	done
 

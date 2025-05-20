@@ -19,6 +19,10 @@
 
 // AXI4 bus parameters
 // NOTE: these cannot be macro-based because of Vivado IP packege constraints
+localparam int unsigned AXI_DATA_WIDTH   = 32;
+localparam int unsigned AXI_ADDR_WIDTH   = 32;
+localparam int unsigned AXI_STRB_WIDTH   = 4;
+localparam int unsigned AXI_ID_WIDTH     = 3; // TODO: check this is >= $clog2(`NUM_SI)
 localparam int unsigned AXI_LEN_WIDTH    = 8;
 localparam int unsigned AXI_SIZE_WIDTH   = 3;
 localparam int unsigned AXI_BURST_WIDTH  = 2;

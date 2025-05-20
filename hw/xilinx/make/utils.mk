@@ -47,7 +47,7 @@ vio_%:
 		-source ${XILINX_SCRIPTS_UTILS_ROOT}/vio_reset.tcl -tclargs $@
 
 # Program the bitstream based on the SoC profile
-program_bitstream: program_bitstream_${SOC_CONFIG}
+program_bitstream: program_bitstream_${SOC_PROFILE}
 
 # Program bitstream for embedded profile
 program_bitstream_embedded:

@@ -22,7 +22,7 @@ CONFIG_NAMES = {
 ###############
 # Read config #
 ###############
-def read_config(config_file_names : list) -> list:
+def read_configs(config_file_names : list) -> list:
     # List of configuration objects (one for each bus)
     configs = []
     for name in config_file_names:
@@ -37,8 +37,11 @@ def read_config(config_file_names : list) -> list:
         # Reading the CSV
         for index, row in pd.read_csv(name, sep=",").iterrows():
             # Update the config
-	        config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
+            config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
 
+        # Naming the actual bus
+        end_name = name.split("/")[-1]
+        config.CONFIG_NAME = CONFIG_BASENAMES[end_name]
         # Append the config to the list
         configs.append(config)
 
@@ -51,7 +54,7 @@ def read_config(config_file_names : list) -> list:
 ############
 
 # Print/debug stuff
-PRINT_PREFIX = "[CHECK_CONFIG]"
+PRINT_PREFIX = "[CONFIG]"
 PRINT_ERROR_PREFIX = "[ERROR]"
 PRINT_WARNING_PREFIX = "[WARNING]"
 

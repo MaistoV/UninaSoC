@@ -3,7 +3,7 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Author: Zaira Abdel Majid <z.abdelmajid@studenti.unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
-// Description: Basic version of UninaSoC that allows to work with axi transactions to and from slaves (ToBeUpdated)
+// Description: Top level module of SoC architecture, with MBUs interconnection and FPGA board physical pins.
 
 // System architecture:
 //                                                                                    ________
@@ -23,17 +23,17 @@
 //                                                    |          |                   |____________|
 //                                                    |          |                    ________________
 //                                                    |          |                   |                |
-//                                                    |          |------------------>| Peripheral bus |---------|
+//                                                    |          |------------------>| Peripheral bus |---------\
 //                                                    |          |                   |     (PBUS)     |         |
 //                                                    |          |                   |________________|         | peripheral
 //   _________              ____________              |          |                    ________________          | interrupts
 //  |         |            |            |             |          |                   |                |         |
-//  |   vio   |----------->| rv_socket  |------------>|          |------------------>|      PLIC      |<--------|
+//  |   vio   |----------->| rv_socket  |------------>|          |------------------>|      PLIC      |<--------/
 //  |_________|            |____________|             |          |                   |________________|
 //                                ^                   |          |                            |
 //                                |                   |__________|                            |
 //                                |                                                           |
-//                                |___________________________________________________________|
+//                                \___________________________________________________________/
 //                                                 platform interrupt
 
 /////////////////////
@@ -561,8 +561,8 @@ module uninasoc (
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
         .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
     ) plic_wrapper_u (
-        .clk_i          ( main_clk                      ), // input wire s_axi_aclk
-        .rst_ni         ( main_rstn                     ), // input wire s_axi_aresetn
+        .clk_i          ( PLIC_clk                      ), // input wire s_axi_aclk
+        .rst_ni         ( PLIC_rstn                     ), // input wire s_axi_aresetn
         // AXI4 slave port (from xbar)
         .intr_src_i     ( plic_int_line                 ), // Input interrupt lines (Sources)
         .irq_o          ( plic_int_irq_o                ), // Output Interrupts (Targets -> Socket)
