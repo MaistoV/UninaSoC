@@ -9,6 +9,10 @@ This project was verified on Ubuntu 22.04 and the following tools version:
 | Vivado          | 2024.2           |
 > This is just because `CORE_MICROBLAZEV` is supported only in Vivado >= 2024.2.
 
+## Architecture
+The base architecture of UninaSoC is depicted in the following:
+![SoC Architecture](./Base_SoC_layout.png)
+
 ## SoC Profiles
 The SoC comes in two flavors, `hpc` and `embedded` profiles, and support for multiple boards.
 
