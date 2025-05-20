@@ -1,10 +1,6 @@
-#include "tinyIO.h"
-#include <stdint.h>
+#include "uninasoc.h"
 
-extern const volatile uint32_t _peripheral_UART_start;
-
-int main()
-{
+int main() {
 
   char str[128];
 

@@ -34,7 +34,7 @@ endif
 all: bin/$(PROGRAM_NAME).bin bin/$(PROGRAM_NAME).dump
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@echo "\n[OBJ] Creating OBJs from src"d
+	@echo "\n[OBJ] Creating OBJs from src $^"
 	$(MKDIR)
 	$(CC) -o $@ $^ $(INC_FLAGS) $(LIB_INC_LIST) $(CFLAGS)
 
