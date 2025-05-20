@@ -119,6 +119,9 @@ def parse_XLEN (
 		property_name : str,
 		property_value: str,
 ):
+
+	print("parse_XLEN", config.PROTOCOL)
+
 	# No need to parse for mock buses
 	if (config.PROTOCOL == "MOCK"):
 		# No-op

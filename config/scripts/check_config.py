@@ -148,7 +148,7 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
         for i in range(len(config.RANGE_CLOCK_DOMAINS)):
             # Check if the clock frequency is valid (DDR has its own clock domain)
             # TODO: decide a prefix for HBUS-attached accelerators here, maybe ACC_* or HBUS_*
-            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_CONFIG] and config.RANGE_NAMES[i] not in {"DDR", "HBUS", "HLS_CONTROL"}:
+            if config.RANGE_CLOCK_DOMAINS[i] not in SUPPORTED_CLOCK_DOMAINS[SOC_PROFILE] and config.RANGE_NAMES[i] not in {"DDR", "HBUS", "HLS_CONTROL"}:
                 print_error(f"The clock domain {config.RANGE_CLOCK_DOMAINS[i]}MHz is not supported")
                 return False
             # Check if all the main_clock_domain slaves have the same frequency as MAIN_CLOCK_DOMAIN
@@ -196,7 +196,9 @@ def check_inter_config(configs : list) -> bool:
             return False
 
         # For each slave (MI) of the current Configuration
+        print(config.CONFIG_NAME)
         for mi_index in range(config.NUM_MI):
+            print("   " + config.RANGE_NAMES[mi_index])
             # If a master is a bus (is in the CONFIG_NAME dict)
             if config.RANGE_NAMES[mi_index] in CONFIG_BASENAMES.values():
                 # Find the child bus configuration

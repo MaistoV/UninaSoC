@@ -50,18 +50,12 @@ clean:
 	rm -rf ${XILINX_PROJECT_BUILD_DIR}
 	rm -rf vivado*.log vivado*.jou vivado*.str
 
-<<<<<<< HEAD
-=======
 # Clean up single IP
->>>>>>> origin/fix/various
 clean_ips/%.xci:
 	rm -rf ${XILINX_IPS_ROOT}/*/$*/build
 	rm -rf ${XILINX_IPS_ROOT}/$*.xci
 
-<<<<<<< HEAD
-=======
 # Clean up all IPs
->>>>>>> origin/fix/various
 clean_ips:
 	rm -rf ${XILINX_IPS_ROOT}/*/*/build
 	rm -rf ${XILINX_IPS_ROOT}/*.xci

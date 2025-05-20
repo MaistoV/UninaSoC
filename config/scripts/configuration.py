@@ -14,8 +14,8 @@ class Configuration:
         self.SUPPORTED_CORES     : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV", "CORE_CV64A6"]
         self.CORE_SELECTOR       : str = ""        # (Mandatory) No default core
         self.VIO_RESETN_DEFAULT  : int = 1         # Reset using Xilinx VIO
+        self.PROTOCOL            : str = ""        # AXI PROTOCOL used
         self.XLEN                : int = 32        # System-level len (only applicable to MBUS)
-        self.PROTOCOL            : str = ""    # AXI PROTOCOL used
         self.CONNECTIVITY_MODE   : str = "SAMD"    # Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
         self.ADDR_WIDTH          : int = 32        # Address Width
         self.DATA_WIDTH          : int = 32        # Data Width
@@ -54,6 +54,9 @@ class Configuration:
     # When XLEN parameter is parsed, ADDR_WIDTH and DATA_WIDTH are assigned accordingly
 
     def set_ADDR_WIDTH (self, value: int):
+
+        print(self.PROTOCOL)
+
         # Reads the Address Widdth applied to all Interfaces
         # [AXI4 ; AXI3] => the range of possible values is (12..64)
         # AXI4LITE => the range of possible values is (1..64)
@@ -63,11 +66,12 @@ class Configuration:
             self.ADDR_WIDTH = value
         elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (value in range(12, 65))):
             self.ADDR_WIDTH = value
+        elif self.PROTOCOL == "MOCK":
+            # Skip mock buses
+            return
         else:
-            logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
-<<<<<<< HEAD
+            logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used.")
             exit(1)
-=======
 
     def set_DATA_WIDTH (self, value: int):
         # Reads the Address Widdth applied to all Interfaces
@@ -86,26 +90,7 @@ class Configuration:
         elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (DATA_WIDTH_Found == True)):
             self.DATA_WIDTH = value
         else:
-            logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
->>>>>>> origin/fix/various
-
-    def set_DATA_WIDTH (self, value: int):
-        # Reads the Address Widdth applied to all Interfaces
-        # [AXI4 ; AXI3] => the range of possible values is {32 ,  64 ,  128 ,  256 ,  512 ,  1024}
-        # AXI4LITE => the range of possible values is {32 ,  64}
-        # 32 is the default value in every scenario
-        # If the value is missing or is incorrect in the csv file,  default value is used
-        DATA_WIDTH_Found = False
-        Base_Data = 32
-        while ((DATA_WIDTH_Found == False) and (Base_Data <= 1024)):
-            if (value == Base_Data):
-                DATA_WIDTH_Found = True
-            Base_Data = Base_Data * 2
-        if ((self.PROTOCOL == "AXI4LITE") and ((value == 32) or (value == 64))):
-            self.DATA_WIDTH = value
-        elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (DATA_WIDTH_Found == True)):
-            self.DATA_WIDTH = value
-        else:
-            logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
+            logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used.")
             exit(1)
+
 

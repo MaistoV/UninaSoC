@@ -12,7 +12,7 @@ import configuration
 import parse_properties_wrapper
 
 # Name of buses
-CONFIG_NAMES = {
+CONFIG_BASENAMES = {
     "config_main_bus.csv"            : "MBUS",
     "config_peripheral_bus.csv"      : "PBUS",
     "config_highperformance_bus.csv" : "HBUS",
@@ -32,7 +32,7 @@ def read_configs(config_file_names : list) -> list:
         # Naming the actual bus
         end_name = name.split("/")[-1]
         # Parse name first
-        config.CONFIG_NAME = CONFIG_NAMES[end_name]
+        config.CONFIG_NAME = CONFIG_BASENAMES[end_name]
 
         # Reading the CSV
         for index, row in pd.read_csv(name, sep=",").iterrows():
