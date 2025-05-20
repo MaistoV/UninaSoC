@@ -26,7 +26,6 @@ The existing examples include:
 - `hello_world` - basic Hello World on UART.
 - `interrupts` - PLIC reference example.
 
-Some examples use the [tinyio](https://github.com/Granp4sso/TinyIO-library-for-printf-and-scanf-) library for `printf()` and `scanf()` on UART.
 
 You can build individual examples or create new projects as described in the following sections.
 Each directory under examples or projects includes a `common/Makefile` that provides baseline commands for building code.
