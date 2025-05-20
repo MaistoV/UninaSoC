@@ -91,7 +91,7 @@ module rv_socket # (
     ////////////////////////
 
     generate
-        case ( CORE_SELECTOR ):
+        case ( CORE_SELECTOR )
             CORE_PICORV32 : begin : core_picorv32
 
                 //////////////////////////
@@ -507,7 +507,7 @@ module rv_socket # (
     // - Microblaze V has its own interfaces and debug module
     // - CVA6 comes directly with a singel AXI master interface
     // - TODO: Rocket
-    if ( !( CORE_SELECTOR inside { CORE_MICROBLAZEV, CORE_CV64A6 } ) ) begin : mem_convert
+    if ( !( CORE_SELECTOR inside { CORE_MICROBLAZEV } ) ) begin : mem_convert
 
         // Convert instructions socket (AXI) to core (MEM)
         custom_axi_from_mem axi_from_mem_instr_u (
