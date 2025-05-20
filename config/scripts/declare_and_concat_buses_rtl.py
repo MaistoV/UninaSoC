@@ -189,9 +189,11 @@ def declare_and_concat_buses(file, config : configuration.Configuration) -> None
 ########
 if __name__ == "__main__":
     config_file_names = sys.argv[1:]
-    configs = read_config(config_file_names)
+    configs = read_configs(config_file_names)
 
     for config in configs:
-        file = open(RTL_FILES[config.CONFIG_NAME], "w")
+        filename = RTL_FILES[config.CONFIG_NAME]
+        file = open(filename, "w")
         declare_and_concat_buses(file, config)
         file.close()
+        print_info("Output file is at " + filename)

@@ -9,6 +9,10 @@ This project was verified on Ubuntu 22.04 and the following tools version:
 | Vivado          | 2024.2           |
 > This is just because `CORE_MICROBLAZEV` is supported only in Vivado >= 2024.2.
 
+## Architecture
+The base architecture of UninaSoC is depicted in the following:
+![SoC Architecture](./Base_SoC_layout.png)
+
 ## SoC Profiles
 The SoC comes in two flavors, `hpc` and `embedded` profiles, and support for multiple boards.
 
@@ -31,7 +35,7 @@ The top-level `Makefile` can be used to build the platform for the specific targ
 
 First, setup environment with:
 ``` bash
-source settings.sh <soc_config> <board>
+source settings.sh <SOC_PROFILE> <board>
 ```
 > NOTE: If no input parameter is specificed, we default to `embedded` profile and the Nexys A7-100T board.
 

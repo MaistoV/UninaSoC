@@ -153,15 +153,17 @@ done
 # Replace in target MK file
 sed -E -i "s/MAIN_CLOCK_FREQ_MHZ.?\?=.+/MAIN_CLOCK_FREQ_MHZ \?= ${main_clock_domain}/g" ${OUTPUT_MK_FILE};
 sed -E -i "s/RANGE_CLOCK_DOMAINS.?\?=.+/RANGE_CLOCK_DOMAINS \?= ${clock_domains_list}/g" ${OUTPUT_MK_FILE};
-# Replace in AXI Lite UART
-# NOTE: this will trigger the rebuild of the IP
-AXI_UARTLITE_CONFIG=${XILINX_IPS_ROOT}/embedded/xlnx_axi_uartlite/config.tcl
-sed -E -i "s/CONFIG.C_S_AXI_ACLK_FREQ_HZ ?\{[[:digit:]]+\}/CONFIG.C_S_AXI_ACLK_FREQ_HZ {${PBUS_CLOCK_FREQ_MHZ}000000}/g" ${AXI_UARTLITE_CONFIG};
+if [[ ${SOC_PROFILE} == "embedded" ]]; then
+    # Replace in AXI Lite UART
+    # NOTE: this will trigger the rebuild of the IP
+    AXI_UARTLITE_CONFIG=${XILINX_IPS_ROOT}/embedded/xlnx_axi_uartlite/config.tcl
+    sed -E -i "s/CONFIG.C_S_AXI_ACLK_FREQ_HZ ?\{[[:digit:]]+\}/CONFIG.C_S_AXI_ACLK_FREQ_HZ {${PBUS_CLOCK_FREQ_MHZ}000000}/g" ${AXI_UARTLITE_CONFIG};
+fi
 
 # Info print
 echo "[CONFIG_XILINX] Updating MAIN_CLOCK_FREQ_MHZ = ${main_clock_domain} "
 echo "[CONFIG_XILINX] Updating RANGE_CLOCK_DOMAINS = ${clock_domains_list} "
-echo "[CONFIG_XILINX] Updating PBUS_CLOCK_FREQ_MHZ = ${PBUS_CLOCK_FREQ_MHZ}000000 "
+echo "[CONFIG_XILINX] Updating PBUS_CLOCK_FREQ_MHZ = ${PBUS_CLOCK_FREQ_MHZ} "
 
 # Done
 echo "[CONFIG_XILINX] Output file is at ${OUTPUT_MK_FILE}"

@@ -22,7 +22,7 @@ SOC_SW_ROOT_DIR = $(SW_ROOT)/SoC
 
 SRC_DIR        = src
 OBJ_DIR        = obj
-INC_DIR     = inc
+INC_FLAGS     = -Iinc -I$(SOC_SW_ROOT_DIR)/common
 STARTUP_DIR = $(SOC_SW_ROOT_DIR)/common
 
 LD_SCRIPT     = ld/user.ld
@@ -36,7 +36,6 @@ LIB_INC_TINYIO    = -I$(LIB_DIR)/tinyio/inc
 
 LIB_OBJ_LIST     = $(LIB_OBJ_TINYIO)
 LIB_INC_LIST     = $(LIB_INC_TINYIO)
-
 
 #############
 # Toolchain #

@@ -1,6 +1,9 @@
 # Python products
 *__pycache__
 
+# VScode local
+.vscode
+
 # Prerequisites
 *.d
 # Object files
@@ -14,10 +17,9 @@ vivado*
 webtalk*
 
 # Build outputs
-build/
+build*/
 
 # Temporary files and directories
 tmp*
 backup*
 *.log
-
