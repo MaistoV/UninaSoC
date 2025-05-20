@@ -1,5 +1,5 @@
 /*
- * mini-scanf - Minimal scanf() implementation for embedded projects. 
+ * mini-scanf - Minimal scanf() implementation for embedded projects.
  * Copyright (c) 2023 Aleksej Muratov
  */
 

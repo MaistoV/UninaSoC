@@ -31,8 +31,8 @@ LD_SCRIPT     = ld/user.ld
 # Libraries #
 #############
 
-LIB_OBJ_TINYIO     = $(LIB_DIR)/tinyio/lib/tinyio.a
-LIB_INC_TINYIO    = -I$(LIB_DIR)/tinyio/inc
+LIB_OBJ_TINYIO     = $(LIB_DIR)/tinyio_/lib/tinyio.a
+LIB_INC_TINYIO    = -I$(LIB_DIR)/tinyio_/inc
 
 LIB_OBJ_LIST     = $(LIB_OBJ_TINYIO)
 LIB_INC_LIST     = $(LIB_INC_TINYIO)
