@@ -39,9 +39,6 @@ def read_configs(config_file_names : list) -> list:
             # Update the config
             config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
 
-        # Naming the actual bus
-        end_name = name.split("/")[-1]
-        config.CONFIG_NAME = CONFIG_BASENAMES[end_name]
         # Append the config to the list
         configs.append(config)
 

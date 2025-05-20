@@ -120,29 +120,24 @@ def parse_XLEN (
 		property_value: str,
 ):
 
-	print("parse_XLEN", config.PROTOCOL)
 
 	# No need to parse for mock buses
 	if (config.PROTOCOL == "MOCK"):
 		# No-op
 		return config
 
-	# XLEN property will set bus DATA_WIDTH and ADDR_WIDTH
+	# Default
 	value = int(property_value)
 	config.XLEN = value
 
-	# Check sanity
-	if (value not in [32, 64]):
-		logging.warning("Invalid XLEN value, please select either 32 or 64")
-
-	# Set BUS-related parameters
+	# Overrfde with BUS-related parameters
 	match config.CONFIG_NAME:
 		# Main bus, use XLEN
 		case "MBUS":
-			value = int(property_value)
 			# Check if the XLEN value is valid
 			if (value not in [32, 64]):
-				logging.warning("Invalid XLEN value ({value}), please select either 32 or 64")
+				logging.error("Invalid XLEN value (" + str(value) + "), please select either 32 or 64")
+				exit(1)
 			# XLEN property will set bus DATA_WIDTH
 			# Note: ADDR_WIDTH is set by parse PHYSICAL_ADDR_WIDTH after XLEN is parsed
 			config.XLEN = value
@@ -186,7 +181,7 @@ def parse_PHYSICAL_ADDR_WIDTH (
 		if 	((xlen == 32) and (physical_addr_width != 32)) \
 			or \
 			((xlen == 64) and (physical_addr_width < 32)) :
-			logging.error("Invalid XLEN ({xlen}) and physical_addr_width ({phyisical_addr_width}) values established")
+			logging.error("Invalid XLEN (" + str(xlen) + ") and physical_addr_width (" + str(physical_addr_width) + ") values established")
 			exit(1)
 
 		# Set proptery in config

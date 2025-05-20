@@ -196,14 +196,13 @@ def check_inter_config(configs : list) -> bool:
             return False
 
         # For each slave (MI) of the current Configuration
-        print(config.CONFIG_NAME)
         for mi_index in range(config.NUM_MI):
-            print("   " + config.RANGE_NAMES[mi_index])
             # If a master is a bus (is in the CONFIG_NAME dict)
             if config.RANGE_NAMES[mi_index] in CONFIG_BASENAMES.values():
                 # Find the child bus configuration
                 for child_config in configs:
-                    if child_config.CONFIG_NAME == config.RANGE_NAMES[mi_index]:
+                    # TODO: allow loop back to MBUS
+                    if child_config.CONFIG_NAME == config.RANGE_NAMES[mi_index] and child_config.CONFIG_NAME != "MBUS":
                         # Compute the base and the end address of the parent bus
                         parent_base_address = int(config.BASE_ADDR[mi_index], 16)
                         parent_end_address = parent_base_address + ~(~1 << (config.RANGE_ADDR_WIDTH[mi_index]-1))
