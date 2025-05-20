@@ -60,10 +60,6 @@ module rv_socket # (
     logic core_resetn_internal;
     assign core_resetn_internal = rst_ni & core_resetn_i;
 
-    // Declare AXI interfaces for instruction memory port and data memory port
-    `DECLARE_AXI_BUS(core_instr_to_socket_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
-    `DECLARE_AXI_BUS(core_data_to_socket_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
-
     // Declare MEM ports
     `DECLARE_MEM_BUS(core_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH);
     `DECLARE_MEM_BUS(core_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH);
@@ -95,7 +91,7 @@ module rv_socket # (
     ////////////////////////
 
     generate
-        case (CORE_SELECTOR):
+        case ( CORE_SELECTOR ):
             CORE_PICORV32 : begin : core_picorv32
 
                 //////////////////////////
@@ -295,7 +291,7 @@ module rv_socket # (
                 logic       Dbg_Disable;  // wire Dbg_Disable_0
 
 
-                // Declare AXI interfaces for instruction memory port and data memory port for MicroblazeV
+                // Declare AXI interfaces for instruction memory port and data memory port for Microblaze V
                 `DECLARE_AXI_BUS(microblaze_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
                 `DECLARE_AXILITE_BUS(microblaze_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
@@ -481,6 +477,10 @@ module rv_socket # (
                     .m_axi_rready   ( converter_instr_axi_rready        )  // output wire m_axi_rready
                 );
 
+                // Sink unused interafces
+                `SINK_AXI_MASTER_INTERFACE(dbg_master);
+                `SINK_AXI_SLAVE_INTERFACE(dbg_slave);
+
             end : xlnx_microblaze_riscv
         endcase
 
@@ -505,55 +505,52 @@ module rv_socket # (
 
     // Few exceptions:
     // - Microblaze V has its own interfaces and debug module
+    // - CVA6 comes directly with a singel AXI master interface
     // - TODO: Rocket
-    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : mem_convert
-
-        // Connect memory interfaces to socket output memory ports
-        `ASSIGN_AXI_BUS( rv_socket_instr, core_instr_to_socket_instr );
-        `ASSIGN_AXI_BUS( rv_socket_data, core_data_to_socket_data );
+    if ( !( CORE_SELECTOR inside { CORE_MICROBLAZEV, CORE_CV64A6 } ) ) begin : mem_convert
 
         // Convert instructions socket (AXI) to core (MEM)
         custom_axi_from_mem axi_from_mem_instr_u (
             // AXI side
-            .m_axi_awid     ( core_instr_to_socket_instr_axi_awid       ),
-            .m_axi_awaddr   ( core_instr_to_socket_instr_axi_awaddr     ),
-            .m_axi_awlen    ( core_instr_to_socket_instr_axi_awlen      ),
-            .m_axi_awsize   ( core_instr_to_socket_instr_axi_awsize     ),
-            .m_axi_awburst  ( core_instr_to_socket_instr_axi_awburst    ),
-            .m_axi_awlock   ( core_instr_to_socket_instr_axi_awlock     ),
-            .m_axi_awcache  ( core_instr_to_socket_instr_axi_awcache    ),
-            .m_axi_awprot   ( core_instr_to_socket_instr_axi_awprot     ),
-            .m_axi_awqos    ( core_instr_to_socket_instr_axi_awqos      ),
-            .m_axi_awregion ( core_instr_to_socket_instr_axi_awregion   ),
-            .m_axi_awvalid  ( core_instr_to_socket_instr_axi_awvalid    ),
-            .m_axi_awready  ( core_instr_to_socket_instr_axi_awready    ),
-            .m_axi_wdata    ( core_instr_to_socket_instr_axi_wdata      ),
-            .m_axi_wstrb    ( core_instr_to_socket_instr_axi_wstrb      ),
-            .m_axi_wlast    ( core_instr_to_socket_instr_axi_wlast      ),
-            .m_axi_wvalid   ( core_instr_to_socket_instr_axi_wvalid     ),
-            .m_axi_wready   ( core_instr_to_socket_instr_axi_wready     ),
-            .m_axi_bid      ( core_instr_to_socket_instr_axi_bid        ),
-            .m_axi_bresp    ( core_instr_to_socket_instr_axi_bresp      ),
-            .m_axi_bvalid   ( core_instr_to_socket_instr_axi_bvalid     ),
-            .m_axi_bready   ( core_instr_to_socket_instr_axi_bready     ),
-            .m_axi_araddr   ( core_instr_to_socket_instr_axi_araddr     ),
-            .m_axi_arlen    ( core_instr_to_socket_instr_axi_arlen      ),
-            .m_axi_arsize   ( core_instr_to_socket_instr_axi_arsize     ),
-            .m_axi_arburst  ( core_instr_to_socket_instr_axi_arburst    ),
-            .m_axi_arlock   ( core_instr_to_socket_instr_axi_arlock     ),
-            .m_axi_arcache  ( core_instr_to_socket_instr_axi_arcache    ),
-            .m_axi_arprot   ( core_instr_to_socket_instr_axi_arprot     ),
-            .m_axi_arqos    ( core_instr_to_socket_instr_axi_arqos      ),
-            .m_axi_arregion ( core_instr_to_socket_instr_axi_arregion   ),
-            .m_axi_arvalid  ( core_instr_to_socket_instr_axi_arvalid    ),
-            .m_axi_arready  ( core_instr_to_socket_instr_axi_arready    ),
-            .m_axi_arid     ( core_instr_to_socket_instr_axi_arid       ),
-            .m_axi_rid      ( core_instr_to_socket_instr_axi_rid        ),
-            .m_axi_rdata    ( core_instr_to_socket_instr_axi_rdata      ),
-            .m_axi_rresp    ( core_instr_to_socket_instr_axi_rresp      ),
-            .m_axi_rlast    ( core_instr_to_socket_instr_axi_rlast      ),
-            .m_axi_rvalid   ( core_instr_to_socket_instr_axi_rvalid     ),
-            .m_axi_rready   ( core_instr_to_socket_instr_axi_rready     ),
+            .m_axi_awid     ( rv_socket_instr_axi_awid       ),
+            .m_axi_awaddr   ( rv_socket_instr_axi_awaddr     ),
+            .m_axi_awlen    ( rv_socket_instr_axi_awlen      ),
+            .m_axi_awsize   ( rv_socket_instr_axi_awsize     ),
+            .m_axi_awburst  ( rv_socket_instr_axi_awburst    ),
+            .m_axi_awlock   ( rv_socket_instr_axi_awlock     ),
+            .m_axi_awcache  ( rv_socket_instr_axi_awcache    ),
+            .m_axi_awprot   ( rv_socket_instr_axi_awprot     ),
+            .m_axi_awqos    ( rv_socket_instr_axi_awqos      ),
+            .m_axi_awregion ( rv_socket_instr_axi_awregion   ),
+            .m_axi_awvalid  ( rv_socket_instr_axi_awvalid    ),
+            .m_axi_awready  ( rv_socket_instr_axi_awready    ),
+            .m_axi_wdata    ( rv_socket_instr_axi_wdata      ),
+            .m_axi_wstrb    ( rv_socket_instr_axi_wstrb      ),
+            .m_axi_wlast    ( rv_socket_instr_axi_wlast      ),
+            .m_axi_wvalid   ( rv_socket_instr_axi_wvalid     ),
+            .m_axi_wready   ( rv_socket_instr_axi_wready     ),
+            .m_axi_bid      ( rv_socket_instr_axi_bid        ),
+            .m_axi_bresp    ( rv_socket_instr_axi_bresp      ),
+            .m_axi_bvalid   ( rv_socket_instr_axi_bvalid     ),
+            .m_axi_bready   ( rv_socket_instr_axi_bready     ),
+            .m_axi_araddr   ( rv_socket_instr_axi_araddr     ),
+            .m_axi_arlen    ( rv_socket_instr_axi_arlen      ),
+            .m_axi_arsize   ( rv_socket_instr_axi_arsize     ),
+            .m_axi_arburst  ( rv_socket_instr_axi_arburst    ),
+            .m_axi_arlock   ( rv_socket_instr_axi_arlock     ),
+            .m_axi_arcache  ( rv_socket_instr_axi_arcache    ),
+            .m_axi_arprot   ( rv_socket_instr_axi_arprot     ),
+            .m_axi_arqos    ( rv_socket_instr_axi_arqos      ),
+            .m_axi_arregion ( rv_socket_instr_axi_arregion   ),
+            .m_axi_arvalid  ( rv_socket_instr_axi_arvalid    ),
+            .m_axi_arready  ( rv_socket_instr_axi_arready    ),
+            .m_axi_arid     ( rv_socket_instr_axi_arid       ),
+            .m_axi_rid      ( rv_socket_instr_axi_rid        ),
+            .m_axi_rdata    ( rv_socket_instr_axi_rdata      ),
+            .m_axi_rresp    ( rv_socket_instr_axi_rresp      ),
+            .m_axi_rlast    ( rv_socket_instr_axi_rlast      ),
+            .m_axi_rvalid   ( rv_socket_instr_axi_rvalid     ),
+            .m_axi_rready   ( rv_socket_instr_axi_rready     ),
 
             // MEM side
             .clk_i              ( clk_i                 ),
@@ -572,45 +569,45 @@ module rv_socket # (
         // Convert instructions socket (AXI) to core (MEM)
         custom_axi_from_mem axi_from_mem_data_u (
             // AXI side
-            .m_axi_awid     ( core_data_to_socket_data_axi_awid       ),
-            .m_axi_awaddr   ( core_data_to_socket_data_axi_awaddr     ),
-            .m_axi_awlen    ( core_data_to_socket_data_axi_awlen      ),
-            .m_axi_awsize   ( core_data_to_socket_data_axi_awsize     ),
-            .m_axi_awburst  ( core_data_to_socket_data_axi_awburst    ),
-            .m_axi_awlock   ( core_data_to_socket_data_axi_awlock     ),
-            .m_axi_awcache  ( core_data_to_socket_data_axi_awcache    ),
-            .m_axi_awprot   ( core_data_to_socket_data_axi_awprot     ),
-            .m_axi_awqos    ( core_data_to_socket_data_axi_awqos      ),
-            .m_axi_awregion ( core_data_to_socket_data_axi_awregion   ),
-            .m_axi_awvalid  ( core_data_to_socket_data_axi_awvalid    ),
-            .m_axi_awready  ( core_data_to_socket_data_axi_awready    ),
-            .m_axi_wdata    ( core_data_to_socket_data_axi_wdata      ),
-            .m_axi_wstrb    ( core_data_to_socket_data_axi_wstrb      ),
-            .m_axi_wlast    ( core_data_to_socket_data_axi_wlast      ),
-            .m_axi_wvalid   ( core_data_to_socket_data_axi_wvalid     ),
-            .m_axi_wready   ( core_data_to_socket_data_axi_wready     ),
-            .m_axi_bid      ( core_data_to_socket_data_axi_bid        ),
-            .m_axi_bresp    ( core_data_to_socket_data_axi_bresp      ),
-            .m_axi_bvalid   ( core_data_to_socket_data_axi_bvalid     ),
-            .m_axi_bready   ( core_data_to_socket_data_axi_bready     ),
-            .m_axi_araddr   ( core_data_to_socket_data_axi_araddr     ),
-            .m_axi_arlen    ( core_data_to_socket_data_axi_arlen      ),
-            .m_axi_arsize   ( core_data_to_socket_data_axi_arsize     ),
-            .m_axi_arburst  ( core_data_to_socket_data_axi_arburst    ),
-            .m_axi_arlock   ( core_data_to_socket_data_axi_arlock     ),
-            .m_axi_arcache  ( core_data_to_socket_data_axi_arcache    ),
-            .m_axi_arprot   ( core_data_to_socket_data_axi_arprot     ),
-            .m_axi_arqos    ( core_data_to_socket_data_axi_arqos      ),
-            .m_axi_arregion ( core_data_to_socket_data_axi_arregion   ),
-            .m_axi_arvalid  ( core_data_to_socket_data_axi_arvalid    ),
-            .m_axi_arready  ( core_data_to_socket_data_axi_arready    ),
-            .m_axi_arid     ( core_data_to_socket_data_axi_arid       ),
-            .m_axi_rid      ( core_data_to_socket_data_axi_rid        ),
-            .m_axi_rdata    ( core_data_to_socket_data_axi_rdata      ),
-            .m_axi_rresp    ( core_data_to_socket_data_axi_rresp      ),
-            .m_axi_rlast    ( core_data_to_socket_data_axi_rlast      ),
-            .m_axi_rvalid   ( core_data_to_socket_data_axi_rvalid     ),
-            .m_axi_rready   ( core_data_to_socket_data_axi_rready     ),
+            .m_axi_awid     ( rv_socket_data_axi_awid       ),
+            .m_axi_awaddr   ( rv_socket_data_axi_awaddr     ),
+            .m_axi_awlen    ( rv_socket_data_axi_awlen      ),
+            .m_axi_awsize   ( rv_socket_data_axi_awsize     ),
+            .m_axi_awburst  ( rv_socket_data_axi_awburst    ),
+            .m_axi_awlock   ( rv_socket_data_axi_awlock     ),
+            .m_axi_awcache  ( rv_socket_data_axi_awcache    ),
+            .m_axi_awprot   ( rv_socket_data_axi_awprot     ),
+            .m_axi_awqos    ( rv_socket_data_axi_awqos      ),
+            .m_axi_awregion ( rv_socket_data_axi_awregion   ),
+            .m_axi_awvalid  ( rv_socket_data_axi_awvalid    ),
+            .m_axi_awready  ( rv_socket_data_axi_awready    ),
+            .m_axi_wdata    ( rv_socket_data_axi_wdata      ),
+            .m_axi_wstrb    ( rv_socket_data_axi_wstrb      ),
+            .m_axi_wlast    ( rv_socket_data_axi_wlast      ),
+            .m_axi_wvalid   ( rv_socket_data_axi_wvalid     ),
+            .m_axi_wready   ( rv_socket_data_axi_wready     ),
+            .m_axi_bid      ( rv_socket_data_axi_bid        ),
+            .m_axi_bresp    ( rv_socket_data_axi_bresp      ),
+            .m_axi_bvalid   ( rv_socket_data_axi_bvalid     ),
+            .m_axi_bready   ( rv_socket_data_axi_bready     ),
+            .m_axi_araddr   ( rv_socket_data_axi_araddr     ),
+            .m_axi_arlen    ( rv_socket_data_axi_arlen      ),
+            .m_axi_arsize   ( rv_socket_data_axi_arsize     ),
+            .m_axi_arburst  ( rv_socket_data_axi_arburst    ),
+            .m_axi_arlock   ( rv_socket_data_axi_arlock     ),
+            .m_axi_arcache  ( rv_socket_data_axi_arcache    ),
+            .m_axi_arprot   ( rv_socket_data_axi_arprot     ),
+            .m_axi_arqos    ( rv_socket_data_axi_arqos      ),
+            .m_axi_arregion ( rv_socket_data_axi_arregion   ),
+            .m_axi_arvalid  ( rv_socket_data_axi_arvalid    ),
+            .m_axi_arready  ( rv_socket_data_axi_arready    ),
+            .m_axi_arid     ( rv_socket_data_axi_arid       ),
+            .m_axi_rid      ( rv_socket_data_axi_rid        ),
+            .m_axi_rdata    ( rv_socket_data_axi_rdata      ),
+            .m_axi_rresp    ( rv_socket_data_axi_rresp      ),
+            .m_axi_rlast    ( rv_socket_data_axi_rlast      ),
+            .m_axi_rvalid   ( rv_socket_data_axi_rvalid     ),
+            .m_axi_rready   ( rv_socket_data_axi_rready     ),
 
             // MEM side
             .clk_i              ( clk_i                     ),
