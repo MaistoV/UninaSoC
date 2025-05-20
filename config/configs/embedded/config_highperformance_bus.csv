@@ -1,2 +1,5 @@
 Property,Value
 PROTOCOL,MOCK
+NUM_SI,0
+NUM_MI,0
+ID_WIDTH,0
