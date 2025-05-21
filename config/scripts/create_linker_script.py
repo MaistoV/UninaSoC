@@ -58,8 +58,8 @@ RANGE_ADDR_WIDTH = []
 # For each bus
 for config_df in config_dfs:
 
-	# Skip mock buses
-	if config_df.loc["PROTOCOL"]["Value"] == "MOCK":
+	# Skip DISABLE buses
+	if config_df.loc["PROTOCOL"]["Value"] == "DISABLE":
 		continue
 
 	# Read number of masters interfaces

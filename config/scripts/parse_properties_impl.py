@@ -119,8 +119,8 @@ def parse_XLEN (
 		property_name : str,
 		property_value: str,
 ):
-	# No need to parse for mock buses
-	if (config.PROTOCOL == "MOCK"):
+	# No need to parse for DISABLE buses
+	if (config.PROTOCOL == "DISABLE"):
 		# No-op
 		return config
 
@@ -498,8 +498,8 @@ def parse_RANGE_BASE_ADDR (
 		property_value: str,
 	):
 
-	# No need to parse for mock buses
-	if (config.PROTOCOL == "MOCK"):
+	# No need to parse for DISABLE buses
+	if (config.PROTOCOL == "DISABLE"):
 		# No-op
 		return config
 
@@ -551,8 +551,8 @@ def parse_RANGE_ADDR_WIDTH (
 		property_value: str,
 	):
 
-	# No need to parse for mock buses
-	if (config.PROTOCOL == "MOCK"):
+	# No need to parse for DISABLE buses
+	if (config.PROTOCOL == "DISABLE"):
 		# No-op
 		return config
 
