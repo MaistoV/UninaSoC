@@ -233,3 +233,6 @@ write_tcl.end_File(file)
 
 # Close file
 file.close
+
+# Print filename
+print("[CONFIG] Output file is at " + config_tcl_file_name)

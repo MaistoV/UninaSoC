@@ -21,7 +21,6 @@ config_%_bus: config_check
 		${CONFIG_SYSTEM_CSV} \
 		${CONFIG_BUS_CSV} \
 		${OUTPUT_TCL_FILE}
-	@echo "[CONFIG] Output file is at ${OUTPUT_TCL_FILE}"
 	${PYTHON} ${CONFIG_ROOT}/scripts/declare_and_concat_buses_rtl.py ${CONFIG_BUS_CSV}
 	${PYTHON} ${CONFIG_ROOT}/scripts/declare_and_assign_clocks_rtl.py ${CONFIG_BUS_CSV}
 
