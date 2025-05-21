@@ -139,7 +139,6 @@ def parse_XLEN (
 			config.set_DATA_WIDTH(value)
 		# Peripheral Bus, fix Data Width to 32
 		case "PBUS":
-			config.XLEN = 32
 			config.set_DATA_WIDTH(32)
 		# High-performance Bus, fix Data Width to 512
 		case "HBUS":
