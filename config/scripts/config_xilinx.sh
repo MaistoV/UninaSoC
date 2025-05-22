@@ -9,13 +9,14 @@
 #   $1: System CSV config
 #   $2: MBUS Source CSV config
 #   $3: PBUS Source CSV config
+#   $3: HBUS Source CSV config
 #   $4: Target MK file
 
 ##############
 # Parse args #
 ##############
 
-EXPECTED_ARGC=4;
+EXPECTED_ARGC=5;
 ARGC=$#;
 
 # Check argc
@@ -28,7 +29,8 @@ fi
 CONFIG_SYS_CSV=$1
 CONFIG_MAIN_CSV=$2
 CONFIG_PBUS_CSV=$3
-OUTPUT_MK_FILE=$4
+CONFIG_HBUS_CSV=$4
+OUTPUT_MK_FILE=$5
 
 ##########
 # Script #
@@ -42,11 +44,16 @@ sys_target_values=(
         PHYSICAL_ADDR_WIDTH
     )
 
+# Always assume prefixed targets
 bus_target_values=(
-        ID_WIDTH
-        NUM_SI
-        NUM_MI
+        MBUS_NUM_SI
+        MBUS_NUM_MI
+        MBUS_ID_WIDTH
         PBUS_NUM_MI
+        PBUS_ID_WIDTH
+        HBUS_NUM_MI
+        HBUS_NUM_SI
+        HBUS_ID_WIDTH
     )
 
 # Loop over system targets
@@ -63,18 +70,29 @@ done
 
 # Loop over bus targets
 for target in ${bus_target_values[*]}; do
-    # Special case for PBUS
-    # Assume a prexif
-    if [[ "$target" == "PBUS_"* ]]; then
-        # Discard prefix (first 5 chars)
-        prefix_len=5
-        grep_target=${target:$prefix_len}
-        # Search for value
-        target_value=$(grep "${grep_target}" ${CONFIG_PBUS_CSV} | awk -F "," '{print $2}');
-    else
-        # Search in main bus config
-        target_value=$(grep "${target}" ${CONFIG_MAIN_CSV} | grep -v RANGE | awk -F "," '{print $2}');
-    fi
+
+    # Discard prefix (first 5 chars)
+    prefix_len=5
+    grep_target=${target:$prefix_len}
+    # Select source config file
+    case "$target" in
+        "MBUS_"*)
+            source_config=${CONFIG_MAIN_CSV}
+            ;;
+        "PBUS_"*)
+            source_config=${CONFIG_PBUS_CSV}
+            ;;
+        "HBUS_"*)
+            source_config=${CONFIG_HBUS_CSV}
+            ;;
+        *)
+            echo "[CONFIG_XILINX][ERROR] Unsupported prefix for property ${target} "
+            exit 1
+            ;;
+    esac
+
+    # Search for value
+    target_value=$(grep "${grep_target}" ${source_config} | awk -F "," '{print $2}');
 
     # Info print
     echo "[CONFIG_XILINX] Updating ${target} = ${target_value} "
@@ -153,10 +171,12 @@ done
 # Replace in target MK file
 sed -E -i "s/MAIN_CLOCK_FREQ_MHZ.?\?=.+/MAIN_CLOCK_FREQ_MHZ \?= ${main_clock_domain}/g" ${OUTPUT_MK_FILE};
 sed -E -i "s/RANGE_CLOCK_DOMAINS.?\?=.+/RANGE_CLOCK_DOMAINS \?= ${clock_domains_list}/g" ${OUTPUT_MK_FILE};
-# Replace in AXI Lite UART
-# NOTE: this will trigger the rebuild of the IP
-AXI_UARTLITE_CONFIG=${XILINX_IPS_ROOT}/embedded/xlnx_axi_uartlite/config.tcl
-sed -E -i "s/CONFIG.C_S_AXI_ACLK_FREQ_HZ ?\{[[:digit:]]+\}/CONFIG.C_S_AXI_ACLK_FREQ_HZ {${PBUS_CLOCK_FREQ_MHZ}000000}/g" ${AXI_UARTLITE_CONFIG};
+if [[ ${SOC_CONFIG} == "embedded" ]]; then
+    # Replace in AXI Lite UART
+    # NOTE: this will trigger the rebuild of the IP
+    AXI_UARTLITE_CONFIG=${XILINX_IPS_ROOT}/embedded/xlnx_axi_uartlite/config.tcl
+    sed -E -i "s/CONFIG.C_S_AXI_ACLK_FREQ_HZ ?\{[[:digit:]]+\}/CONFIG.C_S_AXI_ACLK_FREQ_HZ {${PBUS_CLOCK_FREQ_MHZ}000000}/g" ${AXI_UARTLITE_CONFIG};
+fi
 
 # Info print
 echo "[CONFIG_XILINX] Updating MAIN_CLOCK_FREQ_MHZ = ${main_clock_domain} "

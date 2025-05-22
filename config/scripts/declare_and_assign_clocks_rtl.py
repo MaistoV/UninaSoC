@@ -34,6 +34,8 @@ def declare_and_assign_clocks(config : configuration.Configuration) -> None:
     file.write(FILE_HEADER)
     file.write(f"assign main_clk = clk_{config.MAIN_CLOCK_DOMAIN}MHz;\n")
     file.write(f"assign main_rstn = rstn_{config.MAIN_CLOCK_DOMAIN}MHz;\n")
+    file.write(f"logic clk_300MHz;\n")
+    file.write(f"logic rstn_300MHz;\n")
     for i in range(len(config.RANGE_CLOCK_DOMAINS)):
         # Exclude the DDR from this since it has its own clock
         if config.RANGE_NAMES[i] != "DDR":

@@ -25,16 +25,21 @@ import pandas as pd
 ##############
 
 # CSV configuration file path
-config_file_names = ['config/axi_memory_map/configs/embedded/config_main_bus.csv', 'config/axi_memory_map/configs/embedded/config_peripheral_bus.csv']
-if len(sys.argv) >= 3:
+config_file_names = [
+		'config/configs/embedded/config_main_bus.csv',
+		'config/configs/embedded/config_peripheral_bus.csv',
+		'config/configs/embedded/config_highperformance_bus.csv',
+	]
+
+if len(sys.argv) >= len(config_file_names)+1:
 	# Get the array of bus names from the second arg to the last but one
-	config_file_names = sys.argv[1:3]
+	config_file_names = sys.argv[1:len(config_file_names)+1]
 
 # Target linker script file
 ld_file_name = 'sw/SoC/common/UninaSoC.ld'
-if len(sys.argv) >= 4:
+if len(sys.argv) >= 5:
 	# Get the linker script name, the last arg
-	ld_file_name = sys.argv[3]
+	ld_file_name = sys.argv[len(config_file_names)+1]
 
 
 ###############
@@ -52,6 +57,11 @@ RANGE_BASE_ADDR = []
 RANGE_ADDR_WIDTH = []
 # For each bus
 for config_df in config_dfs:
+
+	# Skip DISABLE buses
+	if config_df.loc["PROTOCOL"]["Value"] == "DISABLE":
+		continue
+
 	# Read number of masters interfaces
 	NUM_MI.append(int(config_df.loc["NUM_MI"]["Value"]))
 	# print("[DEBUG] NUM_MI", NUM_MI)

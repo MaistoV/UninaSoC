@@ -65,7 +65,8 @@ BASE_SUFFIX                        = ")\n"
 # RTL files to edit
 RTL_FILES                = {
     "MBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/mbus_buses.svinc",
-    "PBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/pbus_buses.svinc"
+    "PBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/pbus_buses.svinc",
+    "HBUS" : f"{os.environ.get('XILINX_ROOT')}/rtl/hbus_buses.svinc"
 }
 
 # Get the correct bus suffix depending on bus name
@@ -85,31 +86,48 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
     suffix             = str()
     concat_prefix      = str()
     declare_prefix     = str()
+    data_width         = str()
 
     # If is master
     if is_master:
-        if config.CONFIG_NAME == "PBUS":
-            bus_cnt_str    = "1"                               # The width of the bus array in case of PBUS (1 since the PBUS has just a master)
-            concat_prefix  = CONCAT_AXILITE_MASTER_BUS_PREFIX  # The concatenation prefix in case of a PBUS
-            declare_prefix = DECLARE_AXILITE_BUS_ARRAY_PREFIX  # The declaration prefix in case of a PBUS
-        else:
-            declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS (or other AXI4 buses)
-            bus_cnt_str    = "NUM_SI"                          # The width of the bus array in case of MBUS (or other AXI4 buses)
-            concat_prefix  = CONCAT_MASTER_BUS_PREFIX          # The concatenation prefix in case of MBUS (or other AXI4 buses)
-        suffix             = "_masters"                        # The suffix of the bus array
+        match (config.CONFIG_NAME):
+            case "PBUS":
+                bus_cnt_str    = "1"                               # The width of the bus array in case of PBUS (1 since the PBUS has just a master)
+                concat_prefix  = CONCAT_AXILITE_MASTER_BUS_PREFIX  # The concatenation prefix in case of a PBUS
+                declare_prefix = DECLARE_AXILITE_BUS_ARRAY_PREFIX  # The declaration prefix in case of a PBUS
+            case  "MBUS":
+                declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS
+                bus_cnt_str    = "MBUS_NUM_SI"                     # The width of the bus array in case of MBUS
+                concat_prefix  = CONCAT_MASTER_BUS_PREFIX          # The concatenation prefix in case of MBUS
+            case  "HBUS":
+                declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS
+                # TODO: only MBUS and one accelerator interfaces supported for now
+                bus_cnt_str    = "HBUS_NUM_SI"                     # The width of the bus array in case of MBUS
+                concat_prefix  = CONCAT_MASTER_BUS_PREFIX          # The concatenation prefix in case of MBUS
+
+        # The suffix of the bus array
+        suffix = "_masters"
 
     # If is slave
     else:
-        if config.CONFIG_NAME == "PBUS":
-            bus_cnt_str    = "PBUS_NUM_MI"                     # The width of the bus array in case of PBUS
-            concat_prefix  = CONCAT_AXILITE_SLAVE_BUS_PREFIX   # The concatenation prefix in case of a PBUS
-            declare_prefix = DECLARE_AXILITE_BUS_ARRAY_PREFIX  # The declaration prefix in case of a PBUS
-        else:
-            declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS (or other AXI4 buses)
-            bus_cnt_str    = "NUM_MI"                          # The width of the bus array in case of MBUS (or other AXI4 buses)
-            concat_prefix  = CONCAT_SLAVE_BUS_PREFIX           # The concatenation prefix in case of MBUS (or other AXI4 buses)
-        suffix             = "_slaves"                         # The suffix of the bus array
+        match (config.CONFIG_NAME):
+            case "PBUS":
+                bus_cnt_str    = "PBUS_NUM_MI"                     # The width of the bus array in case of PBUS
+                concat_prefix  = CONCAT_AXILITE_SLAVE_BUS_PREFIX   # The concatenation prefix in case of a PBUS
+                declare_prefix = DECLARE_AXILITE_BUS_ARRAY_PREFIX  # The declaration prefix in case of a PBUS
+            case  "MBUS":
+                declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS
+                bus_cnt_str    = "MBUS_NUM_MI"                     # The width of the bus array in case of MBUS
+                concat_prefix  = CONCAT_SLAVE_BUS_PREFIX           # The concatenation prefix in case of MBUS
+            case  "HBUS":
+                declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of HBUS
+                # NOTE: loopback to MBUS + 1 DDR
+                # TODO: only one DDR channel supported for now
+                bus_cnt_str    = "HBUS_NUM_MI"                     # The width of the bus array in case of HBUS
+                concat_prefix  = CONCAT_SLAVE_BUS_PREFIX           # The concatenation prefix in case of HBUS
 
+        # The suffix of the bus array
+        suffix = "_slaves"
 
     for bus in buses:
         # Add each bus previously declared to the bus string
@@ -149,7 +167,7 @@ def declare_buses(lines : list, is_master : bool, config : configuration.Configu
         if config.CONFIG_NAME == "PBUS":
             # If the bus is PBUS declare an AXILITE bus using the last created bus name
             lines.append(f"{DECLARE_AXILITE_BUS_PREFIX}{buses[-1]}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
-        else:
+        elif config.CONFIG_NAME in {"MBUS", "HBUS"}:
             # If the bus is not PBUS declare an AXI4 bus using the last created bus name
             lines.append(f"{DECLARE_BUS_PREFIX}{buses[-1]}{GET_BUS_SUFFIX(config.CONFIG_NAME)}")
     return buses
@@ -195,3 +213,4 @@ if __name__ == "__main__":
         file = open(RTL_FILES[config.CONFIG_NAME], "w")
         declare_and_concat_buses(file, config)
         file.close()
+

@@ -40,7 +40,7 @@ The following table details the supported properties.
 | XLEN                  | Defines Bus DATA_WIDTH, supported cores and Toolchain version             | [32,64]                                                 | 32
 | PHYSICAL_ADDR_WIDTH   | Select the phyisical address width. If XLEN=32 it must equal 32. If XLEN=64, it must be > 32 | (32..64) | 32
 
-> NOTE: the external PicoRV32 IP is currently bugged in CSR support. Any code running with CORE_PICORV32 must not perform any CSR operation.
+> \* the external PicoRV32 IP is currently bugged in CSR support. Any code running with CORE_PICORV32 must not perform any CSR operation.
 
 ### Bus Configuration
 
@@ -48,7 +48,7 @@ The following table details the supported properties.
 
 | Name  | Description | Values | Default
 |-|-|-|-|
-| PROTOCOL              | AXI PROTOCOL                                              | (AXI4, AXI4LITE, AXI3)                                    | AXI4
+| PROTOCOL              | AXI PROTOCOL                                              | (AXI4, AXI4LITE, AXI3, DISABLE*)                           | N/A
 | CONNECTIVITY_MODE     | Crossbar Interconnection                                  | Shared-Address, Multiple-Data(SAMD), Shared-Address/Shared-Data(SASD)                | SAMD
 | ID_WIDTH              | AXI ID Width                                              | (4..32)                                                   | 4
 | NUM_MI                | Number of Master Interfaces (number of slaves)            | (0..16)                                                   | 2
@@ -79,17 +79,20 @@ The following table details the supported properties.
 | RUSER_WIDTH           | AXI  R User width                                         | (0..1024)                                                 | 0
 | BUSER_WIDTH           | AXI  B User width                                         | (0..1024)                                                 | 0
 
+> \* Using `DISABLE` as AXI PROTOCOL, disable all checks for a given bus. Useful for non-instantiated buses, e.g. HBUS in `embedded` profile
+
 ## Genenerate Configurations
 After applying configuration changes to the target CSV files (`embedded` or `hpc`), apply though `make`.
 
 Alternatively, you can control the generation of single targets:
 ``` bash
-$ make config_check             # Preliminary sanity check for configuration
-$ make config_main_bus          # Generates main bus config
-$ make config_peripheral_bus    # Generates peripheral bus config
-$ make config_ld                # Generates linker script
-$ make config_xilinx            # Update xilinx config
-$ make config_sw                # Update software config
+$ make config_check               # Preliminary sanity check for configuration
+$ make config_main_bus            # Generates MBUS config
+$ make config_peripheral_bus      # Generates PBUS config
+$ make config_highperformance_bus # Generates HBUS config
+$ make config_ld                  # Generates linker script
+$ make config_xilinx              # Update xilinx config
+$ make config_sw                  # Update software config
 ```
 
 ### BRAM size configuration
