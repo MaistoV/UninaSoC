@@ -26,6 +26,8 @@ module custom_top_wrapper (
 
     // AXI Master interface
     `DEFINE_AXI_MASTER_PORTS(m_axi),
+    master_axi_interface_output m_axi_output,
+    master_axi_interface_input m_axi_input,
 
     // Interrupts e timer
     input logic [63:0] mtime,
@@ -149,48 +151,54 @@ module custom_top_wrapper (
         .clk(clk),
         .rst(rst),
 
-        .m_axi(m_axi),
+        .m_axi_output(m_axi_output),
+        .m_axi_input(m_axi_input),
 
         .mtime(64'b0),
         .s_interrupt(s_interrupt),
         .m_interrupt(m_interrupt),
 
         // Disabilitare memorie locali
-        .instruction_bram(64'b0), // Impostato a zero
-        .data_bram(64'b0),        // Impostato a zero
+        .instruction_bram_input(64'b0), 
+        .instruction_bram_output(64'b0), 
+        .data_bram_input(64'b0),     
+        .data_bram_ouyput(64'b0),      
         // Disabilitare interfacce non AXI
-        .m_avalon(64'b0),         // Impostato a zero
-        .dwishbone(64'b0),        // Impostato a zero
-        .iwishbone(64'b0)         // Impostato a zero
+        .m_avalon_input(64'b0),
+        .m_avalon_input(64'b0),    
+        .dwishbone_input(64'b0),        
+        .dwishbone_output(64'b0),   
+        .iwishbone_input(64'b0),
+        .iwishbone_output(64'b0)         
     );
 
     // AR (Address Read Channel)
-    assign m_axi.arready = m_axi_arready;
-    assign m_axi_arvalid = m_axi.arvalid;
-    assign m_axi_araddr  = m_axi.araddr;
+    assign m_axi_output.arready = m_axi_arready;
+    assign m_axi_arvalid = m_axi_output.arvalid;
+    assign m_axi_araddr  = m_axi_output.araddr;
     
     // R (Read Data Channel)
     assign m_axi_rready  = m_axi.rready;
-    assign m_axi.rvalid  = m_axi_rvalid;
-    assign m_axi.rdata   = m_axi_rdata;
-    assign m_axi.rresp   = m_axi_rresp;
-    assign m_axi.rid     = 6'b0; 
+    assign m_axi_output.rvalid  = m_axi_rvalid;
+    assign m_axi_output.rdata   = m_axi_rdata;
+    assign m_axi_output.rresp   = m_axi_rresp;
+    assign m_axi_output.rid     = 6'b0; 
     
     // AW (Address Write Channel)
-    assign m_axi.awready = m_axi_awready;
-    assign m_axi_awvalid = m_axi.awvalid;
-    assign m_axi_awaddr  = m_axi.awaddr;
+    assign m_axi_output.awready = m_axi_awready;
+    assign m_axi_awvalid = m_axi_output.awvalid;
+    assign m_axi_awaddr  = m_axi_output.awaddr;
     
     // W (Write Data Channel)
     assign m_axi_wready  = m_axi_wready;
-    assign m_axi_wvalid  = m_axi.wvalid;
-    assign m_axi_wdata   = m_axi.wdata;
-    assign m_axi_wstrb   = m_axi.wstrb;
+    assign m_axi_wvalid  = m_axi_output.wvalid;
+    assign m_axi_wdata   = m_axi_output.wdata;
+    assign m_axi_wstrb   = m_axi_output.wstrb;
     
     // B (Write Response Channel)
-    assign m_axi_bready  = m_axi.bready;
-    assign m_axi.bvalid  = m_axi_bvalid;
-    assign m_axi.bresp   = m_axi_bresp;
-    assign m_axi.bid     = 6'b0;
+    assign m_axi_bready  = m_axi_output.bready;
+    assign m_axi_output.bvalid  = m_axi_bvalid;
+    assign m_axi_output.bresp   = m_axi_bresp;
+    assign m_axi_output.bid     = 6'b0;
 
 endmodule : custom_top_wrapper
