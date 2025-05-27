@@ -25,7 +25,33 @@ module custom_top_wrapper (
     input logic rst,
 
     // AXI Master interface
-    `DEFINE_AXI_MASTER_PORTS(m_axi),
+    //`DEFINE_AXI_MASTER_PORTS(m_axi),
+    input m_axi_arready,
+    output m_axi_arvalid,
+    output [31:0] m_axi_araddr,
+
+    //R
+    output m_axi_rready,
+    input m_axi_rvalid,
+    input [31:0] m_axi_rdata,
+    input [1:0] m_axi_rresp,
+
+    //AW
+    input m_axi_awready,
+    output m_axi_awvalid,
+    output [31:0] m_axi_awaddr,
+
+    //W
+    output m_axi_wready,
+    output m_axi_wvalid,
+    output [31:0] m_axi_wdata,
+    output [3:0] m_axi_wstrb,
+
+    //B
+    output m_axi_bready,
+    input m_axi_bvalid,
+    input [1:0] m_axi_bresp,
+    
     master_axi_interface_output m_axi_output,
     master_axi_interface_input m_axi_input,
 
@@ -162,7 +188,7 @@ module custom_top_wrapper (
         .instruction_bram_input(64'b0), 
         .instruction_bram_output(64'b0), 
         .data_bram_input(64'b0),     
-        .data_bram_ouyput(64'b0),      
+        .data_bram_output(64'b0),      
         // Disabilitare interfacce non AXI
         .m_avalon_input(64'b0),
         .m_avalon_input(64'b0),    
@@ -178,7 +204,7 @@ module custom_top_wrapper (
     assign m_axi_araddr  = m_axi_output.araddr;
     
     // R (Read Data Channel)
-    assign m_axi_rready  = m_axi.rready;
+    assign m_axi_rready  = m_axi_input.rready;
     assign m_axi_output.rvalid  = m_axi_rvalid;
     assign m_axi_output.rdata   = m_axi_rdata;
     assign m_axi_output.rresp   = m_axi_rresp;
