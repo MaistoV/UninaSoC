@@ -11,10 +11,56 @@ typedef struct packed {
     logic external;    // Interruzione esterna
 } interrupt_t;
 
+typedef struct {
+    logic arvalid;
+    logic [31:0] araddr;
+    logic [7:0] arlen;
+    logic [2:0] arsize;
+    logic [1:0] arburst;
+    logic [3:0] arcache;
+    logic [5:0] arid;
+    logic arlock;
+
+    logic rready;
+
+    logic awvalid;
+    logic [31:0] awaddr;
+    logic [7:0] awlen;
+    logic [2:0] awsize;
+    logic [1:0] awburst;
+    logic [3:0] awcache;
+    logic [5:0] awid;
+    logic awlock;
+
+    logic wvalid;
+    logic [31:0] wdata;
+    logic [3:0] wstrb;
+    logic wlast;
+
+    logic bready;
+} master_axi_interface_output;
+
+typedef struct {
+    logic arready;
+
+    logic rvalid;
+    logic [31:0] rdata;
+    logic [1:0] rresp;
+    logic rlast;
+    logic [5:0] rid;
+
+    logic awready;
+    logic wready;
+
+    logic bvalid;
+    logic [1:0] bresp;
+    logic [5:0] bid;
+} master_axi_interface_input;
+
 // Inclusione dei file di configurazione
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
-import cva5_config::*
+import cva5_config::*;
 
 // Wrapper per il modulo top-level
 module custom_top_wrapper (
@@ -60,6 +106,12 @@ module custom_top_wrapper (
     input interrupt_t s_interrupt,
     input interrupt_t m_interrupt
 );
+      localparam wb_group_config_t WB_CPU_CONFIG = '{
+        0 : '{0: ALU_ID, default : NON_WRITEBACK_ID},
+        1 : '{0: LS_ID, default : NON_WRITEBACK_ID},
+        2 : '{0: MUL_ID, 1: DIV_ID, 2: CSR_ID, 3: FPU_ID, 4: CUSTOM_ID, default : NON_WRITEBACK_ID},
+        default : '{default : NON_WRITEBACK_ID}
+    };
 
     localparam cpu_config_t CONFIG = '{
         // ISA options
