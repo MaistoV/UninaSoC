@@ -12,7 +12,7 @@ NC='\033[0m' # No Color
 mkdir rtl
 
 # clone repo (Release v1.8.3 Jul 15 2024)
-GIT_URL=https://github.com/openhwgroup/cv32e40p.git
+GIT_URL="https://github.com/openhwgroup/cv32e40p.git"
 GIT_TAG=cv32e40p_v1.8.3
 CLONE_DIR=cv32e40p
 printf "${YELLOW}[FETCH_SOURCES] Cloning source repository${NC}\n"
