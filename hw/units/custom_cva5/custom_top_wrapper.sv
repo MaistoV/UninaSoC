@@ -191,7 +191,7 @@ module custom_top_wrapper (
         .data_bram_output(64'b0),      
         // Disabilitare interfacce non AXI
         .m_avalon_input(64'b0),
-        .m_avalon_input(64'b0),    
+        .m_avalon_output(64'b0),    
         .dwishbone_input(64'b0),        
         .dwishbone_output(64'b0),   
         .iwishbone_input(64'b0),
