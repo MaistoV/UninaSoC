@@ -5,7 +5,7 @@ NC='\033[0m' # No Color
 
 # Create rtl dir
 mkdir rtl
-GIT_URL="https://github.com/openhwgroup/cva5.git"
+GIT_URL="https://github.com/annalia01/cva5_annalia.git"
 CLONE_DIR=cva5
 
 printf "${YELLOW} [FETCH SOURCES] Cloning source repository${NC}\n"
