@@ -1,5 +1,6 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description: This module is the module wrapping the entire peripheral bus.
 //              This is a 32-bits bus, meaning a dwidth converter is required if the system XLEN is 64.
 //              It adds a AXI protocol converter before the axilite crossbar and all the peripherals connected to the axilite crossbar

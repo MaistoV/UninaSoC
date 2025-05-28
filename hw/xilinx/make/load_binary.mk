@@ -45,8 +45,9 @@ ELF_PATH ?= ${SW_ROOT}/SoC/examples/blinky/bin/blinky.elf
 
 # Use XSDB as a backend
 XSDB ?= xsdb
-# 32-bit RISC-V port exposed by Vivado HW Server is 3004 (same of OpenOCD)
-DEBUG_PORT ?= 3004
+# 32-bit RISC-V port exposed by Vivado HW Server is 3004, while it is 3005 for 64_bit (same of OpenOCD)
+#DEBUG_PORT ?= 3004
+DEBUG_PORT ?= 3005
 
 xsdb_run:
 	${XSDB} -interactive ${XILINX_SCRIPTS_LOAD_ROOT}/xsdb_backend.tcl
