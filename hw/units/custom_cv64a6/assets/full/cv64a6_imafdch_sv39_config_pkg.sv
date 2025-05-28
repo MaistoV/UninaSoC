@@ -123,9 +123,12 @@ package cva6_config_pkg;
       NrNonIdempotentRules: unsigned'(2),
       NonIdempotentAddrBase: 1024'({64'b0, 64'b0}),
       NonIdempotentLength: 1024'({64'b0, 64'b0}),
-      NrExecuteRegionRules: unsigned'(3),
-      ExecuteRegionAddrBase: 1024'({64'h8000_0000, 64'h1_0000, 64'h0}), // Regions here could be tweaked depending on the system config
-      ExecuteRegionLength: 1024'({64'h40000000, 64'h10000, 64'hf000}), // Regions here could be tweaked depending on the system config
+      // NrExecuteRegionRules: unsigned'(3),
+      // ExecuteRegionAddrBase: 1024'({64'h8000_0000, 64'h1_0000, 64'h0}), // Regions here could be tweaked depending on the system config
+      // ExecuteRegionLength: 1024'({64'h40000000, 64'h10000, 64'hf000}), // Regions here could be tweaked depending on the system config
+      NrExecuteRegionRules: unsigned'(1),
+      ExecuteRegionAddrBase: 1024'({64'h0}), // Regions here could be tweaked depending on the system config
+      ExecuteRegionLength: 1024'({64'hffff_ffff_ffff_ffff}), // Regions here could be tweaked depending on the system config
       NrCachedRegionRules: unsigned'(1),
       CachedRegionAddrBase: 1024'({64'h8000_0000}),
       CachedRegionLength: 1024'({64'h40000000}),

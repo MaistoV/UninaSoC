@@ -66,10 +66,12 @@ class Configuration:
 			self.ADDR_WIDTH = value
 		elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (value in range(12, 65))):
 			self.ADDR_WIDTH = value
-		elif self.PROTOCOL == "MOCK":
+		elif self.PROTOCOL == "DISABLE":
 			# Skip mock buses
 			return
 		else:
+			# TODO: check why protcol is none, for now default
+			self.ADDR_WIDTH = value
 			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
 
 	def set_DATA_WIDTH (self, value: int):
@@ -89,6 +91,7 @@ class Configuration:
 		elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (DATA_WIDTH_Found == True)):
 			self.DATA_WIDTH = value
 		else:
+			self.DATA_WIDTH = value
 			logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
 
 

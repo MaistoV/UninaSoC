@@ -547,7 +547,7 @@ module sys_master # (
     );
 
     // In order to comply with the load binary script, we need a 32 to 64 dwidth converter
-    if( SYS_DATA_WIDTH == 64 ) begin: dwidth_converter
+    if( MBUS_DATA_WIDTH == 64 ) begin: dwidth_converter
 
         xlnx_axi_dwidth_32_to_64_converter xlnx_axi_dwidth_32_to_64_converter_u (
             .s_axi_aclk     ( main_clk  ),
