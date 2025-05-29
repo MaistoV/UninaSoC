@@ -11,7 +11,7 @@ typedef struct packed {
     logic external;    // Interruzione esterna
 } interrupt_t;
 
-typedef struct {
+/*typedef struct {
     logic arvalid;
     logic [31:0] araddr;
     logic [7:0] arlen;
@@ -55,7 +55,7 @@ typedef struct {
     logic bvalid;
     logic [1:0] bresp;
     logic [5:0] bid;
-} master_axi_interface_input;
+} master_axi_interface_input;*/
 
 // Inclusione dei file di configurazione
 `include "uninasoc_axi.svh"
@@ -106,11 +106,16 @@ module custom_top_wrapper (
     input interrupt_t s_interrupt,
     input interrupt_t m_interrupt
 );
-      localparam wb_group_config_t WB_CPU_CONFIG = '{
+localparam wb_group_config_t WB_CPU_CONFIG = '{
         0 : '{0: ALU_ID, default : NON_WRITEBACK_ID},
         1 : '{0: LS_ID, default : NON_WRITEBACK_ID},
         2 : '{0: MUL_ID, 1: DIV_ID, 2: CSR_ID, 3: FPU_ID, 4: CUSTOM_ID, default : NON_WRITEBACK_ID},
-        default : '{default : NON_WRITEBACK_ID}
+        3 : '{default : NON_WRITEBACK_ID},
+        4 : '{default : NON_WRITEBACK_ID},
+        5 : '{default : NON_WRITEBACK_ID},
+        6 : '{default : NON_WRITEBACK_ID},
+        7 : '{default : NON_WRITEBACK_ID},
+        8 : '{default : NON_WRITEBACK_ID}
     };
 
     localparam cpu_config_t CONFIG = '{
