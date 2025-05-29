@@ -2,9 +2,11 @@
 create_ip -name blk_mem_gen -vendor xilinx.com -library ip -version 8.4 -module_name $::env(IP_NAME)
 
 # COE file to pre-load in BRAM
-# set coe_file $::env(BOOTROM_COE)
-# For now, just no preload
-set coe_file no_coe_file_loaded
+# The bootrom default value is currently just a WFI instruction.
+# TODO: implementation of a proper bootrom is deferred to issue #36
+set coe_file $::env(IP_DIR)/init.coe
+
+puts "$coe_file"
 
 # Configure IP
 set_property -dict [list CONFIG.Interface_Type {AXI4} \
@@ -23,8 +25,8 @@ set_property -dict [list CONFIG.Interface_Type {AXI4} \
                         CONFIG.Port_B_Clock {100} \
                         CONFIG.Port_B_Enable_Rate {100} \
                         CONFIG.EN_SAFETY_CKT {true} \
-                        CONFIG.Load_Init_File {false} \
-                        CONFIG.Coe_File {$coe_file} \
+                        CONFIG.Load_Init_File {true} \
+                        CONFIG.Coe_File $coe_file \
                         CONFIG.Fill_Remaining_Memory_Locations {true} \
                 ] [get_ips $::env(IP_NAME)]
 
