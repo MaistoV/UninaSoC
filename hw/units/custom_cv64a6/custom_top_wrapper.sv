@@ -84,22 +84,22 @@ module custom_top_wrapper # (
   axi_resp_t axi_rsp;
     
   cva6 #(
-    // For now, let's leave default configurations and definitions
+
   ) cva6_u (
 
-    .clk_i (clk_i),
-    .rst_ni (rst_ni),
-    .boot_addr_i (boot_addr_i),
-    .hart_id_i (hart_id_i),
-    .irq_i (irq_i),
-    .ipi_i (ipi_i),
-    .time_irq_i (time_irq_i),
-    .debug_req_i (debug_req_i),
-    .rvfi_probes_o (),
-    .cvxif_req_o (),
-    .cvxif_resp_i ('0),
-    .noc_req_o (axi_req),
-    .noc_resp_i (axi_rsp)
+    .clk_i          ( clk_i       ),
+    .rst_ni         ( rst_ni      ),
+    .boot_addr_i    ( boot_addr_i ),
+    .hart_id_i      ( hart_id_i   ),
+    .irq_i          ( irq_i       ),
+    .ipi_i          ( ipi_i       ),
+    .time_irq_i     ( time_irq_i  ),
+    .debug_req_i    ( debug_req_i ),
+    .rvfi_probes_o  (             ),          
+    .cvxif_req_o    (             ),          
+    .cvxif_resp_i   ( '0          ),
+    .noc_req_o      ( axi_req     ),
+    .noc_resp_i     ( axi_rsp     )
   );
 
   // Map master port signals
