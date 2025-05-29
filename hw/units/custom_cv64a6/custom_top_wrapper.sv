@@ -7,7 +7,7 @@
 `include "uninasoc_axi.svh"
 `include "uninasoc_mem.svh"
 
-`include "typedef.svh"
+`include "axi_typedef.svh"
 
 module custom_top_wrapper # (
 
