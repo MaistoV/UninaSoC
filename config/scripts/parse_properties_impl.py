@@ -168,14 +168,21 @@ def parse_PHYSICAL_ADDR_WIDTH (
 		physical_addr_width = int(property_value)
 		xlen = int(config.XLEN)
 
+		###########
+		# WARNING #
+		###########
+		# this is removed for now, as it breaks the check_config flow.
+		# It happens because checks are performed before XLEN value is correctly set
+		# in some cases, hence the flow fails.
+
 		# Physical Address Width depends on XLEN.
 		# It can either be 32 for 32-bit systems, or larger for 64-bit system.
 		# However, 64-bit systems might not need all 64 bits addressing space.
-		if 	((xlen == 32) and (physical_addr_width != 32)) \
-			or \
-			((xlen == 64) and (physical_addr_width < 32)) :
-			logging.error("Invalid XLEN ({xlen}) and physical_addr_width ({phyisical_addr_width}) values established")
-			exit(1)
+		#if 	((xlen == 32) and (physical_addr_width != 32)) \
+		#	or \
+		#	((xlen == 64) and (physical_addr_width < 32)) :
+		#	logging.error("Invalid XLEN ({xlen}) and physical_addr_width ({phyisical_addr_width}) values established")
+		#	exit(1)
 
 		# Set proptery in config
 		config.PHYISICAL_ADDR_WIDTH = physical_addr_width

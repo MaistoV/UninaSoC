@@ -55,8 +55,6 @@ class Configuration:
 	# When XLEN parameter is parsed, ADDR_WIDTH and DATA_WIDTH are assigned accordingly
 
 	def set_ADDR_WIDTH (self, value: int):
-
-		print(self.PROTOCOL)
 		# Reads the Address Widdth applied to all Interfaces
 		# [AXI4 ; AXI3] => the range of possible values is (12..64)
 		# AXI4LITE => the range of possible values is (1..64)
@@ -70,9 +68,10 @@ class Configuration:
 			# Skip mock buses
 			return
 		else:
-			# TODO: check why protcol is none, for now default
+			# Defaulting breaks multiple things in the current flow. It MUST be refactored.
+			# For now, we just raise the warning, and leave the user with the selected value.
 			self.ADDR_WIDTH = value
-			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
+			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using the user value, beware of this.")
 
 	def set_DATA_WIDTH (self, value: int):
 		# Reads the Address Widdth applied to all Interfaces
@@ -91,7 +90,8 @@ class Configuration:
 		elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (DATA_WIDTH_Found == True)):
 			self.DATA_WIDTH = value
 		else:
-			self.DATA_WIDTH = value
-			logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
+			# Defaulting breaks multiple things in the current flow. It MUST be refactored.
+			# For now, we just raise the warning, and leave the user with the selected value.
+			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using the user value, beware of this.")
 
 
