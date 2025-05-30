@@ -168,9 +168,7 @@ def parse_PHYSICAL_ADDR_WIDTH (
 		physical_addr_width = int(property_value)
 		xlen = int(config.XLEN)
 
-		###########
-		# WARNING #
-		###########
+		# TODO<issue config/refactor2>
 		# this is removed for now, as it breaks the check_config flow.
 		# It happens because checks are performed before XLEN value is correctly set
 		# in some cases, hence the flow fails.
