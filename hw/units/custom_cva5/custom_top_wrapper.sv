@@ -11,51 +11,6 @@ typedef struct packed {
     logic external;    // Interruzione esterna
 } interrupt_t;
 
-/*typedef struct {
-    logic arvalid;
-    logic [31:0] araddr;
-    logic [7:0] arlen;
-    logic [2:0] arsize;
-    logic [1:0] arburst;
-    logic [3:0] arcache;
-    logic [5:0] arid;
-    logic arlock;
-
-    logic rready;
-
-    logic awvalid;
-    logic [31:0] awaddr;
-    logic [7:0] awlen;
-    logic [2:0] awsize;
-    logic [1:0] awburst;
-    logic [3:0] awcache;
-    logic [5:0] awid;
-    logic awlock;
-
-    logic wvalid;
-    logic [31:0] wdata;
-    logic [3:0] wstrb;
-    logic wlast;
-
-    logic bready;
-} master_axi_interface_output;
-
-typedef struct {
-    logic arready;
-
-    logic rvalid;
-    logic [31:0] rdata;
-    logic [1:0] rresp;
-    logic rlast;
-    logic [5:0] rid;
-
-    logic awready;
-    logic wready;
-
-    logic bvalid;
-    logic [1:0] bresp;
-    logic [5:0] bid;
-} master_axi_interface_input;*/
 
 // Inclusione dei file di configurazione
 `include "uninasoc_axi.svh"
@@ -242,17 +197,17 @@ localparam wb_group_config_t WB_CPU_CONFIG = '{
         .m_interrupt(m_interrupt),
 
         // Disabilitare memorie locali
-        .instruction_bram_input(64'b0), 
-        .instruction_bram_output(64'b0), 
-        .data_bram_input(64'b0),     
-        .data_bram_output(64'b0),      
+        .instruction_bram_input(), 
+        .instruction_bram_output(), 
+        .data_bram_input(),     
+        .data_bram_output(),      
         // Disabilitare interfacce non AXI
-        .m_avalon_input(64'b0),
-        .m_avalon_output(64'b0),    
-        .dwishbone_input(64'b0),        
-        .dwishbone_output(64'b0),   
-        .iwishbone_input(64'b0),
-        .iwishbone_output(64'b0)         
+        .m_avalon_input(),
+        .m_avalon_output(),    
+        .dwishbone_input(),        
+        .dwishbone_output(),   
+        .iwishbone_input(),
+        .iwishbone_output()         
     );
 
     // AR (Address Read Channel)
