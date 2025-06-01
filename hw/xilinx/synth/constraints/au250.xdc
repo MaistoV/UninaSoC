@@ -214,11 +214,11 @@ set_input_delay 0 [get_ports pcie_resetn_i]
 #       LPMODE  - Active High Control output from FPGA to QSFP Module to put the device in low power mode (Optics Off)
 #       MODSEL  - Active Low Enable output from FPGA to QSFP Module to select device for I2C Sideband Communication
 #
-# set_property -dict {PACKAGE_PIN BE17 IOSTANDARD LVCMOS12       } [get_ports QSFP0_RESETL      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_RESETL_LS"     - IO_L22P_T3U_N6_DBC_AD0P_64
+set_property -dict {LOC BE17 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_resetl      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_RESETL_LS"     - IO_L22P_T3U_N6_DBC_AD0P_64
 # set_property -dict {PACKAGE_PIN BE20 IOSTANDARD LVCMOS12       } [get_ports QSFP0_MODPRSL     ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_MODPRSL_LS"    - IO_L21N_T3L_N5_AD8N_64
 # set_property -dict {PACKAGE_PIN BE21 IOSTANDARD LVCMOS12       } [get_ports QSFP0_INTL        ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_INTL_LS"       - IO_L21P_T3L_N4_AD8P_64
-# set_property -dict {PACKAGE_PIN BD18 IOSTANDARD LVCMOS12       } [get_ports QSFP0_LPMODE      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_LPMODE_LS"     - IO_L20N_T3L_N3_AD1N_64
-# set_property -dict {PACKAGE_PIN BE16 IOSTANDARD LVCMOS12       } [get_ports QSFP0_MODSELL     ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_MODSELL_LS"    - IO_L22N_T3U_N7_DBC_AD0N_64
+set_property -dict {LOC BD18 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_lpmode      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_LPMODE_LS"     - IO_L20N_T3L_N3_AD1N_64
+set_property -dict {LOC BE16 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_modsell     ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_MODSELL_LS"    - IO_L22N_T3U_N7_DBC_AD0N_64
 # #
 # # QSFP0 Clock Control Signals
 # #       FS[1:0] <-- Clock Select Pin FS[1:0] = 1X -> 161.132812 MHz 1.8V LVDS (default when FPGA pin Hi-Z due to 10K pullups)
@@ -956,22 +956,22 @@ set_property -dict {PACKAGE_PIN BD26 IOSTANDARD DIFF_POD12_DCI } [get_ports c0_d
 #
 # MGT Connections
 #
-#set_property PACKAGE_PIN N3  [get_ports QSFP0_RX1_N]; # Bank 231  - MGTYRXN0_231
-#set_property PACKAGE_PIN N4  [get_ports QSFP0_RX1_P]; # Bank 231  - MGTYRXP0_231
-#set_property PACKAGE_PIN M1  [get_ports QSFP0_RX2_N]; # Bank 231  - MGTYRXN1_231
-#set_property PACKAGE_PIN M2  [get_ports QSFP0_RX2_P]; # Bank 231  - MGTYRXP1_231
-#set_property PACKAGE_PIN L3  [get_ports QSFP0_RX3_N]; # Bank 231  - MGTYRXN2_231
-#set_property PACKAGE_PIN L4  [get_ports QSFP0_RX3_P]; # Bank 231  - MGTYRXP2_231
-#set_property PACKAGE_PIN K1  [get_ports QSFP0_RX4_N]; # Bank 231  - MGTYRXN3_231
-#set_property PACKAGE_PIN K2  [get_ports QSFP0_RX4_P]; # Bank 231  - MGTYRXP3_231
-#set_property PACKAGE_PIN N8  [get_ports QSFP0_TX1_N]; # Bank 231  - MGTYTXN0_231
-#set_property PACKAGE_PIN N9  [get_ports QSFP0_TX1_P]; # Bank 231  - MGTYTXP0_231
-#set_property PACKAGE_PIN M6  [get_ports QSFP0_TX2_N]; # Bank 231  - MGTYTXN1_231
-#set_property PACKAGE_PIN M7  [get_ports QSFP0_TX2_P]; # Bank 231  - MGTYTXP1_231
-#set_property PACKAGE_PIN L8  [get_ports QSFP0_TX3_N]; # Bank 231  - MGTYTXN2_231
-#set_property PACKAGE_PIN L9  [get_ports QSFP0_TX3_P]; # Bank 231  - MGTYTXP2_231
-#set_property PACKAGE_PIN K6  [get_ports QSFP0_TX4_N]; # Bank 231  - MGTYTXN3_231
-#set_property PACKAGE_PIN K7  [get_ports QSFP0_TX4_P]; # Bank 231  - MGTYTXP3_231
+set_property PACKAGE_PIN N3  [get_ports qsfp0_rxn_i[0]];  # QSFP0_RX1_N Bank 231  - MGTYRXN0_231
+set_property PACKAGE_PIN N4  [get_ports qsfp0_rxp_i[0]];  # QSFP0_RX1_P Bank 231  - MGTYRXP0_231
+set_property PACKAGE_PIN M1  [get_ports qsfp0_rxn_i[1]];  # QSFP0_RX2_N Bank 231  - MGTYRXN1_231
+set_property PACKAGE_PIN M2  [get_ports qsfp0_rxp_i[1]];  # QSFP0_RX2_P Bank 231  - MGTYRXP1_231
+set_property PACKAGE_PIN L3  [get_ports qsfp0_rxn_i[2]];  # QSFP0_RX3_N Bank 231  - MGTYRXN2_231
+set_property PACKAGE_PIN L4  [get_ports qsfp0_rxp_i[2]];  # QSFP0_RX3_P Bank 231  - MGTYRXP2_231
+set_property PACKAGE_PIN K1  [get_ports qsfp0_rxn_i[3]];  # QSFP0_RX4_N Bank 231  - MGTYRXN3_231
+set_property PACKAGE_PIN K2  [get_ports qsfp0_rxp_i[3]];  # QSFP0_RX4_P Bank 231  - MGTYRXP3_231
+set_property PACKAGE_PIN N8  [get_ports qsfp0_txn_i[0]];  # QSFP0_TX1_N Bank 231  - MGTYTXN0_231
+set_property PACKAGE_PIN N9  [get_ports qsfp0_txp_i[0]];  # QSFP0_TX1_P Bank 231  - MGTYTXP0_231
+set_property PACKAGE_PIN M6  [get_ports qsfp0_txn_i[1]];  # QSFP0_TX2_N Bank 231  - MGTYTXN1_231
+set_property PACKAGE_PIN M7  [get_ports qsfp0_txp_i[1]];  # QSFP0_TX2_P Bank 231  - MGTYTXP1_231
+set_property PACKAGE_PIN L8  [get_ports qsfp0_txn_i[2]];  # QSFP0_TX3_N Bank 231  - MGTYTXN2_231
+set_property PACKAGE_PIN L9  [get_ports qsfp0_txp_i[2]];  # QSFP0_TX3_P Bank 231  - MGTYTXP2_231
+set_property PACKAGE_PIN K6  [get_ports qsfp0_txn_i[3]];  # QSFP0_TX4_N Bank 231  - MGTYTXN3_231
+set_property PACKAGE_PIN K7  [get_ports qsfp0_txp_i[3]];  # QSFP0_TX4_P Bank 231  - MGTYTXP3_231
 #set_property PACKAGE_PIN U3  [get_ports QSFP1_RX1_N]; # Bank 230  - MGTYRXN0_230
 #set_property PACKAGE_PIN U4  [get_ports QSFP1_RX1_P]; # Bank 230  - MGTYRXP0_230
 #set_property PACKAGE_PIN T1  [get_ports QSFP1_RX2_N]; # Bank 230  - MGTYRXN1_230

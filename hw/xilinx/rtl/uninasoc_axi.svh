@@ -1068,4 +1068,58 @@ typedef logic [AXI_REGION_WIDTH -1 : 0] axi_region_t;
     assign ``bus_name`_axilite_rvalid  = '0;    \
     assign ``bus_name`_axilite_rresp   = '0;
 
+//////////////////////////////////////////////////////////////////
+//    ___  __   _______   _____ _                               //
+//   / _ \ \ \ / /_   _| /  ___| |                              //
+//  / /_\ \ \ V /  | |   \ `--.| |_ _ __ ___  __ _ _ __ ___     //
+//  |  _  | /   \  | |    `--. \ __| '__/ _ \/ _` | '_ ` _ \    //
+//  | | | |/ /^\ \_| |_  /\__/ / |_| | |  __/ (_| | | | | | |   //
+//  \_| |_/\/   \/\___/  \____/ \__|_|  \___|\__,_|_| |_| |_|   //
+//                                                              //
+//////////////////////////////////////////////////////////////////
+
+// Params
+localparam unsigned AXIS_TVALID_WIDTH = 1;
+localparam unsigned AXIS_TREADY_WIDTH = 1;
+localparam unsigned AXIS_TLAST_WIDTH  = 1;
+localparam unsigned AXIS_TUSER_WIDTH  = 1;
+localparam unsigned AXIS_TDATA_WIDTH  = 512;
+localparam unsigned AXIS_TKEEP_WIDTH  = 512/8; // AXIS_TDATA_WIDTH/8
+
+// Types
+typedef logic [AXIS_TVALID_WIDTH-1:0]  axis_tvalid_t;
+typedef logic [AXIS_TREADY_WIDTH-1:0]  axis_tready_t;
+typedef logic [AXIS_TLAST_WIDTH-1:0]   axis_tlast_t;
+typedef logic [AXIS_TDATA_WIDTH-1:0]   axis_tdata_t;
+typedef logic [AXIS_TKEEP_WIDTH-1:0]   axis_tkeep_t;
+typedef logic [AXIS_TUSER_WIDTH-1:0]   axis_tuser_t;
+
+
+// AXI stream master ports definition
+`define DEFINE_AXIS_MASTER_PORTS(master_name) \
+    output axis_tvalid_t   ``master_name``_axis_tvalid,   \
+    input  axis_tready_t   ``master_name``_axis_tready,   \
+    output axis_tkeep_t    ``master_name``_axis_tkeep,    \
+    output axis_tlast_t    ``master_name``_axis_tlast,    \
+    output axis_tdata_t    ``master_name``_axis_tdata,    \
+    output axis_tuser_t    ``master_name``_axis_tuser
+
+// AXI stream slave ports definition
+`define DEFINE_AXIS_SLAVE_PORTS(slave_name) \
+    input  axis_tvalid_t   ``slave_name``_axis_tvalid,    \
+    output axis_tready_t   ``slave_name``_axis_tready,    \
+    input  axis_tkeep_t    ``slave_name``_axis_tkeep,     \
+    input  axis_tlast_t    ``slave_name``_axis_tlast,     \
+    input  axis_tdata_t    ``slave_name``_axis_tdata,     \
+    input  axis_tuser_t    ``slave_name``_axis_tuser
+
+// AXI stream bus declaration
+`define DECLARE_AXIS_BUS(bus_name) \
+    axis_tvalid_t   ``bus_name``_axis_tvalid;    \
+    axis_tready_t   ``bus_name``_axis_tready;    \
+    axis_tkeep_t    ``bus_name``_axis_tkeep;     \
+    axis_tlast_t    ``bus_name``_axis_tlast;     \
+    axis_tdata_t    ``bus_name``_axis_tdata;     \
+    axis_tuser_t    ``bus_name``_axis_tuser
+
 `endif // UNINASOC_AXI_SVH__
