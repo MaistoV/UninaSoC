@@ -165,8 +165,8 @@ set_operating_conditions -design_power_budget 160
 #
 # System clocks
 # 300 MHz (DDR CH0)
-set_property -dict {PACKAGE_PIN AY38 IOSTANDARD DIFF_POD12_DCI } [get_ports clk_300mhz_0_n_i]; # Bank 42 VCCO - VCC1V2 Net "SYSCLK0_300_N" - IO_L13N_T2L_N1_GC_QBC_42
-set_property -dict {PACKAGE_PIN AY37 IOSTANDARD DIFF_POD12_DCI } [get_ports clk_300mhz_0_p_i]; # Bank 42 VCCO - VCC1V2 Net "SYSCLK0_300_P" - IO_L13P_T2L_N0_GC_QBC_42
+set_property -dict {PACKAGE_PIN AY38 IOSTANDARD DIFF_POD12_DCI } [get_ports clk_300mhz_0_ni]; # Bank 42 VCCO - VCC1V2 Net "SYSCLK0_300_N" - IO_L13N_T2L_N1_GC_QBC_42
+set_property -dict {PACKAGE_PIN AY37 IOSTANDARD DIFF_POD12_DCI } [get_ports clk_300mhz_0_pi]; # Bank 42 VCCO - VCC1V2 Net "SYSCLK0_300_P" - IO_L13P_T2L_N0_GC_QBC_42
 #create_clock -period 3.333 -name clk_300mhz_0 [get_ports clk_300mhz_0_p_i]
 
 # set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets clk_300mhz_0_int]
@@ -214,11 +214,11 @@ set_input_delay 0 [get_ports pcie_resetn_i]
 #       LPMODE  - Active High Control output from FPGA to QSFP Module to put the device in low power mode (Optics Off)
 #       MODSEL  - Active Low Enable output from FPGA to QSFP Module to select device for I2C Sideband Communication
 #
-set_property -dict {LOC BE17 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_resetl      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_RESETL_LS"     - IO_L22P_T3U_N6_DBC_AD0P_64
+set_property -dict {LOC BE17 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_resetl_no      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_RESETL_LS"     - IO_L22P_T3U_N6_DBC_AD0P_64
 # set_property -dict {PACKAGE_PIN BE20 IOSTANDARD LVCMOS12       } [get_ports QSFP0_MODPRSL     ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_MODPRSL_LS"    - IO_L21N_T3L_N5_AD8N_64
 # set_property -dict {PACKAGE_PIN BE21 IOSTANDARD LVCMOS12       } [get_ports QSFP0_INTL        ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_INTL_LS"       - IO_L21P_T3L_N4_AD8P_64
-set_property -dict {LOC BD18 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_lpmode      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_LPMODE_LS"     - IO_L20N_T3L_N3_AD1N_64
-set_property -dict {LOC BE16 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_modsell     ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_MODSELL_LS"    - IO_L22N_T3U_N7_DBC_AD0N_64
+set_property -dict {LOC BD18 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_lpmode_no      ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_LPMODE_LS"     - IO_L20N_T3L_N3_AD1N_64
+set_property -dict {LOC BE16 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8 } [get_ports qsfp0_modsell_no     ]; # Bank 64 VCCO - VCC1V2 Net "QSFP0_MODSELL_LS"    - IO_L22N_T3U_N7_DBC_AD0N_64
 # #
 # # QSFP0 Clock Control Signals
 # #       FS[1:0] <-- Clock Select Pin FS[1:0] = 1X -> 161.132812 MHz 1.8V LVDS (default when FPGA pin Hi-Z due to 10K pullups)

@@ -1094,7 +1094,7 @@ typedef logic [AXIS_TDATA_WIDTH-1:0]   axis_tdata_t;
 typedef logic [AXIS_TKEEP_WIDTH-1:0]   axis_tkeep_t;
 typedef logic [AXIS_TUSER_WIDTH-1:0]   axis_tuser_t;
 
-
+// TODO: make them configurable (DATA_WIDTH, KEEP_WIDTH)
 // AXI stream master ports definition
 `define DEFINE_AXIS_MASTER_PORTS(master_name) \
     output axis_tvalid_t   ``master_name``_axis_tvalid,   \
@@ -1120,6 +1120,6 @@ typedef logic [AXIS_TUSER_WIDTH-1:0]   axis_tuser_t;
     axis_tkeep_t    ``bus_name``_axis_tkeep;     \
     axis_tlast_t    ``bus_name``_axis_tlast;     \
     axis_tdata_t    ``bus_name``_axis_tdata;     \
-    axis_tuser_t    ``bus_name``_axis_tuser
+    axis_tuser_t    ``bus_name``_axis_tuser;
 
 `endif // UNINASOC_AXI_SVH__
