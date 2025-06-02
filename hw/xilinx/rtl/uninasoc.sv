@@ -81,7 +81,20 @@ module uninasoc (
         input logic pcie_resetn_i,
 
         // PCIe interface
-        `DEFINE_PCIE_PORTS
+        `DEFINE_PCIE_PORTS,
+
+        // QSFP0 clock and reset
+        input logic qsfp0_156mhz_clock_pi,
+        input logic qsfp0_156mhz_clock_ni,
+
+        // QSFP0 module control
+        output logic qsfp0_resetl_no,
+        output logic qsfp0_lpmode_no,
+        output logic qsfp0_modsell_no,
+
+        // QSFP0 interface
+        `DEFINE_QSFP_PORTS(0)
+
     `endif
 
 );
@@ -91,6 +104,7 @@ module uninasoc (
     /////////////////////
 
     localparam peripherals_interrupts_num = 4;
+    localparam highperformance_interrupts_num = 1;
 
     ///////////////////
     // Local Signals //
@@ -120,6 +134,9 @@ module uninasoc (
 
     // Peripheral bus interrupts
     logic [peripherals_interrupts_num-1:0] pbus_int_line;
+
+    // Highperformance bus interrupts;
+    logic [highperformance_interrupts_num-1:0] hbus_int_line;
 
     /////////////////////////////////////////
     // Buses declaration and concatenation //
@@ -541,13 +558,14 @@ module uninasoc (
         plic_int_line = '0;
         rv_socket_interrupt_line = '0;
 
-        // Mapping PLIC input interrupts (only from pbus at the moment)
+        // Mapping PLIC input interrupts (from pbus and hbus at the moment)
         // Mapping is static (refer to uninasoc_pkg.sv)
         plic_int_line[PLIC_RESERVED_INTERRUPT]  = 1'b0;
         plic_int_line[PLIC_GPIOIN_INTERRUPT]    = pbus_int_line[PBUS_GPIOIN_INTERRUPT];
         plic_int_line[PLIC_TIM0_INTERRUPT]      = pbus_int_line[PBUS_TIM0_INTERRUPT];
         plic_int_line[PLIC_TIM1_INTERRUPT]      = pbus_int_line[PBUS_TIM1_INTERRUPT];
         plic_int_line[PLIC_UART_INTERRUPT]      = pbus_int_line[PBUS_UART_INTERRUPT];
+        plic_int_line[PLIC_CMAC_INTERRUPT]      = hbus_int_line[HBUS_CMAC_INTERRUPT];
 
         // Map system-interrupts pins to socket interrupts
         rv_socket_interrupt_line[CORE_EXT_INTERRUPT] = plic_int_irq_o;
@@ -950,7 +968,26 @@ module uninasoc (
         .s_ctrl_axilite_rresp    (       ),
         .s_ctrl_axilite_arprot   ( '0    ),
         .s_ctrl_axilite_wstrb    ( '0    ),
-        .s_ctrl_axilite_awprot   ( '0    )
+        .s_ctrl_axilite_awprot   ( '0    ),
+
+        // QSFP clock and reset
+        .qsfp0_156mhz_clock_pi   ( qsfp0_156mhz_clock_pi ) ,
+        .qsfp0_156mhz_clock_ni   ( qsfp0_156mhz_clock_ni ),
+
+        // QSFP ports
+        .qsfpx_rxp_i             ( qsfp0_rxp_i ),
+        .qsfpx_rxn_i             ( qsfp0_rxn_i ),
+        .qsfpx_txp_o             ( qsfp0_txp_o ),
+        .qsfpx_txn_o             ( qsfp0_txn_o ),
+
+        // QSFP0 module control
+        .qsfp0_resetl_no         ( qsfp0_resetl_no  ),
+        .qsfp0_lpmode_no         ( qsfp0_lpmode_no  ),
+        .qsfp0_modsell_no        ( qsfp0_modsell_no ),
+
+        // Interrupt out to the core
+        .interrupt_po            ( interrupt_po )
+
     );
 
 `endif // HPC
