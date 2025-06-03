@@ -36,7 +36,8 @@ package uninasoc_pkg;
         CORE_PICORV32,
         CORE_CV32E40P,
         CORE_IBEX,
-        CORE_MICROBLAZEV
+        CORE_MICROBLAZEV,
+        CORE_CVA5
     } core_selector_t;
 
     // Select core from macro
