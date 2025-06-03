@@ -254,6 +254,53 @@ module rv_socket # (
 
             );
         end
+        else if (CORE_SELECTOR == CORE_CVA5) begin : core_cva5
+            custom_cva5 cva5_core (
+                .clk (clk_i),
+                .rst (core_resetn_internal),
+                .arvalid (rv_socket_data_arvalid),
+                .araddr (rv_socket_data_araddr),
+                .arlen (rv_socket_data_arlen),
+                .arsize (rv_socket_data_arsize),
+                .arburst (rv_socket_data_arburst),
+                .arcache (rv_socket_data_arcache),
+                .arid (rv_socket_data_arid),
+                .arlock (rv_socket_data_arlock),
+                .rready (rv_socket_data_rready),
+                .awvalid (rv_socket_data_awvalid),
+                .awaddr (rv_socket_data_awaddr),
+                .awlen (rv_socket_data_awlen),
+                .awsize (rv_socket_data_awsize),
+                .awburst (rv_socket_data_awburst),
+                .awcache (rv_socket_data_awcache),
+                .awid (rv_socket_data_awid),
+                .awlock (rv_socket_data_awlock),
+                .wvalid (rv_socket_data_wvalid),
+                .wdata (rv_socket_data_wdata),
+                .wstrb (rv_socket_data_wstrb),
+                .wlast (rv_socket_data_wlast),
+                .bready (rv_socket_data_bready),
+                .arready (rv_socket_data_arready),
+                .rvalid (rv_socket_data_rvalid),
+                .rdata (rv_socket_data_rdata),
+                .rresp (rv_socket_data_rresp),
+                .rlast (rv_socket_data_rlast),
+                .rid (rv_socket_data_rid),
+                .awready (rv_socket_data_awready),
+                .wready (rv_socket_data_wready),
+                .bvalid (rv_socket_data_bvalid),
+                .bresp (rv_socket_data_bresp),
+                .bid (rv_socket_data_bid),
+                .m_interrupt_software (irq_i[CORE_SW_INTERRUPT]),
+                .m_interrupt_timer (irq_i[CORE_TIM_INTERRUPT]),
+                .m_interrupt_external (irq_i[CORE_EXT_INTERRUPT]),
+                .s_interrupt_software('0),
+                .s_interrupt_timer('0),
+                .s_interrupt_external('0),
+                .mtime (64'b0)
+            );
+                                             
+        end 
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
 
             // Tie-off unused signals
@@ -489,7 +536,7 @@ module rv_socket # (
     // Few exceptions:
     // - Microblaze V has its own interfaces and debug module
     // - TODO: Rocket
-    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV} ) ) begin : mem_convert
+    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV, CORE_CVA5} ) ) begin : mem_convert
 
         // Connect memory interfaces to socket output memory ports
         `ASSIGN_AXI_BUS( rv_socket_instr, core_instr_to_socket_instr );
