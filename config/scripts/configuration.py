@@ -11,7 +11,7 @@ import logging
 class Configuration:
 	def __init__(self):
 		self.CONFIG_NAME         : str = "MBUS" # The name of the bus, used in check sanity
-		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV"/*, "CORE_CVA5"*/]
+		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.VIO_RESETN_DEFAULT	 : int = 1      # Reset using Xilinx VIO
 		self.XLEN                : int = 32		# System-level len (only applicable to MBUS)
