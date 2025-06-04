@@ -254,7 +254,7 @@ module rv_socket # (
 
             );
         end
-        else if (CORE_SELECTOR == CORE_CVA5) begin : core_cva5
+        /*else if (CORE_SELECTOR == CORE_CVA5) begin : core_cva5
             custom_cva5 cva5_core (
                 .clk (clk_i),
                 .rst (core_resetn_internal),
@@ -300,7 +300,7 @@ module rv_socket # (
                 .mtime (64'b0)
             );
                                              
-        end 
+        end */
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
 
             // Tie-off unused signals
