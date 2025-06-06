@@ -258,7 +258,7 @@ module rv_socket # (
             custom_cva5 cva5_core (
                 .clk (clk_i),
                 .rst (core_resetn_internal),
-                .arvalid (rv_socket_data_arvalid),
+                /*.arvalid (rv_socket_data_arvalid),
                 .araddr (rv_socket_data_araddr),
                 .arlen (rv_socket_data_arlen),
                 .arsize (rv_socket_data_arsize),
@@ -290,7 +290,7 @@ module rv_socket # (
                 .wready (rv_socket_data_wready),
                 .bvalid (rv_socket_data_bvalid),
                 .bresp (rv_socket_data_bresp),
-                .bid (rv_socket_data_bid),
+                .bid (rv_socket_data_bid),*/
                 .m_interrupt_software (irq_i[CORE_SW_INTERRUPT]),
                 .m_interrupt_timer (irq_i[CORE_TIM_INTERRUPT]),
                 .m_interrupt_external (irq_i[CORE_EXT_INTERRUPT]),
