@@ -296,8 +296,8 @@ module rv_socket # (
                 .m_interrupt_external (irq_i[CORE_EXT_INTERRUPT]),
                 .s_interrupt_software('0),
                 .s_interrupt_timer('0),
-                .s_interrupt_external('0),
-                .mtime (64'b0)
+                .s_interrupt_external('0)
+                //.mtime (64'b0)
             );
                                              
         end 
