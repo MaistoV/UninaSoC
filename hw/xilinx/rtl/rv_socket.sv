@@ -32,10 +32,10 @@ module rv_socket # (
 );
 
     //////////////////////////////////////////////////////
-    //    ___                         _                 //
-    //   | _ \__ _ _ _ __ _ _ __  ___| |_ ___ _ _ ___   //
-    //   |  _/ _` | '_/ _` | '  \/ -_)  _/ -_) '_(_-<   //
-    //   |_| \__,_|_| \__,_|_|_|_\___|\__\___|_| /__/   //
+    //    _                         _                 //
+    //   | _ \_ _ _ _ _ _ _ _  _| | _ _ _ _   //
+    //   |  / _` | '/ ` | '  \/ -)  / -) '(-<   //
+    //   || \,|| \,|||\_|\\_|| /__/   //
     //                                                  //
     //////////////////////////////////////////////////////
 
@@ -48,11 +48,11 @@ module rv_socket # (
     localparam logic [31:0] dm_ExceptionAddress = dm_HaltAddress + 16;
 
     //////////////////////////////////////
-    //    ___ _                _        //
-    //   / __(_)__ _ _ _  __ _| |___    //
-    //   \__ | / _` | ' \/ _` | (_-<    //
-    //   |___|_\__, |_||_\__,_|_/__/    //
-    //         |___/                    //
+    //    _ _                _        //
+    //   / _()_ _ _ _  _ | |__    //
+    //   \_ | / _` | ' \/ _` | (-<    //
+    //   |_|\, |||\,|/_/    //
+    //         |_/                    //
     //////////////////////////////////////
 
     // Core reset
@@ -71,11 +71,11 @@ module rv_socket # (
     logic debug_req_core;
 
     //////////////////////////////////////////////////////
-    //     ___               ___          _             //
-    //    / __|___ _ _ ___  | _ \___ __ _(_)___ _ _     //
-    //   | (__/ _ \ '_/ -_) |   / -_) _` | / _ \ ' \    //
-    //    \___\___/_| \___| |_|_\___\__, |_\___/_||_|   //
-    //                              |___/               //
+    //     _               _          _             //
+    //    / _|_ _ _ __  | _ \_ _ _()_ _ _     //
+    //   | (_/ _ \ '/ -) |   / -) _` | / _ \ ' \    //
+    //    \_\_/| \_| ||\_\, |\_/|||   //
+    //                              |_/               //
     //////////////////////////////////////////////////////
 
     generate
@@ -258,39 +258,39 @@ module rv_socket # (
             custom_cva5 cva5_core (
                 .clk (clk_i),
                 .rst (core_resetn_internal),
-                .arvalid (rv_socket_data_arvalid),
-                .araddr (rv_socket_data_araddr),
-                .arlen (rv_socket_data_arlen),
-                .arsize (rv_socket_data_arsize),
-                .arburst (rv_socket_data_arburst),
-                .arcache (rv_socket_data_arcache),
-                .arid (rv_socket_data_arid),
-                .arlock (rv_socket_data_arlock),
-                .rready (rv_socket_data_rready),
-                .awvalid (rv_socket_data_awvalid),
-                .awaddr (rv_socket_data_awaddr),
-                .awlen (rv_socket_data_awlen),
-                .awsize (rv_socket_data_awsize),
-                .awburst (rv_socket_data_awburst),
-                .awcache (rv_socket_data_awcache),
-                .awid (rv_socket_data_awid),
-                .awlock (rv_socket_data_awlock),
-                .wvalid (rv_socket_data_wvalid),
-                .wdata (rv_socket_data_wdata),
-                .wstrb (rv_socket_data_wstrb),
-                .wlast (rv_socket_data_wlast),
-                .bready (rv_socket_data_bready),
-                .arready (rv_socket_data_arready),
-                .rvalid (rv_socket_data_rvalid),
-                .rdata (rv_socket_data_rdata),
-                .rresp (rv_socket_data_rresp),
-                .rlast (rv_socket_data_rlast),
-                .rid (rv_socket_data_rid),
-                .awready (rv_socket_data_awready),
-                .wready (rv_socket_data_wready),
-                .bvalid (rv_socket_data_bvalid),
-                .bresp (rv_socket_data_bresp),
-                .bid (rv_socket_data_bid),
+                .arvalid (rv_socket_data_axi_arvalid),
+                .araddr (rv_socket_data_axi_araddr),
+                .arlen (rv_socket_data_axi_arlen),
+                .arsize (rv_socket_data_axi_arsize),
+                .arburst (rv_socket_data_axi_arburst),
+                .arcache (rv_socket_data_axi_arcache),
+                .arid (rv_socket_data_axi_arid),
+                .arlock (rv_socket_data_axi_arlock),
+                .rready (rv_socket_data_axi_rready),
+                .awvalid (rv_socket_data_axi_awvalid),
+                .awaddr (rv_socket_data_axi_awaddr),
+                .awlen (rv_socket_data_axi_awlen),
+                .awsize (rv_socket_data_axi_awsize),
+                .awburst (rv_socket_data_axi_awburst),
+                .awcache (rv_socket_data_axi_awcache),
+                .awid (rv_socket_data_axi_awid),
+                .awlock (rv_socket_data_axi_awlock),
+                .wvalid (rv_socket_data_axi_wvalid),
+                .wdata (rv_socket_data_axi_wdata),
+                .wstrb (rv_socket_data_axi_wstrb),
+                .wlast (rv_socket_data_axi_wlast),
+                .bready (rv_socket_data_axi_bready),
+                .arready (rv_socket_data_axi_arready),
+                .rvalid (rv_socket_data_axi_rvalid),
+                .rdata (rv_socket_data_axi_rdata),
+                .rresp (rv_socket_data_axi_rresp),
+                .rlast (rv_socket_data_axi_rlast),
+                .rid (rv_socket_data_axi_rid),
+                .awready (rv_socket_data_axi_awready),
+                .wready (rv_socket_data_axi_wready),
+                .bvalid (rv_socket_data_axi_bvalid),
+                .bresp (rv_socket_data_axi__bresp),
+                .bid (rv_socket_data_axi_bid),
                 .m_interrupt_software (irq_i[CORE_SW_INTERRUPT]),
                 .m_interrupt_timer (irq_i[CORE_TIM_INTERRUPT]),
                 .m_interrupt_external (irq_i[CORE_EXT_INTERRUPT]),
@@ -518,10 +518,10 @@ module rv_socket # (
 
 
     //////////////////////////////////////////
-    //     ___                              //
-    //    / __|___ _ __  _ __  ___ _ _      //
+    //     _                              //
+    //    / _|_ _ _  _ _  __ _ _      //
     //   | (__/ _ | '  \| '  \/ _ | ' \     //
-    //    \___\___|_|_|_|_|_|_\___|_||_|    //
+    //    \_\_||||||\_||||    //
     //                                      //
     //////////////////////////////////////////
 
@@ -658,10 +658,10 @@ module rv_socket # (
     end
 
     ///////////////////////////////////
-    //    ___  ___ ___ _   _  ___    //
-    //   |   \| __| _ ) | | |/ __|   //
-    //   | |) | _|| _ \ |_| | (_ |   //
-    //   |___/|___|___/\___/ \___|   //
+    //    _  _ _ _   _  _    //
+    //   |   \| _| _ ) | | |/ _|   //
+    //   | |) | || _ \ || | (_ |   //
+    //   |_/|_|_/\_/ \_|   //
     //                               //
     ///////////////////////////////////
 
