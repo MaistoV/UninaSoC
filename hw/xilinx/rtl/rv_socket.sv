@@ -289,7 +289,7 @@ module rv_socket # (
                 .awready (rv_socket_data_axi_awready),
                 .wready (rv_socket_data_axi_wready),
                 .bvalid (rv_socket_data_axi_bvalid),
-                .bresp (rv_socket_data_axi__bresp),
+                .bresp (rv_socket_data_axi_bresp),
                 .bid (rv_socket_data_axi_bid),
                 .m_interrupt_software (irq_i[CORE_SW_INTERRUPT]),
                 .m_interrupt_timer (irq_i[CORE_TIM_INTERRUPT]),
