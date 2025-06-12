@@ -119,8 +119,8 @@ def parse_XLEN (
 		property_name : str,
 		property_value: str,
 ):
-	# No need to parse for mock buses
-	if (config.PROTOCOL == "MOCK"):
+	# No need to parse for DISABLE buses
+	if (config.PROTOCOL == "DISABLE"):
 		# No-op
 		return config
 
@@ -139,7 +139,6 @@ def parse_XLEN (
 			config.set_DATA_WIDTH(value)
 		# Peripheral Bus, fix Data Width to 32
 		case "PBUS":
-			config.XLEN = 32
 			config.set_DATA_WIDTH(32)
 		# High-performance Bus, fix Data Width to 512
 		case "HBUS":
@@ -498,8 +497,8 @@ def parse_RANGE_BASE_ADDR (
 		property_value: str,
 	):
 
-	# No need to parse for mock buses
-	if (config.PROTOCOL == "MOCK"):
+	# No need to parse for DISABLE buses
+	if (config.PROTOCOL == "DISABLE"):
 		# No-op
 		return config
 
@@ -551,8 +550,8 @@ def parse_RANGE_ADDR_WIDTH (
 		property_value: str,
 	):
 
-	# No need to parse for mock buses
-	if (config.PROTOCOL == "MOCK"):
+	# No need to parse for DISABLE buses
+	if (config.PROTOCOL == "DISABLE"):
 		# No-op
 		return config
 

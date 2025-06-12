@@ -40,7 +40,7 @@ The following table details the supported properties.
 | XLEN                  | Defines Bus DATA_WIDTH, supported cores and Toolchain version             | [32,64]                                                 | 32
 | PHYSICAL_ADDR_WIDTH   | Select the phyisical address width. If XLEN=32 it must equal 32. If XLEN=64, it must be > 32 | (32..64) | 32
 
-> NOTE: the external PicoRV32 IP is currently bugged in CSR support. Any code running with CORE_PICORV32 must not perform any CSR operation.
+> \* the external PicoRV32 IP is currently bugged in CSR support. Any code running with CORE_PICORV32 must not perform any CSR operation.
 
 ### Bus Configuration
 
@@ -78,6 +78,8 @@ The following table details the supported properties.
 | WUSER_WIDTH           | AXI  W User width                                         | (0..1024)                                                 | 0
 | RUSER_WIDTH           | AXI  R User width                                         | (0..1024)                                                 | 0
 | BUSER_WIDTH           | AXI  B User width                                         | (0..1024)                                                 | 0
+
+> \* Using `DISABLE` as AXI PROTOCOL, disable all checks for a given bus. Useful for non-instantiated buses, e.g. HBUS in `embedded` profile
 
 ## Genenerate Configurations
 After applying configuration changes to the target CSV files (`embedded` or `hpc`), apply though `make`.

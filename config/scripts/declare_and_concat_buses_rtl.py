@@ -120,11 +120,11 @@ def concat_buses(lines : list, buses : list, is_master : bool, config : configur
                 bus_cnt_str    = "MBUS_NUM_MI"                     # The width of the bus array in case of MBUS
                 concat_prefix  = CONCAT_SLAVE_BUS_PREFIX           # The concatenation prefix in case of MBUS
             case  "HBUS":
-                declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of MBUS
+                declare_prefix = DECLARE_BUS_ARRAY_PREFIX          # The declaration prefix in case of HBUS
                 # NOTE: loopback to MBUS + 1 DDR
                 # TODO: only one DDR channel supported for now
-                bus_cnt_str    = "HBUS_NUM_MI"                     # The width of the bus array in case of MBUS
-                concat_prefix  = CONCAT_SLAVE_BUS_PREFIX           # The concatenation prefix in case of MBUS
+                bus_cnt_str    = "HBUS_NUM_MI"                     # The width of the bus array in case of HBUS
+                concat_prefix  = CONCAT_SLAVE_BUS_PREFIX           # The concatenation prefix in case of HBUS
 
         # The suffix of the bus array
         suffix = "_slaves"

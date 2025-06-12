@@ -33,7 +33,7 @@ import configuration
 from utils import *
 
 # Constants
-VALID_PROTOCOLS = ["AXI4", "AXI4LITE", "MOCK"] # AXI3 not implemented yet
+VALID_PROTOCOLS = ["AXI4", "AXI4LITE", "DISABLE"] # AXI3 not implemented yet
 MIN_AXI4_ADDR_WIDTH = 12
 MIN_AXI4LITE_ADDR_WIDTH = 1
 SOC_CONFIG = os.getenv("SOC_CONFIG", "embedded")
