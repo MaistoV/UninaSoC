@@ -27,7 +27,7 @@ all: bin/$(PROGRAM_NAME).bin
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "\n[OBJ] Creating OBJs from src"
 	$(MKDIR)
-	$(CC) -o $@ $^ -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS)
+	$(CC) -o $@ $^ $(INC_FLAGS) $(LIB_INC_LIST) $(CFLAGS)
 
 obj/startup.o:
 	@echo "\n[OBJ] Creating OBJs from $(STARTUP_DIR)/startup.s"

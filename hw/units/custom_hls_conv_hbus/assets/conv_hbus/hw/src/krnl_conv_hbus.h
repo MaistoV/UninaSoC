@@ -41,7 +41,7 @@
 
 typedef uint8_t target_type_t;
 #ifdef MOCK_AP_INT
-// typedef uint8_t m_axi_port_type_t; //TBD
+    typedef uint8_t m_axi_port_type_t;
 #else
     #define M_AXI_DWIDTH 512
     typedef ap_uint<M_AXI_DWIDTH> m_axi_port_type_t;

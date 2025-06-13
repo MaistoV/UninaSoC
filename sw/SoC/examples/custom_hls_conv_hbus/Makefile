@@ -1,7 +1,7 @@
-# Author: Stefano Mercogliano     <stefano.mercogliano@unina.it>
+# Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description:
 #   This Makefile defines the project name and paths for the common Makefile.
-#    Optionally, a user can define additional targets here.
+#   Optionally, a user can define additional targets here.
 
 ################
 # Program Name #
@@ -23,6 +23,7 @@ SOC_SW_ROOT_DIR = $(SW_ROOT)/SoC
 SRC_DIR        = src
 OBJ_DIR        = obj
 INC_FLAGS     = -Iinc -I$(SOC_SW_ROOT_DIR)/common
+INC_FLAGS     += -Iinc/xlnx
 STARTUP_DIR = $(SOC_SW_ROOT_DIR)/common
 
 LD_SCRIPT     = ld/user.ld
@@ -31,7 +32,7 @@ LD_SCRIPT     = ld/user.ld
 # Libraries #
 #############
 
-LIB_OBJ_TINYIO     = $(LIB_DIR)/tinyio/lib/tinyio.a
+LIB_OBJ_TINYIO    = $(LIB_DIR)/tinyio/lib/tinyio.a
 LIB_INC_TINYIO    = -I$(LIB_DIR)/tinyio/inc
 
 LIB_OBJ_LIST     = $(LIB_OBJ_TINYIO)

@@ -43,7 +43,7 @@
 
 /***************************** Include Files *********************************/
 
-#include "xil_types.h"
+// #include "xil_types.h"
 
 #define INLINE inline /**< static inline keyword */
 
@@ -99,22 +99,22 @@ static INLINE u32 Xil_In32(UINTPTR Addr)
 	return *(volatile u32 *) Addr;
 }
 
-/*****************************************************************************/
-/**
-*
-* @brief     Performs an input operation for a memory location by reading the
-*            64 bit Value read  from that address.
-*
-*
-* @param	Addr contains the address to perform the input operation
-*
-* @return	The 64 bit Value read from the specified input address.
-*
-******************************************************************************/
-static INLINE u64 Xil_In64(UINTPTR Addr)
-{
-	return *(volatile u64 *) Addr;
-}
+// /*****************************************************************************/
+// /**
+// *
+// * @brief     Performs an input operation for a memory location by reading the
+// *            64 bit Value read  from that address.
+// *
+// *
+// * @param	Addr contains the address to perform the input operation
+// *
+// * @return	The 64 bit Value read from the specified input address.
+// *
+// ******************************************************************************/
+// static INLINE u64 Xil_In64(UINTPTR Addr)
+// {
+// 	return *(volatile u64 *) Addr;
+// }
 
 /*****************************************************************************/
 /**
@@ -175,24 +175,24 @@ static INLINE void Xil_Out32(UINTPTR Addr, u32 Value)
 	*LocalAddr = Value;
 }
 
-/*****************************************************************************/
-/**
-*
-* @brief    Performs an output operation for a memory location by writing the
-*           64 bit Value to the the specified address.
-*
-* @param	Addr contains the address to perform the output operation
-* @param	Value contains 64 bit Value to be written at the specified address.
-*
-* @return	None.
-*
-******************************************************************************/
-static INLINE void Xil_Out64(UINTPTR Addr, u64 Value)
-{
-	/* write 64 bit value to specified address */
-	volatile u64 *LocalAddr = (volatile u64 *)Addr;
-	*LocalAddr = Value;
-}
+// /*****************************************************************************/
+// /**
+// *
+// * @brief    Performs an output operation for a memory location by writing the
+// *           64 bit Value to the the specified address.
+// *
+// * @param	Addr contains the address to perform the output operation
+// * @param	Value contains 64 bit Value to be written at the specified address.
+// *
+// * @return	None.
+// *
+// ******************************************************************************/
+// static INLINE void Xil_Out64(UINTPTR Addr, u64 Value)
+// {
+// 	/* write 64 bit value to specified address */
+// 	volatile u64 *LocalAddr = (volatile u64 *)Addr;
+// 	*LocalAddr = Value;
+// }
 
 
-#endif 
+#endif

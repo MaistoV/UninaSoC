@@ -1,10 +1,10 @@
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
-// Description: Baremetal host code coe conv_opt1 HLS IP core.
+// Description: Baremetal host code for conv_hbus HLS IP core.
 
-#include "driver.h"
+#include "stdlib.h" // TODO47: push this to HAL
+#include "tinyIO.h" // TODO47: push this to HAL
+#include "xlnx.h"
 #include "krnl_conv_hbus.h"
-#include "uninasoc.h"
-#include "measures.h"
 #include "utils.h"
 
 void dump_conv_hbus_csrs () {
@@ -35,6 +35,9 @@ void print_control_csr ( uint32_t csr_read_in ) {
 }
 
 #define PRINT_LEAP 10000
+
+extern const volatile uint32_t _peripheral_UART_start;
+
 int main() {
 
     // Control CSR
@@ -42,7 +45,8 @@ int main() {
     uint32_t cnt;
 
     // Init platform
-    uninasoc_init();
+    uint32_t uart_base_address = (uint32_t) &_peripheral_UART_start;
+    tinyIO_init(uart_base_address);
 
     // Pre-allocate tensors, aligned to power of two
     #define ALIGN_I 2048
@@ -64,18 +68,7 @@ int main() {
 
     // Compute expected
     printf("[INFO] Compute expected\n\r");
-    #define HOST_REPS 1
-    for ( int i = 0; i < HOST_REPS; i++) {
-        uint32_t mcycle_start_host, mcycle_end_host;
-        mcycle_start_host = get_mcycle();
-        compute_expected(I, W, expected);
-        mcycle_end_host = get_mcycle();
-        print_meas(
-                "host",
-                i,
-                mcycle_start_host,
-                mcycle_end_host   );
-    }
+    compute_expected(I, W, expected);
 
     printf("[INFO] Waiting for idle...\n\r");
     // Reset counter
@@ -106,9 +99,6 @@ int main() {
     /////////////////////////
     // Starting the kernel //
     /////////////////////////
-
-    uint32_t mcycle_start, mcycle_end;
-    mcycle_start = get_mcycle();
 
     // Writing input/output addresses
     Xil_Out32(Xkrnl_AXI_ADDR_I, (uint32_t)I);
@@ -141,14 +131,6 @@ int main() {
         }
     } while ( XKrnl_IsDone() );
 
-    mcycle_end = get_mcycle();
-    // print_meas (
-    //         "conv_hbus",
-    //         N,
-    //         mcycle_start,
-    //         mcycle_end
-    //     );
-
     // // Read pending interrupts
     // printf( "   ISR     = 0x%04x\n\r", XKrnl_InterruptGetStatus() );
     // // Clear interrupts
@@ -159,13 +141,6 @@ int main() {
 
     // // Write continue
     // XKrnl_Continue();
-
-    // DUMP
-    // dump_conv_hbus_csrs();
-    // printf("I **********************************:\n\r"); print_tensor((target_type_t*)I,N,C,Y,X);
-    // printf("W **********************************:\n\r"); print_tensor((target_type_t*)W,K,C,R,S);
-    // printf("expected ***************************:\n\r"); print_tensor((target_type_t*)expected,N,K,Y1,X1);
-    // printf("O **********************************:\n\r"); print_tensor((target_type_t*)O,N,K,Y1,X1);
 
     // Checking results
     printf("[INFO] Checking results...\n\r");
