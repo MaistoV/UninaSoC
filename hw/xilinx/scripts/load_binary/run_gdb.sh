@@ -26,8 +26,13 @@ fi
 ELF_NAME=$1;
 BACKEND_PORT=$2;
 
-echo "Running GDB";
+# Get the correct GDB XLEN version
+mkfile=$SW_SOC_ROOT"/common/config.mk"
+XLEN=$(grep -E '^XLEN\s*\?\=\s*[0-9]+' "$mkfile" | sed -E 's/^XLEN\s*\?\=\s*([0-9]+)/\1/')
+
+echo "Running GDB $XLEN-bits version";
 echo "Loading ELF $ELF_NAME";
 echo "Connecting to port $BACKEND_PORT";
 
-riscv32-unknown-elf-gdb $ELF_NAME -ex 'target extended-remote:'$BACKEND_PORT -ex 'load '$ELF_NAME;
+# Run GDB
+riscv$XLEN-unknown-elf-gdb $ELF_NAME -ex 'target extended-remote:'$BACKEND_PORT -ex 'load '$ELF_NAME;
