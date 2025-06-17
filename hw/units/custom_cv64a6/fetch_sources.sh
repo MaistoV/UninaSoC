@@ -109,6 +109,6 @@ ln -s ${ASSETS_DIR}/cv64a6_config_pkg.sv ${RTL_DIR}
 # Remove Artifacts #
 ####################
 
-sudo rm -r ${CLONE_DIR}
+rm -rf ${CLONE_DIR}
 
 echo -e "${GREEN}[FETCH_SOURCES] Completed${NC}"
