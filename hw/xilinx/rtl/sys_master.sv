@@ -1,6 +1,5 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description: Sys master - Instantiates the right masetr AXI based on the SoC profile and gives the clk and rst to the soc
 //              EMBEDDED -> Jtag2Axi
 //              HPC      -> XDMA
@@ -9,7 +8,7 @@
 //----------------------------------------------------------- EMBEDDED -----------------------------------------------------------------------------
 //
 //              ______________               __________                _____________
-// sys_clock   |              | soc_clock   |          |   data [32b] |             | data[DATA_WIDTH]
+// sys_clock   |              | soc_clock   |          |   data [32b] |             | data[MBUS_DATA_WIDTH]
 // ----------->| Clock Wizard |------------>| Jtag2Axi |--------------| Dwidth Conv |-------------------------------------------------->
 //             |______________|     |       |__________|              |_____________|
 //                                  |                                 
@@ -501,7 +500,11 @@ module sys_master # (
         .clk_10   ( clk_10MHz_o  )
     );
 
-    `DECLARE_AXI_BUS(jtag_to_axi_dwidth_converter, 32, 32, LOCAL_ID_WIDTH);
+    // The JTAG2AXI ip is always built with a 32-bits DWIDTH. We use a DWIDTH
+    // converter if the SoC is built at 64 bits. While it is possible to build 
+    // JTAG2AXI as a 64-bits ip, it would also require a change to the load_binary
+    // script, which we want to avoid.
+    `DECLARE_AXI_BUS(jtag_to_axi_dwidth_converter, 32, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
     // JTAG2AXI Master
     xlnx_jtag_axi jtag_axi_u (
@@ -635,11 +638,12 @@ module sys_master # (
         assign m_axi_awregion = '0;
         assign m_axi_arregion = '0;
 
-    end else begin: no_dwidth_conversion
+    end: dwidth_converter
+    else begin: no_dwidth_conversion
 
         `ASSIGN_AXI_BUS (m, jtag_to_axi_dwidth_converter);
 
-    end
+    end: no_dwidth_conversion
 
 `endif
 

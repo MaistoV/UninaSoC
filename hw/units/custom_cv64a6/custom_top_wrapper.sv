@@ -1,6 +1,11 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Description:
-//    TBD
+//    This module is intended as a top-level wrapper for the custom_cv64a6 
+//    unit used in the SoC rtl (in the Socket). It wraps the CV64A6 CPU from OpenHW.
+//    By default, CV64A6 expects a configuration file describing its extensions
+//    Cache sizes and microarchitectural features, such as RAS or BTB size.
+//    We use a slightly modified config file suited on our needs in ./assets.
+//    Extensions supported are: I M A F D C H
 
 
 // Import headers

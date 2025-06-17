@@ -68,7 +68,7 @@ class Configuration:
 			# Skip mock buses
 			return
 		else:
-			# Defaulting breaks multiple things in the current flow. It MUST be refactored.
+			# TODO127: Defaulting breaks multiple things in the current flow. It MUST be refactored.
 			# For now, we just raise the warning, and leave the user with the selected value.
 			self.ADDR_WIDTH = value
 			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using the user value, beware of this.")
@@ -90,7 +90,7 @@ class Configuration:
 		elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (DATA_WIDTH_Found == True)):
 			self.DATA_WIDTH = value
 		else:
-			# Defaulting breaks multiple things in the current flow. It MUST be refactored.
+			# TODO127: Defaulting breaks multiple things in the current flow. It MUST be refactored.
 			# For now, we just raise the warning, and leave the user with the selected value.
 			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using the user value, beware of this.")
 

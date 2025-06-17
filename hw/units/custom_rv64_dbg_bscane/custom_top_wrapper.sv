@@ -221,7 +221,6 @@ module custom_top_wrapper # (
     localparam int unsigned axi_to_mem_BufDepth = 4;
 
     // AXI access to debug module
-    // axi_to_mem_interleaved #(
     axi_to_mem_interleaved #(
         .axi_req_t  ( axi_req_t             ),
         .axi_resp_t ( axi_resp_t            ),

@@ -75,7 +75,7 @@ elif "peripheral_bus" in bus_config_file_name:
 elif "highperformance_bus" in bus_config_file_name:
     config.CONFIG_NAME = "HBUS"
 
-# TODO<issue config/refactor2>
+# TODO127:
 # In the previous version we first read the sys config and then the bus config
 # This is now broken because of how we assign datawidth and address width
 # and the relative order of these assignments.

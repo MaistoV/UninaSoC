@@ -10,7 +10,7 @@ ARGC=$#;
 help (){
     echo  "Usage: source ${BASH_SOURCE[0]} <elf_name> <backend_port>";
     echo  "    elf_name         :  path to the elf file";
-    echo  "    backend_port     :  port backend (3333 for openocd, 3004 for vivado hw_server riscv 32 bit, 3005 for vivado hw_server riscv 64 bits)";
+    echo  "    backend_port     :  port backend (We use 3004 for both vivado hw_server (32-bits) and openocd. 3005 for vivado hw_server riscv 64 bits)";
     return;
 }
 
