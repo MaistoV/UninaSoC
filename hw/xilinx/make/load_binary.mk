@@ -2,6 +2,9 @@
 # Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 # Description: Make target to load binaries to SoC memory and interact with debugger
 
+# Get XLEN for SoC Configuration
+include ${XILINX_ROOT}/make/config.mk
+
 # Common scripts directory
 XILINX_SCRIPTS_LOAD_ROOT := ${XILINX_SCRIPT_ROOT}/load_binary
 
@@ -67,7 +70,7 @@ openocd_run:
 # Use GDB to load the ELF and run (open the backend in a shell before)
 
 gdb_run:
-	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/run_gdb.sh ${ELF_PATH} ${DEBUG_PORT}"
+	@bash -c "source ${XILINX_SCRIPTS_LOAD_ROOT}/run_gdb.sh ${ELF_PATH} ${DEBUG_PORT} ${XLEN}"
 
 ###########
 # PHONIES #
