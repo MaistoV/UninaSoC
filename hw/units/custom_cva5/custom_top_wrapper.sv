@@ -54,10 +54,7 @@ module custom_top_wrapper (
     input logic [1:0] bresp,
     input logic [5:0] bid,
 
-    // Interrupts e timer
-    //input logic [63:0] mtime,
-    //input interrupt_t s_interrupt,
-    //input interrupt_t m_interrupt
+
     input logic s_interrupt_software,
     input logic s_interrupt_timer,
     input logic s_interrupt_external,
