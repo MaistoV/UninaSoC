@@ -1,91 +1,32 @@
 #include "../inc/xlnx_tim.h"
+#include "../inc/io.h"
 #include <stdint.h>
 
-// CASCADE
-#define ENABLE_CASCADE (1 << 11)
-#define TIMER_ENABLE (1 << 7)
-#define TIMER_DISABLE (~(1 << 7))
-
-// 0-not initialized
-// 1-32 bit timers
-// 2-64 bit timer
-static int timer_init = 0;
-
-void tim_init(int init)
-{
-    timer_init = init;
-}
+#define TIM_DOWN_COUNTER (1 << 1)
+#define TIM_AUTO_RELOAD (1 << 4)
+#define TIM_LOAD (1 << 5)
+#define TIM_ENABLE_INTERRUPT (1 << 6)
+#define TIM_ENABLE (1 << 7)
 
 // FOR LOAD: 0x1312D00; That is 20000000 to count one second at 20 MHz
-
-int tim_configure(TIM_Peripheral* tim, TIM_Config* config)
+void xlnx_tim_configure(uint32_t counter)
 {
-    TIM32* timer32 = (TIM32*)tim;
-    TIM64* timer64 = (TIM64*)tim;
-
-    if (timer_init == 0)
-        return UNINITIALIZED_TIMER;
-    // can't use pwm if timer is in 32 bit
-    if ((config->mask_tcsr & ENABLE_PWM) && (timer_init != TIM64B))
-        return WRONG_MODE;
-
-    // set configs for 64 bit
-    if (timer_init == TIM64B) {
-        timer64->tim1.tlr = (uint32_t)(config->load_value >> 32);
-        if ((config->mask_tcsr & ENABLE_PWM)) {
-            timer64->tim0.tcsr |= ENABLE_GENERATE_SIG;
-            timer64->tim1.tcsr |= ENABLE_GENERATE_SIG;
-        }
-        // if not using PWM then just set cascade
-        else {
-            config->set_tcsr |= ENABLE_CASCADE;
-        }
-    }
-
-    timer32->tlr = (uint32_t)config->load_value;
-    // reset bits
-    timer32->tcsr &= config->mask_tcsr;
-    // set bits
-    timer32->tcsr |= config->set_tcsr;
-
-    return CONFIG_OK;
+    write32(TIM0_TLR, counter);
+    write32(TIM0_CSR, TIM_DOWN_COUNTER | TIM_LOAD | TIM_AUTO_RELOAD);
 }
 
-void tim_enable_int()
+void xlnx_tim_enable_int()
 {
-
-    uint32_t* tim_addr = (uint32_t*)&_peripheral_TIM0_start;
-
-    // Enable the interrupt
-    *(tim_addr) |= 0x40; // ENIT0 = 1 (bit 6), interrupt enabled
+    uint32_t csr_value = read32(TIM0_CSR);
+    csr_value |= TIM_ENABLE_INTERRUPT;
+    write32(TIM0_CSR, csr_value);
 }
 
-void tim_enable(TIM_Peripheral* tim)
+void xlnx_tim_start()
 {
-    TIM32* timer = (TIM32*)tim;
-    // turn off load bit
-    timer->tcsr &= LOAD_TIMER;
-    // enable timer
-    timer->tcsr |= TIMER_ENABLE;
-}
-
-void tim_disable(TIM_Peripheral* tim)
-{
-    TIM32* timer = (TIM32*)tim;
-    timer->tcsr &= TIMER_DISABLE;
-}
-
-void tim_handler()
-{
-
-    uint32_t* tim_addr = (uint32_t*)&_peripheral_TIM0_start;
-
-    // Print
-    printf("\n\r******* Timer Interrupt! *******\n\r\n\r");
-
-    // Clear timer interrupt by setting TCSR0.T0INT
-    *tim_addr = 0x100;
-
-    // Restart the timer
-    *tim_addr = 0xD2;
+    uint32_t csr_value = read32(TIM0_CSR);
+    // Lower LOAD0 (necessary to start the timer correctly)
+    csr_value &= ~TIM_LOAD;
+    csr_value |= TIM_ENABLE;
+    write32(TIM0_CSR, csr_value);
 }
