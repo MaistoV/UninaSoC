@@ -2,6 +2,7 @@
 
 #include "io.h"
 #include "xlnx_gpio_out.h"
+#include <stdint.h>
 
 void xlnx_gpio_out_init()
 {
@@ -11,6 +12,20 @@ void xlnx_gpio_out_init()
 void xlnx_gpio_out_write(uint16_t val)
 {
     write16(GPIO_DATA, val);
+}
+
+uint16_t xlnx_gpio_out_read()
+{
+    return read16(GPIO_DATA);
+}
+
+int xlnx_gpio_out_toggle(pin_t pin){
+    if ((pin <= 0) || (pin > 0xFFFF))
+        return -1;
+    uint16_t data = xlnx_gpio_out_read();
+    data ^= pin;
+    xlnx_gpio_out_write(data);
+    return 0;
 }
 
 #endif

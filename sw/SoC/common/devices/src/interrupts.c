@@ -17,7 +17,6 @@ void _timer_handler(void) {
 }
 
 void _ext_handler(void) {
-
     // Interrupts are automatically disabled by the microarchitecture (uarch).
     // Nested interrupts can be enabled manually by setting the IE bit in the mstatus register,
     // but this requires careful handling of registers.
@@ -40,14 +39,14 @@ void _ext_handler(void) {
             break;
         case 0x1:
         #ifdef IS_EMBEDDED
-            xlnx_gpio_out_write(0x1);
+            xlnx_gpio_out_toggle(PIN_0);
             xlnx_gpio_in_clear_int();
             //gpio_handler();
         #endif
         break;
         case 0x2:
             // Timer interrupt
-            xlnx_gpio_out_write(0x2);
+            xlnx_gpio_out_toggle(PIN_1);
             xlnx_tim_clear_int();
             //tim_handler();
             break;
