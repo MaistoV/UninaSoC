@@ -27,6 +27,10 @@
 
 #define SOURCES_NUM 3
 
+void _sw_handler() __handler__;
+void _timer_handler() __handler__;
+void _ext_handler() __handler__;
+
 void _sw_handler(void) {
     // Unused for this example
 }
