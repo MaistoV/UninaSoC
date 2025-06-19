@@ -21,12 +21,6 @@ extern const volatile uint32_t _peripheral_GPIO_out_start;
 #define IP_ISR GPIO_OUT + 0x0120 // Interrupt Status Register
 #define IP_IER GPIO_OUT + 0x0128 // Interrupt Enable Register
 
-// INTERRUPTS
-typedef enum {
-    ENABLE_INT,
-    DISABLE_INT
-} interrupt_conf_t;
-
 void xlnx_gpio_out_init();
 
 void xlnx_gpio_out_write(uint16_t val);

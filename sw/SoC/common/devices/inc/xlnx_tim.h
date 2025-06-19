@@ -27,6 +27,8 @@ void xlnx_tim_configure(uint32_t counter);
 
 void xlnx_tim_enable_int();
 
+void xlnx_tim_clear_int();
+
 void xlnx_tim_start();
 
 #endif

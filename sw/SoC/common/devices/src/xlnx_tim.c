@@ -1,5 +1,5 @@
-#include "../inc/xlnx_tim.h"
-#include "../inc/io.h"
+#include "xlnx_tim.h"
+#include "io.h"
 #include <stdint.h>
 
 #define TIM_DOWN_COUNTER (1 << 1)
@@ -7,6 +7,7 @@
 #define TIM_LOAD (1 << 5)
 #define TIM_ENABLE_INTERRUPT (1 << 6)
 #define TIM_ENABLE (1 << 7)
+#define TIM_INTERRUPT (1 << 8)
 
 // FOR LOAD: 0x1312D00; That is 20000000 to count one second at 20 MHz
 void xlnx_tim_configure(uint32_t counter)
@@ -19,6 +20,13 @@ void xlnx_tim_enable_int()
 {
     uint32_t csr_value = read32(TIM0_CSR);
     csr_value |= TIM_ENABLE_INTERRUPT;
+    write32(TIM0_CSR, csr_value);
+}
+
+void xlnx_tim_clear_int(){
+    // Clear timer interrupt by setting TCSR0.T0INT
+    uint32_t csr_value = read32(TIM0_CSR);
+    csr_value |= TIM_INTERRUPT;
     write32(TIM0_CSR, csr_value);
 }
 

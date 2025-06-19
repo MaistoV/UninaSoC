@@ -1,6 +1,5 @@
-#include "../inc/plic.h"
-#include "../inc/io.h"
-#include <cstdint>
+#include "plic.h"
+#include "io.h"
 #include <stdint.h>
 
 #define MAX_SOURCES 3
@@ -32,4 +31,12 @@ void plic_enable_all(){
         enable += (1 << i);
     } 
     write32(PLIC_INT_ENABLE_CTX0 , enable);
+}
+
+uint32_t plic_claim(){
+    return read32(PLIC_CLAIM_CTX0);
+}
+
+void plic_complete(uint32_t interrupt_id){
+    write32(PLIC_COMPLETE_CTX0, interrupt_id);
 }

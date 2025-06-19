@@ -4,15 +4,39 @@
 
 .section .vector_table, "ax"
 .option norvc;
+.extern _sw_handler;
+.extern _timer_handler;
+.extern _ext_handler;
 
   # According to RISC-V Specification, all entries are jumps to the specific handler.
   # Only the reset handler is defined in this file, while all other handlers points to
   # the default_handler (a loop)
 
   jal x0, _reset_handler
-  .rept 31
+
+  .rept 2
   jal x0, _default_handler
   .endr
+
+  jal x0, _sw_handler # BASE VECTOR + 3 WORDS
+
+  .rept 3
+  jal x0, _default_handler
+  .endr
+
+  jal x0, _timer_handler # BASE VECTOR + 7 WORDS
+
+  .rept 3
+  jal x0, _default_handler
+  .endr
+
+  jal x0, _ext_handler  # BASE VECTOR + 11 WORDS
+
+  .rept 20
+  jal x0, _default_handler
+  .endr
+
+
 
 .section .text.handlers
 

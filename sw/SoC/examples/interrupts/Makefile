@@ -26,6 +26,7 @@ INC_DIR     = inc
 STARTUP_DIR = $(SOC_SW_ROOT_DIR)/common
 
 LD_SCRIPT     = ld/user.ld
+INC_FLAGS     += -I$(DEVICES_DIR)/inc
 
 #############
 # Libraries #
