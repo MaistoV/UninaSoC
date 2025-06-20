@@ -10,16 +10,16 @@ extern const volatile uint32_t _peripheral_GPIO_in_start;
 
 // GPIO is configured to use just one channel (so all the "2" registers like GPIO2_DATA are unused)
 
-#define GPIO_IN ((uintptr_t)&_peripheral_GPIO_in_start)
+#define GPIO_IN_BASEADDR ((uintptr_t)&_peripheral_GPIO_in_start)
 
 // Bits
-#define GPIO_IN_DATA GPIO_IN + 0x0000 // Data Register
-#define GPIO_IN_TRI GPIO_IN + 0x0004 // Direction Register
-#define GPIO2_IN_DATA GPIO_IN + 0x0008 // Data register second channel
-#define GPIO2_IN_TRI GPIO_IN + 0x000C // Data register second channel
-#define GPIO_IN_GIER GPIO_IN + 0x011C // Global Interrupt Enable Register
-#define GPIO_IN_ISR GPIO_IN + 0x0120 // Interrupt Status Register
-#define GPIO_IN_IER GPIO_IN + 0x0128 // Interrupt Enable Register
+#define GPIO_IN_DATA     (GPIO_IN_BASEADDR + 0x0000) // Data Register
+#define GPIO_IN_TRI      (GPIO_IN_BASEADDR + 0x0004) // Direction Register
+#define GPIO2_IN_DATA    (GPIO_IN_BASEADDR + 0x0008) // Data register second channel
+#define GPIO2_IN_TRI     (GPIO_IN_BASEADDR + 0x000C) // Data register second channel
+#define GPIO_IN_GIER     (GPIO_IN_BASEADDR + 0x011C) // Global Interrupt Enable Register
+#define GPIO_IN_ISR      (GPIO_IN_BASEADDR + 0x0120) // Interrupt Status Register
+#define GPIO_IN_IER      (GPIO_IN_BASEADDR + 0x0128) // Interrupt Enable Register
 
 // INTERRUPTS
 typedef enum {
