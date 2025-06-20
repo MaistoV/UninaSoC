@@ -27,6 +27,11 @@
 
 #define SOURCES_NUM 3
 
+// IMPORTANT:
+// when defining custom handlers always use the "__handler__" symbol
+// this symbol is crucial, omitting it would make the compiler treat them like normal functions
+// creating wrong epilogue and prologue
+
 void _sw_handler() __handler__;
 void _timer_handler() __handler__;
 void _ext_handler() __handler__;

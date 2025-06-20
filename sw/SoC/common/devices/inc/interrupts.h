@@ -10,7 +10,11 @@
 // less safe and requires carefully crafted assembly code.
 
 // Note: compiling with D/F/V extension would also include the extra registers in the context.
-// Should make sure to not relocate the code too far away from the vector_table "jump instruction" (see startup.s)
+
+// Should make sure to not relocate the code far away from the vector_table "jump instruction" (see startup.s)
+// __attribute__((section(".text")) in this case is just a placeholder to signal this eventual problem
+// the "__handler__" symbol must be used to redefine the handler correctly inside the specific example
+// (see interrupts example)
 
 #define __handler__ __attribute__((interrupt("machine"))) __attribute__((section(".text")))
 

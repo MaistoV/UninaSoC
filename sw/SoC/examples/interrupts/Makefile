@@ -32,11 +32,14 @@ INC_FLAGS     += -I$(DEVICES_DIR)/inc
 # Libraries #
 #############
 
-LIB_OBJ_TINYIO     = $(LIB_DIR)/tinyio/lib/tinyio.a
+LIB_OBJ_TINYIO    = $(LIB_DIR)/tinyio/lib/tinyio.a
 LIB_INC_TINYIO    = -I$(LIB_DIR)/tinyio/inc
 
-LIB_OBJ_LIST     = $(LIB_OBJ_TINYIO)
-LIB_INC_LIST     = $(LIB_INC_TINYIO)
+LIB_OBJ_DEVICES   = $(DEVICES_DIR)/lib/libuninasoc.a
+LIB_INC_DEVICES   = -I$(DEVICES_DIR)/inc
+
+LIB_OBJ_LIST     = $(LIB_OBJ_TINYIO) $(LIB_OBJ_DEVICES)
+LIB_INC_LIST     = $(LIB_INC_TINYIO) $(LIB_INC_DEVICES)
 
 
 #############

@@ -9,9 +9,11 @@ LIB_DIR	= $(SOC_SW_ROOT_DIR)/lib
 ## DEVICES
 DEVICES_DIR = $(SOC_SW_ROOT_DIR)/common/devices
 DEVICES_SRCS := $(wildcard $(DEVICES_DIR)/src/*.c)
-DEVICES_OBJS := $(addprefix obj/,$(patsubst %.c,%.o,$(notdir $(DEVICES_SRCS))))
+DEVICES_OBJS := $(patsubst $(DEVICES_DIR)/src/%.c, %.o, $(wildcard $(DEVICES_DIR)/src/*.c))
 DEVICES_SRCS_DIR := $(DEVICES_DIR)/src
+DEVICES_LIB_DIR := $(DEVICES_DIR)/lib
 DEVICES_INC_DIR = $(DEVICES_DIR)/inc
+DEVICES_LIB := $(DEVICES_LIB_DIR)/libuninasoc.a
 
 ########
 # Misc #
@@ -46,17 +48,23 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(MKDIR)
 	$(CC) -o $@ $^ $(INC_FLAGS) -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS) $(MACRO_LIST)
 
-obj/%.o: $(DEVICES_SRCS_DIR)/%.c
-	@echo "\n[OBJ] Creating devices OBJs"
+
+%.o: $(DEVICES_SRCS_DIR)/%.c
+	$(CC) -c $< -o $@ -I$(DEVICES_INC_DIR) $(CFLAGS) $(MACRO_LIST)
+
+# Rule to create libuninasoc.a library
+$(DEVICES_LIB): $(DEVICES_OBJS)
+	@echo "\n[OBJ] Creating libuninasoc.a library"
 	$(MKDIR)
-	$(CC) -o $@ $^ -I$(DEVICES_INC_DIR) $(CFLAGS) $(MACRO_LIST)
+	@ar rcs $(DEVICES_LIB) $(DEVICES_OBJS)
+	@rm -f $(DEVICES_OBJS)
 
 obj/startup.o:
 	@echo "\n[OBJ] Creating OBJs from $(STARTUP_DIR)/startup.s"
 	$(MKDIR)
 	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s -I$(LIB_INC_LIST) $(CFLAGS)
 
-bin/$(PROGRAM_NAME).elf: $(OBJS) $(DEVICES_OBJS) obj/startup.o
+bin/$(PROGRAM_NAME).elf: $(OBJS) obj/startup.o $(DEVICES_LIB)
 	@echo "\n[ELF] Creating elf file"
 	$(MKDIR)
 	$(LD) -o $@ $^ $(LDFLAGS)
