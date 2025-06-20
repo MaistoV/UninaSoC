@@ -7,6 +7,7 @@ SOC_SW_ROOT_DIR = $(SW_ROOT)/SoC
 LIB_DIR	= $(SOC_SW_ROOT_DIR)/lib
 
 ## DEVICES
+## TODO47: this is just a placeholder for a HAL library
 DEVICES_DIR = $(SOC_SW_ROOT_DIR)/common/devices
 DEVICES_SRCS := $(wildcard $(DEVICES_DIR)/src/*.c)
 DEVICES_OBJS := $(patsubst $(DEVICES_DIR)/src/%.c, %.o, $(wildcard $(DEVICES_DIR)/src/*.c))
@@ -46,7 +47,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "\n[OBJ] Creating OBJs from src"
 	$(MKDIR)
 	$(CC) -o $@ $^ $(INC_FLAGS) -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS) $(MACRO_LIST)
-
 
 # Build sources for devices
 %.o: $(DEVICES_SRCS_DIR)/%.c
