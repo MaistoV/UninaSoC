@@ -99,12 +99,12 @@ int main(){
 
     #ifdef IS_EMBEDDED
     // Configure the GPIO (embedded only)
-        xlnx_gpio_in_init(ENABLE_INT);
+    xlnx_gpio_in_init(ENABLE_INT);
     #endif
 
-    // Configure the timer
-    uint32_t counter = 0x1312D00;
-    xlnx_tim_configure(counter);
+    // Configure the timer for one interrupt each second (assuming a 20MHz clock)
+    uint32_t counter_value = 20000000; // 0x1312D00
+    xlnx_tim_configure(counter_value);
     xlnx_tim_enable_int();
     xlnx_tim_start();
 
