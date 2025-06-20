@@ -22,7 +22,6 @@ DEVICES_LIB := $(DEVICES_LIB_DIR)/libuninasoc.a
 SRCS	 = $(wildcard src/*.c) $(wildcard lib/*.c)
 OBJS	 = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.c=.o)))
 
-
 RM	  = rm -rf					 # Remove recursively command
 MKDIR   = @mkdir -p $(@D)			 # Creates folders if not present
 

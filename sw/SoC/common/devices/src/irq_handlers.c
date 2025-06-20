@@ -1,4 +1,4 @@
-#include "interrupts.h"
+#include "irq_handlers.h"
 #include "plic.h"
 #include "xlnx_tim.h"
 #include "xlnx_gpio_out.h"
@@ -17,14 +17,10 @@ void _timer_handler(void) {
 }
 
 void _ext_handler(void) {
-    // Interrupts are automatically disabled by the microarchitecture (uarch).
+    // Interrupts are automatically disabled by the microarchitecture.
     // Nested interrupts can be enabled manually by setting the IE bit in the mstatus register,
     // but this requires careful handling of registers.
     // Interrupts are automatically re-enabled by the microarchitecture when the MRET instruction is executed.
-
-    // Since this code calls other functions, the compiler will likely save ALL registers,
-    // including floating-point and vector registers. To ensure compatibility with most processors,
-    // we compile using only the IMA extensions.
 
     // In this example, the core is connected to PLIC target 1 line.
     // Therefore, we need to access the PLIC claim/complete register 1 (base_addr + 0x200004).
@@ -39,16 +35,13 @@ void _ext_handler(void) {
             break;
         case 0x1:
         #ifdef IS_EMBEDDED
-            xlnx_gpio_out_toggle(PIN_0);
+            // Not implemented, just clear to continue
             xlnx_gpio_in_clear_int();
-            //gpio_handler();
         #endif
         break;
         case 0x2:
-            // Timer interrupt
-            xlnx_gpio_out_toggle(PIN_1);
+            // Not implemented, just clear to continue
             xlnx_tim_clear_int();
-            //tim_handler();
             break;
         default:
             break;

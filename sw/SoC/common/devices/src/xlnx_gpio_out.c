@@ -11,12 +11,12 @@ void xlnx_gpio_out_init()
 
 void xlnx_gpio_out_write(uint16_t val)
 {
-    write16(GPIO_DATA, val);
+    iowrite16(GPIO_DATA, val);
 }
 
 uint16_t xlnx_gpio_out_read()
 {
-    return read16(GPIO_DATA);
+    return ioread16(GPIO_DATA);
 }
 
 int xlnx_gpio_out_toggle(pin_t pin){

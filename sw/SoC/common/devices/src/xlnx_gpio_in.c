@@ -10,19 +10,19 @@ void xlnx_gpio_in_init(interrupt_conf_t ic)
 
     if (ic == ENABLE_INT) {
         // Enable interrupt for the channel (1 in IP_IER)
-        write32(GPIO_IN_IER, 0x01);
+        iowrite32(GPIO_IN_IER, 0x01);
         // Enable global interrupts (1 in GIER)
-        write32(GPIO_IN_GIER, 0x80000000);
+        iowrite32(GPIO_IN_GIER, 0x80000000);
     }
 }
 
 uint16_t xlnx_gpio_in_read(){
-    return read16(GPIO_IN_DATA);
+    return ioread16(GPIO_IN_DATA);
 }
 
 void xlnx_gpio_in_clear_int(){
     // Acknowledge GPIO interrupt has been handled.
-    write32(GPIO_IN_ISR, 0x1);
+    iowrite32(GPIO_IN_ISR, 0x1);
 }
 
 #endif // IS_EMBEDDED

@@ -2,6 +2,9 @@
 # Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 # Description: startup code for uninasoc
 
+################
+# Vector table #
+################
 .section .vector_table, "ax"
 .option norvc;
 .extern _sw_handler;
@@ -12,26 +15,34 @@
   # Only the reset handler is defined in this file, while all other handlers points to
   # the default_handler (a loop)
 
+  # Entry 0, reset handler
   jal x0, _reset_handler
 
+  # Entry 1-2, _default_handler
   .rept 2
   jal x0, _default_handler
   .endr
 
-  jal x0, _sw_handler # BASE VECTOR + 3 WORDS
+  # Entry 3
+  jal x0, _sw_handler
 
+  # Entry 4-6, _default_handler
   .rept 3
   jal x0, _default_handler
   .endr
 
-  jal x0, _timer_handler # BASE VECTOR + 7 WORDS
+  # Entry 7
+  jal x0, _timer_handler
 
+  # Entry 8-10, _default_handler
   .rept 3
   jal x0, _default_handler
   .endr
 
-  jal x0, _ext_handler  # BASE VECTOR + 11 WORDS
+  # Entry 11
+  jal x0, _ext_handler
 
+  # Entry 11-31, _default_handler
   .rept 20
   jal x0, _default_handler
   .endr
