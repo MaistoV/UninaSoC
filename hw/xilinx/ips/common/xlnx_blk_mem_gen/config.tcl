@@ -2,9 +2,23 @@
 create_ip -name blk_mem_gen -vendor xilinx.com -library ip -version 8.4 -module_name $::env(IP_NAME)
 
 # COE file to pre-load in BRAM
-# set coe_file $::env(BOOTROM_COE)
-# For now, just no preload
-set coe_file no_coe_file_loaded
+# The bootrom default value is currently our startup.s code ending with a WFI.
+# TODO: implementation of a proper bootrom is deferred to issue #36
+set coe_file $::env(IP_DIR)/init.coe
+
+puts "$coe_file"
+
+# Use envvars out of list
+set_property CONFIG.Write_Width_A $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_A  $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Write_Width_B $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.Read_Width_B  $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
+set_property CONFIG.AXI_ID_Width  $::env(MBUS_ID_WIDTH)       [get_ips $::env(IP_NAME)]
+
+# Get the BRAM depth
+set bram_depths [split $::env(BRAM_DEPTHS) " "]
+# This file is the config for the first BRAM occurrence, hence it uses the index 0
+set_property CONFIG.Write_Depth_A [lindex $bram_depths 0] [get_ips $::env(IP_NAME)]
 
 # Configure IP
 set_property -dict [list CONFIG.Interface_Type {AXI4} \
@@ -23,20 +37,9 @@ set_property -dict [list CONFIG.Interface_Type {AXI4} \
                         CONFIG.Port_B_Clock {100} \
                         CONFIG.Port_B_Enable_Rate {100} \
                         CONFIG.EN_SAFETY_CKT {true} \
-                        CONFIG.Load_Init_File {false} \
-                        CONFIG.Coe_File {$coe_file} \
+                        CONFIG.Load_Init_File {true} \
+                        CONFIG.Coe_File $coe_file \
                         CONFIG.Fill_Remaining_Memory_Locations {true} \
                 ] [get_ips $::env(IP_NAME)]
 
-# Use envvars out of list
-set_property CONFIG.Write_Width_A $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.Read_Width_A  $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.Write_Width_B $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.Read_Width_B  $::env(MBUS_DATA_WIDTH)     [get_ips $::env(IP_NAME)]
-set_property CONFIG.AXI_ID_Width  $::env(MBUS_ID_WIDTH)       [get_ips $::env(IP_NAME)]
 
-# Get the BRAM depth
-# TODO: this parameter does not update this file, hence the IP is not going to be rebuilt
-set bram_depths [split $::env(BRAM_DEPTHS) " "]
-# This file is the config for the first BRAM occurrence, hence it uses the index 0
-set_property CONFIG.Write_Depth_A [lindex $bram_depths 0] [get_ips $::env(IP_NAME)]
