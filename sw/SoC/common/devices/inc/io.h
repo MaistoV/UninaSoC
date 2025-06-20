@@ -1,3 +1,4 @@
+// Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
 // Description:
 //  Simple wrapper functions for direct memory I/O
 
