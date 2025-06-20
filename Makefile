@@ -27,4 +27,3 @@ clean:
 	${MAKE} -C ${SW_ROOT} clean
 
 .PHONY: config hw sw xilinx units
-
