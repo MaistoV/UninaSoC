@@ -48,10 +48,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -o $@ $^ $(INC_FLAGS) -I$(INC_DIR) $(LIB_INC_LIST) $(CFLAGS) $(MACRO_LIST)
 
 
+# Build sources for devices
 %.o: $(DEVICES_SRCS_DIR)/%.c
 	$(CC) -c $< -o $@ -I$(DEVICES_INC_DIR) $(CFLAGS) $(MACRO_LIST)
 
-# Rule to create libuninasoc.a library
+# Build libuninasoc.a library
 $(DEVICES_LIB): $(DEVICES_OBJS)
 	@echo "\n[OBJ] Creating libuninasoc.a library"
 	$(MKDIR)
