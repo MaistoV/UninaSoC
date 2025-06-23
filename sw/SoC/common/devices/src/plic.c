@@ -1,3 +1,10 @@
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
+// Description: 
+//  Very simple implementations of PLIC functions used to correctly
+//  configure and handle external interrupts
+
 #include "plic.h"
 #include "io.h"
 #include <stdint.h>

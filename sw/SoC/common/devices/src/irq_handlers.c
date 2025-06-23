@@ -1,3 +1,10 @@
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
+// Description: 
+//  Basic "placeholder" implementations of interrupt handlers, supposed
+//  to be redefined by the user
+
 #include "irq_handlers.h"
 #include "plic.h"
 #include "xlnx_tim.h"

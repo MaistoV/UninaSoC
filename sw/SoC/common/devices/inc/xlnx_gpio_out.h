@@ -1,3 +1,9 @@
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
+// Description: 
+//  This file defines the API to adoperate the Output GPIO
+
 #ifndef XLNX_GPIO_OUT_H
 #define XLNX_GPIO_OUT_H
 
@@ -22,6 +28,12 @@ extern const volatile uint32_t _peripheral_GPIO_out_start;
 #define IP_ISR      (GPIO_OUT_BASEADDR + 0x0120) // Interrupt Status Register
 #define IP_IER      (GPIO_OUT_BASEADDR + 0x0128) // Interrupt Enable Register
 
+// The GPIO OUT peripheral has 16 output pins
+// every bit in the "DATA" register controls the output of each pins
+// here are defined the values to place in the data register to activate each pin
+// PIN_0 = 2^0 = 1 (first bit)
+// PIN_1 = 2^1 = 2 (second bit)
+// and so on...
 typedef enum{
     PIN_0 = (1 << 0),
     PIN_1 = (1 << 1),
@@ -41,12 +53,16 @@ typedef enum{
     PIN_15 = (1 << 15),
 }pin_t;
 
+// Initializes the gpio out peripheral
 void xlnx_gpio_out_init();
 
-void xlnx_gpio_out_write(uint16_t val);
+// Raise the selected pin (to raise multiple pins just use bitwise OR es. PIN_0 | PIN_1)
+void xlnx_gpio_out_write(pin_t val);
 
+// Read the content of the DATA register
 uint16_t xlnx_gpio_out_read();
 
+// Toggle the selected pin(s) switching 0 and 1 back and forth
 int xlnx_gpio_out_toggle(pin_t pin);
 
 #endif

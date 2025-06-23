@@ -1,3 +1,9 @@
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
+// Description: 
+//  This file implements all the Input GPIO's related functions
+
 #ifdef IS_EMBEDDED // TODO: placeholder to HAL
 
 #include "io.h"

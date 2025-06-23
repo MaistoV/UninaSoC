@@ -1,3 +1,9 @@
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
+// Description: 
+//  This file defines the API to adoperate the Timer
+
 #ifndef TIM_H
 #define TIM_H
 
@@ -32,12 +38,19 @@ extern const volatile uint32_t _peripheral_TIM0_start;
 
 // Functions
 
+//Configure the timer counter, given that the timer is working at 20 MHz
+//to count a second you should use 0x1312D00 (the timer is counting down)
+//the timer automatically restarts everytime ciclically
 void xlnx_tim_configure(uint32_t counter);
 
+//Enables the timer interrupts
 void xlnx_tim_enable_int();
 
+//Clears the timer interrupt signal, this function is supposed to be used
+//to assert the completition of the timer interrupt handling
 void xlnx_tim_clear_int();
 
+//This function starts the timer
 void xlnx_tim_start();
 
 #endif

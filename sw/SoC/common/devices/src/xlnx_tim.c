@@ -1,9 +1,14 @@
+// Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
+// Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
+// Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
+// Description: 
+//  This file implements all the Timer's related functions
+
 #include "xlnx_tim.h"
 #include "io.h"
 #include <stdint.h>
 
 
-// FOR LOAD: 0x1312D00; That is 20000000 to count one second at 20 MHz
 void xlnx_tim_configure(uint32_t counter)
 {
     iowrite32(TIM0_TLR, counter);
