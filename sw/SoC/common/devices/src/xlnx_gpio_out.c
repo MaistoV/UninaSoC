@@ -4,8 +4,6 @@
 // Description:
 //  This file implements all the Output GPIO's related functions
 
-
-
 #include "uninasoc.h"
 
 #ifdef GPIO_OUT_IS_ENABLED

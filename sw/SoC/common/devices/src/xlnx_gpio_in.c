@@ -4,8 +4,6 @@
 // Description:
 //  This file implements all the Input GPIO's related functions
 
-
-
 #include "uninasoc.h"
 
 #ifdef GPIO_IN_IS_ENABLED
