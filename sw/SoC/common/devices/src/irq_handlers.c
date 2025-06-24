@@ -27,7 +27,7 @@ void _ext_handler(void) {
     uint32_t interrupt_id = plic_claim();
 
     // JUST TURN LEDS ON TO SIGNAL THAT INTERRUPTS ARE WORKING
-    xlnx_gpio_out_write(PIN_ALL);
+    //xlnx_gpio_out_write(PIN_ALL);
 
     switch(interrupt_id){
         case 0x0: // unused
@@ -35,12 +35,12 @@ void _ext_handler(void) {
         case 0x1:
         #ifdef IS_EMBEDDED
             // Not implemented, just clear to continue
-            xlnx_gpio_in_clear_int();
+            //xlnx_gpio_in_clear_int();
         #endif
         break;
         case 0x2:
             // Not implemented, just clear to continue
-            xlnx_tim_clear_int();
+            //xlnx_tim_clear_int();
             break;
         default:
             break;

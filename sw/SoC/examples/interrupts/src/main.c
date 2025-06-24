@@ -15,19 +15,26 @@
 //      vesuvius configuration (according to the SOC_CONFIG envvar set in settings.sh)
 //
 
+#include "uninasoc.h"
 #include <stdint.h>
-#include "tinyIO.h"
-
-#include "xlnx_tim.h"
-#include "plic.h"
-#include "irq_handlers.h"
-#include "xlnx_gpio_out.h"
-
-#ifdef IS_EMBEDDED
-    #include "xlnx_gpio_in.h"
-#endif
 
 #define SOURCES_NUM 3
+
+xlnx_gpio_in_t gpio_in = {
+    .base_addr = GPIO_IN_BASEADDR,
+    .interrupt = ENABLE_INT
+};
+
+xlnx_gpio_out_t gpio_out = {
+    .base_addr = GPIO_OUT_BASEADDR
+};
+
+xlnx_tim_t timer = {
+    .base_addr = TIM0_BASEADDR,
+    .counter = 20000000,
+    .reload_mode = TIM_RELOAD_AUTO,
+    .count_direction = TIM_COUNT_DOWN
+};
 
 // IMPORTANT:
 // when defining custom handlers always use the "__irq_handler__" symbol
@@ -38,15 +45,18 @@ void _sw_handler() __irq_handler__;
 void _timer_handler() __irq_handler__;
 void _ext_handler() __irq_handler__;
 
-void _sw_handler(void) {
+void _sw_handler(void)
+{
     // Unused for this example
 }
 
-void _timer_handler(void) {
+void _timer_handler(void)
+{
     // Unused for this example
 }
 
-void _ext_handler(void) {
+void _ext_handler(void)
+{
     // Interrupts are automatically disabled by the microarchitecture.
     // Nested interrupts can be enabled manually by setting the IE bit in the mstatus register,
     // but this requires careful handling of registers.
@@ -55,61 +65,55 @@ void _ext_handler(void) {
     // In this example, the core is connected to PLIC target 1 line.
     // Therefore, we need to access the PLIC claim/complete register 1 (base_addr + 0x200004).
     // The interrupt source ID is obtained from the claim register.
+
     uint32_t interrupt_id = plic_claim();
-    switch(interrupt_id){
-        case 0x0: // unused
-            break;
-        case 0x1:
-        #ifdef IS_EMBEDDED
-            xlnx_gpio_out_toggle(PIN_0);
-            xlnx_gpio_in_clear_int();
-            //gpio_handler();
-        #endif
+    switch (interrupt_id) {
+    case 0x0: // unused
         break;
-        case 0x2:
-            // Timer interrupt
-            xlnx_gpio_out_toggle(PIN_1);
-            xlnx_tim_clear_int();
-            //tim_handler();
-            break;
-        default:
-            break;
+    case 0x1:
+        xlnx_gpio_out_toggle(&gpio_out, PIN_0);
+        xlnx_gpio_in_clear_int(&gpio_in);
+        // gpio_handler();
+        break;
+    case 0x2:
+        // Timer interrupt
+        xlnx_gpio_out_toggle(&gpio_out, PIN_1);
+        xlnx_tim_clear_int(&timer);
+        // tim_handler();
+        break;
+    default:
+        break;
     }
 
     // To notify the handler completion, a write-back on the claim/complete register is required.
     plic_complete(interrupt_id);
 }
 
-// Import linker script symbol
-extern const volatile uint32_t _peripheral_UART_start;
-
 // Main function
-int main(){
-
-    // Initialize tinyIO
-    uint32_t* uart_base_address = (uint32_t*) &_peripheral_UART_start;
-    tinyIO_init((uint32_t) uart_base_address);
+int main()
+{
+    // Initialize HAL
+    uninasoc_init();
 
     printf("Interrupts Example\n\r");
 
     // Configure the PLIC
-    uint32_t priorities[SOURCES_NUM] = { 1, 1, 1};
+    uint32_t priorities[SOURCES_NUM] = { 1, 1, 1 };
     plic_configure(priorities, SOURCES_NUM);
     plic_enable_all();
 
-    #ifdef IS_EMBEDDED
-    // Configure the GPIO (embedded only)
-    xlnx_gpio_in_init(ENABLE_INT);
-    #endif
+    xlnx_gpio_in_init(&gpio_in);
+    xlnx_gpio_out_init(&gpio_out);
 
     // Configure the timer for one interrupt each second (assuming a 20MHz clock)
-    uint32_t counter_value = 20000000; // 0x1312D00
-    xlnx_tim_configure(counter_value);
-    xlnx_tim_enable_int();
-    xlnx_tim_start();
+
+    xlnx_tim_configure(&timer);
+    xlnx_tim_enable_int(&timer);
+    xlnx_tim_start(&timer);
 
     // Hot-loop, waiting for interrupts to occur
-    while(1);
+    while (1)
+        ;
 
     return 0;
 }

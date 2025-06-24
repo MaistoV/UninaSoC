@@ -4,33 +4,74 @@
 // Description:
 //  This file implements all the Input GPIO's related functions
 
-#ifdef GPIO_IN_IS_ENABLED
 
-#include "xlnx_gpio_in.h"
+
+#include "uninasoc.h"
+
+#ifdef GPIO_IN_IS_ENABLED
 #include "io.h"
 #include <stdint.h>
 
-void xlnx_gpio_in_init(xlnx_gpio_in_interrupt_conf_t ic)
-{
-    // Already configured in input as default
+// GPIO is configured to use just one channel (so all the "2" registers like GPIO2_DATA are unused)
+// Bits
 
-    if (ic == ENABLE_INT) {
+#define GPIO_IN_DATA 0x0000 // Data Register
+#define GPIO_IN_TRI 0x0004 // Direction Register
+#define GPIO2_IN_DATA 0x0008 // Data register second channel
+#define GPIO2_IN_TRI 0x000C // Data register second channel
+#define GPIO_IN_GIER 0x011C // Global Interrupt Enable Register
+#define GPIO_IN_ISR 0x0120 // Interrupt Status Register
+#define GPIO_IN_IER 0x0128 // Interrupt Enable Register
+
+// Extend this function implementation in case you add more peripherals
+#ifdef UNINASOC_DEBUG
+static inline void assert_gpio_in(xlnx_gpio_in_t* gpio)
+{
+    if ((gpio->base_addr != GPIO_IN_BASEADDR)) {
+        // make the system halt (assuming tinyIO is already initialized)
+        printf("WRONG GPIO IN BASE ADDRESS, HALTING THE SYSTEM!\r\n");
+        while (1) {
+            asm volatile("nop");
+        }
+    }
+}
+#else
+static inline void assert_gpio_in(xlnx_gpio_in_t* timer)
+{
+    // no-op when not debugging
+}
+#endif
+
+void xlnx_gpio_in_init(xlnx_gpio_in_t* gpio_in)
+{
+    assert_gpio_in(gpio_in);
+
+    uintptr_t gpio_in_ier = (uintptr_t)(gpio_in->base_addr + GPIO_IN_IER);
+    uintptr_t gpio_in_gier = (uintptr_t)(gpio_in->base_addr + GPIO_IN_GIER);
+
+    if (gpio_in->interrupt == ENABLE_INT) {
         // Enable interrupt for the channel (1 in IP_IER)
-        iowrite32(GPIO_IN_IER, 0x01);
+        iowrite32(gpio_in_ier, 0x01);
         // Enable global interrupts (1 in GIER)
-        iowrite32(GPIO_IN_GIER, 0x80000000);
+        iowrite32(gpio_in_gier, 0x80000000);
     }
 }
 
-uint16_t xlnx_gpio_in_read()
+uint16_t xlnx_gpio_in_read(xlnx_gpio_in_t* gpio_in)
 {
-    return ioread16(GPIO_IN_DATA);
+    assert_gpio_in(gpio_in);
+
+    uintptr_t gpio_in_data = (uintptr_t)(gpio_in->base_addr + GPIO_IN_DATA);
+    return ioread16(gpio_in_data);
 }
 
-void xlnx_gpio_in_clear_int()
+void xlnx_gpio_in_clear_int(xlnx_gpio_in_t* gpio_in)
 {
+    assert_gpio_in(gpio_in);
+
+    uintptr_t gpio_in_isr = (uintptr_t)(gpio_in->base_addr + GPIO_IN_ISR);
     // Acknowledge GPIO interrupt has been handled.
-    iowrite32(GPIO_IN_ISR, 0x1);
+    iowrite32(gpio_in_isr, 0x1);
 }
 
 #endif

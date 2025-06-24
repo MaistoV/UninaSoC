@@ -16,6 +16,9 @@ DEVICES_LIB_DIR := $(DEVICES_DIR)/lib
 DEVICES_INC_DIR = $(DEVICES_DIR)/inc
 DEVICES_LIB := $(DEVICES_LIB_DIR)/libuninasoc.a
 
+TINYIO_DIR = $(SOC_SW_ROOT_DIR)/lib/tinyio/lib/tinyio.a
+TINYIO_INC = $(SOC_SW_ROOT_DIR)/lib/tinyio/inc
+
 ########
 # Misc #
 ########
@@ -50,13 +53,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 # Build sources for devices
 %.o: $(DEVICES_SRCS_DIR)/%.c
-	$(CC) -c $< -o $@ -I$(DEVICES_INC_DIR) $(CFLAGS) $(MACRO_LIST)
+	$(CC) -c $< -o $@ -I$(TINYIO_INC) -I$(DEVICES_INC_DIR) $(CFLAGS) $(MACRO_LIST)
 
 # Build libuninasoc.a library
 $(DEVICES_LIB): $(DEVICES_OBJS)
 	@echo "\n[OBJ] Creating libuninasoc.a library"
 	$(MKDIR)
-	@ar rcs $(DEVICES_LIB) $(DEVICES_OBJS)
+	ar rcs $(DEVICES_LIB) $(DEVICES_OBJS)	
 	@rm -f $(DEVICES_OBJS)
 
 obj/startup.o:

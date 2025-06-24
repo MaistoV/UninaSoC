@@ -5,9 +5,9 @@
 //  Very simple implementations of PLIC functions used to correctly
 //  configure and handle external interrupts
 
-#ifdef PLIC_IS_ENABLED
 
-#include "plic.h"
+#include "uninasoc.h"
+
 #include "io.h"
 #include <stdint.h>
 
@@ -49,5 +49,3 @@ uint32_t plic_claim(){
 void plic_complete(uint32_t interrupt_id){
     iowrite32(PLIC_COMPLETE_CTX0, interrupt_id);
 }
-
-#endif

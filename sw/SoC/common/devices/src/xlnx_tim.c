@@ -1,46 +1,110 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
-// Description: 
+// Description:
 //  This file implements all the Timer's related functions
 
 
-#ifdef TIM_IS_ENABLED
+#include "uninasoc.h"
 
-#include "xlnx_tim.h"
+#ifdef TIM_IS_ENABLED
 #include "io.h"
 #include <stdint.h>
 
-// TODO47: For now, only timer 0 is used. 
+// TODO47: For now, only timer 0 is used.
 //         These APIs need to be extended to work on TIM0, TIM1 and other instances
 
-void xlnx_tim_configure(uint32_t counter)
+// Macros used internally, so they're place here instead of the header file
+
+// Registers (both TIM0 and TIM1 have same registers)
+#define TIM_CSR 0x0000 // Control and Status register
+#define TIM_TLR 0x0004 // Load register
+
+#define TIM_CSR_COUNTER_MODE (1 << 1)
+#define TIM_CSR_RELOAD_MODE (1 << 4)
+#define TIM_CSR_LOAD (1 << 5)
+#define TIM_CSR_ENABLE_INTERRUPT (1 << 6)
+#define TIM_CSR_ENABLE (1 << 7)
+#define TIM_CSR_INTERRUPT (1 << 8)
+
+
+// Extend this function implementation in case you add more peripherals
+#ifdef UNINASOC_DEGUG
+static inline void assert_timer(xlnx_tim_t* timer)
 {
-    iowrite32(TIM0_TLR, counter);
-    iowrite32(TIM0_CSR, TIM_CSR_DOWN_COUNTER | TIM_CSR_LOAD | TIM_CSR_AUTO_RELOAD);
+    if ((timer->base_addr != TIM0_BASEADDR) && (timer->base_addr != TIM1_BASEADDR)) {
+        // make the system halt (assuming tinyIO is already initialized)
+        printf("WRONG TIMER BASE ADDRESS, HALTING THE SYSTEM!\r\n");
+        while (1) {
+            asm volatile("nop");
+        }
+    }
+}
+#else
+static inline void assert_timer(xlnx_tim_t* timer)
+{
+    // no-op when not debugging
+}
+#endif
+
+void xlnx_tim_configure(xlnx_tim_t* timer)
+{
+    assert_timer(timer);
+
+    uintptr_t tim_tlr = (uintptr_t)(timer->base_addr + TIM_TLR);
+    uintptr_t tim_csr = (uintptr_t)(timer->base_addr + TIM_CSR);
+    // reset to default UP COUNT and HOLD
+    uint32_t config = 0;
+
+    // The configurations are defined as the same bits
+    // but 0 or 1 depending on the mode, so need to do
+    // bits manipulations
+    if (timer->reload_mode == TIM_RELOAD_AUTO)
+        config |= TIM_CSR_RELOAD_MODE;
+    // if HOLD do nothing
+
+    if (timer->reload_mode == TIM_COUNT_DOWN)
+        config |= TIM_CSR_COUNTER_MODE;
+    // if count UP do nothing
+
+    // Needed by the timer to load the counter value
+    config |= TIM_CSR_LOAD;
+    // finally configure the peripheral
+    iowrite32(tim_tlr, timer->counter);
+    iowrite32(tim_csr, config);
 }
 
-void xlnx_tim_enable_int()
+void xlnx_tim_enable_int(xlnx_tim_t* timer)
 {
-    uint32_t csr_value = ioread32(TIM0_CSR);
+    assert_timer(timer);
+
+    uintptr_t tim_csr = (uintptr_t)(timer->base_addr + TIM_CSR);
+    uint32_t csr_value = ioread32(tim_csr);
     csr_value |= TIM_CSR_ENABLE_INTERRUPT;
-    iowrite32(TIM0_CSR, csr_value);
+    iowrite32(tim_csr, csr_value);
 }
 
-void xlnx_tim_clear_int(){
-    // Clear timer interrupt by setting TCSR0.T0INT
-    uint32_t csr_value = ioread32(TIM0_CSR);
-    csr_value |= TIM_CSR_INTERRUPT;
-    iowrite32(TIM0_CSR, csr_value);
-}
-
-void xlnx_tim_start()
+void xlnx_tim_clear_int(xlnx_tim_t* timer)
 {
-    uint32_t csr_value = ioread32(TIM0_CSR);
+    assert_timer(timer);
+
+    // Clear timer interrupt by setting TCSR0.T0INT
+    uintptr_t tim_csr = (uintptr_t)(timer->base_addr + TIM_CSR);
+    uint32_t csr_value = ioread32(tim_csr);
+    csr_value |= TIM_CSR_INTERRUPT;
+    iowrite32(tim_csr, csr_value);
+}
+
+void xlnx_tim_start(xlnx_tim_t* timer)
+{
+    assert_timer(timer);
+
+    uintptr_t tim_csr = (uintptr_t)(timer->base_addr + TIM_CSR);
+    uint32_t csr_value = ioread32(tim_csr);
     // Lower LOAD0 (necessary to start the timer correctly)
     csr_value &= ~TIM_CSR_LOAD;
     csr_value |= TIM_CSR_ENABLE;
-    iowrite32(TIM0_CSR, csr_value);
+    iowrite32(tim_csr, csr_value);
 }
 
 #endif

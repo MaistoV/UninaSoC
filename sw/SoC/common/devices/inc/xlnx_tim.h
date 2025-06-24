@@ -1,7 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
-// Description: 
+// Description:
 //  This file defines the API to adoperate the Timer
 
 #ifndef TIM_H
@@ -13,44 +13,48 @@
 
 // Import linker script symbols
 extern const volatile uint32_t _peripheral_TIM0_start;
-//extern const volatile uint32_t _peripheral_TIM1_start;
+// extern const volatile uint32_t _peripheral_TIM1_start;
 
 // Base address
 #define TIM0_BASEADDR ((uintptr_t)&_peripheral_TIM0_start)
-// #define TIM1_BASEADDR ((uintptr_t)&_peripheral_TIM1_start)
+#define TIM1_BASEADDR ((uintptr_t)&_peripheral_TIM1_start)
 
-// Registers
-#define TIM0_CSR (TIM0_BASEADDR + 0x0000) // Control and Status register
-#define TIM0_TLR (TIM0_BASEADDR + 0x0004) // Load register
-#define TIM0_TCR (TIM0_BASEADDR + 0x0008) // Counter register
 
-// #define TIM1_CSR (TIM1_BASEADDR + 0x0000) // Control and Status register
-// #define TIM1_TLR (TIM1_BASEADDR + 0x0004) // Load register
-// #define TIM1_TCR (TIM1_BASEADDR + 0x0008) // Counter register
+// The timer keeps reloading the initial counter value
+#define TIM_RELOAD_AUTO 0
+// The timer mantains the termination value
+#define TIM_RELOAD_HOLD 1
 
-// Modes
-#define TIM_CSR_DOWN_COUNTER (1 << 1)
-#define TIM_CSR_AUTO_RELOAD (1 << 4)
-#define TIM_CSR_LOAD (1 << 5)
-#define TIM_CSR_ENABLE_INTERRUPT (1 << 6)
-#define TIM_CSR_ENABLE (1 << 7)
-#define TIM_CSR_INTERRUPT (1 << 8)
+// The timer counts from the specified counter value to 0
+#define TIM_COUNT_DOWN 0
+// The timer counts from 0 to the specified value
+#define TIM_COUNT_UP 1
+
+typedef struct {
+    uintptr_t base_addr;
+    uint32_t counter;
+    uint32_t reload_mode : 1;
+    uint32_t count_direction : 1;
+} xlnx_tim_t;
 
 // Functions
 
-//Configure the timer counter, given that the timer is working at 20 MHz
-//to count a second you should use 0x1312D00 (the timer is counting down)
-//the timer automatically restarts everytime ciclically
-void xlnx_tim_configure(uint32_t counter);
+// Configure the timer
+// base_addr should contain the base address of the specific timer
+// (TIM0_BASEADDR) and (TIM1_BASEADDR)
+// and the other parameters should contain the values specified from the above macros
+// in case mode parameters are missing or wrong, the timer will be configured
+// COUNT UP and RELOAD HOLD
+void xlnx_tim_configure(xlnx_tim_t* timer);
 
-//Enables the timer interrupts
-void xlnx_tim_enable_int();
+// Enables the timer interrupts
+void xlnx_tim_enable_int(xlnx_tim_t* timer);
 
-//Clears the timer interrupt signal, this function is supposed to be used
-//to assert the completition of the timer interrupt handling
-void xlnx_tim_clear_int();
+// Clears the timer interrupt signal, this function is supposed to be used
+// to assert the completition of the timer interrupt handling
+void xlnx_tim_clear_int(xlnx_tim_t* timer);
 
-//This function starts the timer
-void xlnx_tim_start();
+// This function starts the timer
+void xlnx_tim_start(xlnx_tim_t* timer);
 
 #endif
