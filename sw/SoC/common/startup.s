@@ -50,9 +50,6 @@
   .endr
 
 
-
-.section .text.handlers
-
 _reset_handler:
   .global _reset_handler
 
