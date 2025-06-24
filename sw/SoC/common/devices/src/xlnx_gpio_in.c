@@ -10,7 +10,7 @@
 #include "xlnx_gpio_in.h"
 #include <stdint.h>
 
-void xlnx_gpio_in_init(interrupt_conf_t ic)
+void xlnx_gpio_in_init(xlnx_gpio_in_interrupt_conf_t ic)
 {
     // Already configured in input as default
 
