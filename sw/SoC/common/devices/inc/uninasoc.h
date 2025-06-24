@@ -6,6 +6,7 @@
 #include "stlib.h"
 
 #include "plic.h"
+#include "irq_handlers.h"
 
 #ifdef GPIO_IN_IS_ENABLED 
 #include "xlnx_gpio_in.h"
