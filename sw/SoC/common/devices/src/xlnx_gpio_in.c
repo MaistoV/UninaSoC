@@ -1,13 +1,13 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
-// Description: 
+// Description:
 //  This file implements all the Input GPIO's related functions
 
-#ifdef IS_EMBEDDED // TODO47: placeholder to HAL
+#ifdef GPIO_IN_IS_ENABLED
 
-#include "io.h"
 #include "xlnx_gpio_in.h"
+#include "io.h"
 #include <stdint.h>
 
 void xlnx_gpio_in_init(xlnx_gpio_in_interrupt_conf_t ic)
@@ -22,13 +22,15 @@ void xlnx_gpio_in_init(xlnx_gpio_in_interrupt_conf_t ic)
     }
 }
 
-uint16_t xlnx_gpio_in_read(){
+uint16_t xlnx_gpio_in_read()
+{
     return ioread16(GPIO_IN_DATA);
 }
 
-void xlnx_gpio_in_clear_int(){
+void xlnx_gpio_in_clear_int()
+{
     // Acknowledge GPIO interrupt has been handled.
     iowrite32(GPIO_IN_ISR, 0x1);
 }
 
-#endif // IS_EMBEDDED
+#endif

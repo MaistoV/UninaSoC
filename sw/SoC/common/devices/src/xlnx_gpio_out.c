@@ -4,8 +4,7 @@
 // Description: 
 //  This file implements all the Output GPIO's related functions
 
-
-#ifdef IS_EMBEDDED // TODO47: placeholder to HAL
+#ifdef GPIO_OUT_IS_ENABLED
 
 #include "io.h"
 #include "xlnx_gpio_out.h"
