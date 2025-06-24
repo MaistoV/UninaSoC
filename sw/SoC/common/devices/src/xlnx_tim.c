@@ -8,6 +8,8 @@
 #include "io.h"
 #include <stdint.h>
 
+// TODO47: For now, only timer 0 is used. 
+//         These APIs need to be extended to work on TIM0, TIM1 and other instances
 
 void xlnx_tim_configure(uint32_t counter)
 {
