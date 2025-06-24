@@ -1,5 +1,5 @@
 # Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
-# Author: Vincenzo Maistp <vincenzo.maisto2@unina.it>
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 # Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 # Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
 # Description: Startup code and vector table definition for uninasoc
