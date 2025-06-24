@@ -51,6 +51,7 @@ typedef enum{
     PIN_13 = (1 << 13),
     PIN_14 = (1 << 14),
     PIN_15 = (1 << 15),
+    PIN_ALL = 0xFFFF    // All pins bits
 }pin_t;
 
 // Initializes the gpio out peripheral

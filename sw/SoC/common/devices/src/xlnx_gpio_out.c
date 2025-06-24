@@ -16,7 +16,7 @@ void xlnx_gpio_out_init()
     // Already configured in output as default
 }
 
-void xlnx_gpio_out_write(uint16_t val)
+void xlnx_gpio_out_write(pin_t val)
 {
     iowrite16(GPIO_DATA, val);
 }

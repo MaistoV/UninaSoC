@@ -35,7 +35,7 @@ void _ext_handler(void) {
     uint32_t interrupt_id = plic_claim();
 
     // JUST TURN LEDS ON TO SIGNAL THAT INTERRUPTS ARE WORKING
-    xlnx_gpio_out_init();
+    xlnx_gpio_out_write(PIN_ALL);
 
     switch(interrupt_id){
         case 0x0: // unused
