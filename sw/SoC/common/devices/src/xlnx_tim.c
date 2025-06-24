@@ -4,6 +4,9 @@
 // Description: 
 //  This file implements all the Timer's related functions
 
+
+#ifdef TIM_IS_ENABLED
+
 #include "xlnx_tim.h"
 #include "io.h"
 #include <stdint.h>
@@ -37,3 +40,5 @@ void xlnx_tim_start()
     csr_value |= TIM_CSR_ENABLE;
     iowrite32(TIM0_CSR, csr_value);
 }
+
+#endif

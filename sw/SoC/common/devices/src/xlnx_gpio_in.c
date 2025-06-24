@@ -4,7 +4,7 @@
 // Description: 
 //  This file implements all the Input GPIO's related functions
 
-#ifdef IS_EMBEDDED // TODO: placeholder to HAL
+#ifdef GPIO_IN_IS_ENABLED
 
 #include "io.h"
 #include "xlnx_gpio_in.h"
@@ -31,4 +31,4 @@ void xlnx_gpio_in_clear_int(){
     iowrite32(GPIO_IN_ISR, 0x1);
 }
 
-#endif // IS_EMBEDDED
+#endif

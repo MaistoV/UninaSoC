@@ -5,15 +5,7 @@
 //  Basic "placeholder" implementations of interrupt handlers, supposed
 //  to be redefined by the user
 
-#include "irq_handlers.h"
-#include "plic.h"
-#include "xlnx_tim.h"
-#include "xlnx_gpio_out.h"
-
-#ifdef IS_EMBEDDED
-    #include "xlnx_gpio_in.h"
-#endif
-
+#include "uninasoc.h"
 
 void _sw_handler(void) {
     // Unused for this example

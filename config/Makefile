@@ -6,6 +6,8 @@ CONFIG_BUS_CSVS ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_main_bus.csv \
 			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv \
 			   ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_highperformance_bus.csv
 
+CONFIG_PERIPHERALS_CSV ?= ${CONFIG_ROOT}/configs/${SOC_CONFIG}/config_peripheral_bus.csv
+
 # csv for system-level configuration
 CONFIG_SYSTEM_CSV ?= ${CONFIG_ROOT}/configs/common/config_system.csv
 
@@ -26,6 +28,9 @@ config_%_bus: config_check
 
 
 OUTPUT_LD_FILE ?= ${SW_ROOT}/SoC/common/UninaSoC.ld
+# Generate HAL configuration file
+OUTPUT_HAL_CONF_FILE ?= ${SW_ROOT}/SoC/common/devices/inc/uninasoc_conf.h
+
 config_ld: config_check
 	${PYTHON} ${CONFIG_ROOT}/scripts/create_linker_script.py \
 		${CONFIG_BUS_CSVS} \
@@ -44,4 +49,6 @@ config_xilinx:
 
 config_sw: config_check
 	${CONFIG_ROOT}/scripts/config_sw.sh ${CONFIG_SYSTEM_CSV} ${OUTPUT_SW_MK_FILE}
+	${PYTHON} ${CONFIG_ROOT}/scripts/create_uninasoc_conf_header.py ${CONFIG_PERIPHERALS_CSV} ${OUTPUT_HAL_CONF_FILE}
+
 
