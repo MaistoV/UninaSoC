@@ -22,7 +22,7 @@ void plic_configure(uint32_t* priorities, size_t source_num){
 
     //Set interrupt priorities
     for (int i = 1; i <= sources; i++) {
-        iowrite32(PLIC + (0x4 * i) , priorities[i]);
+        iowrite32(PLIC_BASEADDR + (0x4 * i) , priorities[i]);
     }
 
 }
