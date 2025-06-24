@@ -32,10 +32,10 @@ extern const volatile uint32_t _peripheral_GPIO_in_start;
 typedef enum {
     ENABLE_INT,
     DISABLE_INT
-} interrupt_conf_t;
+} xlnx_gpio_in_interrupt_conf_t;
 
 // Initialize the input gpio and choose to enable or disable interrupts
-void xlnx_gpio_in_init(interrupt_conf_t ic);
+void xlnx_gpio_in_init(xlnx_gpio_in_interrupt_conf_t ic);
 
 // Function that clears the gpio input interrupt bit, effectively signaling the completition
 // of interrupt handling
