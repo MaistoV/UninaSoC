@@ -63,7 +63,7 @@ void xlnx_tim_configure(xlnx_tim_t* timer)
         config |= TIM_CSR_RELOAD_MODE;
     // if HOLD do nothing
 
-    if (timer->reload_mode == TIM_COUNT_DOWN)
+    if (timer->count_direction == TIM_COUNT_DOWN)
         config |= TIM_CSR_COUNTER_MODE;
     // if count UP do nothing
 
