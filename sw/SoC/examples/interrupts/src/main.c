@@ -89,6 +89,8 @@ void _ext_handler(void)
     plic_complete(interrupt_id);
 }
 
+#define UNINASOC_DEBUG
+
 // Main function
 int main()
 {

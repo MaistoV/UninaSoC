@@ -6,6 +6,8 @@
 
 #include "uninasoc.h"
 
+//#ifdef IS_EMBEDDED // TODO47: placeholder to HAL
+
 #ifdef GPIO_OUT_IS_ENABLED
 #include "io.h"
 #include <stdint.h>
