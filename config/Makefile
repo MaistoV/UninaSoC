@@ -29,7 +29,7 @@ config_%_bus: config_check
 
 OUTPUT_LD_FILE ?= ${SW_ROOT}/SoC/common/UninaSoC.ld
 # Generate HAL configuration file
-OUTPUT_HAL_CONF_FILE ?= ${SW_ROOT}/SoC/common/devices/inc/uninasoc_conf.h
+OUTPUT_HAL_CONF_FILE ?= ${SW_ROOT}/SoC/lib/uninasoc/inc/uninasoc_conf.h
 
 config_ld: config_check
 	${PYTHON} ${CONFIG_ROOT}/scripts/create_linker_script.py \

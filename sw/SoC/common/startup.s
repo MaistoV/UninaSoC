@@ -9,6 +9,9 @@
 ################
 .section .vector_table, "ax"
 .option norvc;
+.weak _sw_handler
+.weak _timer_handler
+.weak _ext_handler
 .extern _sw_handler;
 .extern _timer_handler;
 .extern _ext_handler;

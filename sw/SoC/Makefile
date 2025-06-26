@@ -30,7 +30,7 @@ lib:
 	@echo "[Make] Compile all the libraries"
 #	TinyIO is the only one atm
 	${MAKE} -C lib/tinyio XLEN=${XLEN} C_EXTENSION=Y
-	${MAKE} -C common/devices
+	${MAKE} -C lib/uninasoc
 
 clean:
 	@echo "[Make] Clean all the example projects"

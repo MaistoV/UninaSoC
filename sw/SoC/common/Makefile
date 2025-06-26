@@ -6,9 +6,8 @@
 SOC_SW_ROOT_DIR = $(SW_ROOT)/SoC
 LIB_DIR	= $(SOC_SW_ROOT_DIR)/lib
 
-## DEVICES
 ## TODO47: this is just a placeholder for a HAL library
-DEVICES_DIR = $(SW_SOC_ROOT)/common/devices
+## REMOVED
 
 ########
 # Misc #
