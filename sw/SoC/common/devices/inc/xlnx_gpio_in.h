@@ -28,16 +28,19 @@ typedef struct {
     xlnx_gpio_in_interrupt_conf_t interrupt;
 } xlnx_gpio_in_t;
 
+
+//All the Functions return UNINASOC_ERROR in case of error and UNINASOC_OK otherwise
+
 // Initialize the input gpio and choose to enable or disable interrupts
 // if left unspecified as default interrupt are disabled
-void xlnx_gpio_in_init(xlnx_gpio_in_t* gpio_in);
+int xlnx_gpio_in_init(xlnx_gpio_in_t* gpio_in);
 
 // Function that clears the gpio input interrupt bit, effectively signaling the completition
 // of interrupt handling
 // It's supposed to be used inside Input GPIO's interrupt handler
-void xlnx_gpio_in_clear_int(xlnx_gpio_in_t* gpio_in);
+int xlnx_gpio_in_clear_int(xlnx_gpio_in_t* gpio_in);
 
 // This function returns the content of the Input GPIO's register, used to read input data
-uint16_t xlnx_gpio_in_read(xlnx_gpio_in_t* gpio_in);
+int xlnx_gpio_in_read(xlnx_gpio_in_t* gpio_in, uint16_t* data);
 
 #endif

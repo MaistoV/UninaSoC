@@ -50,14 +50,17 @@ typedef struct {
     uintptr_t base_addr;
 } xlnx_gpio_out_t;
 
+
+//All the Functions return UNINASOC_ERROR in case of error and UNINASOC_OK otherwise
+
 // Initializes the gpio out peripheral
-void xlnx_gpio_out_init(xlnx_gpio_out_t* gpio);
+int xlnx_gpio_out_init(xlnx_gpio_out_t* gpio);
 
 // Raise the selected pin (to raise multiple pins just use bitwise OR es. PIN_0 | PIN_1)
-void xlnx_gpio_out_write(xlnx_gpio_out_t* gpio, pin_t val);
+int xlnx_gpio_out_write(xlnx_gpio_out_t* gpio, pin_t val);
 
 // Read the content of the DATA register
-uint16_t xlnx_gpio_out_read(xlnx_gpio_out_t* gpio);
+int xlnx_gpio_out_read(xlnx_gpio_out_t* gpio, uint16_t* data);
 
 // Toggle the selected pin(s) switching 0 and 1 back and forth
 int xlnx_gpio_out_toggle(xlnx_gpio_out_t* gpio, pin_t pin);

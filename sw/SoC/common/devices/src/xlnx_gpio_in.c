@@ -6,8 +6,7 @@
 
 #include "uninasoc.h"
 
-
-//#ifdef IS_EMBEDDED // TODO47: placeholder to HAL
+// #ifdef IS_EMBEDDED // TODO47: placeholder to HAL
 
 #ifdef GPIO_IN_IS_ENABLED
 #include "io.h"
@@ -25,27 +24,19 @@
 #define GPIO_IN_IER 0x0128 // Interrupt Enable Register
 
 // Extend this function implementation in case you add more peripherals
-#ifdef UNINASOC_DEBUG
-static inline void assert_gpio_in(xlnx_gpio_in_t* gpio)
+static inline int assert_gpio_in(xlnx_gpio_in_t* gpio)
 {
     if ((gpio->base_addr != GPIO_IN_BASEADDR)) {
-        // make the system halt (assuming tinyIO is already initialized)
-        printf("WRONG GPIO IN BASE ADDRESS, HALTING THE SYSTEM!\r\n");
-        while (1) {
-            asm volatile("nop");
-        }
+        return UNINASOC_ERROR;
     }
+    return UNINASOC_OK;
 }
-#else
-static inline void assert_gpio_in(xlnx_gpio_in_t* timer)
-{
-    // no-op when not debugging
-}
-#endif
 
-void xlnx_gpio_in_init(xlnx_gpio_in_t* gpio_in)
+int xlnx_gpio_in_init(xlnx_gpio_in_t* gpio_in)
 {
-    assert_gpio_in(gpio_in);
+    if (assert_gpio_in(gpio_in) != UNINASOC_OK) {
+        return UNINASOC_ERROR;
+    };
 
     uintptr_t gpio_in_ier = (uintptr_t)(gpio_in->base_addr + GPIO_IN_IER);
     uintptr_t gpio_in_gier = (uintptr_t)(gpio_in->base_addr + GPIO_IN_GIER);
@@ -56,23 +47,31 @@ void xlnx_gpio_in_init(xlnx_gpio_in_t* gpio_in)
         // Enable global interrupts (1 in GIER)
         iowrite32(gpio_in_gier, 0x80000000);
     }
+    return UNINASOC_OK;
 }
 
-uint16_t xlnx_gpio_in_read(xlnx_gpio_in_t* gpio_in)
+int xlnx_gpio_in_read(xlnx_gpio_in_t* gpio_in, uint16_t* data)
 {
-    assert_gpio_in(gpio_in);
+    if (assert_gpio_in(gpio_in) != UNINASOC_OK) {
+        return UNINASOC_ERROR;
+    };
 
     uintptr_t gpio_in_data = (uintptr_t)(gpio_in->base_addr + GPIO_IN_DATA);
-    return ioread16(gpio_in_data);
+    *data = ioread16(gpio_in_data);
+    return UNINASOC_OK;
 }
 
-void xlnx_gpio_in_clear_int(xlnx_gpio_in_t* gpio_in)
+int xlnx_gpio_in_clear_int(xlnx_gpio_in_t* gpio_in)
 {
-    assert_gpio_in(gpio_in);
+    if (assert_gpio_in(gpio_in) != UNINASOC_OK) {
+        return UNINASOC_ERROR;
+    };
 
     uintptr_t gpio_in_isr = (uintptr_t)(gpio_in->base_addr + GPIO_IN_ISR);
     // Acknowledge GPIO interrupt has been handled.
     iowrite32(gpio_in_isr, 0x1);
+
+    return UNINASOC_OK;
 }
 
 #endif

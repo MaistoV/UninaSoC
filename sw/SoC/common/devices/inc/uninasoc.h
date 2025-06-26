@@ -23,6 +23,11 @@
 
 #include "tinyIO.h"
 
+enum{
+    UNINASOC_OK,
+    UNINASOC_ERROR
+};
+
 static inline void uninasoc_init()
 {
     extern const volatile uint32_t _peripheral_UART_start;

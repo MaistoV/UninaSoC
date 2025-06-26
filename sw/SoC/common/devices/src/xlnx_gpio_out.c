@@ -6,30 +6,12 @@
 
 #include "uninasoc.h"
 
-//#ifdef IS_EMBEDDED // TODO47: placeholder to HAL
+// #ifdef IS_EMBEDDED // TODO47: placeholder to HAL
 
 #ifdef GPIO_OUT_IS_ENABLED
 #include "io.h"
 #include <stdint.h>
 
-// Extend this function implementation in case you add more peripherals
-#ifdef UNINASOC_DEBUG
-static inline void assert_gpio_out(xlnx_gpio_out_t* gpio)
-{
-    if ((gpio->base_addr != GPIO_OUT_BASEADDR)) {
-        // make the system halt (assuming tinyIO is already initialized)
-        printf("WRONG GPIO OUT BASE ADDRESS, HALTING THE SYSTEM!\r\n");
-        while (1) {
-            asm volatile("nop");
-        }
-    }
-}
-#else
-static inline void assert_gpio_out(xlnx_gpio_out_t* gpio)
-{
-    // no-op when not debugging
-}
-#endif
 
 // Registers
 #define GPIO_DATA 0x0000 // Data Register
@@ -39,38 +21,58 @@ static inline void assert_gpio_out(xlnx_gpio_out_t* gpio)
 #define GIER 0x011C // Global Interrupt Enable Register
 #define IP_ISR 0x0120 // Interrupt Status Register
 #define IP_IER 0x0128 // Interrupt Enable Register
+                
 
-void xlnx_gpio_out_init(xlnx_gpio_out_t* gpio)
+//Extend this function implementation in case you add more peripherals
+static inline int assert_gpio_out(xlnx_gpio_out_t* gpio)
+{
+    if ((gpio->base_addr != GPIO_OUT_BASEADDR)) {
+        return UNINASOC_ERROR;
+    }
+    return UNINASOC_OK;
+}
+
+
+int xlnx_gpio_out_init(xlnx_gpio_out_t* gpio)
 {
     // Already configured in output as default
-    assert_gpio_out(gpio);
+    if (assert_gpio_out(gpio) != UNINASOC_OK){
+        return UNINASOC_ERROR;
+    }
+    return UNINASOC_OK;
 }
 
-void xlnx_gpio_out_write(xlnx_gpio_out_t* gpio, pin_t val)
+int xlnx_gpio_out_write(xlnx_gpio_out_t* gpio, pin_t val)
 {
-    assert_gpio_out(gpio);
-    uintptr_t gpio_data = (uintptr_t) (gpio->base_addr + GPIO_DATA);
+    if (assert_gpio_out(gpio) != UNINASOC_OK)
+        return UNINASOC_ERROR;
+    uintptr_t gpio_data = (uintptr_t)(gpio->base_addr + GPIO_DATA);
     iowrite16(gpio_data, val);
+    return UNINASOC_OK;
 }
 
-uint16_t xlnx_gpio_out_read(xlnx_gpio_out_t* gpio)
+int xlnx_gpio_out_read(xlnx_gpio_out_t* gpio, uint16_t* data)
 {
-    assert_gpio_out(gpio);
-    uintptr_t gpio_data = (uintptr_t) (gpio->base_addr + GPIO_DATA);
-    return ioread16(gpio_data);
+    if (assert_gpio_out(gpio) != UNINASOC_OK)
+        return UNINASOC_ERROR;
+    uintptr_t gpio_data = (uintptr_t)(gpio->base_addr + GPIO_DATA);
+    *data = ioread16(gpio_data);
+    return UNINASOC_OK;
 }
 
 int xlnx_gpio_out_toggle(xlnx_gpio_out_t* gpio, pin_t pin)
 {
-    assert_gpio_out(gpio);
+    if (assert_gpio_out(gpio) != UNINASOC_OK)
+        return UNINASOC_ERROR;
 
     if ((pin <= 0) || (pin > 0xFFFF))
-        return -1;
+        return UNINASOC_ERROR;
 
-    uint16_t data = xlnx_gpio_out_read(gpio);
+    uint16_t data;
+    xlnx_gpio_out_read(gpio, &data);
     data ^= pin;
     xlnx_gpio_out_write(gpio, data);
-    return 0;
+    return UNINASOC_OK;
 }
 
 #endif

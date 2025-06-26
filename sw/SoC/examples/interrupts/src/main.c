@@ -89,7 +89,6 @@ void _ext_handler(void)
     plic_complete(interrupt_id);
 }
 
-#define UNINASOC_DEBUG
 
 // Main function
 int main()
@@ -104,14 +103,22 @@ int main()
     plic_configure(priorities, SOURCES_NUM);
     plic_enable_all();
 
-    xlnx_gpio_in_init(&gpio_in);
-    xlnx_gpio_out_init(&gpio_out);
+    if (xlnx_gpio_in_init(&gpio_in) != UNINASOC_OK)
+        printf("ERROR GPIOIN\n");
+
+    if (xlnx_gpio_out_init(&gpio_out) != UNINASOC_OK) 
+        printf("ERROR GPIOOUT\n");
 
     // Configure the timer for one interrupt each second (assuming a 20MHz clock)
 
-    xlnx_tim_configure(&timer);
-    xlnx_tim_enable_int(&timer);
-    xlnx_tim_start(&timer);
+    if (xlnx_tim_configure(&timer) != UNINASOC_OK)
+        printf("ERROR TIMER\n");
+
+    if (xlnx_tim_enable_int(&timer) != UNINASOC_OK)
+        printf("ERROR TIMER\n");
+
+    if (xlnx_tim_start(&timer) != UNINASOC_OK)
+        printf("ERROR TIMER\n");
 
     // Hot-loop, waiting for interrupts to occur
     while (1)

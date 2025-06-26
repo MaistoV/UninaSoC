@@ -13,7 +13,7 @@
 
 // Import linker script symbols
 extern const volatile uint32_t _peripheral_TIM0_start;
-// extern const volatile uint32_t _peripheral_TIM1_start;
+extern const volatile uint32_t _peripheral_TIM1_start;
 
 // Base address
 #define TIM0_BASEADDR ((uintptr_t)&_peripheral_TIM0_start)
@@ -37,7 +37,7 @@ typedef struct {
     uint32_t count_direction : 1;
 } xlnx_tim_t;
 
-// Functions
+//All the Functions return UNINASOC_ERROR in case of error and UNINASOC_OK otherwise
 
 // Configure the timer
 // base_addr should contain the base address of the specific timer
@@ -45,16 +45,16 @@ typedef struct {
 // and the other parameters should contain the values specified from the above macros
 // in case mode parameters are missing or wrong, the timer will be configured
 // COUNT UP and RELOAD HOLD
-void xlnx_tim_configure(xlnx_tim_t* timer);
+int xlnx_tim_configure(xlnx_tim_t* timer);
 
 // Enables the timer interrupts
-void xlnx_tim_enable_int(xlnx_tim_t* timer);
+int xlnx_tim_enable_int(xlnx_tim_t* timer);
 
 // Clears the timer interrupt signal, this function is supposed to be used
 // to assert the completition of the timer interrupt handling
-void xlnx_tim_clear_int(xlnx_tim_t* timer);
+int xlnx_tim_clear_int(xlnx_tim_t* timer);
 
 // This function starts the timer
-void xlnx_tim_start(xlnx_tim_t* timer);
+int xlnx_tim_start(xlnx_tim_t* timer);
 
 #endif
