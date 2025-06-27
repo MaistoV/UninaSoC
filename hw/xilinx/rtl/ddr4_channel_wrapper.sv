@@ -74,10 +74,10 @@ module ddr4_channel_wrapper # (
     // Dwidth converter master ID signals assigned to 0
     // Since the AXI data width converter has a reordering depth of 1 it doesn't have ID in its master ports - for more details see the documentation
     // Thus, we assign 0 to all these signals that go to the DDR MIG
-    //assign dwidth_conv_to_ddr4_axi_awid = '0;
-    //assign dwidth_conv_to_ddr4_axi_bid  = '0;
-    //assign dwidth_conv_to_ddr4_axi_arid = '0;
-    //assign dwidth_conv_to_ddr4_axi_rid  = '0;
+    assign dwidth_conv_to_ddr4_axi_awid = clk_conv_to_dwidth_conv_axi_awid;
+    assign dwidth_conv_to_ddr4_axi_bid  = clk_conv_to_dwidth_conv_axi_bid;
+    assign dwidth_conv_to_ddr4_axi_arid = clk_conv_to_dwidth_conv_axi_arid;
+    assign dwidth_conv_to_ddr4_axi_rid  = clk_conv_to_dwidth_conv_axi_rid;
 
     // AXI Clock converter from 250 MHz (xdma global design clk) to 300 MHz (AXI user interface DDR clk) - the data width is XLEN
     axi_clock_converter_wrapper # (
@@ -223,7 +223,7 @@ module ddr4_channel_wrapper # (
 
 
         // Master to DDR
-        .m_axi_awid     ( dwidth_conv_to_ddr4_axi_awid    ),
+        // .m_axi_awid     ( dwidth_conv_to_ddr4_axi_awid    ),
         .m_axi_awaddr   ( dwidth_conv_to_ddr4_axi_awaddr  ),
         .m_axi_awlen    ( dwidth_conv_to_ddr4_axi_awlen   ),
         .m_axi_awsize   ( dwidth_conv_to_ddr4_axi_awsize  ),
@@ -239,11 +239,11 @@ module ddr4_channel_wrapper # (
         .m_axi_wlast    ( dwidth_conv_to_ddr4_axi_wlast   ),
         .m_axi_wvalid   ( dwidth_conv_to_ddr4_axi_wvalid  ),
         .m_axi_wready   ( dwidth_conv_to_ddr4_axi_wready  ),
-        .m_axi_bid      ( dwidth_conv_to_ddr4_axi_bid     ),
+        // .m_axi_bid      ( dwidth_conv_to_ddr4_axi_bid     ),
         .m_axi_bresp    ( dwidth_conv_to_ddr4_axi_bresp   ),
         .m_axi_bvalid   ( dwidth_conv_to_ddr4_axi_bvalid  ),
         .m_axi_bready   ( dwidth_conv_to_ddr4_axi_bready  ),
-        .m_axi_arid     ( dwidth_conv_to_ddr4_axi_arid    ),
+        // .m_axi_arid     ( dwidth_conv_to_ddr4_axi_arid    ),
         .m_axi_araddr   ( dwidth_conv_to_ddr4_axi_araddr  ),
         .m_axi_arlen    ( dwidth_conv_to_ddr4_axi_arlen   ),
         .m_axi_arsize   ( dwidth_conv_to_ddr4_axi_arsize  ),
@@ -254,7 +254,7 @@ module ddr4_channel_wrapper # (
         .m_axi_arqos    ( dwidth_conv_to_ddr4_axi_arqos   ),
         .m_axi_arvalid  ( dwidth_conv_to_ddr4_axi_arvalid ),
         .m_axi_arready  ( dwidth_conv_to_ddr4_axi_arready ),
-        .m_axi_rid      ( dwidth_conv_to_ddr4_axi_rid     ),
+        // .m_axi_rid      ( dwidth_conv_to_ddr4_axi_rid     ),
         .m_axi_rdata    ( dwidth_conv_to_ddr4_axi_rdata   ),
         .m_axi_rresp    ( dwidth_conv_to_ddr4_axi_rresp   ),
         .m_axi_rlast    ( dwidth_conv_to_ddr4_axi_rlast   ),
