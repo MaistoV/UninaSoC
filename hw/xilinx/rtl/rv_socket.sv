@@ -300,7 +300,7 @@ module rv_socket # (
                 .s_interrupt_software('0),
                 .s_interrupt_timer('0),
                 .s_interrupt_external('0)
-                //.mtime (64'b0)
+            
             );
             `ASSIGN_AXI_BUS( rv_socket_data , temp );
                                              
