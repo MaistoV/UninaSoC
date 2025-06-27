@@ -3,7 +3,7 @@
 # Description: Create an ILA core and attach all nets in the design marked as MARK_DEBUG.
 
 # ILA clock from SoC design
-set clk_net_name sys_master_u/soc_clk_o
+set clk_net_name sys_master_u/clk_100MHz_o
 
 # Get market nets
 set debug_nets [lsort -dictionary [get_nets -hier -filter {MARK_DEBUG == 1}]]
