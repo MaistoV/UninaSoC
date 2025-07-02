@@ -1,11 +1,11 @@
 // Author: Manuel Maddaluno <manuel.maddaluno@unina.it>
 // Description: CMAC wrapper, this module instanciate the CMAC to access the network through the QSFP port
-//              This wrapper comprises a complete subsytem (attached to the HBUS) for allowing external modules (the core, an accelerator, etc.) to access network packets.
+//              This wrapper comprises a complete subsytem (attached to the MBUS and the HBUS) for allowing external modules (the core, an accelerator, etc.) to access network packets.
 //              It is structured as in the following diagram.
 //              It includes three main paths:
-//                  - The CSR CMAC path (AXI Lite)
-//                  - The CSR AXI Stream FIFO path (AXI Lite)
-//                  - The data AXI Stream FIFO path (AXI4)
+//                  - MBUS to CSR CMAC path (AXI Lite)
+//                  - MBUS to CSR AXI Stream FIFO path (AXI Lite)
+//                  - HBUS to data AXI Stream FIFO path (AXI4)
 //
 //              The rationale of this subsystem is to have a module (the AXI Stream FIFO) (connected to the external world)
 //              that stores (sends) network packets from (to) the CMAC.
@@ -28,7 +28,7 @@
 //      ----------->| Clock conv |--------------------------------------------------------------------->|            |------------>|        |
 //                  |____________|                                                                      |____________|             |________|
 //                                               __________________                                           |
-//                                  HBUS clk    |                  |   322.26 MHz         interrupt           |
+//                                  MBUS clk    |                  |   322.26 MHz         interrupt           |
 //      <---------------------------------------| CDC Synchronizer |<-----------------------------------------|
 //                                              |__________________|
 //
