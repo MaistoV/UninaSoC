@@ -1,6 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 // Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
+// Author: Annalia Ruggiero <annalia.ruggiero@studenti.unina.it>
 // Description: Wrapper module for RISC-V CPUs and Debuggers
 
 // Import packages
@@ -11,24 +12,25 @@ import uninasoc_pkg::*;
 `include "uninasoc_mem.svh"
 
 module rv_socket # (
-    parameter core_selector_t CORE_SELECTOR = CORE_CV32E40P,
-    parameter int unsigned    DATA_WIDTH    = 32,
-    parameter int unsigned    ADDR_WIDTH    = 32,
-    parameter int unsigned    NUM_IRQ       = 32
+    parameter core_selector_t CORE_SELECTOR     = CORE_CV32E40P,
+    parameter int unsigned    LOCAL_DATA_WIDTH  = 32,
+    parameter int unsigned    LOCAL_ADDR_WIDTH  = 32,
+    parameter int unsigned    LOCAL_ID_WIDTH    = 2,
+    parameter int unsigned    NUM_IRQ           = 32
 ) (
     input  logic                            clk_i,
     input  logic                            rst_ni,        // System-wide reset (also resets core)
     input  logic                            core_resetn_i, // Core-only reset (does not reset DM and other modules)
-    input  logic [AXI_ADDR_WIDTH -1 : 0 ]   bootaddr_i,
-    input  logic [NUM_IRQ        -1 : 0 ]   irq_i,
+    input  logic [LOCAL_ADDR_WIDTH -1 : 0 ] bootaddr_i,
+    input  logic [NUM_IRQ          -1 : 0 ] irq_i,
 
     // Core
-    `DEFINE_AXI_MASTER_PORTS(rv_socket_instr),
-    `DEFINE_AXI_MASTER_PORTS(rv_socket_data),
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
 
     // Debug module
-    `DEFINE_AXI_MASTER_PORTS(dbg_master),
-    `DEFINE_AXI_SLAVE_PORTS(dbg_slave)
+    `DEFINE_AXI_MASTER_PORTS(rv_socket_dbg_master, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
+    `DEFINE_AXI_SLAVE_PORTS(rv_socket_dbg_slave, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 );
 
     //////////////////////////////////////////////////////
@@ -40,12 +42,12 @@ module rv_socket # (
     //////////////////////////////////////////////////////
 
     // Let's assume single core
-    localparam logic [31:0] hart_id = 32'h0;
-    localparam logic [31:0] DEBUG_START   = 32'h10000; // From config
+    localparam logic [LOCAL_DATA_WIDTH-1:0] hart_id = '0;
+    localparam logic [LOCAL_ADDR_WIDTH-1:0] DEBUG_START   = 'h10000; // From config
 
     // From dm_pkg
-    localparam logic [31:0] dm_HaltAddress = 64'h800;
-    localparam logic [31:0] dm_ExceptionAddress = dm_HaltAddress + 16;
+    localparam logic [LOCAL_ADDR_WIDTH-1:0] dm_HaltAddress = 'h800;
+    localparam logic [LOCAL_ADDR_WIDTH-1:0] dm_ExceptionAddress = dm_HaltAddress + 16;
 
     //////////////////////////////////////
     //    _ _                _        //
@@ -60,12 +62,12 @@ module rv_socket # (
     assign core_resetn_internal = rst_ni & core_resetn_i;
 
     // Declare AXI interfaces for instruction memory port and data memory port
-    `DECLARE_AXI_BUS(core_instr_to_socket_instr, DATA_WIDTH);
-    `DECLARE_AXI_BUS(core_data_to_socket_data, DATA_WIDTH);
+    `DECLARE_AXI_BUS(core_instr_to_socket_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
+    `DECLARE_AXI_BUS(core_data_to_socket_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
     // Declare MEM ports
-    `DECLARE_MEM_BUS(core_instr, DATA_WIDTH);
-    `DECLARE_MEM_BUS(core_data, DATA_WIDTH);
+    `DECLARE_MEM_BUS(core_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH);
+    `DECLARE_MEM_BUS(core_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH);
 
     // Debug request DM -> RV core
     logic debug_req_core;
@@ -77,6 +79,21 @@ module rv_socket # (
     //    \_\_/| \_| ||\_\, |\_/|||   //
     //                              |_/               //
     //////////////////////////////////////////////////////
+
+    ////////////////////////////
+    // Core validity checking //
+    ////////////////////////////
+
+    // Check if the selected Core is compatible with the system XLEN
+    if ( LOCAL_DATA_WIDTH == 64 && CORE_SELECTOR inside {CORE_PICORV32,CORE_CV32E40P,CORE_IBEX,CORE_MICROBLAZEV} ||
+         LOCAL_DATA_WIDTH == 32 && CORE_SELECTOR inside {CORE_CV64A6} ) begin : xlen_core_error
+        $error($sformatf("[Socket] Illegal CORE (%s) for the selected XLEN (%0d)",
+                        core_selector_to_string(CORE_SELECTOR), LOCAL_DATA_WIDTH));
+    end : xlen_core_error
+
+    ////////////////////////
+    // Core Instantiation //
+    ////////////////////////
 
     generate
         if (CORE_SELECTOR == CORE_PICORV32) begin: core_picorv32
@@ -254,7 +271,10 @@ module rv_socket # (
 
             );
         end
-        else if (CORE_SELECTOR == CORE_CVA5) begin : core_cva5
+        else if (CORE_SELECTOR == CORE_
+        
+        
+        ) begin : core_cva5
         
            `DECLARE_AXI_BUS(temp, DATA_WIDTH);
             
@@ -302,8 +322,11 @@ module rv_socket # (
                 .s_interrupt_external('0)
             
             );
+
+            // TODO: remove temp, use rv_socket_data directly
+            // TOOD: sink rv_socket_instr
             `ASSIGN_AXI_BUS( rv_socket_data , temp );
-                                             
+
         end 
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
 
@@ -330,11 +353,11 @@ module rv_socket # (
 
 
             // Declare AXI interfaces for instruction memory port and data memory port for MicroblazeV
-            `DECLARE_AXI_BUS(microblaze_data,DATA_WIDTH);
-            `DECLARE_AXILITE_BUS(microblaze_instr);
+            `DECLARE_AXI_BUS(microblaze_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
+            `DECLARE_AXILITE_BUS(microblaze_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
             // Declare AXI interface for Protocol Converter
-            `DECLARE_AXI_BUS(converter_instr,DATA_WIDTH);
+            `DECLARE_AXI_BUS(converter_instr, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
 
             // Microblaze V instance
             xlnx_microblaze_riscv microblazev_u (
@@ -454,7 +477,7 @@ module rv_socket # (
 
             // Convert from Microblaze V (AXI-lite) to socket (AXI)
             // Only instruction port (AXI-lite), data port is socket compliant (AXI)
-            xlnx_axilite_to_axi4_converter axilite_to_axi4_converter_u (
+            xlnx_axilite_to_axi4_d32_converter axilite_to_axi4_converter_u (
                 .aclk           ( clk_i                             ), // input wire aclk
                 .aresetn        ( rst_ni                            ), // input wire aresetn
                 // From Microblaze (AXI-lite)
@@ -515,6 +538,73 @@ module rv_socket # (
                 .m_axi_rready   ( converter_instr_axi_rready        )  // output wire m_axi_rready
             );
 
+        // 64-bits cores
+        end else if (CORE_SELECTOR == CORE_CV64A6) begin: core_cv64a6
+
+            ////////////////////////
+            //      CV32A6        //
+            ////////////////////////
+
+            // CVA6 only has one Master port (for both data and instruction)
+            `DECLARE_AXI_BUS(cv64a6, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH);
+
+            custom_cv64a6 cv64a6_core (
+
+                .clk_i           ( clk_i                            ),
+                .rst_ni          ( core_resetn_internal             ),
+                .boot_addr_i     ( bootaddr_i                       ),
+                .hart_id_i       ( hart_id                          ),
+                .irq_i           ( {0,irq_i[CORE_EXT_INTERRUPT]}    ), // Should be EXT interrupt. Bit zero is for M-mode, bit one is for S-mode
+                .ipi_i           ( irq_i[CORE_SW_INTERRUPT]         ), // Shoult be SW interrupt
+                .time_irq_i      ( irq_i[CORE_TIM_INTERRUPT]        ), // Should be TIM interrupt
+                .debug_req_i     ( debug_req_core                   ),
+
+                .m_axi_awaddr   ( cv64a6_axi_awaddr                 ), // output wire [31 : 0] m_axi_awaddr
+                .m_axi_awlen    ( cv64a6_axi_awlen                  ), // output wire [7 : 0] m_axi_awlen
+                .m_axi_awsize   ( cv64a6_axi_awsize                 ), // output wire [2 : 0] m_axi_awsize
+                .m_axi_awburst  ( cv64a6_axi_awburst                ), // output wire [1 : 0] m_axi_awburst
+                .m_axi_awlock   ( cv64a6_axi_awlock                 ), // output wire [0 : 0] m_axi_awlock
+                .m_axi_awcache  ( cv64a6_axi_awcache                ), // output wire [3 : 0] m_axi_awcache
+                .m_axi_awprot   ( cv64a6_axi_awprot                 ), // output wire [2 : 0] m_axi_awprot
+                .m_axi_awregion ( cv64a6_axi_awregion               ), // output wire [3 : 0] m_axi_awregion
+                .m_axi_awqos    ( cv64a6_axi_awqos                  ), // output wire [3 : 0] m_axi_awqos
+                .m_axi_awvalid  ( cv64a6_axi_awvalid                ), // output wire m_axi_awvalid
+                .m_axi_awready  ( cv64a6_axi_awready                ), // input wire m_axi_awready
+                .m_axi_awid     ( cv64a6_axi_awid                   ),
+                .m_axi_wdata    ( cv64a6_axi_wdata                  ), // output wire [31 : 0] m_axi_wdata
+                .m_axi_wstrb    ( cv64a6_axi_wstrb                  ), // output wire [3 : 0] m_axi_wstrb
+                .m_axi_wlast    ( cv64a6_axi_wlast                  ), // output wire m_axi_wlast
+                .m_axi_wvalid   ( cv64a6_axi_wvalid                 ), // output wire m_axi_wvalid
+                .m_axi_wready   ( cv64a6_axi_wready                 ), // input wire m_axi_wready
+                .m_axi_bresp    ( cv64a6_axi_bresp                  ), // input wire [1 : 0] m_axi_bresp
+                .m_axi_bvalid   ( cv64a6_axi_bvalid                 ), // input wire m_axi_bvalid
+                .m_axi_bready   ( cv64a6_axi_bready                 ), // output wire m_axi_bready
+                .m_axi_bid      ( cv64a6_axi_bid                    ), // output wire m_axi_bready
+                .m_axi_araddr   ( cv64a6_axi_araddr                 ), // output wire [31 : 0] m_axi_araddr
+                .m_axi_arlen    ( cv64a6_axi_arlen                  ), // output wire [7 : 0] m_axi_arlen
+                .m_axi_arsize   ( cv64a6_axi_arsize                 ), // output wire [2 : 0] m_axi_arsize
+                .m_axi_arburst  ( cv64a6_axi_arburst                ), // output wire [1 : 0] m_axi_arburst
+                .m_axi_arlock   ( cv64a6_axi_arlock                 ), // output wire [0 : 0] m_axi_arlock
+                .m_axi_arcache  ( cv64a6_axi_arcache                ), // output wire [3 : 0] m_axi_arcache
+                .m_axi_arprot   ( cv64a6_axi_arprot                 ), // output wire [2 : 0] m_axi_arprot
+                .m_axi_arregion ( cv64a6_axi_arregion               ), // output wire [3 : 0] m_axi_arregion
+                .m_axi_arqos    ( cv64a6_axi_arqos                  ), // output wire [3 : 0] m_axi_arqos
+                .m_axi_arvalid  ( cv64a6_axi_arvalid                ), // output wire m_axi_arvalid
+                .m_axi_arready  ( cv64a6_axi_arready                ), // input wire m_axi_arready
+                .m_axi_arid     ( cv64a6_axi_arid                   ),
+                .m_axi_rdata    ( cv64a6_axi_rdata                  ), // input wire [31 : 0] m_axi_rdata
+                .m_axi_rresp    ( cv64a6_axi_rresp                  ), // input wire [1 : 0] m_axi_rresp
+                .m_axi_rlast    ( cv64a6_axi_rlast                  ), // input wire m_axi_rlast
+                .m_axi_rvalid   ( cv64a6_axi_rvalid                 ), // input wire m_axi_rvalid
+                .m_axi_rready   ( cv64a6_axi_rready                 ), // output wire m_axi_rready
+                .m_axi_rid      ( cv64a6_axi_rid                    )  // output wire m_axi_rready
+
+            );
+
+            // Attach to socket (we only use data port)
+            `ASSIGN_AXI_BUS( rv_socket_data , cv64a6 );
+            `SINK_AXI_MASTER_INTERFACE(rv_socket_instr);
+
         end
 
 
@@ -539,8 +629,10 @@ module rv_socket # (
 
     // Few exceptions:
     // - Microblaze V has its own interfaces and debug module
+    // - CVA5 Already has an AXI interface
+    // - CVA6 Already has an AXI interface
     // - TODO: Rocket
-    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV, CORE_CVA5} ) ) begin : mem_convert
+    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV, CORE_CVA5, CORE_CV64A6} ) ) begin : mem_convert
 
         // Connect memory interfaces to socket output memory ports
         `ASSIGN_AXI_BUS( rv_socket_instr, core_instr_to_socket_instr );
@@ -671,107 +763,207 @@ module rv_socket # (
 
     // This is only for PULP cores, that share a common debug module
     // Other cores are required to instatiate their own DM
-    if ( CORE_SELECTOR inside {CORE_CV32E40P, CORE_IBEX} ) begin : dm_gen
+    if ( CORE_SELECTOR inside {CORE_CV32E40P, CORE_IBEX} ) begin : dm_rv32_gen
+
+        ///////////////////////////
+        // Debug Module Instance //
+        ///////////////////////////
 
         //  BSCANE2 tap
         (* keep_hierarchy = "yes" *)  // DEBUG
-        custom_riscv_dbg_bscane riscv_dbg_u (
+        custom_rv32_dbg_bscane riscv_dbg_u (
             .clk_i                  ( clk_i                   ),
             .rst_ni                 ( rst_ni                  ),
             .unavailable_i          ( '0                      ),
             .ndmreset_o             ( ndmreset_o              ), // Open
             .dmactive_o             ( dmactive_o              ), // Open
             // AXI Slave
-            .dbg_slave_axi_awid         ( dbg_slave_axi_awid      ),
-            .dbg_slave_axi_awaddr       ( dbg_slave_axi_awaddr    ),
-            .dbg_slave_axi_awlen        ( dbg_slave_axi_awlen     ),
-            .dbg_slave_axi_awsize       ( dbg_slave_axi_awsize    ),
-            .dbg_slave_axi_awburst      ( dbg_slave_axi_awburst   ),
-            .dbg_slave_axi_awlock       ( dbg_slave_axi_awlock    ),
-            .dbg_slave_axi_awcache      ( dbg_slave_axi_awcache   ),
-            .dbg_slave_axi_awprot       ( dbg_slave_axi_awprot    ),
-            .dbg_slave_axi_awqos        ( dbg_slave_axi_awqos     ),
-            .dbg_slave_axi_awvalid      ( dbg_slave_axi_awvalid   ),
-            .dbg_slave_axi_awready      ( dbg_slave_axi_awready   ),
-            .dbg_slave_axi_wdata        ( dbg_slave_axi_wdata     ),
-            .dbg_slave_axi_wstrb        ( dbg_slave_axi_wstrb     ),
-            .dbg_slave_axi_wlast        ( dbg_slave_axi_wlast     ),
-            .dbg_slave_axi_wvalid       ( dbg_slave_axi_wvalid    ),
-            .dbg_slave_axi_wready       ( dbg_slave_axi_wready    ),
-            .dbg_slave_axi_bid          ( dbg_slave_axi_bid       ),
-            .dbg_slave_axi_bresp        ( dbg_slave_axi_bresp     ),
-            .dbg_slave_axi_bvalid       ( dbg_slave_axi_bvalid    ),
-            .dbg_slave_axi_bready       ( dbg_slave_axi_bready    ),
-            .dbg_slave_axi_arid         ( dbg_slave_axi_arid      ),
-            .dbg_slave_axi_araddr       ( dbg_slave_axi_araddr    ),
-            .dbg_slave_axi_arlen        ( dbg_slave_axi_arlen     ),
-            .dbg_slave_axi_arsize       ( dbg_slave_axi_arsize    ),
-            .dbg_slave_axi_arburst      ( dbg_slave_axi_arburst   ),
-            .dbg_slave_axi_arlock       ( dbg_slave_axi_arlock    ),
-            .dbg_slave_axi_arcache      ( dbg_slave_axi_arcache   ),
-            .dbg_slave_axi_arprot       ( dbg_slave_axi_arprot    ),
-            .dbg_slave_axi_arqos        ( dbg_slave_axi_arqos     ),
-            .dbg_slave_axi_arvalid      ( dbg_slave_axi_arvalid   ),
-            .dbg_slave_axi_arready      ( dbg_slave_axi_arready   ),
-            .dbg_slave_axi_rid          ( dbg_slave_axi_rid       ),
-            .dbg_slave_axi_rdata        ( dbg_slave_axi_rdata     ),
-            .dbg_slave_axi_rresp        ( dbg_slave_axi_rresp     ),
-            .dbg_slave_axi_rlast        ( dbg_slave_axi_rlast     ),
-            .dbg_slave_axi_rvalid       ( dbg_slave_axi_rvalid    ),
-            .dbg_slave_axi_rready       ( dbg_slave_axi_rready    ),
+            .dbg_slave_axi_awid         ( rv_socket_dbg_slave_axi_awid      ),
+            .dbg_slave_axi_awaddr       ( rv_socket_dbg_slave_axi_awaddr    ),
+            .dbg_slave_axi_awlen        ( rv_socket_dbg_slave_axi_awlen     ),
+            .dbg_slave_axi_awsize       ( rv_socket_dbg_slave_axi_awsize    ),
+            .dbg_slave_axi_awburst      ( rv_socket_dbg_slave_axi_awburst   ),
+            .dbg_slave_axi_awlock       ( rv_socket_dbg_slave_axi_awlock    ),
+            .dbg_slave_axi_awcache      ( rv_socket_dbg_slave_axi_awcache   ),
+            .dbg_slave_axi_awprot       ( rv_socket_dbg_slave_axi_awprot    ),
+            .dbg_slave_axi_awqos        ( rv_socket_dbg_slave_axi_awqos     ),
+            .dbg_slave_axi_awvalid      ( rv_socket_dbg_slave_axi_awvalid   ),
+            .dbg_slave_axi_awready      ( rv_socket_dbg_slave_axi_awready   ),
+            .dbg_slave_axi_wdata        ( rv_socket_dbg_slave_axi_wdata     ),
+            .dbg_slave_axi_wstrb        ( rv_socket_dbg_slave_axi_wstrb     ),
+            .dbg_slave_axi_wlast        ( rv_socket_dbg_slave_axi_wlast     ),
+            .dbg_slave_axi_wvalid       ( rv_socket_dbg_slave_axi_wvalid    ),
+            .dbg_slave_axi_wready       ( rv_socket_dbg_slave_axi_wready    ),
+            .dbg_slave_axi_bid          ( rv_socket_dbg_slave_axi_bid       ),
+            .dbg_slave_axi_bresp        ( rv_socket_dbg_slave_axi_bresp     ),
+            .dbg_slave_axi_bvalid       ( rv_socket_dbg_slave_axi_bvalid    ),
+            .dbg_slave_axi_bready       ( rv_socket_dbg_slave_axi_bready    ),
+            .dbg_slave_axi_arid         ( rv_socket_dbg_slave_axi_arid      ),
+            .dbg_slave_axi_araddr       ( rv_socket_dbg_slave_axi_araddr    ),
+            .dbg_slave_axi_arlen        ( rv_socket_dbg_slave_axi_arlen     ),
+            .dbg_slave_axi_arsize       ( rv_socket_dbg_slave_axi_arsize    ),
+            .dbg_slave_axi_arburst      ( rv_socket_dbg_slave_axi_arburst   ),
+            .dbg_slave_axi_arlock       ( rv_socket_dbg_slave_axi_arlock    ),
+            .dbg_slave_axi_arcache      ( rv_socket_dbg_slave_axi_arcache   ),
+            .dbg_slave_axi_arprot       ( rv_socket_dbg_slave_axi_arprot    ),
+            .dbg_slave_axi_arqos        ( rv_socket_dbg_slave_axi_arqos     ),
+            .dbg_slave_axi_arvalid      ( rv_socket_dbg_slave_axi_arvalid   ),
+            .dbg_slave_axi_arready      ( rv_socket_dbg_slave_axi_arready   ),
+            .dbg_slave_axi_rid          ( rv_socket_dbg_slave_axi_rid       ),
+            .dbg_slave_axi_rdata        ( rv_socket_dbg_slave_axi_rdata     ),
+            .dbg_slave_axi_rresp        ( rv_socket_dbg_slave_axi_rresp     ),
+            .dbg_slave_axi_rlast        ( rv_socket_dbg_slave_axi_rlast     ),
+            .dbg_slave_axi_rvalid       ( rv_socket_dbg_slave_axi_rvalid    ),
+            .dbg_slave_axi_rready       ( rv_socket_dbg_slave_axi_rready    ),
             // AXI Master
-            .dbg_master_axi_awid        ( dbg_master_axi_awid     ),
-            .dbg_master_axi_awaddr      ( dbg_master_axi_awaddr   ),
-            .dbg_master_axi_awlen       ( dbg_master_axi_awlen    ),
-            .dbg_master_axi_awsize      ( dbg_master_axi_awsize   ),
-            .dbg_master_axi_awburst     ( dbg_master_axi_awburst  ),
-            .dbg_master_axi_awlock      ( dbg_master_axi_awlock   ),
-            .dbg_master_axi_awcache     ( dbg_master_axi_awcache  ),
-            .dbg_master_axi_awprot      ( dbg_master_axi_awprot   ),
-            .dbg_master_axi_awregion    ( dbg_master_axi_awregion ),
-            .dbg_master_axi_awqos       ( dbg_master_axi_awqos    ),
-            .dbg_master_axi_awvalid     ( dbg_master_axi_awvalid  ),
-            .dbg_master_axi_awready     ( dbg_master_axi_awready  ),
-            .dbg_master_axi_wdata       ( dbg_master_axi_wdata    ),
-            .dbg_master_axi_wstrb       ( dbg_master_axi_wstrb    ),
-            .dbg_master_axi_wlast       ( dbg_master_axi_wlast    ),
-            .dbg_master_axi_wvalid      ( dbg_master_axi_wvalid   ),
-            .dbg_master_axi_wready      ( dbg_master_axi_wready   ),
-            .dbg_master_axi_bid         ( dbg_master_axi_bid      ),
-            .dbg_master_axi_bresp       ( dbg_master_axi_bresp    ),
-            .dbg_master_axi_bvalid      ( dbg_master_axi_bvalid   ),
-            .dbg_master_axi_bready      ( dbg_master_axi_bready   ),
-            .dbg_master_axi_arid        ( dbg_master_axi_arid     ),
-            .dbg_master_axi_araddr      ( dbg_master_axi_araddr   ),
-            .dbg_master_axi_arlen       ( dbg_master_axi_arlen    ),
-            .dbg_master_axi_arsize      ( dbg_master_axi_arsize   ),
-            .dbg_master_axi_arburst     ( dbg_master_axi_arburst  ),
-            .dbg_master_axi_arlock      ( dbg_master_axi_arlock   ),
-            .dbg_master_axi_arcache     ( dbg_master_axi_arcache  ),
-            .dbg_master_axi_arprot      ( dbg_master_axi_arprot   ),
-            .dbg_master_axi_arregion    ( dbg_master_axi_arregion ),
-            .dbg_master_axi_arqos       ( dbg_master_axi_arqos    ),
-            .dbg_master_axi_arvalid     ( dbg_master_axi_arvalid  ),
-            .dbg_master_axi_arready     ( dbg_master_axi_arready  ),
-            .dbg_master_axi_rid         ( dbg_master_axi_rid      ),
-            .dbg_master_axi_rdata       ( dbg_master_axi_rdata    ),
-            .dbg_master_axi_rresp       ( dbg_master_axi_rresp    ),
-            .dbg_master_axi_rlast       ( dbg_master_axi_rlast    ),
-            .dbg_master_axi_rvalid      ( dbg_master_axi_rvalid   ),
-            .dbg_master_axi_rready      ( dbg_master_axi_rready   ),
+            .dbg_master_axi_awid        ( rv_socket_dbg_master_axi_awid     ),
+            .dbg_master_axi_awaddr      ( rv_socket_dbg_master_axi_awaddr   ),
+            .dbg_master_axi_awlen       ( rv_socket_dbg_master_axi_awlen    ),
+            .dbg_master_axi_awsize      ( rv_socket_dbg_master_axi_awsize   ),
+            .dbg_master_axi_awburst     ( rv_socket_dbg_master_axi_awburst  ),
+            .dbg_master_axi_awlock      ( rv_socket_dbg_master_axi_awlock   ),
+            .dbg_master_axi_awcache     ( rv_socket_dbg_master_axi_awcache  ),
+            .dbg_master_axi_awprot      ( rv_socket_dbg_master_axi_awprot   ),
+            .dbg_master_axi_awregion    ( rv_socket_dbg_master_axi_awregion ),
+            .dbg_master_axi_awqos       ( rv_socket_dbg_master_axi_awqos    ),
+            .dbg_master_axi_awvalid     ( rv_socket_dbg_master_axi_awvalid  ),
+            .dbg_master_axi_awready     ( rv_socket_dbg_master_axi_awready  ),
+            .dbg_master_axi_wdata       ( rv_socket_dbg_master_axi_wdata    ),
+            .dbg_master_axi_wstrb       ( rv_socket_dbg_master_axi_wstrb    ),
+            .dbg_master_axi_wlast       ( rv_socket_dbg_master_axi_wlast    ),
+            .dbg_master_axi_wvalid      ( rv_socket_dbg_master_axi_wvalid   ),
+            .dbg_master_axi_wready      ( rv_socket_dbg_master_axi_wready   ),
+            .dbg_master_axi_bid         ( rv_socket_dbg_master_axi_bid      ),
+            .dbg_master_axi_bresp       ( rv_socket_dbg_master_axi_bresp    ),
+            .dbg_master_axi_bvalid      ( rv_socket_dbg_master_axi_bvalid   ),
+            .dbg_master_axi_bready      ( rv_socket_dbg_master_axi_bready   ),
+            .dbg_master_axi_arid        ( rv_socket_dbg_master_axi_arid     ),
+            .dbg_master_axi_araddr      ( rv_socket_dbg_master_axi_araddr   ),
+            .dbg_master_axi_arlen       ( rv_socket_dbg_master_axi_arlen    ),
+            .dbg_master_axi_arsize      ( rv_socket_dbg_master_axi_arsize   ),
+            .dbg_master_axi_arburst     ( rv_socket_dbg_master_axi_arburst  ),
+            .dbg_master_axi_arlock      ( rv_socket_dbg_master_axi_arlock   ),
+            .dbg_master_axi_arcache     ( rv_socket_dbg_master_axi_arcache  ),
+            .dbg_master_axi_arprot      ( rv_socket_dbg_master_axi_arprot   ),
+            .dbg_master_axi_arregion    ( rv_socket_dbg_master_axi_arregion ),
+            .dbg_master_axi_arqos       ( rv_socket_dbg_master_axi_arqos    ),
+            .dbg_master_axi_arvalid     ( rv_socket_dbg_master_axi_arvalid  ),
+            .dbg_master_axi_arready     ( rv_socket_dbg_master_axi_arready  ),
+            .dbg_master_axi_rid         ( rv_socket_dbg_master_axi_rid      ),
+            .dbg_master_axi_rdata       ( rv_socket_dbg_master_axi_rdata    ),
+            .dbg_master_axi_rresp       ( rv_socket_dbg_master_axi_rresp    ),
+            .dbg_master_axi_rlast       ( rv_socket_dbg_master_axi_rlast    ),
+            .dbg_master_axi_rvalid      ( rv_socket_dbg_master_axi_rvalid   ),
+            .dbg_master_axi_rready      ( rv_socket_dbg_master_axi_rready   ),
             // To PULP core
             .debug_req_o            ( debug_req_core           )
         );
 
-    end : dm_gen
+    end : dm_rv32_gen
+    else if ( CORE_SELECTOR inside {CORE_CV64A6} ) begin : dm_rv64_gen
+
+        // Debug Core built to use 64-bits interface.
+        // It is technically compatible with all execution-based debug-mode cores.
+        // In practice, it has only been used with CVA6
+        //  BSCANE2 tap
+        (* keep_hierarchy = "yes" *)  // DEBUG
+        custom_rv64_dbg_bscane riscv_dbg_u (
+            .clk_i                  ( clk_i                   ),
+            .rst_ni                 ( rst_ni                  ),
+            .unavailable_i          ( '0                      ),
+            .ndmreset_o             ( ndmreset_o              ), // Open
+            .dmactive_o             ( dmactive_o              ), // Open
+            // AXI Slave
+            .dbg_slave_axi_awid         ( rv_socket_dbg_slave_axi_awid      ),
+            .dbg_slave_axi_awaddr       ( rv_socket_dbg_slave_axi_awaddr    ),
+            .dbg_slave_axi_awlen        ( rv_socket_dbg_slave_axi_awlen     ),
+            .dbg_slave_axi_awsize       ( rv_socket_dbg_slave_axi_awsize    ),
+            .dbg_slave_axi_awburst      ( rv_socket_dbg_slave_axi_awburst   ),
+            .dbg_slave_axi_awlock       ( rv_socket_dbg_slave_axi_awlock    ),
+            .dbg_slave_axi_awcache      ( rv_socket_dbg_slave_axi_awcache   ),
+            .dbg_slave_axi_awprot       ( rv_socket_dbg_slave_axi_awprot    ),
+            .dbg_slave_axi_awqos        ( rv_socket_dbg_slave_axi_awqos     ),
+            .dbg_slave_axi_awvalid      ( rv_socket_dbg_slave_axi_awvalid   ),
+            .dbg_slave_axi_awready      ( rv_socket_dbg_slave_axi_awready   ),
+            .dbg_slave_axi_wdata        ( rv_socket_dbg_slave_axi_wdata     ),
+            .dbg_slave_axi_wstrb        ( rv_socket_dbg_slave_axi_wstrb     ),
+            .dbg_slave_axi_wlast        ( rv_socket_dbg_slave_axi_wlast     ),
+            .dbg_slave_axi_wvalid       ( rv_socket_dbg_slave_axi_wvalid    ),
+            .dbg_slave_axi_wready       ( rv_socket_dbg_slave_axi_wready    ),
+            .dbg_slave_axi_bid          ( rv_socket_dbg_slave_axi_bid       ),
+            .dbg_slave_axi_bresp        ( rv_socket_dbg_slave_axi_bresp     ),
+            .dbg_slave_axi_bvalid       ( rv_socket_dbg_slave_axi_bvalid    ),
+            .dbg_slave_axi_bready       ( rv_socket_dbg_slave_axi_bready    ),
+            .dbg_slave_axi_arid         ( rv_socket_dbg_slave_axi_arid      ),
+            .dbg_slave_axi_araddr       ( rv_socket_dbg_slave_axi_araddr    ),
+            .dbg_slave_axi_arlen        ( rv_socket_dbg_slave_axi_arlen     ),
+            .dbg_slave_axi_arsize       ( rv_socket_dbg_slave_axi_arsize    ),
+            .dbg_slave_axi_arburst      ( rv_socket_dbg_slave_axi_arburst   ),
+            .dbg_slave_axi_arlock       ( rv_socket_dbg_slave_axi_arlock    ),
+            .dbg_slave_axi_arcache      ( rv_socket_dbg_slave_axi_arcache   ),
+            .dbg_slave_axi_arprot       ( rv_socket_dbg_slave_axi_arprot    ),
+            .dbg_slave_axi_arqos        ( rv_socket_dbg_slave_axi_arqos     ),
+            .dbg_slave_axi_arvalid      ( rv_socket_dbg_slave_axi_arvalid   ),
+            .dbg_slave_axi_arready      ( rv_socket_dbg_slave_axi_arready   ),
+            .dbg_slave_axi_rid          ( rv_socket_dbg_slave_axi_rid       ),
+            .dbg_slave_axi_rdata        ( rv_socket_dbg_slave_axi_rdata     ),
+            .dbg_slave_axi_rresp        ( rv_socket_dbg_slave_axi_rresp     ),
+            .dbg_slave_axi_rlast        ( rv_socket_dbg_slave_axi_rlast     ),
+            .dbg_slave_axi_rvalid       ( rv_socket_dbg_slave_axi_rvalid    ),
+            .dbg_slave_axi_rready       ( rv_socket_dbg_slave_axi_rready    ),
+            // AXI Master
+            .dbg_master_axi_awid        ( rv_socket_dbg_master_axi_awid     ),
+            .dbg_master_axi_awaddr      ( rv_socket_dbg_master_axi_awaddr   ),
+            .dbg_master_axi_awlen       ( rv_socket_dbg_master_axi_awlen    ),
+            .dbg_master_axi_awsize      ( rv_socket_dbg_master_axi_awsize   ),
+            .dbg_master_axi_awburst     ( rv_socket_dbg_master_axi_awburst  ),
+            .dbg_master_axi_awlock      ( rv_socket_dbg_master_axi_awlock   ),
+            .dbg_master_axi_awcache     ( rv_socket_dbg_master_axi_awcache  ),
+            .dbg_master_axi_awprot      ( rv_socket_dbg_master_axi_awprot   ),
+            .dbg_master_axi_awregion    ( rv_socket_dbg_master_axi_awregion ),
+            .dbg_master_axi_awqos       ( rv_socket_dbg_master_axi_awqos    ),
+            .dbg_master_axi_awvalid     ( rv_socket_dbg_master_axi_awvalid  ),
+            .dbg_master_axi_awready     ( rv_socket_dbg_master_axi_awready  ),
+            .dbg_master_axi_wdata       ( rv_socket_dbg_master_axi_wdata    ),
+            .dbg_master_axi_wstrb       ( rv_socket_dbg_master_axi_wstrb    ),
+            .dbg_master_axi_wlast       ( rv_socket_dbg_master_axi_wlast    ),
+            .dbg_master_axi_wvalid      ( rv_socket_dbg_master_axi_wvalid   ),
+            .dbg_master_axi_wready      ( rv_socket_dbg_master_axi_wready   ),
+            .dbg_master_axi_bid         ( rv_socket_dbg_master_axi_bid      ),
+            .dbg_master_axi_bresp       ( rv_socket_dbg_master_axi_bresp    ),
+            .dbg_master_axi_bvalid      ( rv_socket_dbg_master_axi_bvalid   ),
+            .dbg_master_axi_bready      ( rv_socket_dbg_master_axi_bready   ),
+            .dbg_master_axi_arid        ( rv_socket_dbg_master_axi_arid     ),
+            .dbg_master_axi_araddr      ( rv_socket_dbg_master_axi_araddr   ),
+            .dbg_master_axi_arlen       ( rv_socket_dbg_master_axi_arlen    ),
+            .dbg_master_axi_arsize      ( rv_socket_dbg_master_axi_arsize   ),
+            .dbg_master_axi_arburst     ( rv_socket_dbg_master_axi_arburst  ),
+            .dbg_master_axi_arlock      ( rv_socket_dbg_master_axi_arlock   ),
+            .dbg_master_axi_arcache     ( rv_socket_dbg_master_axi_arcache  ),
+            .dbg_master_axi_arprot      ( rv_socket_dbg_master_axi_arprot   ),
+            .dbg_master_axi_arregion    ( rv_socket_dbg_master_axi_arregion ),
+            .dbg_master_axi_arqos       ( rv_socket_dbg_master_axi_arqos    ),
+            .dbg_master_axi_arvalid     ( rv_socket_dbg_master_axi_arvalid  ),
+            .dbg_master_axi_arready     ( rv_socket_dbg_master_axi_arready  ),
+            .dbg_master_axi_rid         ( rv_socket_dbg_master_axi_rid      ),
+            .dbg_master_axi_rdata       ( rv_socket_dbg_master_axi_rdata    ),
+            .dbg_master_axi_rresp       ( rv_socket_dbg_master_axi_rresp    ),
+            .dbg_master_axi_rlast       ( rv_socket_dbg_master_axi_rlast    ),
+            .dbg_master_axi_rvalid      ( rv_socket_dbg_master_axi_rvalid   ),
+            .dbg_master_axi_rready      ( rv_socket_dbg_master_axi_rready   ),
+            // To PULP core
+            .debug_req_o            ( debug_req_core           )
+        );
+
+    end : dm_rv64_gen
     else begin : dm_not_gen
 
         // Tie-off debug request signal to cores
         assign debug_req_core = '0;
 
         // Sink unused interafces
-        `SINK_AXI_MASTER_INTERFACE(dbg_master);
-        `SINK_AXI_SLAVE_INTERFACE(dbg_slave);
+        `SINK_AXI_MASTER_INTERFACE(rv_socket_dbg_master);
+        `SINK_AXI_SLAVE_INTERFACE(rv_socket_dbg_slave);
 
     end : dm_not_gen
 

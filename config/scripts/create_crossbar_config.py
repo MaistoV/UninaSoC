@@ -72,15 +72,15 @@ if "main_bus" in bus_config_file_name:
     config.CONFIG_NAME = "MBUS"
 elif "peripheral_bus" in bus_config_file_name:
     config.CONFIG_NAME = "PBUS"
+elif "highperformance_bus" in bus_config_file_name:
+    config.CONFIG_NAME = "HBUS"
 
-###################
-# Read Sys config #
-###################
-
-config_df = pd.read_csv(sys_config_file_name, sep=",")
-
-for index, row in config_df.iterrows():
-	config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
+# TODO127:
+# In the previous version we first read the sys config and then the bus config
+# This is now broken because of how we assign datawidth and address width
+# and the relative order of these assignments.
+# By swapping the order (bus config first and system after) it works.
+# nevertheless, it must be corrected in the proper branch
 
 ###################
 # Read Bus config #
@@ -93,7 +93,21 @@ config_df = pd.read_csv(bus_config_file_name, sep=",")
 ########################
 # Update configuration by calling wrapper function for each property
 for index, row in config_df.iterrows():
-	config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
+    config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
+
+# Skip DISABLE buses
+if config.PROTOCOL == "DISABLE":
+    print("[CONFIG] Skipping DISABLE bus", config.CONFIG_NAME )
+    exit(0)
+
+###################
+# Read Sys config #
+###################
+
+config_df = pd.read_csv(sys_config_file_name, sep=",")
+
+for index, row in config_df.iterrows():
+    config = parse_properties_wrapper.parse_property(config, row["Property"], row["Value"])
 
 ####################
 # Prepare commands #
@@ -226,3 +240,6 @@ write_tcl.end_File(file)
 
 # Close file
 file.close
+
+# Print filename
+print("[CONFIG] Output file is at " + config_tcl_file_name)

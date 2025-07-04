@@ -10,18 +10,19 @@ import logging
 # Wrapper class for configuration properties
 class Configuration:
 	def __init__(self):
-		self.CONFIG_NAME         : str = "MBUS" # The name of the bus, used in check sanity
-		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV", "CORE_CVA5"]
+		self.CONFIG_NAME         : str = "" # The name of the bus, used in check sanity
+		self.SUPPORTED_CORES	 : list = ["CORE_PICORV32", "CORE_CV32E40P", "CORE_IBEX", "CORE_MICROBLAZEV", "CORE_CVA5", "CORE_CV64A6"]
 		self.CORE_SELECTOR		 : str = ""		# (Mandatory) No default core
 		self.VIO_RESETN_DEFAULT	 : int = 1      # Reset using Xilinx VIO
-		self.XLEN                : int = 32		# System-level len (only applicable to MBUS)
-		self.PROTOCOL			 : str = "AXI4"	# AXI PROTOCOL used
+		self.PROTOCOL			 : str = ""		# AXI PROTOCOL used, use "MOCK" to skip checks
+		self.XLEN                : int = 32		# MBUS, CPU and Toolchain data width
+		self.PHYSICAL_ADDR_WIDTH : int = 32 	# MBUS physical address width
 		self.CONNECTIVITY_MODE	 : str = "SAMD"	# Crossbar Configuration, Shared-Address/Multiple-Data(SAMD) or Shared-Address/Shared-Data(SASD)
 		self.ADDR_WIDTH			 : int = 32 	# Address Width
 		self.DATA_WIDTH			 : int = 32 	# Data Width
 		self.ID_WIDTH			 : int = 4		# ID Data Width for MI and SI (a subset of it is used by the Interfaces Thread IDs)
-		self.NUM_MI				 : int = 2 		# Master Interface (MI) Number
-		self.NUM_SI				 : int = 1 		# Slave Interface (SI) Number
+		self.NUM_MI				 : int = 0 		# Master Interface (MI) Number
+		self.NUM_SI				 : int = 0 		# Slave Interface (SI) Number
 		self.MASTER_NAMES        : list = []    # List of names of masters connected to the bus
 		self.RANGE_NAMES         : list = []    # List of names of slaves connected to the bus
 		self.ADDR_RANGES		 : list = 1 	# Number of Address Ranges for all MI
@@ -63,8 +64,14 @@ class Configuration:
 			self.ADDR_WIDTH = value
 		elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (value in range(12, 65))):
 			self.ADDR_WIDTH = value
+		elif self.PROTOCOL == "DISABLE":
+			# Skip mock buses
+			return
 		else:
-			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
+			# TODO127: Defaulting breaks multiple things in the current flow. It MUST be refactored.
+			# For now, we just raise the warning, and leave the user with the selected value.
+			self.ADDR_WIDTH = value
+			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using the user value, beware of this.")
 
 	def set_DATA_WIDTH (self, value: int):
 		# Reads the Address Widdth applied to all Interfaces
@@ -83,6 +90,8 @@ class Configuration:
 		elif (((self.PROTOCOL == "AXI4") or (self.PROTOCOL == "AXI3")) and (DATA_WIDTH_Found == True)):
 			self.DATA_WIDTH = value
 		else:
-			logging.warning("Data Width value isn't compatible with AXI PROTOCOL Used. Using default value.")
+			# TODO127: Defaulting breaks multiple things in the current flow. It MUST be refactored.
+			# For now, we just raise the warning, and leave the user with the selected value.
+			logging.warning("Address Width value isn't compatible with AXI PROTOCOL Used. Using the user value, beware of this.")
 
 
