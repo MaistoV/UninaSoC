@@ -29,7 +29,7 @@ mkdir ${RTL_DIR}
 echo -e "${YELLOW}[FETCH_SOURCES] Fetching Open-Titan Peripherals (aiming to PLIC) sources${NC}"
 
 # clone repo (Release v1.8.3 Jul 15 2024)
-GIT_URL=https://github.com/pulp-platform/opentitan_peripherals.git
+GIT_URL="https://github.com/pulp-platform/opentitan_peripherals.git"
 GIT_TAG=v0.4.0
 CLONE_DIR=otp
 git clone ${GIT_URL} -b ${GIT_TAG} --depth 1 ${CLONE_DIR}

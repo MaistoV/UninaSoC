@@ -61,6 +61,7 @@ package uninasoc_pkg;
         CORE_CV32E40P,
         CORE_IBEX,
         CORE_MICROBLAZEV,
+        CORE_CVA5
         // 64-bits Cores
         CORE_CV64A6
     } core_selector_t;

@@ -1,6 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
 // Author: Cesare Pulcrano <ce.pulcrano@studenti.unina.it>
+// Author: Annalia Ruggiero <annalia.ruggiero@studenti.unina.it>
 // Description: Wrapper module for RISC-V CPUs and Debuggers
 
 // Import packages
@@ -33,10 +34,10 @@ module rv_socket # (
 );
 
     //////////////////////////////////////////////////////
-    //    ___                         _                 //
-    //   | _ \__ _ _ _ __ _ _ __  ___| |_ ___ _ _ ___   //
-    //   |  _/ _` | '_/ _` | '  \/ -_)  _/ -_) '_(_-<   //
-    //   |_| \__,_|_| \__,_|_|_|_\___|\__\___|_| /__/   //
+    //    _                         _                 //
+    //   | _ \_ _ _ _ _ _ _ _  _| | _ _ _ _   //
+    //   |  / _` | '/ ` | '  \/ -)  / -) '(-<   //
+    //   || \,|| \,|||\_|\\_|| /__/   //
     //                                                  //
     //////////////////////////////////////////////////////
 
@@ -49,11 +50,11 @@ module rv_socket # (
     localparam logic [LOCAL_ADDR_WIDTH-1:0] dm_ExceptionAddress = dm_HaltAddress + 16;
 
     //////////////////////////////////////
-    //    ___ _                _        //
-    //   / __(_)__ _ _ _  __ _| |___    //
-    //   \__ | / _` | ' \/ _` | (_-<    //
-    //   |___|_\__, |_||_\__,_|_/__/    //
-    //         |___/                    //
+    //    _ _                _        //
+    //   / _()_ _ _ _  _ | |__    //
+    //   \_ | / _` | ' \/ _` | (-<    //
+    //   |_|\, |||\,|/_/    //
+    //         |_/                    //
     //////////////////////////////////////
 
     // Core reset
@@ -72,11 +73,11 @@ module rv_socket # (
     logic debug_req_core;
 
     //////////////////////////////////////////////////////
-    //     ___               ___          _             //
-    //    / __|___ _ _ ___  | _ \___ __ _(_)___ _ _     //
-    //   | (__/ _ \ '_/ -_) |   / -_) _` | / _ \ ' \    //
-    //    \___\___/_| \___| |_|_\___\__, |_\___/_||_|   //
-    //                              |___/               //
+    //     _               _          _             //
+    //    / _|_ _ _ __  | _ \_ _ _()_ _ _     //
+    //   | (_/ _ \ '/ -) |   / -) _` | / _ \ ' \    //
+    //    \_\_/| \_| ||\_\, |\_/|||   //
+    //                              |_/               //
     //////////////////////////////////////////////////////
 
     ////////////////////////////
@@ -270,6 +271,63 @@ module rv_socket # (
 
             );
         end
+        else if (CORE_SELECTOR == CORE_
+        
+        
+        ) begin : core_cva5
+        
+           `DECLARE_AXI_BUS(temp, DATA_WIDTH);
+            
+            custom_cva5 cva5_core (
+                .clk (clk_i),
+                .rst (core_resetn_internal),
+                .arvalid (temp_axi_arvalid),
+                .araddr (temp_axi_araddr),
+                .arlen (temp_axi_arlen),
+                .arsize (temp_axi_arsize),
+                .arburst (temp_axi_arburst),
+                .arcache (temp_axi_arcache),
+                .arid (temp_axi_arid),
+                .arlock (temp_axi_arlock),
+                .rready (temp_axi_rready),
+                .awvalid (temp_axi_awvalid),
+                .awaddr (temp_axi_awaddr),
+                .awlen (temp_axi_awlen),
+                .awsize (temp_axi_awsize),
+                .awburst (temp_axi_awburst),
+                .awcache (temp_axi_awcache),
+                .awid (temp_axi_awid),
+                .awlock (temp_axi_awlock),
+                .wvalid (temp_axi_wvalid),
+                .wdata (temp_axi_wdata),
+                .wstrb (temp_axi_wstrb),
+                .wlast (temp_axi_wlast),
+                .bready (temp_axi_bready),
+                .arready (temp_axi_arready),
+                .rvalid (temp_axi_rvalid),
+                .rdata (temp_axi_rdata),
+                .rresp (temp_axi_rresp),
+                .rlast (temp_axi_rlast),
+                .rid (temp_axi_rid),
+                .awready (temp_axi_awready),
+                .wready (temp_axi_wready),
+                .bvalid (temp_axi_bvalid),
+                .bresp (temp_axi_bresp),
+                .bid (temp_axi_bid),
+                .m_interrupt_software (irq_i[CORE_SW_INTERRUPT]),
+                .m_interrupt_timer (irq_i[CORE_TIM_INTERRUPT]),
+                .m_interrupt_external (irq_i[CORE_EXT_INTERRUPT]),
+                .s_interrupt_software('0),
+                .s_interrupt_timer('0),
+                .s_interrupt_external('0)
+            
+            );
+
+            // TODO: remove temp, use rv_socket_data directly
+            // TOOD: sink rv_socket_instr
+            `ASSIGN_AXI_BUS( rv_socket_data , temp );
+
+        end 
         else if (CORE_SELECTOR == CORE_MICROBLAZEV) begin : xlnx_microblaze_riscv
 
             // Tie-off unused signals
@@ -554,10 +612,10 @@ module rv_socket # (
 
 
     //////////////////////////////////////////
-    //     ___                              //
-    //    / __|___ _ __  _ __  ___ _ _      //
+    //     _                              //
+    //    / _|_ _ _  _ _  __ _ _      //
     //   | (__/ _ | '  \| '  \/ _ | ' \     //
-    //    \___\___|_|_|_|_|_|_\___|_||_|    //
+    //    \_\_||||||\_||||    //
     //                                      //
     //////////////////////////////////////////
 
@@ -571,9 +629,10 @@ module rv_socket # (
 
     // Few exceptions:
     // - Microblaze V has its own interfaces and debug module
+    // - CVA5 Already has an AXI interface
     // - CVA6 Already has an AXI interface
     // - TODO: Rocket
-    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV, CORE_CV64A6} ) ) begin : mem_convert
+    if ( !( CORE_SELECTOR inside {CORE_MICROBLAZEV, CORE_CVA5, CORE_CV64A6} ) ) begin : mem_convert
 
         // Connect memory interfaces to socket output memory ports
         `ASSIGN_AXI_BUS( rv_socket_instr, core_instr_to_socket_instr );
@@ -695,10 +754,10 @@ module rv_socket # (
     end
 
     ///////////////////////////////////
-    //    ___  ___ ___ _   _  ___    //
-    //   |   \| __| _ ) | | |/ __|   //
-    //   | |) | _|| _ \ |_| | (_ |   //
-    //   |___/|___|___/\___/ \___|   //
+    //    _  _ _ _   _  _    //
+    //   |   \| _| _ ) | | |/ _|   //
+    //   | |) | || _ \ || | (_ |   //
+    //   |_/|_|_/\_/ \_|   //
     //                               //
     ///////////////////////////////////
 
