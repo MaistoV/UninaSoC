@@ -73,8 +73,8 @@ module highperformance_bus #(
 
     // TODO: expose an array of NUM_DDR_CHANNELS pins and interfaces
     // DDR4 CH0 clock and reset
-    input logic clk_300mhz_0_p_i,
-    input logic clk_300mhz_0_n_i,
+    input logic clk_300mhz_x_p_i,
+    input logic clk_300mhz_x_n_i,
     // DDR4 channel output clock and reset
     output logic clk_300MHz_o,
     output logic rstn_300MHz_o,

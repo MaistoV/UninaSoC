@@ -88,6 +88,12 @@ module uninasoc (
         // DDR4 Channel 1 interface
         `DEFINE_DDR4_PORTS(1),
 
+        // DDR4 Channel 2 differential clock
+        input logic clk_300mhz_2_p_i,
+        input logic clk_300mhz_2_n_i,
+        // DDR4 Channel 2 interface
+        `DEFINE_DDR4_PORTS(2),
+
         // PCIe clock and reset
         input logic pcie_refclk_p_i,
         input logic pcie_refclk_n_i,
@@ -688,33 +694,33 @@ module uninasoc (
 // In HPC profile
 `ifdef HPC
 
-    // DDR4 Channel 0
+    // DDR4 Channel 1
     ddr4_channel_wrapper # (
         .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
         .LOCAL_ID_WIDTH     ( MBUS_ID_WIDTH   )
-    ) ddr4_channel_0_wrapper_u (
+    ) ddr4_channel_1_wrapper_u (
         .clock_i              ( main_clk          ),
         .reset_ni             ( main_rstn         ),
         // DDR4 differential clock
-        .clk_300mhz_0_p_i     ( clk_300mhz_0_p_i  ),
-        .clk_300mhz_0_n_i     ( clk_300mhz_0_n_i  ),
+        .clk_300mhz_x_p_i     ( clk_300mhz_1_p_i  ),
+        .clk_300mhz_x_n_i     ( clk_300mhz_1_n_i  ),
 
-        // Connect DDR4 channel 0
-        .cx_ddr4_adr          ( c0_ddr4_adr       ),
-        .cx_ddr4_ba           ( c0_ddr4_ba        ),
-        .cx_ddr4_cke          ( c0_ddr4_cke       ),
-        .cx_ddr4_cs_n         ( c0_ddr4_cs_n      ),
-        .cx_ddr4_dq           ( c0_ddr4_dq        ),
-        .cx_ddr4_dqs_t        ( c0_ddr4_dqs_t     ),
-        .cx_ddr4_dqs_c        ( c0_ddr4_dqs_c     ),
-        .cx_ddr4_odt          ( c0_ddr4_odt       ),
-        .cx_ddr4_par          ( c0_ddr4_par       ),
-        .cx_ddr4_bg           ( c0_ddr4_bg        ),
-        .cx_ddr4_act_n        ( c0_ddr4_act_n     ),
-        .cx_ddr4_reset_n      ( c0_ddr4_reset_n   ),
-        .cx_ddr4_ck_t         ( c0_ddr4_ck_t      ),
-        .cx_ddr4_ck_c         ( c0_ddr4_ck_c      ),
+        // Connect DDR4 channel 1
+        .cx_ddr4_adr          ( c1_ddr4_adr       ),
+        .cx_ddr4_ba           ( c1_ddr4_ba        ),
+        .cx_ddr4_cke          ( c1_ddr4_cke       ),
+        .cx_ddr4_cs_n         ( c1_ddr4_cs_n      ),
+        .cx_ddr4_dq           ( c1_ddr4_dq        ),
+        .cx_ddr4_dqs_t        ( c1_ddr4_dqs_t     ),
+        .cx_ddr4_dqs_c        ( c1_ddr4_dqs_c     ),
+        .cx_ddr4_odt          ( c1_ddr4_odt       ),
+        .cx_ddr4_par          ( c1_ddr4_par       ),
+        .cx_ddr4_bg           ( c1_ddr4_bg        ),
+        .cx_ddr4_act_n        ( c1_ddr4_act_n     ),
+        .cx_ddr4_reset_n      ( c1_ddr4_reset_n   ),
+        .cx_ddr4_ck_t         ( c1_ddr4_ck_t      ),
+        .cx_ddr4_ck_c         ( c1_ddr4_ck_c      ),
 
         // AXILITE interface - for ECC status and control - not connected
         .s_ctrl_axilite_awvalid  ( 1'b0  ),
@@ -1025,26 +1031,26 @@ module uninasoc (
         .s_acc_axi_rready   ( s_acc_HBUS_axi_rready   ),
 
         // DDR4 differential clock
-        .clk_300mhz_0_p_i     ( clk_300mhz_1_p_i  ),
-        .clk_300mhz_0_n_i     ( clk_300mhz_1_n_i  ),
+        .clk_300mhz_x_p_i     ( clk_300mhz_2_p_i  ),
+        .clk_300mhz_x_n_i     ( clk_300mhz_2_n_i  ),
         // DDR4 user clock and reset
         .clk_300MHz_o         ( clk_300MHz        ),
         .rstn_300MHz_o        ( rstn_300MHz       ),
-        // Connect DDR4 channel 0
-        .cx_ddr4_adr          ( c1_ddr4_adr       ),
-        .cx_ddr4_ba           ( c1_ddr4_ba        ),
-        .cx_ddr4_cke          ( c1_ddr4_cke       ),
-        .cx_ddr4_cs_n         ( c1_ddr4_cs_n      ),
-        .cx_ddr4_dq           ( c1_ddr4_dq        ),
-        .cx_ddr4_dqs_t        ( c1_ddr4_dqs_t     ),
-        .cx_ddr4_dqs_c        ( c1_ddr4_dqs_c     ),
-        .cx_ddr4_odt          ( c1_ddr4_odt       ),
-        .cx_ddr4_par          ( c1_ddr4_par       ),
-        .cx_ddr4_bg           ( c1_ddr4_bg        ),
-        .cx_ddr4_act_n        ( c1_ddr4_act_n     ),
-        .cx_ddr4_reset_n      ( c1_ddr4_reset_n   ),
-        .cx_ddr4_ck_t         ( c1_ddr4_ck_t      ),
-        .cx_ddr4_ck_c         ( c1_ddr4_ck_c      ),
+        // Connect DDR4 channel 2
+        .cx_ddr4_adr          ( c2_ddr4_adr       ),
+        .cx_ddr4_ba           ( c2_ddr4_ba        ),
+        .cx_ddr4_cke          ( c2_ddr4_cke       ),
+        .cx_ddr4_cs_n         ( c2_ddr4_cs_n      ),
+        .cx_ddr4_dq           ( c2_ddr4_dq        ),
+        .cx_ddr4_dqs_t        ( c2_ddr4_dqs_t     ),
+        .cx_ddr4_dqs_c        ( c2_ddr4_dqs_c     ),
+        .cx_ddr4_odt          ( c2_ddr4_odt       ),
+        .cx_ddr4_par          ( c2_ddr4_par       ),
+        .cx_ddr4_bg           ( c2_ddr4_bg        ),
+        .cx_ddr4_act_n        ( c2_ddr4_act_n     ),
+        .cx_ddr4_reset_n      ( c2_ddr4_reset_n   ),
+        .cx_ddr4_ck_t         ( c2_ddr4_ck_t      ),
+        .cx_ddr4_ck_c         ( c2_ddr4_ck_c      ),
 
         // AXILITE interface - for ECC status and control - not connected
         .s_ctrl_axilite_awvalid  ( 1'b0  ),
@@ -1066,7 +1072,7 @@ module uninasoc (
         .s_ctrl_axilite_arprot   ( '0    ),
         .s_ctrl_axilite_wstrb    ( '0    ),
         .s_ctrl_axilite_awprot   ( '0    )
-    );*/
+    );
 
 `endif // HPC
 

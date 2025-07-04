@@ -6,7 +6,7 @@ set_property -dict [list CONFIG.PROTOCOL {AXI4} \
                          CONFIG.CONNECTIVITY_MODE {SAMD} \
                          CONFIG.ADDR_WIDTH {32} \
                          CONFIG.DATA_WIDTH {512} \
-                         CONFIG.ID_WIDTH {4} \
+                         CONFIG.ID_WIDTH {3} \
                          CONFIG.NUM_SI {2} \
                          CONFIG.NUM_MI {2} \
                          CONFIG.ADDR_RANGES {1} \
