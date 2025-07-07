@@ -13,7 +13,7 @@
 //  | sys_master |----------------------------------->|   Main   |                   |________|
 //  |____________|                                    |          |                    ________
 //   ______________                                   |          |                   |        |
-//  |              |--------------------------------->|          |------------------>|  DDR0  |
+//  |              |--------------------------------->|          |------------------>|  DDR1  |
 //  | Debug Module |                                  |   Main   |                   |________|
 //  |______________|<---------------------------------|   Bus    |                    __________________
 //                                                    |          |                   |                  |
@@ -514,8 +514,8 @@ module uninasoc (
     // AXI slaves //
     ////////////////
 
-    // Main memory
-    xlnx_blk_mem_gen main_memory_u (
+    // BRAM
+    xlnx_blk_mem_gen bram_u (
         .rsta_busy      ( /* open */                ), // output wire rsta_busy
         .rstb_busy      ( /* open */                ), // output wire rstb_busy
         .s_aclk         ( BRAM_clk                  ), // input wire s_aclk
