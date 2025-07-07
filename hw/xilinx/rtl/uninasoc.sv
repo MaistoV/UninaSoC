@@ -694,7 +694,11 @@ module uninasoc (
 // In HPC profile
 `ifdef HPC
 
-    // DDR4 Channel 1
+    ////////////////////
+    // DDR4 Channel 1 //
+    ////////////////////
+
+    // DDR channle on MBUS
     ddr4_channel_wrapper # (
         .LOCAL_DATA_WIDTH   ( MBUS_DATA_WIDTH ),
         .LOCAL_ADDR_WIDTH   ( MBUS_ADDR_WIDTH ),
@@ -782,6 +786,10 @@ module uninasoc (
         .s_axi_rready         ( MBUS_to_DDR_axi_rready   )
     );
 
+    ///////////////////
+    // HLS CONV2D IP //
+    ///////////////////
+
     // HLS CONV2D -> HBUS
     `DECLARE_AXI_BUS(HLS_gmem0_d512, HBUS_DATA_WIDTH, HBUS_ADDR_WIDTH, HBUS_ID_WIDTH)
     // TODO: Only one HBUS accelerator for now
@@ -789,7 +797,6 @@ module uninasoc (
     // Just pass through the interface
     `ASSIGN_AXI_BUS(s_acc_HBUS, HLS_gmem0_d512)
 
-    // HLS CONV2D IP
     hls_conv2d_wrapper # (
         // MBUS parameters
         .MBUS_ADDR_WIDTH ( MBUS_ADDR_WIDTH ),
@@ -904,9 +911,9 @@ module uninasoc (
         .NUM_DDR_CHANNELS ( 1 ),
         .NUM_HBM_CHANNELS ( 0 )
     ) highperformance_bus_u (
-        // Mian domain clock and reset
-        .main_clock_i   ( main_clk  ),
-        .main_reset_ni  ( main_rstn ),
+        // MBUS domain clock and reset
+        .main_clock_i        ( main_clk  ),
+        .main_reset_ni       ( main_rstn ),
         // From MBUS
         .s_MBUS_axi_awid     ( MBUS_to_HBUS_axi_awid     ),
         .s_MBUS_axi_awaddr   ( MBUS_to_HBUS_axi_awaddr   ),

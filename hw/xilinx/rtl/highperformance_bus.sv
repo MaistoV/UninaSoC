@@ -92,6 +92,12 @@ module highperformance_bus #(
         $error("HBUS must be in have its own clock domain!");
     `endif
 
+    // For simplicity
+    initial begin : assert_properties
+        assert( MBUS_ID_WIDTH == HBUS_ID_WIDTH )
+            else $error("HBUS_ID_WIDTH (%d) must be the same as MBUS_ID_WIDTH (%d)", HBUS_ID_WIDTH, MBUS_ID_WIDTH);
+    end : assert_properties
+
     /////////////////
     // Assignments //
     /////////////////
@@ -612,8 +618,8 @@ module highperformance_bus #(
 
     // DDR4 Channel 0
     xlnx_ddr4 ddr4_u (
-        .c0_sys_clk_n                ( clk_300mhz_0_n_i ),
-        .c0_sys_clk_p                ( clk_300mhz_0_p_i ),
+        .c0_sys_clk_n                ( clk_300mhz_x_n_i ),
+        .c0_sys_clk_p                ( clk_300mhz_x_p_i ),
 
         .sys_rst                     ( ddr4_reset       ),
 
