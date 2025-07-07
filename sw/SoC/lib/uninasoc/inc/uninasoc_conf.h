@@ -3,8 +3,9 @@
 #define __UNINASOC_CONF_H__
 
 #define UART_IS_ENABLED 1
-#define TIM_IS_ENABLED 1
 #define GPIO_OUT_IS_ENABLED 1
 #define GPIO_IN_IS_ENABLED 1
+#define TIM0_IS_ENABLED 1
+#define TIM1_IS_ENABLED 1
 
 #endif // __UNINASOC_CONF_H__

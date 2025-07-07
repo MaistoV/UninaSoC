@@ -1,4 +1,8 @@
 #!/bin/python3.10
+# Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
+# Author: Vincenzo Maisto <vincenzo.maisto2@unina.it>
+# Description: Parse PBUS config and generate HAL header
+
 import sys
 import os
 
@@ -11,26 +15,30 @@ peripheral_csv_path = sys.argv[1]
 output_hal_conf_file = sys.argv[2]
 
 if peripheral_csv_path is None:
-    print("Error: config_peripheral_bus.csv not found in CONFIG_BUS_CSVS")
+    print("[ERROR]: config_peripheral_bus.csv not found")
     sys.exit(1)
 
-# Open the file whose path is stored in peripheral_csv_path
-devices = set()
+# List of device peripherals
+devices = list()
 
+# Open the file whose path is stored in peripheral_csv_path
 with open(peripheral_csv_path, 'r') as file:
+    # For each line
     for line in file:
+        # Parse RANGE_NAMES
         if line.startswith('RANGE_NAMES'):
             # Split line by comma, then take the right-hand side (after first comma)
             names_str = line.strip().split(',', 1)[1]
             names = names_str.split()
+            # For each peripheral
             for name in names:
+                # Timers (assume prefix)
                 if name.startswith('TIM'):
-                    devices.add('TIM')
+                    devices.append(name)
+                # Generic
                 else:
-                    devices.add(name)
+                    devices.append(name)
             break  # No need to process further lines
-
-devices = list(devices)
 
 # Extract base name and make it a valid macro name for the include guard
 base_filename = os.path.basename(output_hal_conf_file).replace('.', '_').upper()
@@ -44,6 +52,7 @@ lines = [
     "",
 ]
 
+# For each device
 for device in devices:
     macro_name = f"{device.upper()}_IS_ENABLED"
     lines.append(f"#define {macro_name} 1")
