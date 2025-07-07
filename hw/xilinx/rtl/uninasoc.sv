@@ -76,11 +76,11 @@ module uninasoc (
         input  logic [GPIO_IN_WIDTH  -1 : 0]  gpio_in_i,
         output logic [GPIO_OUT_WIDTH -1 : 0]  gpio_out_o
     `elsif HPC
-        // DDR4 Channel 0 differential clock
-        input logic clk_300mhz_0_p_i,
-        input logic clk_300mhz_0_n_i,
-        // DDR4 Channel 0 interface
-        `DEFINE_DDR4_PORTS(0),
+        // // DDR4 Channel 0 differential clock
+        // input logic clk_300mhz_0_p_i,
+        // input logic clk_300mhz_0_n_i,
+        // // DDR4 Channel 0 interface
+        // `DEFINE_DDR4_PORTS(0),
 
         // DDR4 Channel 1 differential clock
         input logic clk_300mhz_1_p_i,
@@ -719,7 +719,7 @@ module uninasoc (
         .cx_ddr4_dqs_t        ( c1_ddr4_dqs_t     ),
         .cx_ddr4_dqs_c        ( c1_ddr4_dqs_c     ),
         .cx_ddr4_odt          ( c1_ddr4_odt       ),
-        .cx_ddr4_par          ( c1_ddr4_par       ),
+        .cx_ddr4_parity       ( c1_ddr4_parity    ),
         .cx_ddr4_bg           ( c1_ddr4_bg        ),
         .cx_ddr4_act_n        ( c1_ddr4_act_n     ),
         .cx_ddr4_reset_n      ( c1_ddr4_reset_n   ),
@@ -808,11 +808,11 @@ module uninasoc (
         .HBUS_ID_WIDTH   ( HBUS_ID_WIDTH   )
     ) hls_conv2d_wrapper_u (
         // MBUS clock and reset
-        .main_clk_i          ( main_clk  ),
-        .main_rstn_i         ( main_rstn ),
+        .main_clk_i                 ( main_clk  ),
+        .main_rstn_i                ( main_rstn ),
         // HLS IP clock and reset (from HBUS)
-        .HLS_CONTROL_clk_i   ( HLS_CONTROL_clk  ),
-        .HLS_CONTROL_rstn_i  ( HLS_CONTROL_rstn ),
+        .HLS_CONTROL_clk_i          ( HLS_CONTROL_clk  ),
+        .HLS_CONTROL_rstn_i         ( HLS_CONTROL_rstn ),
         // Slave for control
         .s_HLS_CONTROL_axi_awid     ( MBUS_to_HLS_CONTROL_axi_awid     ),
         .s_HLS_CONTROL_axi_awaddr   ( MBUS_to_HLS_CONTROL_axi_awaddr   ),
@@ -1052,7 +1052,7 @@ module uninasoc (
         .cx_ddr4_dqs_t        ( c2_ddr4_dqs_t     ),
         .cx_ddr4_dqs_c        ( c2_ddr4_dqs_c     ),
         .cx_ddr4_odt          ( c2_ddr4_odt       ),
-        .cx_ddr4_par          ( c2_ddr4_par       ),
+        .cx_ddr4_parity       ( c2_ddr4_parity    ),
         .cx_ddr4_bg           ( c2_ddr4_bg        ),
         .cx_ddr4_act_n        ( c2_ddr4_act_n     ),
         .cx_ddr4_reset_n      ( c2_ddr4_reset_n   ),

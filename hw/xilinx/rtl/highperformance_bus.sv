@@ -640,7 +640,7 @@ module highperformance_bus #(
         .c0_ddr4_dqs_t               ( cx_ddr4_dqs_t    ),
         .c0_ddr4_dqs_c               ( cx_ddr4_dqs_c    ),
         .c0_ddr4_odt                 ( cx_ddr4_odt      ),
-        .c0_ddr4_parity              ( cx_ddr4_par      ),
+        .c0_ddr4_parity              ( cx_ddr4_parity   ),
         .c0_ddr4_bg                  ( cx_ddr4_bg       ),
         .c0_ddr4_reset_n             ( cx_ddr4_reset_n  ),
         .c0_ddr4_act_n               ( cx_ddr4_act_n    ),

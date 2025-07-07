@@ -610,7 +610,7 @@ set_property -dict {PACKAGE_PIN AN24 IOSTANDARD SSTL12_DCI     } [get_ports c1_d
 set_property -dict {PACKAGE_PIN AN23 IOSTANDARD SSTL12_DCI     } [get_ports c1_ddr4_adr[16]  ]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_ADR16"    - IO_L19P_T3L_N0_DBC_AD9P_D10_65
 #set_property -dict {PACKAGE_PIN AV26 IOSTANDARD DIFF_SSTL12_DCI} [get_ports c1_ddr4_ck_c[1]  ]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_CK_C1"    - IO_L17N_T2U_N9_AD10N_D15_65
 #set_property -dict {PACKAGE_PIN AU26 IOSTANDARD DIFF_SSTL12_DCI} [get_ports c1_ddr4_ck_t[1]  ]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_CK_T1"    - IO_L17P_T2U_N8_AD10P_D14_65
-set_property -dict {PACKAGE_PIN AT23 IOSTANDARD SSTL12_DCI     } [get_ports c1_ddr4_par   ]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_PAR"      - IO_L16N_T2U_N7_QBC_AD3N_A01_D17_65
+set_property -dict {PACKAGE_PIN AT23 IOSTANDARD SSTL12_DCI     } [get_ports c1_ddr4_parity]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_PAR"      - IO_L16N_T2U_N7_QBC_AD3N_A01_D17_65
 #set_property -dict {PACKAGE_PIN AR23 IOSTANDARD SSTL12_DCI     } [get_ports c1_ddr4_cs_n[2]  ]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_CS_B2"    - IO_L16P_T2U_N6_QBC_AD3P_A00_D16_65
 #set_property -dict {PACKAGE_PIN AP25 IOSTANDARD SSTL12_DCI     } [get_ports c1_ddr4_cs_n[1]  ]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_CS_B1"    - IO_T2U_N12_CSI_ADV_B_65
 set_property -dict {PACKAGE_PIN AU24 IOSTANDARD SSTL12_DCI     } [get_ports c1_ddr4_ba[0]    ]; # Bank 65 VCCO - VCC1V2 Net "DDR4_C1_BA0"      - IO_L18N_T2U_N11_AD2N_D13_65
@@ -739,7 +739,7 @@ set_property -dict {PACKAGE_PIN L29  IOSTANDARD SSTL12_DCI     } [get_ports c2_d
 #set_property -dict {PACKAGE_PIN H32  IOSTANDARD SSTL12_DCI     } [get_ports c2_ddr4_adr[17]  ]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_ADR17"   - IO_L8N_T1L_N3_AD5N_47
 set_property -dict {PACKAGE_PIN H31  IOSTANDARD SSTL12_DCI     } [get_ports c2_ddr4_adr[4]   ]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_ADR4"    - IO_L8P_T1L_N2_AD5P_47
 set_property -dict {PACKAGE_PIN M30  IOSTANDARD SSTL12_DCI     } [get_ports c2_ddr4_adr[12]  ]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_ADR12"   - IO_L7N_T1L_N1_QBC_AD13N_47
-set_property -dict {PACKAGE_PIN M29  IOSTANDARD SSTL12_DCI     } [get_ports c2_ddr4_par      ]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_PAR"     - IO_L7P_T1L_N0_QBC_AD13P_47
+set_property -dict {PACKAGE_PIN M29  IOSTANDARD SSTL12_DCI     } [get_ports c2_ddr4_parity   ]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_PAR"     - IO_L7P_T1L_N0_QBC_AD13P_47
 set_property -dict {PACKAGE_PIN P30  IOSTANDARD POD12_DCI      } [get_ports c2_ddr4_dq[40]   ]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_DQ40"    - IO_L5N_T0U_N9_AD14N_47
 set_property -dict {PACKAGE_PIN R30  IOSTANDARD POD12_DCI      } [get_ports c2_ddr4_dq[41]   ]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_DQ41"    - IO_L5P_T0U_N8_AD14P_47
 set_property -dict {PACKAGE_PIN M31  IOSTANDARD DIFF_POD12_DCI } [get_ports c2_ddr4_dqs_c[10]]; # Bank 47 VCCO - VCC1V2 Net "DDR4_C2_DQS_C5"  - IO_L4N_T0U_N7_DBC_AD7N_47
@@ -826,7 +826,7 @@ set_property -dict {PACKAGE_PIN M34  IOSTANDARD DIFF_POD12_DCI } [get_ports c2_d
 # #set_property -dict {PACKAGE_PIN AU35 IOSTANDARD DIFF_SSTL12_DCI} [get_ports c0_ddr4_ck_c[1]  ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_CK_C1"   - IO_L16N_T2U_N7_QBC_AD3N_42
 # #set_property -dict {PACKAGE_PIN AU34 IOSTANDARD DIFF_SSTL12_DCI} [get_ports c0_ddr4_ck_t[1]  ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_CK_T1"   - IO_L16P_T2U_N6_QBC_AD3P_42
 # set_property -dict {PACKAGE_PIN AT34 IOSTANDARD SSTL12_DCI     } [get_ports c0_ddr4_ba[1]    ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_BA1"     - IO_T2U_N12_42
-# set_property -dict {PACKAGE_PIN AU36 IOSTANDARD SSTL12_DCI     } [get_ports c0_ddr4_par      ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_PAR"     - IO_L18N_T2U_N11_AD2N_42
+# set_property -dict {PACKAGE_PIN AU36 IOSTANDARD SSTL12_DCI     } [get_ports c0_ddr4_parity   ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_PAR"     - IO_L18N_T2U_N11_AD2N_42
 # set_property -dict {PACKAGE_PIN AT36 IOSTANDARD SSTL12_DCI     } [get_ports c0_ddr4_adr[0]   ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_ADR0"    - IO_L18P_T2U_N10_AD2P_42
 # set_property -dict {PACKAGE_PIN AV37 IOSTANDARD SSTL12_DCI     } [get_ports c0_ddr4_adr[2]   ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_ADR2"    - IO_L15N_T2L_N5_AD11N_42
 # set_property -dict {PACKAGE_PIN AV36 IOSTANDARD SSTL12_DCI     } [get_ports c0_ddr4_adr[1]   ]; # Bank 42 VCCO - VCC1V2 Net "DDR4_C0_ADR1"    - IO_L15P_T2L_N4_AD11P_42
