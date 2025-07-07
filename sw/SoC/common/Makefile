@@ -6,6 +6,9 @@
 SOC_SW_ROOT_DIR = $(SW_ROOT)/SoC
 LIB_DIR	= $(SOC_SW_ROOT_DIR)/lib
 
+## TODO47: this is just a placeholder for a HAL library
+## REMOVED
+
 ########
 # Misc #
 ########
@@ -41,7 +44,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 obj/startup.o:
 	@echo "\n[OBJ] Creating OBJs from $(STARTUP_DIR)/startup.s"
 	$(MKDIR)
-	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s -I$(LIB_INC_LIST) $(CFLAGS)
+	$(CC) -o obj/startup.o $(STARTUP_DIR)/startup.s $(LIB_INC_LIST) $(CFLAGS)
 
 bin/$(PROGRAM_NAME).elf: $(OBJS) obj/startup.o
 	@echo "\n[ELF] Creating elf file"
