@@ -34,7 +34,8 @@ with open(peripheral_csv_path, 'r') as file:
             for name in names:
                 # Timers (assume prefix)
                 if name.startswith('TIM'):
-                    devices.append(name)
+                    # Append generic device name to enable bare-metal driver
+                    devices.append('TIM')
                 # Generic
                 else:
                     devices.append(name)
