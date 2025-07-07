@@ -106,7 +106,7 @@ int main()
     if (xlnx_gpio_in_init(&gpio_in) != UNINASOC_OK)
         printf("ERROR GPIOIN\n");
 
-    if (xlnx_gpio_out_init(&gpio_out) != UNINASOC_OK) 
+    if (xlnx_gpio_out_init(&gpio_out) != UNINASOC_OK)
         printf("ERROR GPIOOUT\n");
 
     // Configure the timer for one interrupt each second (assuming a 20MHz clock)
