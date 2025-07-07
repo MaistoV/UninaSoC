@@ -20,37 +20,49 @@
   # Only the reset handler is defined in this file, while all other handlers points to
   # the default_handler (a loop)
 
-  # Entry 0, reset handler
-  jal x0, _reset_handler
+  # Reset handler
+  jal x0, _reset_handler      # Entry 0
 
-  # Entries 1-2, _default_handler
-  .rept 2
-  jal x0, _default_handler
-  .endr
+  jal x0, _default_handler    # Entry 1
+  jal x0, _default_handler    # Entry 2
 
-  # Entry 3
-  jal x0, _sw_handler
+  # SIE handler
+  jal x0, _sw_handler         # Entry 3
 
-  # Entries 4-6, _default_handler
-  .rept 3
-  jal x0, _default_handler
-  .endr
+  jal x0, _default_handler    # Entry 4
+  jal x0, _default_handler    # Entry 5
+  jal x0, _default_handler    # Entry 6
 
-  # Entry 7
-  jal x0, _timer_handler
+  # TIE handler
+  jal x0, _timer_handler      # Entry 7
 
-  # Entries 8-10, _default_handler
-  .rept 3
-  jal x0, _default_handler
-  .endr
+  jal x0, _default_handler    # Entry 8
+  jal x0, _default_handler    # Entry 9
+  jal x0, _default_handler    # Entry 10
 
-  # Entry 11
-  jal x0, _ext_handler
+  # EIE handler
+  jal x0, _ext_handler        # Entry 11
 
-  # Entries 11-31, _default_handler
-  .rept 20
-  jal x0, _default_handler
-  .endr
+  jal x0, _default_handler    # Entry 12
+  jal x0, _default_handler    # Entry 13
+  jal x0, _default_handler    # Entry 14
+  jal x0, _default_handler    # Entry 15
+  jal x0, _default_handler    # Entry 16
+  jal x0, _default_handler    # Entry 17
+  jal x0, _default_handler    # Entry 18
+  jal x0, _default_handler    # Entry 19
+  jal x0, _default_handler    # Entry 20
+  jal x0, _default_handler    # Entry 21
+  jal x0, _default_handler    # Entry 22
+  jal x0, _default_handler    # Entry 23
+  jal x0, _default_handler    # Entry 24
+  jal x0, _default_handler    # Entry 25
+  jal x0, _default_handler    # Entry 26
+  jal x0, _default_handler    # Entry 27
+  jal x0, _default_handler    # Entry 28
+  jal x0, _default_handler    # Entry 29
+  jal x0, _default_handler    # Entry 30
+  jal x0, _default_handler    # Entry 31
 
 # Keep a dedicated sections for handlers
 .section .text.handlers
