@@ -28,8 +28,9 @@ examples:
 # Build all libraries
 lib:
 	@echo "[Make] Compile all the libraries"
-#	TinyIO is the only one atm
+#	Build TinyIO
 	${MAKE} -C lib/tinyio XLEN=${XLEN} C_EXTENSION=Y
+#	Build light-weight HAL
 	${MAKE} -C lib/uninasoc
 
 clean:

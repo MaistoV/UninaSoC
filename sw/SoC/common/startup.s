@@ -52,6 +52,8 @@
   jal x0, _default_handler
   .endr
 
+# Keep a dedicated sections for handlers
+.section .text.handlers
 
 _reset_handler:
   .global _reset_handler

@@ -1,7 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
-// Description: 
+// Description:
 //  Basic "placeholder" implementations of interrupt handlers, supposed
 //  to be redefined by the user
 
@@ -25,10 +25,6 @@ void _ext_handler(void) {
     // Therefore, we need to access the PLIC claim/complete register 1 (base_addr + 0x200004).
     // The interrupt source ID is obtained from the claim register.
     uint32_t interrupt_id = plic_claim();
-
-    // JUST TURN LEDS ON TO SIGNAL THAT INTERRUPTS ARE WORKING
-    //xlnx_gpio_out_write(PIN_ALL);
-
     switch(interrupt_id){
         case 0x0: // unused
             break;

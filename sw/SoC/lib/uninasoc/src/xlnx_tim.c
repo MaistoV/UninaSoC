@@ -27,7 +27,7 @@
 #define TIM_CSR_INTERRUPT (1 << 8)
 
 // Extend this function implementation in case you add more peripherals
-static inline int assert_timer(xlnx_tim_t* timer)
+static inline int xlnx_tim_assert(xlnx_tim_t* timer)
 {
     if ((timer->base_addr != TIM0_BASEADDR) && (timer->base_addr != TIM1_BASEADDR)) {
         return UNINASOC_ERROR;
@@ -37,7 +37,7 @@ static inline int assert_timer(xlnx_tim_t* timer)
 
 int xlnx_tim_configure(xlnx_tim_t* timer)
 {
-    if (assert_timer(timer) != UNINASOC_OK) {
+    if (xlnx_tim_assert(timer) != UNINASOC_OK) {
         return UNINASOC_ERROR;
     }
 
@@ -67,7 +67,7 @@ int xlnx_tim_configure(xlnx_tim_t* timer)
 
 int xlnx_tim_enable_int(xlnx_tim_t* timer)
 {
-    if (assert_timer(timer) != UNINASOC_OK) {
+    if (xlnx_tim_assert(timer) != UNINASOC_OK) {
         return UNINASOC_ERROR;
     }
 
@@ -80,7 +80,7 @@ int xlnx_tim_enable_int(xlnx_tim_t* timer)
 
 int xlnx_tim_clear_int(xlnx_tim_t* timer)
 {
-    if (assert_timer(timer) != UNINASOC_OK) {
+    if (xlnx_tim_assert(timer) != UNINASOC_OK) {
         return UNINASOC_ERROR;
     }
 
@@ -94,7 +94,7 @@ int xlnx_tim_clear_int(xlnx_tim_t* timer)
 
 int xlnx_tim_start(xlnx_tim_t* timer)
 {
-    if (assert_timer(timer) != UNINASOC_OK) {
+    if (xlnx_tim_assert(timer) != UNINASOC_OK) {
         return UNINASOC_ERROR;
     }
 
