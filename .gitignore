@@ -1,18 +1,6 @@
 # Python products
 *__pycache__
 
-# Prerequisites
-*.d
-# Object files
-*.o
-# Static libraries
-*.a
-
-# Vivado outputs
-.Xil
-vivado*
-webtalk*
-
 # Build outputs
 build/
 
@@ -20,4 +8,3 @@ build/
 tmp*
 backup*
 *.log
-
