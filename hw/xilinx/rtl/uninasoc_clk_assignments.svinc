@@ -16,7 +16,7 @@ assign DM_mem_clk = clk_50MHz;
 logic DM_mem_rstn;
 assign DM_mem_rstn = rstn_50MHz;
 logic PBUS_clk;
-assign PBUS_clk = clk_10MHz;
+assign PBUS_clk = clk_250MHz;
 logic PBUS_rstn;
 assign PBUS_rstn = rstn_250MHz;
 logic CMAC_CSR_clk;
