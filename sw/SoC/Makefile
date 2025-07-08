@@ -11,7 +11,10 @@ endif
 EXAMPLES_NAMES := $(shell basename --multiple $(SW_ROOT)/SoC/examples/*)
 EXAMPLES_LIST  := $(foreach ip,${EXAMPLES_NAMES},$(SW_ROOT)/SoC/examples/${ip})
 
-all: examples
+# We need to import the XLEN envvar
+include $(SW_ROOT)/SoC/common/config.mk
+
+all: lib examples
 
 # Compile all examples in the example dir
 examples:
@@ -22,6 +25,12 @@ examples:
 		echo "\n[Make] Done\n" ; \
 	done
 
+# Build all libraries
+lib:
+	@echo "[Make] Compile all the libraries"
+#	TinyIO is the only one atm
+	${MAKE} -C lib/tinyio XLEN=${XLEN} C_EXTENSION=Y
+
 clean:
 	@echo "[Make] Clean all the example projects"
 	@for example in ${EXAMPLES_LIST}; do \
@@ -31,4 +40,4 @@ clean:
 	done
 
 
-.PHONY: examples
+.PHONY: examples lib
