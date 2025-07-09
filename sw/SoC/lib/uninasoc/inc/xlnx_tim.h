@@ -37,7 +37,10 @@ typedef struct {
     uint32_t count_direction : 1;
 } xlnx_tim_t;
 
-//All the Functions return UNINASOC_ERROR in case of error and UNINASOC_OK otherwise
+// All the Functions return UNINASOC_ERROR in case of error and UNINASOC_OK otherwise
+
+// Initialize timer peripheral
+int xlnx_tim_init(xlnx_tim_t* timer);
 
 // Configure the timer
 // base_addr should contain the base address of the specific timer

@@ -35,6 +35,13 @@ static inline int xlnx_tim_assert(xlnx_tim_t* timer)
     return UNINASOC_OK;
 }
 
+
+int xlnx_tim_init(xlnx_tim_t* timer)
+{
+    // No-op
+    return UNINASOC_OK;
+}
+
 int xlnx_tim_configure(xlnx_tim_t* timer)
 {
     if (xlnx_tim_assert(timer) != UNINASOC_OK) {

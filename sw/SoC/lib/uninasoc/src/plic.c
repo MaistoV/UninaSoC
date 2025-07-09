@@ -1,13 +1,12 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
-// Description: 
+// Description:
 //  Very simple implementations of PLIC functions used to correctly
 //  configure and handle external interrupts
 
 
 #include "uninasoc.h"
-
 #include "io.h"
 #include <stdint.h>
 
@@ -16,6 +15,12 @@
 // In this example, only 4 interrupts sources are supported in the SoC
 
 static size_t sources = MAX_SOURCES;
+
+int plic_init()
+{
+    // No-op
+    return UNINASOC_OK;
+}
 
 void plic_configure(uint32_t* priorities, size_t source_num){
 

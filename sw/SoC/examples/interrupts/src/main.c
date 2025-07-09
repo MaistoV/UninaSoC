@@ -100,6 +100,7 @@ int main()
 
     // Configure the PLIC
     uint32_t priorities[SOURCES_NUM] = { 1, 1, 1 };
+    plic_init();
     plic_configure(priorities, SOURCES_NUM);
     plic_enable_all();
 
@@ -110,6 +111,7 @@ int main()
         printf("ERROR GPIOOUT\n");
 
     // Configure the timer for one interrupt each second (assuming a 20MHz clock)
+    xlnx_tim_init(&timer);
 
     if (xlnx_tim_configure(&timer) != UNINASOC_OK)
         printf("ERROR TIMER\n");

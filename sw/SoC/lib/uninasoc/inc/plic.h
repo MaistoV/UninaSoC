@@ -1,7 +1,7 @@
 // Author: Stefano Mercogliano <stefano.mercogliano@unina.it>
 // Author: Valerio Di Domenico <valer.didomenico@studenti.unina.it>
 // Author: Salvatore Santoro <sal.santoro@studenti.unina.it>
-// Description: 
+// Description:
 //  This file defines the API to adoperate the PLIC (Platform-Level Interrupt Controller)
 //  in order to manage external interrupts
 
@@ -23,6 +23,9 @@ extern const volatile uint32_t _peripheral_PLIC_start;
 #define PLIC_COMPLETE_CTX0      (PLIC_BASEADDR + 0x200004)
 
 // Functions
+
+// Initialize PLIC peripheral
+int plic_init();
 
 // This function configures the priorities associated to each peripheral
 // "priorities" is an array of size "source_num" containing
