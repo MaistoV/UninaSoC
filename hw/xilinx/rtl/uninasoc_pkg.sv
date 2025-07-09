@@ -85,6 +85,7 @@ package uninasoc_pkg;
     localparam int unsigned PBUS_TIM0_INTERRUPT = 1;        // Timer 0
     localparam int unsigned PBUS_TIM1_INTERRUPT = 2;        // Timer 1
     localparam int unsigned PBUS_UART_INTERRUPT = 3;        // UART
+    localparam int unsigned HBUS_CMAC_INTERRUPT = 0;        // CMAC
 
     // PLIC Interrupts mapping
     // We support 32 possible sources of platform interrupts, which are statically mapped
@@ -94,6 +95,7 @@ package uninasoc_pkg;
     localparam int unsigned PLIC_TIM0_INTERRUPT = 2;        // Timer 0 (From PBUS)
     localparam int unsigned PLIC_TIM1_INTERRUPT = 3;        // Timer 1 (From PBUS)
     localparam int unsigned PLIC_UART_INTERRUPT = 4;        // UART    (From PBUS)
+    localparam int unsigned PLIC_CMAC_INTERRUPT = 5;        // CMAC
 
     ///////////////
     // Functions //

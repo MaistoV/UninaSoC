@@ -183,5 +183,50 @@ echo "[CONFIG_XILINX] Updating MAIN_CLOCK_FREQ_MHZ = ${main_clock_domain} "
 echo "[CONFIG_XILINX] Updating RANGE_CLOCK_DOMAINS = ${clock_domains_list} "
 echo "[CONFIG_XILINX] Updating PBUS_CLOCK_FREQ_MHZ = ${PBUS_CLOCK_FREQ_MHZ}000000 "
 
+#########################
+# CMAC SUBSYSTEM PARAMS #
+#########################
+
+
+if [[ ${SOC_CONFIG} == "hpc" ]]; then
+
+    # Get hbus slaves and base addresses
+    hbus_slaves=$(grep "RANGE_NAMES" ${CONFIG_HBUS_CSV} | awk -F "," '{print $2}');
+    hbus_ranges_base_addr=($(grep "RANGE_BASE_ADDR" ${CONFIG_HBUS_CSV} | awk -F "," '{print $2}'));
+    # We assume the CMAC as the first slave in the HBUS m_acc
+    cmac_slave=m_acc
+    # CMAC AXIS FIFO default base address
+    cmac_axis_fifo_base_addr=0x60000
+
+    # for loop index
+    let cnt=0
+
+    # For each hbus slave
+    # Find the index for the hbus cmac_slave into the slave names
+
+    for slave in ${hbus_slaves[*]}; do
+
+        if [[ ${slave} == $cmac_slave ]]; then
+            cmac_axis_fifo_base_addr=${hbus_ranges_base_addr[$cnt]}
+            break
+        fi
+
+        # Increment counter
+        ((cnt++))
+    done
+
+    # Update the CMAC AXIS FIFO base address
+    CMAC_AXIS_FIFO_CONFIG=${XILINX_IPS_ROOT}/hpc/xlnx_axis_fifo/config.tcl
+    # NOTE: this will trigger the rebuild of the IP
+    sed -E -i "s#(CONFIG\.C_AXI4_BASEADDR)[[:space:]]*\{[^}]+\}#\1 {${cmac_axis_fifo_base_addr}}#g" "${CMAC_AXIS_FIFO_CONFIG}"
+    echo "[CONFIG_XILINX] Updating CMAC_AXIS_FIFO_BASE_ADDRESS = ${cmac_axis_fifo_base_addr} "
+
+    # Update the CMAC drp (init) clock frequency
+    CMAC_CONFIG=${XILINX_IPS_ROOT}/hpc/xlnx_cmac/config.tcl
+    # NOTE: this will trigger the rebuild of the IP
+    sed -E -i "s#(CONFIG\.GT_DRP_CLK)[[:space:]]*\{[^}]+\}#\1 {${main_clock_domain}}#g" "${CMAC_CONFIG}"
+    echo "[CONFIG_XILINX] Updating CMAC_GT_DRP_CLOCK = ${main_clock_domain} "
+fi
+
 # Done
 echo "[CONFIG_XILINX] Output file is at ${OUTPUT_MK_FILE}"
