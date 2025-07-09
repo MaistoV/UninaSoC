@@ -325,9 +325,9 @@ module highperformance_bus #(
         .m_axi_arregion ( dwidth_conv_to_HBUS_axi_arregion )
     );
 
-    assign dwidth_conv_to_HBUS_axi_awid = '0;
+    // assign dwidth_conv_to_HBUS_axi_awid = '0;
     // assign dwidth_conv_to_HBUS_axi_bid  = '0;
-    assign dwidth_conv_to_HBUS_axi_arid = '0;
+    // assign dwidth_conv_to_HBUS_axi_arid = '0;
     // assign dwidth_conv_to_HBUS_axi_rid  = '0;
 
     // AXI dwith converter from 32 bit (global AXI data width) to 512 bit (AXI user interface HBUS data width)
