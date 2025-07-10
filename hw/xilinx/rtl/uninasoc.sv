@@ -985,7 +985,7 @@ module uninasoc (
         // DDR4 user clock and reset
         .clk_300MHz_o         ( clk_300MHz        ),
         .rstn_300MHz_o        ( rstn_300MHz       ),
-        // Connect DDR4 channel 0
+        // Connect DDR4 channel 2
         .cx_ddr4_adr          ( c2_ddr4_adr       ),
         .cx_ddr4_ba           ( c2_ddr4_ba        ),
         .cx_ddr4_cke          ( c2_ddr4_cke       ),
