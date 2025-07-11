@@ -1,0 +1,7 @@
+// This file is auto-generated with declare_and_assign_clocks_rtl.py
+
+/////////////////////////////////////////
+// Clocks declaration and assignments  //
+/////////////////////////////////////////
+assign HBUS_clk = ddr_clk;
+assign HBUS_rstn = ~ddr_rst;

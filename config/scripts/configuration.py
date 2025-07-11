@@ -47,7 +47,8 @@ class Configuration:
 		self.RUSER_WIDTH		 : int = 0		# AXI  R User width
 		self.BUSER_WIDTH		 : int = 0		# AXI  B User width
 		self.MAIN_CLOCK_DOMAIN   : int = 100    # Core + mbus clock domain (the main clock domain)
-		self.RANGE_CLOCK_DOMAINS       : list = []    # MBUS slaves clock domains
+		self.HBUS_CLOCK_DOMAIN   : int = 300    # HBUS clock domain - MUST be the same as the HBUS slave in MBUS configuration
+		self.RANGE_CLOCK_DOMAINS : list = []    # MBUS slaves clock domains
 
 	###########
 	# Setters #

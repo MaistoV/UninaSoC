@@ -12,6 +12,7 @@ set src_file_list [ list \
     $::env(XILINX_ROOT)/rtl/pbus_buses.svinc                 \
     $::env(XILINX_ROOT)/rtl/hbus_buses.svinc                 \
     $::env(XILINX_ROOT)/rtl/cmac_subsystem.sv                \
+    $::env(XILINX_ROOT)/rtl/hbus_clk_assignments.svinc       \
     $::env(XILINX_ROOT)/rtl/highperformance_bus.sv           \
     $::env(XILINX_ROOT)/rtl/uninasoc_clk_assignments.svinc   \
     $::env(XILINX_ROOT)/rtl/axi_clock_converter_wrapper.sv   \

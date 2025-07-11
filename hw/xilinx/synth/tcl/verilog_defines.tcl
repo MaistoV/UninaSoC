@@ -31,6 +31,7 @@ lappend verilog_defines HBUS_ID_WIDTH=$::env(MBUS_ID_WIDTH)
 lappend verilog_defines CORE_SELECTOR=$::env(CORE_SELECTOR)
 # Clock domains
 lappend verilog_defines MAIN_CLOCK_FREQ_MHZ=$::env(MAIN_CLOCK_FREQ_MHZ)
+lappend verilog_defines HBUS_CLOCK_FREQ_MHZ=$::env(HBUS_CLOCK_FREQ_MHZ)
 set clock_domain_list [split $::env(RANGE_CLOCK_DOMAINS) " "]
 foreach clock_domain $clock_domain_list {
     lappend verilog_defines $clock_domain=$clock_domain

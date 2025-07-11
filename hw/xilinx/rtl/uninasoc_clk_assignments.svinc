@@ -5,8 +5,6 @@
 /////////////////////////////////////////
 assign main_clk = clk_50MHz;
 assign main_rstn = rstn_50MHz;
-logic clk_300MHz;
-logic rstn_300MHz;
 logic BRAM_clk;
 assign BRAM_clk = clk_50MHz;
 logic BRAM_rstn;
@@ -23,10 +21,6 @@ logic CMAC_CSR_clk;
 assign CMAC_CSR_clk = clk_50MHz;
 logic CMAC_CSR_rstn;
 assign CMAC_CSR_rstn = rstn_50MHz;
-logic HBUS_clk;
-assign HBUS_clk = clk_300MHz;
-logic HBUS_rstn;
-assign HBUS_rstn = rstn_300MHz;
 logic PLIC_clk;
 assign PLIC_clk = clk_50MHz;
 logic PLIC_rstn;

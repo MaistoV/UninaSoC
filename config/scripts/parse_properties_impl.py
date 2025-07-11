@@ -681,6 +681,15 @@ def parse_MAIN_CLOCK_DOMAIN(
 	config.MAIN_CLOCK_DOMAIN = int(property_value)
 	return config
 
+def parse_HBUS_CLOCK_DOMAIN(
+	config,
+	property_name : str,
+	property_value: str,
+):
+	config.HBUS_CLOCK_DOMAIN = int(property_value)
+	return config
+
+
 def parse_RANGE_CLOCK_DOMAINS(
 	config,
 	property_name : str,

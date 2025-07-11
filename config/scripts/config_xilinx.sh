@@ -164,13 +164,20 @@ for clock_domain in ${clock_domains[*]}; do
         PBUS_CLOCK_FREQ_MHZ=$clock_domain
     fi
 
+    # Save HBUS clock domain
+    if [[ "${slaves[$cnt]}" == "HBUS" ]]; then
+        HBUS_CLOCK_FREQ_MHZ=$clock_domain
+    fi
+
     # Increment counter
     ((cnt++))
 done
 
 # Replace in target MK file
 sed -E -i "s/MAIN_CLOCK_FREQ_MHZ.?\?=.+/MAIN_CLOCK_FREQ_MHZ \?= ${main_clock_domain}/g" ${OUTPUT_MK_FILE};
+sed -E -i "s/HBUS_CLOCK_FREQ_MHZ.?\?=.+/HBUS_CLOCK_FREQ_MHZ \?= ${HBUS_CLOCK_FREQ_MHZ}/g" ${OUTPUT_MK_FILE};
 sed -E -i "s/RANGE_CLOCK_DOMAINS.?\?=.+/RANGE_CLOCK_DOMAINS \?= ${clock_domains_list}/g" ${OUTPUT_MK_FILE};
+
 if [[ ${SOC_CONFIG} == "embedded" ]]; then
     # Replace in AXI Lite UART
     # NOTE: this will trigger the rebuild of the IP
@@ -180,6 +187,7 @@ fi
 
 # Info print
 echo "[CONFIG_XILINX] Updating MAIN_CLOCK_FREQ_MHZ = ${main_clock_domain} "
+echo "[CONFIG_XILINX] Updating HBUS_CLOCK_FREQ_MHZ = ${HBUS_CLOCK_FREQ_MHZ} "
 echo "[CONFIG_XILINX] Updating RANGE_CLOCK_DOMAINS = ${clock_domains_list} "
 echo "[CONFIG_XILINX] Updating PBUS_CLOCK_FREQ_MHZ = ${PBUS_CLOCK_FREQ_MHZ}000000 "
 

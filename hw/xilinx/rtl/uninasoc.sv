@@ -32,7 +32,7 @@
 //                                |___________________________________________________________|
 //                                                 platform interrupt
 
-// TODO: update the description
+// TODO: update the description add CMAC subsys
 
 /////////////////////
 // Import packages //
@@ -135,6 +135,18 @@ module uninasoc (
     logic rstn_50MHz;
     logic rstn_100MHz;
     logic rstn_250MHz;     // HPC ONLY
+
+    // HBUS clocks and resets - HPC ONLY
+    // HBUS output
+    logic HBUS_clk;
+    logic HBUS_rstn;
+    // HBUS input
+    logic HBUS_extern_clk;
+    logic HBUS_extern_rstn;
+
+    // CMAC output clock and reset
+    logic clk_322MHz;
+    logic rstn_322MHz;
 
     // VIO Signals
     logic vio_resetn;
@@ -795,6 +807,7 @@ module uninasoc (
     // HBUS //
     //////////
 
+
     // TODO: HBUS is currently broken, to be fixed in the next issues
     // TODO: No HBUS accelerators for now, just sink the s_acc interface for now
     `DECLARE_AXI_BUS(s_acc_HBUS, HBUS_DATA_WIDTH, HBUS_ADDR_WIDTH, HBUS_ID_WIDTH)
@@ -814,8 +827,17 @@ module uninasoc (
         .NUM_HBM_CHANNELS ( 0 )
     ) highperformance_bus_u (
         // Main domain clock and reset
-        .main_clock_i   ( main_clk  ),
-        .main_reset_ni  ( main_rstn ),
+        .main_clock_i        ( main_clk  ),
+        .main_reset_ni       ( main_rstn ),
+
+        // Input clock and reset
+        .extern_clock_i      ( HBUS_extern_clk  ),
+        .extern_reset_ni     ( HBUS_extern_rstn ),
+
+        // Output user clock and reset
+        .output_clock_o      ( HBUS_clk  ),
+        .output_reset_no     ( HBUS_rstn ),
+
         // From MBUS
         .s_MBUS_axi_awid     ( MBUS_to_HBUS_axi_awid     ),
         .s_MBUS_axi_awaddr   ( MBUS_to_HBUS_axi_awaddr   ),
@@ -982,9 +1004,7 @@ module uninasoc (
         // DDR4 differential clock
         .clk_300mhz_2_p_i     ( clk_300mhz_2_p_i  ),
         .clk_300mhz_2_n_i     ( clk_300mhz_2_n_i  ),
-        // DDR4 user clock and reset
-        .clk_300MHz_o         ( clk_300MHz        ),
-        .rstn_300MHz_o        ( rstn_300MHz       ),
+
         // Connect DDR4 channel 2
         .cx_ddr4_adr          ( c2_ddr4_adr       ),
         .cx_ddr4_ba           ( c2_ddr4_ba        ),
@@ -1046,6 +1066,10 @@ module uninasoc (
         // MBUS clock and reset
         .MBUS_clock_i            ( main_clk    ),
         .MBUS_reset_ni           ( main_rstn   ),
+
+        // Output user clock and reset
+        .output_clock_o          ( clk_322MHz  ),
+        .output_reset_no         ( rstn_322MHz ),
 
         // QSFP ports
         .qsfpx_rxp_i             ( qsfp0_rxp_i ),

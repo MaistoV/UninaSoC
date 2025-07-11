@@ -45,9 +45,13 @@ SUPPORTED_CLOCK_DOMAINS = {
     "hpc"      : SUPPORTED_CLOCK_DOMAINS_HPC
 }
 # These slaves reside statically in the MAIN_CLOCK_DOMAIN
-MAIN_CLOCK_DOMAIN_SLAVES = ["BRAM", "DM_mem", "PLIC"]
+MAIN_CLOCK_DOMAIN_SLAVES = ["BRAM", "DM_mem", "PLIC", "CMAC_CSR"]
 # The DDR clock must have the same frequency of the DDR board clock
 DDR_FREQUENCY = 300
+CMAC_FREQUENCY = 322
+
+# For now, the HBUS only supports DDR clock (from the intern) or the CMAC clock (from the extern)
+HBUS_SUPPORTED_CLOCK_DOMAINS = [DDR_FREQUENCY, CMAC_FREQUENCY]
 
 #############################
 # Check intra configuration #
@@ -157,10 +161,20 @@ def check_intra_config(config : configuration.Configuration, config_file_name: s
                     print_error(f"The {config.RANGE_NAMES[i]} frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same as MAIN_CLOCK_DOMAIN {config.MAIN_CLOCK_DOMAIN}")
                     return False
             # Check if the DDR has the right frequency
-            if config.RANGE_NAMES[i] in {"DDR", "HBUS"}:
+            if config.RANGE_NAMES[i] == "DDR":
                 if config.RANGE_CLOCK_DOMAINS[i] != DDR_FREQUENCY:
-                    print_error(f"The DDR and HBUS frequency {config.RANGE_CLOCK_DOMAINS[i]} must be the same of DDR board clock {DDR_FREQUENCY}")
+                    print_error(f"The DDR frequency {config.RANGE_CLOCK_DOMAINS[i]} must be {DDR_FREQUENCY}")
                     return False
+            # Check if the HBUS has the right frequency
+            if config.RANGE_NAMES[i] == "HBUS":
+                if config.RANGE_CLOCK_DOMAINS[i] not in HBUS_SUPPORTED_CLOCK_DOMAINS:
+                    print_error(f"The HBUS frequency {config.RANGE_CLOCK_DOMAINS[i]} must be one of these: {clk_domain for clk_domain in HBUS_SUPPORTED_CLOCK_DOMAINS}")
+                    return False
+    # Check the HBUS clock domain validity in the HBUS config
+    if config.CONFIG_NAME == "HBUS":
+        if config.HBUS_CLOCK_DOMAIN not in HBUS_SUPPORTED_CLOCK_DOMAINS:
+            print_error(f"The HBUS frequency {config.HBUS_CLOCK_DOMAIN} must be one of these: {clk_domain for clk_domain in HBUS_SUPPORTED_CLOCK_DOMAINS}")
+            return False
 
     # Check the presence of multiple BRAMs, for now a single occurrence of BRAM is supported
     # Assume BRAM as prefix for any BRAM declaration
@@ -189,8 +203,19 @@ def check_inter_config(configs : list) -> bool:
         if config.CONFIG_NAME == "SYS":
             continue
 
+        if config.CONFIG_NAME == "HBUS":
+            # hbus clock domain in the hbus configuration
+            hbus_clock_domain_from_hbus = config.HBUS_CLOCK_DOMAIN
+
         # For each master of the current Configuration
         for mi_index in range(config.NUM_MI):
+
+            # Find the HBUS clock domain to check if it is set properly
+            if config.CONFIG_NAME == "MBUS":
+                if config.RANGE_NAMES[mi_index] == "HBUS":
+                    # hbus clock domain in the mbus configuration
+                    hbus_clock_domain_from_mbus = config.RANGE_CLOCK_DOMAINS[mi_index]
+
             # If a master is a bus (is in the CONFIG_NAME dict)
             if config.RANGE_NAMES[mi_index] in CONFIG_NAMES.values():
                 # Find the child bus configuration
@@ -214,6 +239,11 @@ def check_inter_config(configs : list) -> bool:
                             if child_config.CONFIG_NAME != "HBUS":
                                 print_error(f"Address of {child_config.CONFIG_NAME} is not properly contained in {config.CONFIG_NAME}")
                                 return False
+
+    if hbus_clock_domain_from_hbus != hbus_clock_domain_from_mbus:
+        print_error(f"HBUS_CLOCK_DOMAIN {hbus_clock_domain_from_hbus} defined in hbus_clock_domain_from_hbus.csv is different from {hbus_clock_domain_from_mbus} defined in config_main_bus.csv")
+        return False
+
     return True
 
 ##############

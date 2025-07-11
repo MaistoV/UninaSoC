@@ -68,6 +68,14 @@ module highperformance_bus #(
     input logic main_clock_i,
     input logic main_reset_ni,
 
+    // Extern clock and reset
+    input logic extern_clock_i,
+    input logic extern_reset_ni,
+
+    // Output clock and reset
+    output logic output_clock_o,
+    output logic output_reset_no,
+
     // AXI4 Slave interface from MBUS
     `DEFINE_AXI_SLAVE_PORTS(s_MBUS, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH),
     // AXI4 Master interface to MBUS
@@ -87,9 +95,6 @@ module highperformance_bus #(
     input logic clk_300mhz_2_p_i,
     input logic clk_300mhz_2_n_i,
 
-    // DDR4 channel output clock and reset
-    output logic clk_300MHz_o,
-    output logic rstn_300MHz_o,
     // DDR channel
     `DEFINE_DDR4_PORTS(x),
     // AXI-lite CSR interface
@@ -110,12 +115,6 @@ module highperformance_bus #(
         $error("HBUS must be in have its own clock domain!");
     `endif
 
-    /////////////////
-    // Assignments //
-    /////////////////
-    assign clk_300MHz_o  = ddr_clk;
-    assign rstn_300MHz_o = ~ddr_rst;
-
     /////////////////////////////////////////
     // Buses declaration and concatenation //
     /////////////////////////////////////////
@@ -133,15 +132,21 @@ module highperformance_bus #(
     // - m_MBUS (master to MBUS)
     // (HBUS_to_MBUS) -> ASSIGN_AXI_BUS -> (dwidth_conv_from_HBUS) -> axi_dwidth_conv_m_MBUS_u -> (m_MBUS_dwidth_conv_to_clock_conv) -> xlnx_axi_clock_converter_m_MBUS_u -> (m_MBUS)
 
-    ////////////////////
-    // AXI Converters //
-    ////////////////////
 
     logic HBUS_clk ;
     logic HBUS_rstn;
 
-    assign HBUS_clk  = ddr_clk;
-    assign HBUS_rstn = ~ddr_rst;
+    /////////////////
+    // Assignments //
+    /////////////////
+    assign output_clock_o  = HBUS_clk;
+    assign output_reset_no = HBUS_rstn;
+
+    `include "hbus_clk_assignments.svinc"
+
+    ////////////////////
+    // AXI Converters //
+    ////////////////////
 
     // Clock converter
     // s_MBUS -> s_MBUS_clock_conv_to_dwidth_conv
@@ -636,7 +641,114 @@ module highperformance_bus #(
     // assign m_MBUS_dwidth_conv_to_clock_conv_axi_arregion = '0;
     assign m_MBUS_dwidth_conv_to_clock_conv_axi_awid     = '0;
 
-    // DDR4 Channel 0
+
+
+    `DECLARE_AXI_BUS(clock_conv_to_ddr_data, HBUS_DATA_WIDTH, HBUS_ADDR_WIDTH, HBUS_ID_WIDTH)
+    generate
+        // DATA clock converter in case the HBUS clock is different from the DDR clock
+        if (`HBUS_CLOCK_FREQ_MHZ != 300) begin
+            axi_clock_converter_wrapper #(
+                .LOCAL_DATA_WIDTH ( HBUS_DATA_WIDTH ),
+                .LOCAL_ADDR_WIDTH ( HBUS_ADDR_WIDTH ),
+                .LOCAL_ID_WIDTH   ( HBUS_ID_WIDTH   )
+
+            ) ddr_data_clock_conv_u (
+                .s_axi_aclk     ( HBUS_clock_i        ),
+                .s_axi_aresetn  ( HBUS_reset_ni       ),
+
+                .m_axi_aclk     ( ddr_clk             ),
+                .m_axi_aresetn  ( ~ddr_rst            ),
+
+                .s_axi_awid     ( HBUS_to_DDR_axi_awid                 ),
+                .s_axi_awaddr   ( HBUS_to_DDR_axi_awaddr               ),
+                .s_axi_awlen    ( HBUS_to_DDR_axi_awlen                ),
+                .s_axi_awsize   ( HBUS_to_DDR_axi_awsize               ),
+                .s_axi_awburst  ( HBUS_to_DDR_axi_awburst              ),
+                .s_axi_awlock   ( HBUS_to_DDR_axi_awlock               ),
+                .s_axi_awcache  ( HBUS_to_DDR_axi_awcache              ),
+                .s_axi_awprot   ( HBUS_to_DDR_axi_awprot               ),
+                .s_axi_awqos    ( HBUS_to_DDR_axi_awqos                ),
+                .s_axi_awvalid  ( HBUS_to_DDR_axi_awvalid              ),
+                .s_axi_awready  ( HBUS_to_DDR_axi_awready              ),
+                .s_axi_awregion ( HBUS_to_DDR_axi_awregion             ),
+                .s_axi_wdata    ( HBUS_to_DDR_axi_wdata                ),
+                .s_axi_wstrb    ( HBUS_to_DDR_axi_wstrb                ),
+                .s_axi_wlast    ( HBUS_to_DDR_axi_wlast                ),
+                .s_axi_wvalid   ( HBUS_to_DDR_axi_wvalid               ),
+                .s_axi_wready   ( HBUS_to_DDR_axi_wready               ),
+                .s_axi_bid      ( HBUS_to_DDR_axi_bid                  ),
+                .s_axi_bresp    ( HBUS_to_DDR_axi_bresp                ),
+                .s_axi_bvalid   ( HBUS_to_DDR_axi_bvalid               ),
+                .s_axi_bready   ( HBUS_to_DDR_axi_bready               ),
+                .s_axi_arid     ( HBUS_to_DDR_axi_arid                 ),
+                .s_axi_araddr   ( HBUS_to_DDR_axi_araddr               ),
+                .s_axi_arlen    ( HBUS_to_DDR_axi_arlen                ),
+                .s_axi_arsize   ( HBUS_to_DDR_axi_arsize               ),
+                .s_axi_arburst  ( HBUS_to_DDR_axi_arburst              ),
+                .s_axi_arlock   ( HBUS_to_DDR_axi_arlock               ),
+                .s_axi_arregion ( HBUS_to_DDR_axi_arregion             ),
+                .s_axi_arcache  ( HBUS_to_DDR_axi_arcache              ),
+                .s_axi_arprot   ( HBUS_to_DDR_axi_arprot               ),
+                .s_axi_arqos    ( HBUS_to_DDR_axi_arqos                ),
+                .s_axi_arvalid  ( HBUS_to_DDR_axi_arvalid              ),
+                .s_axi_arready  ( HBUS_to_DDR_axi_arready              ),
+                .s_axi_rid      ( HBUS_to_DDR_axi_rid                  ),
+                .s_axi_rdata    ( HBUS_to_DDR_axi_rdata                ),
+                .s_axi_rresp    ( HBUS_to_DDR_axi_rresp                ),
+                .s_axi_rlast    ( HBUS_to_DDR_axi_rlast                ),
+                .s_axi_rvalid   ( HBUS_to_DDR_axi_rvalid               ),
+                .s_axi_rready   ( HBUS_to_DDR_axi_rready               ),
+
+                .m_axi_awid     ( clock_conv_to_ddr_data_axi_awid      ),
+                .m_axi_awaddr   ( clock_conv_to_ddr_data_axi_awaddr    ),
+                .m_axi_awlen    ( clock_conv_to_ddr_data_axi_awlen     ),
+                .m_axi_awsize   ( clock_conv_to_ddr_data_axi_awsize    ),
+                .m_axi_awburst  ( clock_conv_to_ddr_data_axi_awburst   ),
+                .m_axi_awlock   ( clock_conv_to_ddr_data_axi_awlock    ),
+                .m_axi_awcache  ( clock_conv_to_ddr_data_axi_awcache   ),
+                .m_axi_awprot   ( clock_conv_to_ddr_data_axi_awprot    ),
+                .m_axi_awregion ( clock_conv_to_ddr_data_axi_awregion  ),
+                .m_axi_awqos    ( clock_conv_to_ddr_data_axi_awqos     ),
+                .m_axi_awvalid  ( clock_conv_to_ddr_data_axi_awvalid   ),
+                .m_axi_awready  ( clock_conv_to_ddr_data_axi_awready   ),
+                .m_axi_wdata    ( clock_conv_to_ddr_data_axi_wdata     ),
+                .m_axi_wstrb    ( clock_conv_to_ddr_data_axi_wstrb     ),
+                .m_axi_wlast    ( clock_conv_to_ddr_data_axi_wlast     ),
+                .m_axi_wvalid   ( clock_conv_to_ddr_data_axi_wvalid    ),
+                .m_axi_wready   ( clock_conv_to_ddr_data_axi_wready    ),
+                .m_axi_bid      ( clock_conv_to_ddr_data_axi_bid       ),
+                .m_axi_bresp    ( clock_conv_to_ddr_data_axi_bresp     ),
+                .m_axi_bvalid   ( clock_conv_to_ddr_data_axi_bvalid    ),
+                .m_axi_bready   ( clock_conv_to_ddr_data_axi_bready    ),
+                .m_axi_arid     ( clock_conv_to_ddr_data_axi_arid      ),
+                .m_axi_araddr   ( clock_conv_to_ddr_data_axi_araddr    ),
+                .m_axi_arlen    ( clock_conv_to_ddr_data_axi_arlen     ),
+                .m_axi_arsize   ( clock_conv_to_ddr_data_axi_arsize    ),
+                .m_axi_arburst  ( clock_conv_to_ddr_data_axi_arburst   ),
+                .m_axi_arlock   ( clock_conv_to_ddr_data_axi_arlock    ),
+                .m_axi_arcache  ( clock_conv_to_ddr_data_axi_arcache   ),
+                .m_axi_arprot   ( clock_conv_to_ddr_data_axi_arprot    ),
+                .m_axi_arregion ( clock_conv_to_ddr_data_axi_arregion  ),
+                .m_axi_arqos    ( clock_conv_to_ddr_data_axi_arqos     ),
+                .m_axi_arvalid  ( clock_conv_to_ddr_data_axi_arvalid   ),
+                .m_axi_arready  ( clock_conv_to_ddr_data_axi_arready   ),
+                .m_axi_rid      ( clock_conv_to_ddr_data_axi_rid       ),
+                .m_axi_rdata    ( clock_conv_to_ddr_data_axi_rdata     ),
+                .m_axi_rresp    ( clock_conv_to_ddr_data_axi_rresp     ),
+                .m_axi_rlast    ( clock_conv_to_ddr_data_axi_rlast     ),
+                .m_axi_rvalid   ( clock_conv_to_ddr_data_axi_rvalid    ),
+                .m_axi_rready   ( clock_conv_to_ddr_data_axi_rready    )
+            );
+        end
+        else begin
+            `ASSIGN_AXI_BUS(clock_conv_to_ddr_data, HBUS_to_DDR)
+        end
+    endgenerate
+
+
+    // TODO: Add the converters (dwitdh conv in case of xlen 64 and clock conv from the MBUS domain) for the CRTL path (for now to used)
+
+    // DDR4 Channel 2
     xlnx_ddr4 ddr4_u (
         .c0_sys_clk_n                ( clk_300mhz_2_n_i ),
         .c0_sys_clk_p                ( clk_300mhz_2_p_i ),
@@ -695,43 +807,43 @@ module highperformance_bus #(
 
 
         // AXI4 interface
-        .c0_ddr4_s_axi_awid          ( HBUS_to_DDR_axi_awid    ),
-        .c0_ddr4_s_axi_awaddr        ( { 2'b00, HBUS_to_DDR_axi_awaddr } ), // 34 bits
-        .c0_ddr4_s_axi_awlen         ( HBUS_to_DDR_axi_awlen   ),
-        .c0_ddr4_s_axi_awsize        ( HBUS_to_DDR_axi_awsize  ),
-        .c0_ddr4_s_axi_awburst       ( HBUS_to_DDR_axi_awburst ),
-        .c0_ddr4_s_axi_awlock        ( HBUS_to_DDR_axi_awlock  ),
-        .c0_ddr4_s_axi_awcache       ( HBUS_to_DDR_axi_awcache ),
-        .c0_ddr4_s_axi_awprot        ( HBUS_to_DDR_axi_awprot  ),
-        .c0_ddr4_s_axi_awqos         ( HBUS_to_DDR_axi_awqos   ),
-        .c0_ddr4_s_axi_awvalid       ( HBUS_to_DDR_axi_awvalid ),
-        .c0_ddr4_s_axi_awready       ( HBUS_to_DDR_axi_awready ),
-        .c0_ddr4_s_axi_wdata         ( HBUS_to_DDR_axi_wdata   ),
-        .c0_ddr4_s_axi_wstrb         ( HBUS_to_DDR_axi_wstrb   ),
-        .c0_ddr4_s_axi_wlast         ( HBUS_to_DDR_axi_wlast   ),
-        .c0_ddr4_s_axi_wvalid        ( HBUS_to_DDR_axi_wvalid  ),
-        .c0_ddr4_s_axi_wready        ( HBUS_to_DDR_axi_wready  ),
-        .c0_ddr4_s_axi_bready        ( HBUS_to_DDR_axi_bready  ),
-        .c0_ddr4_s_axi_bid           ( HBUS_to_DDR_axi_bid     ),
-        .c0_ddr4_s_axi_bresp         ( HBUS_to_DDR_axi_bresp   ),
-        .c0_ddr4_s_axi_bvalid        ( HBUS_to_DDR_axi_bvalid  ),
-        .c0_ddr4_s_axi_arid          ( HBUS_to_DDR_axi_arid    ),
-        .c0_ddr4_s_axi_araddr        ( { 2'b00, HBUS_to_DDR_axi_araddr } ), // 34 bits
-        .c0_ddr4_s_axi_arlen         ( HBUS_to_DDR_axi_arlen   ),
-        .c0_ddr4_s_axi_arsize        ( HBUS_to_DDR_axi_arsize  ),
-        .c0_ddr4_s_axi_arburst       ( HBUS_to_DDR_axi_arburst ),
-        .c0_ddr4_s_axi_arlock        ( HBUS_to_DDR_axi_arlock  ),
-        .c0_ddr4_s_axi_arcache       ( HBUS_to_DDR_axi_arcache ),
-        .c0_ddr4_s_axi_arprot        ( HBUS_to_DDR_axi_arprot  ),
-        .c0_ddr4_s_axi_arqos         ( HBUS_to_DDR_axi_arqos   ),
-        .c0_ddr4_s_axi_arvalid       ( HBUS_to_DDR_axi_arvalid ),
-        .c0_ddr4_s_axi_arready       ( HBUS_to_DDR_axi_arready ),
-        .c0_ddr4_s_axi_rready        ( HBUS_to_DDR_axi_rready  ),
-        .c0_ddr4_s_axi_rlast         ( HBUS_to_DDR_axi_rlast   ),
-        .c0_ddr4_s_axi_rvalid        ( HBUS_to_DDR_axi_rvalid  ),
-        .c0_ddr4_s_axi_rresp         ( HBUS_to_DDR_axi_rresp   ),
-        .c0_ddr4_s_axi_rid           ( HBUS_to_DDR_axi_rid     ),
-        .c0_ddr4_s_axi_rdata         ( HBUS_to_DDR_axi_rdata   )
+        .c0_ddr4_s_axi_awid          ( clock_conv_to_ddr_data_axi_awid    ),
+        .c0_ddr4_s_axi_awaddr        ( { 2'b00, clock_conv_to_ddr_data_axi_awaddr } ), // 34 bits
+        .c0_ddr4_s_axi_awlen         ( clock_conv_to_ddr_data_axi_awlen   ),
+        .c0_ddr4_s_axi_awsize        ( clock_conv_to_ddr_data_axi_awsize  ),
+        .c0_ddr4_s_axi_awburst       ( clock_conv_to_ddr_data_axi_awburst ),
+        .c0_ddr4_s_axi_awlock        ( clock_conv_to_ddr_data_axi_awlock  ),
+        .c0_ddr4_s_axi_awcache       ( clock_conv_to_ddr_data_axi_awcache ),
+        .c0_ddr4_s_axi_awprot        ( clock_conv_to_ddr_data_axi_awprot  ),
+        .c0_ddr4_s_axi_awqos         ( clock_conv_to_ddr_data_axi_awqos   ),
+        .c0_ddr4_s_axi_awvalid       ( clock_conv_to_ddr_data_axi_awvalid ),
+        .c0_ddr4_s_axi_awready       ( clock_conv_to_ddr_data_axi_awready ),
+        .c0_ddr4_s_axi_wdata         ( clock_conv_to_ddr_data_axi_wdata   ),
+        .c0_ddr4_s_axi_wstrb         ( clock_conv_to_ddr_data_axi_wstrb   ),
+        .c0_ddr4_s_axi_wlast         ( clock_conv_to_ddr_data_axi_wlast   ),
+        .c0_ddr4_s_axi_wvalid        ( clock_conv_to_ddr_data_axi_wvalid  ),
+        .c0_ddr4_s_axi_wready        ( clock_conv_to_ddr_data_axi_wready  ),
+        .c0_ddr4_s_axi_bready        ( clock_conv_to_ddr_data_axi_bready  ),
+        .c0_ddr4_s_axi_bid           ( clock_conv_to_ddr_data_axi_bid     ),
+        .c0_ddr4_s_axi_bresp         ( clock_conv_to_ddr_data_axi_bresp   ),
+        .c0_ddr4_s_axi_bvalid        ( clock_conv_to_ddr_data_axi_bvalid  ),
+        .c0_ddr4_s_axi_arid          ( clock_conv_to_ddr_data_axi_arid    ),
+        .c0_ddr4_s_axi_araddr        ( { 2'b00, clock_conv_to_ddr_data_axi_araddr } ), // 34 bits
+        .c0_ddr4_s_axi_arlen         ( clock_conv_to_ddr_data_axi_arlen   ),
+        .c0_ddr4_s_axi_arsize        ( clock_conv_to_ddr_data_axi_arsize  ),
+        .c0_ddr4_s_axi_arburst       ( clock_conv_to_ddr_data_axi_arburst ),
+        .c0_ddr4_s_axi_arlock        ( clock_conv_to_ddr_data_axi_arlock  ),
+        .c0_ddr4_s_axi_arcache       ( clock_conv_to_ddr_data_axi_arcache ),
+        .c0_ddr4_s_axi_arprot        ( clock_conv_to_ddr_data_axi_arprot  ),
+        .c0_ddr4_s_axi_arqos         ( clock_conv_to_ddr_data_axi_arqos   ),
+        .c0_ddr4_s_axi_arvalid       ( clock_conv_to_ddr_data_axi_arvalid ),
+        .c0_ddr4_s_axi_arready       ( clock_conv_to_ddr_data_axi_arready ),
+        .c0_ddr4_s_axi_rready        ( clock_conv_to_ddr_data_axi_rready  ),
+        .c0_ddr4_s_axi_rlast         ( clock_conv_to_ddr_data_axi_rlast   ),
+        .c0_ddr4_s_axi_rvalid        ( clock_conv_to_ddr_data_axi_rvalid  ),
+        .c0_ddr4_s_axi_rresp         ( clock_conv_to_ddr_data_axi_rresp   ),
+        .c0_ddr4_s_axi_rid           ( clock_conv_to_ddr_data_axi_rid     ),
+        .c0_ddr4_s_axi_rdata         ( clock_conv_to_ddr_data_axi_rdata   )
     );
 
 endmodule : highperformance_bus

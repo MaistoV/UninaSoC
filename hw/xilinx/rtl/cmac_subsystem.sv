@@ -78,6 +78,10 @@ module cmac_subsystem # (
     input logic MBUS_clock_i,
     input logic MBUS_reset_ni,
 
+    // Output clock and reset
+    output logic output_clock_o,
+    output logic output_reset_no,
+
     // AXI4 CSR
     `DEFINE_AXI_SLAVE_PORTS(s_csr, MBUS_DATA_WIDTH, MBUS_ADDR_WIDTH, MBUS_ID_WIDTH),
 
@@ -98,6 +102,9 @@ module cmac_subsystem # (
     // CMAC output clock (322,26 MHz) and reset (Active high)
     logic cmac_output_clock_322MHz;
     logic cmac_output_reset_p;
+
+    assign output_clock_o  = cmac_output_clock_322MHz;
+    assign output_reset_no = ~cmac_output_reset_p;
 
     // AXI Stream FIFO interrupt signal
     logic fifo_interrupt;
@@ -263,102 +270,109 @@ module cmac_subsystem # (
     endgenerate
 
 
+    generate
+        // Clock converter from HBUS to dwidth converter (DATA FIFO)
+        if (`HBUS_CLOCK_FREQ_MHZ != 322) begin
+            axi_clock_converter_wrapper #(
+                .LOCAL_DATA_WIDTH ( LOCAL_DATA_WIDTH ),
+                .LOCAL_ADDR_WIDTH ( LOCAL_ADDR_WIDTH ),
+                .LOCAL_ID_WIDTH   ( LOCAL_ID_WIDTH   )
 
-    // TODO: make this clock conv optional based on the HBUS clock domain
-    // Clock converter from HBUS to dwidth converter (DATA FIFO)
-    axi_clock_converter_wrapper #(
-        .LOCAL_DATA_WIDTH ( LOCAL_DATA_WIDTH ),
-        .LOCAL_ADDR_WIDTH ( LOCAL_ADDR_WIDTH ),
-        .LOCAL_ID_WIDTH   ( LOCAL_ID_WIDTH   )
+            ) fifo_clock_conv_u (
+                .s_axi_aclk     ( HBUS_clock_i        ),
+                .s_axi_aresetn  ( HBUS_reset_ni       ),
 
-    ) fifo_clock_conv_u (
-        .s_axi_aclk     ( HBUS_clock_i        ),
-        .s_axi_aresetn  ( HBUS_reset_ni       ),
+                .m_axi_aclk     ( cmac_output_clock_322MHz ),
+                .m_axi_aresetn  ( ~cmac_output_reset_p     ),
 
-        .m_axi_aclk     ( cmac_output_clock_322MHz ),
-        .m_axi_aresetn  ( ~cmac_output_reset_p     ),
+                .s_axi_awid     ( s_data_axi_awid          ),
+                .s_axi_awaddr   ( s_data_axi_awaddr        ),
+                .s_axi_awlen    ( s_data_axi_awlen         ),
+                .s_axi_awsize   ( s_data_axi_awsize        ),
+                .s_axi_awburst  ( s_data_axi_awburst       ),
+                .s_axi_awlock   ( s_data_axi_awlock        ),
+                .s_axi_awcache  ( s_data_axi_awcache       ),
+                .s_axi_awprot   ( s_data_axi_awprot        ),
+                .s_axi_awqos    ( s_data_axi_awqos         ),
+                .s_axi_awvalid  ( s_data_axi_awvalid       ),
+                .s_axi_awready  ( s_data_axi_awready       ),
+                .s_axi_awregion ( s_data_axi_awregion      ),
+                .s_axi_wdata    ( s_data_axi_wdata         ),
+                .s_axi_wstrb    ( s_data_axi_wstrb         ),
+                .s_axi_wlast    ( s_data_axi_wlast         ),
+                .s_axi_wvalid   ( s_data_axi_wvalid        ),
+                .s_axi_wready   ( s_data_axi_wready        ),
+                .s_axi_bid      ( s_data_axi_bid           ),
+                .s_axi_bresp    ( s_data_axi_bresp         ),
+                .s_axi_bvalid   ( s_data_axi_bvalid        ),
+                .s_axi_bready   ( s_data_axi_bready        ),
+                .s_axi_arid     ( s_data_axi_arid          ),
+                .s_axi_araddr   ( s_data_axi_araddr        ),
+                .s_axi_arlen    ( s_data_axi_arlen         ),
+                .s_axi_arsize   ( s_data_axi_arsize        ),
+                .s_axi_arburst  ( s_data_axi_arburst       ),
+                .s_axi_arlock   ( s_data_axi_arlock        ),
+                .s_axi_arregion ( s_data_axi_arregion      ),
+                .s_axi_arcache  ( s_data_axi_arcache       ),
+                .s_axi_arprot   ( s_data_axi_arprot        ),
+                .s_axi_arqos    ( s_data_axi_arqos         ),
+                .s_axi_arvalid  ( s_data_axi_arvalid       ),
+                .s_axi_arready  ( s_data_axi_arready       ),
+                .s_axi_rid      ( s_data_axi_rid           ),
+                .s_axi_rdata    ( s_data_axi_rdata         ),
+                .s_axi_rresp    ( s_data_axi_rresp         ),
+                .s_axi_rlast    ( s_data_axi_rlast         ),
+                .s_axi_rvalid   ( s_data_axi_rvalid        ),
+                .s_axi_rready   ( s_data_axi_rready        ),
 
-        .s_axi_awid     ( s_data_axi_awid          ),
-        .s_axi_awaddr   ( s_data_axi_awaddr        ),
-        .s_axi_awlen    ( s_data_axi_awlen         ),
-        .s_axi_awsize   ( s_data_axi_awsize        ),
-        .s_axi_awburst  ( s_data_axi_awburst       ),
-        .s_axi_awlock   ( s_data_axi_awlock        ),
-        .s_axi_awcache  ( s_data_axi_awcache       ),
-        .s_axi_awprot   ( s_data_axi_awprot        ),
-        .s_axi_awqos    ( s_data_axi_awqos         ),
-        .s_axi_awvalid  ( s_data_axi_awvalid       ),
-        .s_axi_awready  ( s_data_axi_awready       ),
-        .s_axi_awregion ( s_data_axi_awregion      ),
-        .s_axi_wdata    ( s_data_axi_wdata         ),
-        .s_axi_wstrb    ( s_data_axi_wstrb         ),
-        .s_axi_wlast    ( s_data_axi_wlast         ),
-        .s_axi_wvalid   ( s_data_axi_wvalid        ),
-        .s_axi_wready   ( s_data_axi_wready        ),
-        .s_axi_bid      ( s_data_axi_bid           ),
-        .s_axi_bresp    ( s_data_axi_bresp         ),
-        .s_axi_bvalid   ( s_data_axi_bvalid        ),
-        .s_axi_bready   ( s_data_axi_bready        ),
-        .s_axi_arid     ( s_data_axi_arid          ),
-        .s_axi_araddr   ( s_data_axi_araddr        ),
-        .s_axi_arlen    ( s_data_axi_arlen         ),
-        .s_axi_arsize   ( s_data_axi_arsize        ),
-        .s_axi_arburst  ( s_data_axi_arburst       ),
-        .s_axi_arlock   ( s_data_axi_arlock        ),
-        .s_axi_arregion ( s_data_axi_arregion      ),
-        .s_axi_arcache  ( s_data_axi_arcache       ),
-        .s_axi_arprot   ( s_data_axi_arprot        ),
-        .s_axi_arqos    ( s_data_axi_arqos         ),
-        .s_axi_arvalid  ( s_data_axi_arvalid       ),
-        .s_axi_arready  ( s_data_axi_arready       ),
-        .s_axi_rid      ( s_data_axi_rid           ),
-        .s_axi_rdata    ( s_data_axi_rdata         ),
-        .s_axi_rresp    ( s_data_axi_rresp         ),
-        .s_axi_rlast    ( s_data_axi_rlast         ),
-        .s_axi_rvalid   ( s_data_axi_rvalid        ),
-        .s_axi_rready   ( s_data_axi_rready        ),
+                .m_axi_awid     ( clock_conv_to_fifo_axi_awid      ),
+                .m_axi_awaddr   ( clock_conv_to_fifo_axi_awaddr    ),
+                .m_axi_awlen    ( clock_conv_to_fifo_axi_awlen     ),
+                .m_axi_awsize   ( clock_conv_to_fifo_axi_awsize    ),
+                .m_axi_awburst  ( clock_conv_to_fifo_axi_awburst   ),
+                .m_axi_awlock   ( clock_conv_to_fifo_axi_awlock    ),
+                .m_axi_awcache  ( clock_conv_to_fifo_axi_awcache   ),
+                .m_axi_awprot   ( clock_conv_to_fifo_axi_awprot    ),
+                .m_axi_awregion ( clock_conv_to_fifo_axi_awregion  ),
+                .m_axi_awqos    ( clock_conv_to_fifo_axi_awqos     ),
+                .m_axi_awvalid  ( clock_conv_to_fifo_axi_awvalid   ),
+                .m_axi_awready  ( clock_conv_to_fifo_axi_awready   ),
+                .m_axi_wdata    ( clock_conv_to_fifo_axi_wdata     ),
+                .m_axi_wstrb    ( clock_conv_to_fifo_axi_wstrb     ),
+                .m_axi_wlast    ( clock_conv_to_fifo_axi_wlast     ),
+                .m_axi_wvalid   ( clock_conv_to_fifo_axi_wvalid    ),
+                .m_axi_wready   ( clock_conv_to_fifo_axi_wready    ),
+                .m_axi_bid      ( clock_conv_to_fifo_axi_bid       ),
+                .m_axi_bresp    ( clock_conv_to_fifo_axi_bresp     ),
+                .m_axi_bvalid   ( clock_conv_to_fifo_axi_bvalid    ),
+                .m_axi_bready   ( clock_conv_to_fifo_axi_bready    ),
+                .m_axi_arid     ( clock_conv_to_fifo_axi_arid      ),
+                .m_axi_araddr   ( clock_conv_to_fifo_axi_araddr    ),
+                .m_axi_arlen    ( clock_conv_to_fifo_axi_arlen     ),
+                .m_axi_arsize   ( clock_conv_to_fifo_axi_arsize    ),
+                .m_axi_arburst  ( clock_conv_to_fifo_axi_arburst   ),
+                .m_axi_arlock   ( clock_conv_to_fifo_axi_arlock    ),
+                .m_axi_arcache  ( clock_conv_to_fifo_axi_arcache   ),
+                .m_axi_arprot   ( clock_conv_to_fifo_axi_arprot    ),
+                .m_axi_arregion ( clock_conv_to_fifo_axi_arregion  ),
+                .m_axi_arqos    ( clock_conv_to_fifo_axi_arqos     ),
+                .m_axi_arvalid  ( clock_conv_to_fifo_axi_arvalid   ),
+                .m_axi_arready  ( clock_conv_to_fifo_axi_arready   ),
+                .m_axi_rid      ( clock_conv_to_fifo_axi_rid       ),
+                .m_axi_rdata    ( clock_conv_to_fifo_axi_rdata     ),
+                .m_axi_rresp    ( clock_conv_to_fifo_axi_rresp     ),
+                .m_axi_rlast    ( clock_conv_to_fifo_axi_rlast     ),
+                .m_axi_rvalid   ( clock_conv_to_fifo_axi_rvalid    ),
+                .m_axi_rready   ( clock_conv_to_fifo_axi_rready    )
+            );
+        end
+        else begin
+            `ASSIGN_AXI_BUS(clock_conv_to_fifo, s_data)
+        end
 
-        .m_axi_awid     ( clock_conv_to_fifo_axi_awid      ),
-        .m_axi_awaddr   ( clock_conv_to_fifo_axi_awaddr    ),
-        .m_axi_awlen    ( clock_conv_to_fifo_axi_awlen     ),
-        .m_axi_awsize   ( clock_conv_to_fifo_axi_awsize    ),
-        .m_axi_awburst  ( clock_conv_to_fifo_axi_awburst   ),
-        .m_axi_awlock   ( clock_conv_to_fifo_axi_awlock    ),
-        .m_axi_awcache  ( clock_conv_to_fifo_axi_awcache   ),
-        .m_axi_awprot   ( clock_conv_to_fifo_axi_awprot    ),
-        .m_axi_awregion ( clock_conv_to_fifo_axi_awregion  ),
-        .m_axi_awqos    ( clock_conv_to_fifo_axi_awqos     ),
-        .m_axi_awvalid  ( clock_conv_to_fifo_axi_awvalid   ),
-        .m_axi_awready  ( clock_conv_to_fifo_axi_awready   ),
-        .m_axi_wdata    ( clock_conv_to_fifo_axi_wdata     ),
-        .m_axi_wstrb    ( clock_conv_to_fifo_axi_wstrb     ),
-        .m_axi_wlast    ( clock_conv_to_fifo_axi_wlast     ),
-        .m_axi_wvalid   ( clock_conv_to_fifo_axi_wvalid    ),
-        .m_axi_wready   ( clock_conv_to_fifo_axi_wready    ),
-        .m_axi_bid      ( clock_conv_to_fifo_axi_bid       ),
-        .m_axi_bresp    ( clock_conv_to_fifo_axi_bresp     ),
-        .m_axi_bvalid   ( clock_conv_to_fifo_axi_bvalid    ),
-        .m_axi_bready   ( clock_conv_to_fifo_axi_bready    ),
-        .m_axi_arid     ( clock_conv_to_fifo_axi_arid      ),
-        .m_axi_araddr   ( clock_conv_to_fifo_axi_araddr    ),
-        .m_axi_arlen    ( clock_conv_to_fifo_axi_arlen     ),
-        .m_axi_arsize   ( clock_conv_to_fifo_axi_arsize    ),
-        .m_axi_arburst  ( clock_conv_to_fifo_axi_arburst   ),
-        .m_axi_arlock   ( clock_conv_to_fifo_axi_arlock    ),
-        .m_axi_arcache  ( clock_conv_to_fifo_axi_arcache   ),
-        .m_axi_arprot   ( clock_conv_to_fifo_axi_arprot    ),
-        .m_axi_arregion ( clock_conv_to_fifo_axi_arregion  ),
-        .m_axi_arqos    ( clock_conv_to_fifo_axi_arqos     ),
-        .m_axi_arvalid  ( clock_conv_to_fifo_axi_arvalid   ),
-        .m_axi_arready  ( clock_conv_to_fifo_axi_arready   ),
-        .m_axi_rid      ( clock_conv_to_fifo_axi_rid       ),
-        .m_axi_rdata    ( clock_conv_to_fifo_axi_rdata     ),
-        .m_axi_rresp    ( clock_conv_to_fifo_axi_rresp     ),
-        .m_axi_rlast    ( clock_conv_to_fifo_axi_rlast     ),
-        .m_axi_rvalid   ( clock_conv_to_fifo_axi_rvalid    ),
-        .m_axi_rready   ( clock_conv_to_fifo_axi_rready    )
-    );
 
+
+    endgenerate
 
     // AXI4 to AXI Lite prot conv (from dwidth converter to CMAC XBAR CSR PATH)
     xlnx_axi4_to_axilite_d32_converter axi4_to_axilite_d32_converter_to_xbar_u (

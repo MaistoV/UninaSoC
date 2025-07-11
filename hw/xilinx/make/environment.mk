@@ -92,6 +92,7 @@ XILINX_VIVADO_ENV ?=                                \
     MBUS_ID_WIDTH=${MBUS_ID_WIDTH}                  \
     BRAM_DEPTHS="${BRAM_DEPTHS}"                    \
     MAIN_CLOCK_FREQ_MHZ=${MAIN_CLOCK_FREQ_MHZ}      \
+    HBUS_CLOCK_FREQ_MHZ=${HBUS_CLOCK_FREQ_MHZ}      \
     RANGE_CLOCK_DOMAINS="${RANGE_CLOCK_DOMAINS}"    \
     PBUS_NUM_MI=${PBUS_NUM_MI}                      \
     PBUS_ID_WIDTH=${PBUS_ID_WIDTH}                  \
