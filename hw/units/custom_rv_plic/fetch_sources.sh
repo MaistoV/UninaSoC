@@ -19,26 +19,12 @@ ASSETS_DIR=$(pwd)/assets
 
 # TODO31: this PYTHON flow requires: hjson, tabulate, yaml and mako
 # TODO31: Install them from here, as harmless if already installed
+# TODO142: migrate to venv 
 
-# Check Python dependencies (hjson requires Python 3.3+). If you need more info, heck OpenTitan doc: https://opentitan.org/book/doc/contributing/style_guides/hjson_usage_style.html
-echo -e "${YELLOW}[FETCH_SOURCES] Checking and installing Python modules ...${NC}"
-
-# Check if venv module is available
-if ! python3.10 -m venv --help &> /dev/null; then
-    echo -e "${YELLOW}[FETCH_SOURCES] 'venv' not found for Python 3.10. Installing python3.10-venv ...${NC}"
-    sudo apt update
-    sudo apt install -y python3.10-venv
-fi
-
-# Create virtual environment
-python3.10 -m venv venv310
-
-# Activate virtual environment
-source venv310/bin/activate
-
+# Install the required module
 echo -e "${YELLOW}[FETCH_SOURCES] Installing Python modules: hjson, tabulate, pyyaml, mako ...${NC}"
-pip install --upgrade pip
-pip install hjson tabulate pyyaml mako
+pip3.10 install --upgrade pip
+pip3.10 install hjson tabulate pyyaml mako
 
 #######################################
 # Fetch PLIC sources and depencencies #
@@ -60,8 +46,9 @@ cd ${CLONE_DIR};
 echo -e "${YELLOW}[FETCH_SOURCES] Use Bender to retrieve dependencies ${NC}"
 # Open-Titan peripherals (by PULP) requires a preliminar configuration and patching
 # Apply hjson configurations and patches
-cp ${ASSETS_DIR}/bender ./
+#cp ${ASSETS_DIR}/bender ./
 cp ${ASSETS_DIR}/Bender.yml ./
+cp ${ASSETS_DIR}/otp.mk ./
 make -B otp;
 cp ${ASSETS_DIR}/Bender.lock ./
 ./bender checkout;
@@ -128,7 +115,3 @@ echo -e "${GREEN}[FETCH_SOURCES] Completed${NC}"
 
 # remove open titan peripherals dir
 rm -rf ${CLONE_DIR};
-
-# Close Python venv
-rm -rf venv310
-deactivate
