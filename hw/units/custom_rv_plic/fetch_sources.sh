@@ -17,11 +17,9 @@ ASSETS_DIR=$(pwd)/assets
 # Python Environment #
 ######################
 
-# TODO31: this PYTHON flow requires: hjson, tabulate, yaml and mako
-# TODO31: Install them from here, as harmless if already installed
 # TODO142: migrate to venv 
 
-# Install the required module
+# Install the required modules
 echo -e "${YELLOW}[FETCH_SOURCES] Installing Python modules: hjson, tabulate, pyyaml, mako ...${NC}"
 pip3.10 install --upgrade pip
 pip3.10 install hjson tabulate pyyaml mako
@@ -85,7 +83,7 @@ for file in ${DEP_AXI}/include/axi/*.svh; do [ -f "$file" ] && cp "$file" "${RTL
 
 # We need a second step of local patching
 # 1 - Remove absolute path in source files in order to allow a flatten source code organization
-# 2 . Remove interface definitions as vivado complaints even if interfaces are not instantiated at all
+# 2 - Remove interface definitions as vivado complaints even if interfaces are not instantiated at all
 echo -e "${YELLOW}[PATCH_SOURCES] Patching include paths for flat includes and specific substitutions${NC}"
 for rtl_file in ${RTL_DIR}/*; do
     if [[ -f $rtl_file ]]; then
