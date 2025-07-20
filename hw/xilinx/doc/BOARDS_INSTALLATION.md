@@ -8,10 +8,17 @@ Verified on Vivado 2022.1 (should be working from 2015.1 onward):
    - Restart vivado
 
 ## Alveo U250
-Verified on Vivado 2023.1:
+Verified on Vivado 2023.1 and 2024.1:
    - Download the [Alveo U250 board files](https://www.xilinx.com/bin/public/openDownload?filename=au250_board_files_20200616.zip)
    - Extract the downloaded zip into \<VIVADO_DIR>/data/xhub/boards/XilinxBoardStore/boards/Xilinx/
    - Restart Vivado
+
+## Alveo U280
+The Alveo U280 is no longer supported by AMD Xilinx, thus Vivado 2023.1 is the last version to support it:
+   - Download the [Alveo U280 board files]([javascript:void(0)](https://adaptivesupport.amd.com/s/question/0D5KZ00000yk2Bx0AI/would-anyone-have-the-official-file-for-the-alveo-u280-trying-to-get-the-the-xdc-file-for-a-project-to-run-on-the-u280-but-it-seems-official-documentation-is-nowhere-to-be-found-download-doesnt-exist?language=en_US)
+   - Extract the downloaded zip into \<VIVADO_DIR>/data/xhub/boards/XilinxBoardStore/boards/Xilinx/
+   - Restart Vivado
+Note that these board files are from the AMD support forum.
 
 ### XDMA maximum BAR size
 > The safe (and adopted) maximum BAR size is 32 MB (see [XBAR config](../ips/hpc/xlnx_xdma/config.tcl)) on the MSI Z590 PLUS (MS-7D11) motherboard, but it strictly depends on the motherboard.
