@@ -63,7 +63,7 @@ if [[ ${SOC_CONFIG} == "hpc" ]]; then
         # TODO: the Alveo U280 is EOL (end of life) the last vivado version to support it is the 2023.1
         export XILINX_PART_NUMBER=xcu280-fsvh2892-2L-e
         export XILINX_BOARD_PART=xilinx.com:au280:part0:1.2
-        export XILINX_HW_DEVICE=xcu280_0
+        export XILINX_HW_DEVICE=xcu280_u55c_0 # xcu280_0
         export BOARD=au280
     elif [[ ${BOARD_CONFIG} == "au50" ]]; then
         # TBD
