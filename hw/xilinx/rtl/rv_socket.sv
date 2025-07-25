@@ -483,6 +483,9 @@ module rv_socket # (
         end
 
         // 64-bits cores
+
+        // TODO: Debug the configuration of SoC with MicroblazeV 64 bit
+        // currently the only example working is "blinky"
         else if (CORE_SELECTOR == CORE_MICROBLAZEV_64) begin : xlnx_microblazev_64
 
             // Tie-off unused signals
