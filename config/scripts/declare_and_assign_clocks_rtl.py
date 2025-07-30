@@ -48,7 +48,7 @@ CLK_OWNERS = [
     "DDR"
 ]
 
-# TODO: Maybe refactor (?)
+# TODO 127: Maybe refactor (?)
 # Clocks declarations and assignments
 def declare_and_assign_clocks(config : configuration.Configuration) -> None:
     # Declare and assign clocks

@@ -3,5 +3,5 @@
 /////////////////////////////////////////
 // Clocks declaration and assignments  //
 /////////////////////////////////////////
-assign HBUS_clk = ddr_clk;
-assign HBUS_rstn = ~ddr_rst;
+assign HBUS_clk = extern_clock_i;
+assign HBUS_rstn = extern_reset_ni;

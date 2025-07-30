@@ -9,8 +9,8 @@
 #   $1: System CSV config
 #   $2: MBUS Source CSV config
 #   $3: PBUS Source CSV config
-#   $3: HBUS Source CSV config
-#   $4: Target MK file
+#   $4: HBUS Source CSV config
+#   $5: Target MK file
 
 ##############
 # Parse args #
@@ -31,6 +31,8 @@ CONFIG_MAIN_CSV=$2
 CONFIG_PBUS_CSV=$3
 CONFIG_HBUS_CSV=$4
 OUTPUT_MK_FILE=$5
+CMAC_IP_FILE=$6
+AXIS_FIFO_IP_FILE=$7
 
 ##########
 # Script #
@@ -197,16 +199,35 @@ echo "[CONFIG_XILINX] Updating PBUS_CLOCK_FREQ_MHZ = ${PBUS_CLOCK_FREQ_MHZ}00000
 
 
 if [[ ${SOC_CONFIG} == "hpc" ]]; then
-
     # Get hbus slaves and base addresses
+    mbus_slaves=$(grep "RANGE_NAMES" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}');
     hbus_slaves=$(grep "RANGE_NAMES" ${CONFIG_HBUS_CSV} | awk -F "," '{print $2}');
+    mbus_ranges_base_addr=($(grep "RANGE_BASE_ADDR" ${CONFIG_MAIN_CSV} | awk -F "," '{print $2}'));
     hbus_ranges_base_addr=($(grep "RANGE_BASE_ADDR" ${CONFIG_HBUS_CSV} | awk -F "," '{print $2}'));
     # We assume the CMAC as the first slave in the HBUS m_acc
     cmac_slave=m_acc
+    cmac_xbar_slave=CMAC_CSR
+    # CMAC XBAR default base address
+    cmac_xbar_base_addr=0x40000
     # CMAC AXIS FIFO default base address
     cmac_axis_fifo_base_addr=0x60000
 
     # for loop index
+    let cnt=0
+
+    # For each mbus slave
+    # Find the index for the mbus cmac_xbasr_slave into the slave names
+    for slave in ${mbus_slaves[*]}; do
+
+        if [[ ${slave} == $cmac_xbar_slave ]]; then
+            cmac_xbar_base_addr=${mbus_ranges_base_addr[$cnt]}
+            break
+        fi
+
+        # Increment counter
+        ((cnt++))
+    done
+
     let cnt=0
 
     # For each hbus slave
@@ -223,10 +244,16 @@ if [[ ${SOC_CONFIG} == "hpc" ]]; then
         ((cnt++))
     done
 
+    # Update the CMAC XBAR base address
+    CMAC_XBAR_CONFIG=${XILINX_IPS_ROOT}/hpc/xlnx_cmac_xbar/config.tcl
+    # NOTE: this will trigger the rebuild of the IP
+    sed -E -i "s#(set base_offset)[[:space:]]*\{[^}]+\}#\1 {${cmac_xbar_base_addr}}#g" "${CMAC_XBAR_CONFIG}"
+    echo "[CONFIG_XILINX] Updating CMAC_XBAR_BASE_ADDRESS = ${cmac_xbar_base_addr} "
+
     # Update the CMAC AXIS FIFO base address
     CMAC_AXIS_FIFO_CONFIG=${XILINX_IPS_ROOT}/hpc/xlnx_axis_fifo/config.tcl
     # NOTE: this will trigger the rebuild of the IP
-    sed -E -i "s#(CONFIG\.C_AXI4_BASEADDR)[[:space:]]*\{[^}]+\}#\1 {${cmac_axis_fifo_base_addr}}#g" "${CMAC_AXIS_FIFO_CONFIG}"
+    sed -E -i "s#(set base_offset)[[:space:]]*\{[^}]+\}#\1 {${cmac_axis_fifo_base_addr}}#g" "${CMAC_AXIS_FIFO_CONFIG}"
     echo "[CONFIG_XILINX] Updating CMAC_AXIS_FIFO_BASE_ADDRESS = ${cmac_axis_fifo_base_addr} "
 
     # Update the CMAC drp (init) clock frequency
