@@ -14,11 +14,17 @@
 //   ____________                                     |   Bus    |                    __________________
 //  |            |                                    |          |                   |                  |
 //  | sys_master |----------------------------------->|          |------------------>| High-performance |
-//  |____________|                                    |          |                   |       bus        |
-//   ______________                                   |          |<------------------|     (HBUS)       |
-//  |              |--------------------------------->|          |                   |__________________|
-//  | Debug Module |                                  |          |                    ________________
-//  |______________|<---------------------------------|          |                   |                |
+//  |____________|                                    |          |                   |       bus        |--------|
+//   ______________                                   |          |<------------------|     (HBUS)       |        |
+//  |              |--------------------------------->|          |                   |__________________|        |
+//  | Debug Module |                                  |          |                    __________________         |
+//  |______________|<---------------------------------|          |                   |                  |        |
+//                                                    |          |      CSR          |                  |  Data  |
+//                                                    |          |------------------>|  CMAC Subsystem  |<-------|
+//                                                    |          |                   |                  |
+//                                                    |          |                   |__________________|
+//                                                    |          |                    ________________
+//                                                    |          |                   |                |
 //                                                    |          |------------------>| Peripheral bus |---------|
 //                                                    |          |                   |     (PBUS)     |         |
 //                                                    |          |                   |________________|         | peripheral
@@ -31,8 +37,6 @@
 //                                |                                                           |
 //                                |___________________________________________________________|
 //                                                 platform interrupt
-
-// TODO: update the description add CMAC subsys
 
 /////////////////////
 // Import packages //
@@ -1059,13 +1063,13 @@ module uninasoc (
         .qsfp0_156mhz_clock_pi   ( qsfp0_156mhz_clock_pi ),
         .qsfp0_156mhz_clock_ni   ( qsfp0_156mhz_clock_ni ),
 
-        // HBUS clock and reset
-        .HBUS_clock_i            ( HBUS_clk    ),
-        .HBUS_reset_ni           ( HBUS_rstn   ),
+        // Data clock and reset
+        .data_clock_i            ( HBUS_clk    ),
+        .data_reset_ni           ( HBUS_rstn   ),
 
-        // MBUS clock and reset
-        .MBUS_clock_i            ( main_clk    ),
-        .MBUS_reset_ni           ( main_rstn   ),
+        // CSR clock and reset
+        .csr_clock_i            ( main_clk    ),
+        .csr_reset_ni           ( main_rstn   ),
 
         // Output user clock and reset
         .output_clock_o          ( clk_322MHz  ),

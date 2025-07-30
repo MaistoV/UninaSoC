@@ -28,9 +28,6 @@ RTL_FILES                = {
     "HBUS"       : f"{os.environ.get('XILINX_ROOT')}/rtl/hbus_clk_assignments.svinc",
 }
 
-# TODO: update CONFIG DOCUMENTATION - say that the only possible frequency for the HBUS for now are 300 (from the DDR CH2 internal to the HBUS)
-#                                     and 322 (from the CMAC external to the HBUS)
-
 # HBUS internal clock frequencies
 HBUS_INTERN_CLK_FREQUENCIES = {
     "ddr"  : 300,
@@ -101,7 +98,7 @@ def declare_and_assign_clocks(config : configuration.Configuration) -> None:
             for freq in HBUS_INTERN_CLK_FREQUENCIES:
                 if HBUS_INTERN_CLK_FREQUENCIES[freq] == hbus_clk_freq:
                     file.write(f"assign HBUS_clk = {freq}_clk;\n")
-                    file.write(f"assign HBUS_rstn = ~{freq}_rst;\n") # TODO: this work only in the DDR case, each peripheral has a different reset type...
+                    file.write(f"assign HBUS_rstn = ~{freq}_rst;\n") # TODO 127: this work only in the DDR case, each peripheral has a different reset type...
 
         # If the clock frequency is NOT an HBUS-internal clock then take the clock from the extern (CMAC or other extern peripherals/accelerators)
         else:

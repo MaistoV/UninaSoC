@@ -38,8 +38,6 @@
 //
 
 
-// TODO: update the description
-
 `include "uninasoc_axi.svh"
 `include "uninasoc_qsfp.svh"
 
@@ -68,15 +66,13 @@ module cmac_subsystem # (
 
     // AXI4 ports
 
-    // HBUS clock and reset
-    // TODO: Rename as data_clock_i (?)
-    input logic HBUS_clock_i,
-    input logic HBUS_reset_ni,
+    // Data clock and reset
+    input logic data_clock_i,
+    input logic data_reset_ni,
 
-    // MBUS clock and reset
-    // TODO: Rename as CSR_clock_i (?)
-    input logic MBUS_clock_i,
-    input logic MBUS_reset_ni,
+    // CSR clock and reset
+    input logic csr_clock_i,
+    input logic csr_reset_ni,
 
     // Output clock and reset
     output logic output_clock_o,
@@ -88,6 +84,7 @@ module cmac_subsystem # (
     // AXI4 DATA
     `DEFINE_AXI_SLAVE_PORTS(s_data, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH),
 
+    // TODO: Interrupts are not supported now
     // Interrupt out from the AXI Stream FIFO
     output logic interrupt_po
 );
@@ -117,7 +114,7 @@ module cmac_subsystem # (
     )
     xpm_cdc_array_single_inst (
         .dest_out       ( interrupt_po             ),
-        .dest_clk       ( MBUS_clock_i             ),     // Destination clock domain (MAIN_DOMAIN)
+        .dest_clk       ( csr_clock_i             ),     // Destination clock domain (MAIN_DOMAIN)
         .src_clk        ( cmac_output_clock_322MHz ),     // Source clock domain (PBUS_DOMAIN)
         .src_in         ( fifo_interrupt           )
     );
@@ -127,9 +124,6 @@ module cmac_subsystem # (
     // AXI4 buses //
     ////////////////
 
-    // TODO: check the Widths
-
-    // TODO: name this bus clock_conv_to_data_fifo (?)
     // AXI4 bus (512b) for read/write data from/to the AXIS FIFO from the clock converter (DATA FIFO)
     `DECLARE_AXI_BUS(clock_conv_to_fifo, LOCAL_DATA_WIDTH, LOCAL_ADDR_WIDTH, LOCAL_ID_WIDTH)
 
@@ -178,8 +172,8 @@ module cmac_subsystem # (
         if ( MBUS_DATA_WIDTH == 64 ) begin
 
             xlnx_axi_dwidth_from64_to32_converter csr_dwidth_conv_u (
-                .s_axi_aclk     ( MBUS_clock_i       ),
-                .s_axi_aresetn  ( MBUS_reset_ni      ),
+                .s_axi_aclk     ( csr_clock_i       ),
+                .s_axi_aresetn  ( csr_reset_ni      ),
 
                 // Slave from MBUS
                 .s_axi_awid     ( s_csr_axi_awid     ),
@@ -279,8 +273,8 @@ module cmac_subsystem # (
                 .LOCAL_ID_WIDTH   ( LOCAL_ID_WIDTH   )
 
             ) fifo_clock_conv_u (
-                .s_axi_aclk     ( HBUS_clock_i        ),
-                .s_axi_aresetn  ( HBUS_reset_ni       ),
+                .s_axi_aclk     ( data_clock_i        ),
+                .s_axi_aresetn  ( data_reset_ni       ),
 
                 .m_axi_aclk     ( cmac_output_clock_322MHz ),
                 .m_axi_aresetn  ( ~cmac_output_reset_p     ),
@@ -376,8 +370,8 @@ module cmac_subsystem # (
 
     // AXI4 to AXI Lite prot conv (from dwidth converter to CMAC XBAR CSR PATH)
     xlnx_axi4_to_axilite_d32_converter axi4_to_axilite_d32_converter_to_xbar_u (
-        .aclk           ( MBUS_clock_i                   ),
-        .aresetn        ( MBUS_reset_ni                  ),
+        .aclk           ( csr_clock_i                   ),
+        .aresetn        ( csr_reset_ni                  ),
 
         // AXI4 slave port (from dwidth converter)
         .s_axi_awid     ( to_prot_conv_csr_axi_awid      ),
@@ -443,8 +437,8 @@ module cmac_subsystem # (
     );
 
     xlnx_cmac_xbar cmac_xbar_u (
-        .aclk           ( MBUS_clock_i  ),
-        .aresetn        ( MBUS_reset_ni ),
+        .aclk           ( csr_clock_i  ),
+        .aresetn        ( csr_reset_ni ),
 
         .s_axi_awaddr   ( prot_conv_to_cmac_xbar_axilite_awaddr   ),
         .s_axi_awprot   ( prot_conv_to_cmac_xbar_axilite_awprot   ),
@@ -489,8 +483,8 @@ module cmac_subsystem # (
     );
 
     xlnx_axilite_d32_clock_converter cmac_xbar_to_fifo_csr_clock_conv_u (
-        .s_axi_aclk     ( MBUS_clock_i  ),
-        .s_axi_aresetn  ( MBUS_reset_ni ),
+        .s_axi_aclk     ( csr_clock_i  ),
+        .s_axi_aresetn  ( csr_reset_ni ),
 
         .m_axi_aclk     ( cmac_output_clock_322MHz ),
         .m_axi_aresetn  ( ~cmac_output_reset_p     ),
@@ -654,8 +648,8 @@ module cmac_subsystem # (
 
 
         // AXI Lite interface ( CSR space )
-        .s_axi_aclk                ( MBUS_clock_i                          ),
-        .s_axi_sreset              ( ~MBUS_reset_ni                        ),     // Active high
+        .s_axi_aclk                ( csr_clock_i                          ),
+        .s_axi_sreset              ( ~csr_reset_ni                        ),     // Active high
 
         .s_axi_araddr              ( cmac_xbar_to_cmac_csr_axilite_araddr  ),     // 32 bit
         .s_axi_arready             ( cmac_xbar_to_cmac_csr_axilite_arready ),
@@ -692,8 +686,8 @@ module cmac_subsystem # (
 
 
         // CMAC input clocks and resets
-        .init_clk                  ( MBUS_clock_i             ),
-        .sys_reset                 ( ~MBUS_reset_ni           ),   // Active high
+        .init_clk                  ( csr_clock_i             ),
+        .sys_reset                 ( ~csr_reset_ni           ),   // Active high
 
         .rx_clk                    ( cmac_output_clock_322MHz ),   // 322,26 MHz
         .core_rx_reset             ( 1'b0                     ),   // Active high
@@ -703,7 +697,7 @@ module cmac_subsystem # (
 
         // DRP (Dynamic Reconfiguration Port ) interface (not needed)
         .core_drp_reset            ( 1'b0              ),   // Active high
-        .drp_clk                   ( MBUS_clock_i      ),   // This should be the same as init_clk
+        .drp_clk                   ( csr_clock_i      ),   // This should be the same as init_clk
         .drp_addr                  ( '0                ),   // 10 bit
         .drp_di                    ( '0                ),   // 16 bit
         .drp_en                    ( '0                ),
